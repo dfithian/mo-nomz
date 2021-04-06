@@ -1,0 +1,86 @@
+name: mo-nomz
+version: '0.1'
+maintainer: Dan Fithian
+license: AllRightsReserved
+copyright: 2021 Dan Fithian
+
+ghc-options:
+  - -Wall
+  - -fwarn-tabs
+  - -fwarn-redundant-constraints
+  - -Wincomplete-uni-patterns
+  - -eventlog
+  - -O0
+
+default-extensions:
+  - ConstraintKinds
+  - DataKinds
+  - DefaultSignatures
+  - DeriveDataTypeable
+  - DeriveGeneric
+  - DerivingStrategies
+  - DerivingVia
+  - EmptyDataDecls
+  - FlexibleContexts
+  - FlexibleInstances
+  - GADTs
+  - GeneralizedNewtypeDeriving
+  - LambdaCase
+  - MultiParamTypeClasses
+  - MultiWayIf
+  - NamedFieldPuns
+  - NoImplicitPrelude
+  - NoMonomorphismRestriction
+  - OverloadedStrings
+  - QuasiQuotes
+  - RankNTypes
+  - RecordWildCards
+  - ScopedTypeVariables
+  - StandaloneDeriving
+  - TemplateHaskell
+  - TupleSections
+  - TypeApplications
+  - TypeFamilies
+  - TypeOperators
+  - ViewPatterns
+
+dependencies:
+  - aeson
+  - base
+  - classy-prelude
+  - data-default
+  - monad-logger
+  - mtl
+  - network-uri
+  - postgresql-config
+  - postgresql-simple
+  - resource-pool
+  - servant
+  - servant-server
+  - wai
+  - wai-extra
+  - warp
+  - yaml
+
+library:
+  source-dirs:
+    - src
+
+tests:
+  tests:
+    main: main.hs
+    source-dirs: test
+    dependencies:
+      - hspec
+      - hspec-expectations
+      - QuickCheck
+      - mo-nomz
+
+executables:
+  mo-nomz:
+    ghc-options:
+      - -O2
+    main: main.hs
+    source-dirs: app
+    dependencies:
+      - mo-nomz

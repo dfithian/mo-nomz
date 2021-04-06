@@ -1,0 +1,5 @@
+resolver: lts-17.8
+packages:
+- server/mo-nomz
+extra-deps:
+- postgresql-config-0.1.0@sha256:5ce9d48cd0f422910a3786d17f5c75331da222bbf8ccba03ba116eded6185db1,1294

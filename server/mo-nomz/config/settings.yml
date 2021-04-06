@@ -1,0 +1,9 @@
+port: '_env:MO_NOMZ_PORT:8080'
+
+database:
+  database: "_env:POSTGRES_DATABASE:postgres"
+  host:     "_env:POSTGRES_ADDR:127.0.0.1"
+  port:     "_env:POSTGRES_PORT:5432"
+  user:     "_env:POSTGRES_USER:postgres"
+  password: "_env:POSTGRES_PASSWORD:postgres"
+  poolsize: "_env:POSTGRES_POOLSIZE:3"

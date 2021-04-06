@@ -1,0 +1,4 @@
+stack.yaml.lock
+tmp
+*.cabal
+*.log
