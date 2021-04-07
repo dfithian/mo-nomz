@@ -5,25 +5,29 @@ import ClassyPrelude
 import Control.Monad.Except (MonadError, throwError)
 import Network.URI (parseURI, uriAuthority, uriPath, uriRegName)
 import Servant.API (NoContent(NoContent))
-import Servant.Server (ServerError, err400, errReasonPhrase)
+import Servant.Server (ServerError, err400, err500, errReasonPhrase)
 
 import API.Types
   ( ListIngredientResponse(..), ListRecipeResponse(..), RecipeImportBodyRequest(..)
   , RecipeImportLinkRequest(..), RecipeImportResponse(..)
   )
 import Foundation (HasDatabase, withDbConn)
-import Types (Ingredient(..), RecipeLink(..), RecipeName(..), RecipeId)
+import Scrape (parseIngredients, scrapeUrl)
+import Scrub (scrubIngredient)
+import Types (Ingredient(..), RecipeLink(..), RecipeName(..), RecipeId, mapError)
 import Unit (combineQuantities)
 import qualified Database
 
 postRecipeImportLink :: (HasDatabase r, MonadError ServerError m, MonadIO m, MonadReader r m) => RecipeImportLinkRequest -> m RecipeImportResponse
 postRecipeImportLink RecipeImportLinkRequest {..} = do
+  uri <- maybe (throwError err400 { errReasonPhrase = "Invalid link" }) pure $ parseURI (unpack recipeImportLinkRequestLink)
   let recipeNameMay = do
-        uri <- parseURI (unpack recipeImportLinkRequestLink)
         uriAuth <- uriAuthority uri
         pure . RecipeName . pack $ uriRegName uriAuth <> uriPath uri
   recipeName <- maybe (throwError err400 { errReasonPhrase = "Invalid domain" }) pure recipeNameMay
-  recipeId <- withDbConn $ \c -> Database.insertRecipe c recipeName (Just $ RecipeLink recipeImportLinkRequestLink) mempty
+  rawIngredients <- mapError (\e -> err500 { errReasonPhrase = unpack e }) $ parseIngredients =<< scrapeUrl uri
+  let ingredients = scrubIngredient <$> rawIngredients
+  recipeId <- withDbConn $ \c -> Database.insertRecipe c recipeName (Just $ RecipeLink recipeImportLinkRequestLink) ingredients
   pure RecipeImportResponse
     { recipeImportResponseId = recipeId
     }

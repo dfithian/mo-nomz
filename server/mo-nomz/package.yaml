@@ -46,7 +46,9 @@ default-extensions:
 
 dependencies:
   - aeson
+  - attoparsec
   - base
+  - case-insensitive
   - classy-prelude
   - data-default
   - monad-logger
@@ -55,8 +57,10 @@ dependencies:
   - postgresql-config
   - postgresql-simple
   - resource-pool
+  - scalpel
   - servant
   - servant-server
+  - text
   - wai
   - wai-extra
   - warp
@@ -71,6 +75,8 @@ tests:
     main: main.hs
     source-dirs: test
     dependencies:
+      - file-embed
+      - file-path-th
       - hspec
       - hspec-expectations
       - QuickCheck

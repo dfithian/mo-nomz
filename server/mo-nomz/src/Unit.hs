@@ -2,14 +2,7 @@ module Unit where
 
 import ClassyPrelude
 
-import Types (Quantity(..), Unit(..))
-
-pinch, teaspoon, tablespoon, cup, ounce :: Unit
-pinch = Unit "pinch"
-teaspoon = Unit "tsp"
-tablespoon = Unit "tbsp"
-cup = Unit "cup"
-ounce = Unit "oz"
+import Types (Quantity(..), Unit(..), cup, ounce, pinch, tablespoon, teaspoon)
 
 data UnitHierarchy
   = UnitHierarchyTop (Unit, Quantity)

@@ -5,7 +5,7 @@ import ClassyPrelude
 import Test.Hspec (Spec, describe, it, shouldBe)
 import Test.QuickCheck (forAll, shuffle)
 
-import Types (Unit(..))
+import Types (Unit(..), cup, ounce, pinch, tablespoon, teaspoon)
 
 import Unit
 

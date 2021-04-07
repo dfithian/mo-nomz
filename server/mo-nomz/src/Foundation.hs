@@ -21,7 +21,7 @@ data App = App
   }
 
 class HasDatabase a where
-  connectionPool :: a -> (Pool Connection)
+  connectionPool :: a -> Pool Connection
 
 instance HasDatabase App where
   connectionPool = appConnectionPool

@@ -12,6 +12,7 @@ stack run mo-nomz
 initdb -D tmp
 pg_ctl -D tmp -l postgres.log start
 psql -d postgres -c "create user postgres"
+psql -d postgres -c "alter user postgres superuser"
 psql -d postgres -c "grant create on database postgres to postgres"
 psql -d postgres -U postgres -f sql/init.sql
 ```
@@ -65,4 +66,17 @@ curl \
   -d '{
     "link": "https://www.allrecipes.com/recipe/26317/chicken-pot-pie-ix/"
   }'
+```
+
+## Scraper
+
+```haskell
+import Control.Monad (fail)
+import Control.Monad.Except (runExceptT)
+import Network.URI (parseURI)
+
+let x = "https://www.allrecipes.com/recipe/26317/chicken-pot-pie-ix/"
+let y = "https://www.pillsbury.com/recipes/classic-chicken-pot-pie/1401d418-ac0b-4b50-ad09-c6f1243fb992"
+let z = "https://www.tasteofhome.com/recipes/favorite-chicken-potpie/"
+runExceptT $ scrapeUrl =<< maybe (fail "missing") pure (parseURI x)
 ```
