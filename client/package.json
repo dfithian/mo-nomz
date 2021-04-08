@@ -25,7 +25,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "prettier:check": "prettier --list-different \"./{jest,jest-e2e,packages,src,webpack}/**/*.{js,json,ts,tsx}\"",
+    "prettier:write": "yarn prettier:check --write"
   },
   "eslintConfig": {
     "extends": [
