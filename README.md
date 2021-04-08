@@ -1,5 +1,7 @@
 # Mo Nomz
 
+A Haskell / React webapp which will scrape provided recipe URLs ingredients and aggregate them into grocery lists.
+
 ## Start the server
 
 ```bash
@@ -16,6 +18,15 @@ psql -d postgres -c "alter user postgres superuser"
 psql -d postgres -c "grant create on database postgres to postgres"
 psql -d postgres -U postgres -f sql/init.sql
 ```
+
+## Start the client
+
+```bash
+cd client
+yarn start
+```
+
+Visit [http://localhost:3000](http://localhost:3000) in a browser.
 
 ## Seed data
 
