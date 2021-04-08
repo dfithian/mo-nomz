@@ -5,18 +5,17 @@ import ClassyPrelude
 import Types (Quantity(..), Unit(..), cup, ounce, pinch, tablespoon, teaspoon)
 
 data UnitHierarchy
-  = UnitHierarchyTop (Unit, Quantity)
+  = UnitHierarchyEnd (Unit, Quantity)
   | UnitHierarchyMid (Unit, Quantity) (Unit, Quantity)
-  | UnitHierarchyLow (Unit, Quantity)
   deriving (Eq, Ord, Show)
 
 conversionTable :: Map Unit UnitHierarchy
 conversionTable = mapFromList
-  [ (ounce, UnitHierarchyTop (cup, 8))
+  [ (ounce, UnitHierarchyEnd (cup, 8))
   , (cup, UnitHierarchyMid (tablespoon, 16) (ounce, 0.125))
   , (tablespoon, UnitHierarchyMid (teaspoon, 3) (cup, 0.0625))
   , (teaspoon, UnitHierarchyMid (pinch, 4) (tablespoon, Quantity $ 1 / 3))
-  , (pinch, UnitHierarchyLow (tablespoon, 0.25))
+  , (pinch, UnitHierarchyEnd (tablespoon, 0.25))
   ]
 
 getAllConversions :: Unit -> Map Unit Quantity
@@ -27,10 +26,7 @@ getAllConversions = snd . go mempty
       in case (member next oldVisited, lookup next conversionTable) of
         (True, _) -> (oldVisited, mempty)
         (_, Nothing) -> (visited, mempty)
-        (_, Just (UnitHierarchyTop (x, q))) ->
-          let (newVisited, newConversions) = go visited x
-          in (newVisited, insertMap x q $ map ((*) q) newConversions)
-        (_, Just (UnitHierarchyLow (x, q))) ->
+        (_, Just (UnitHierarchyEnd (x, q))) ->
           let (newVisited, newConversions) = go visited x
           in (newVisited, insertMap x q $ map ((*) q) newConversions)
         (_, Just (UnitHierarchyMid (x1, q1) (x2, q2))) ->
