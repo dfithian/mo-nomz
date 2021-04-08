@@ -1,22 +1,23 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import { Route, Switch } from "react-router";
+import { BrowserRouter as Router } from "react-router-dom";
 import { Provider } from "react-redux";
 
 import store from "./store";
-import App from "./App";
-import { fetchRecipes, fetchIngredients } from "./actions";
-import { createMuiTheme } from "@material-ui/core";
-import { MuiThemeProvider } from "@material-ui/core/styles";
+import Home from "./Home";
+import User from "./User";
+import Recipe from "./Recipe";
 
-store.dispatch(fetchRecipes());
-store.dispatch(fetchIngredients([]));
-const theme = createMuiTheme();
-const rootElement = document.getElementById("root");
 ReactDOM.render(
-  <MuiThemeProvider theme={theme}>
-    <Provider store={store}>
-      <App />
-    </Provider>
-  </MuiThemeProvider>,
-  rootElement
+  <Provider store={store}>
+    <Router>
+      <Switch>
+        <Route exact path="/" component={Home} />
+        <Route exact path="/user/:userId" component={User} />
+        <Route exact path="/user/:userId/recipe/:recipeId" component={Recipe} />
+      </Switch>
+    </Router>
+  </Provider>,
+  document.getElementById("root")
 );

@@ -20,9 +20,16 @@ psql -d postgres -U postgres -f sql/init.sql
 ## Seed data
 
 ```bash
+USER_ID=$(curl \
+  -H 'Content-Type: application/json' \
+  http://localhost:8080/api/v1/user \
+  -d '{
+    "username": "dfithian"
+  }' | jq .userId)
+
 curl \
   -H 'Content-Type: application/json' \
-  http://localhost:8080/api/v1/recipe/import/json \
+  "http://localhost:8080/api/v1/user/${USER_ID}/recipe/import/json" \
   -d '{
     "name": "Chicken Parmesan",
     "ingredients": [{
@@ -42,7 +49,7 @@ curl \
 
 curl \
   -H 'Content-Type: application/json' \
-  http://localhost:8080/api/v1/recipe/import/json \
+  "http://localhost:8080/api/v1/user/${USER_ID}/recipe/import/json" \
   -d '{
     "name": "Eggplant Parmesan",
     "ingredients": [{
@@ -62,7 +69,7 @@ curl \
 
 curl \
   -H 'Content-Type: application/json' \
-  http://localhost:8080/api/v1/recipe/import/link \
+  "http://localhost:8080/api/v1/user/${USER_ID}/recipe/import/link" \
   -d '{
     "link": "https://www.allrecipes.com/recipe/26317/chicken-pot-pie-ix/"
   }'

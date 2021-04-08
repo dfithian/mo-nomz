@@ -15,12 +15,17 @@ import Servant.Server (ServerT, hoistServer, serve)
 
 import Foundation (App(..), NomzServer, runNomzServer)
 import Servant (NomzApi, nomzApi)
-import Server (deleteRecipe, getIngredients, getRecipes, postRecipeImportBody, postRecipeImportLink)
+import Server
+  ( deleteRecipe, getIngredients, getRecipes, getUsers, postCreateUser, postRecipeImportBody
+  , postRecipeImportLink
+  )
 import Settings (AppSettings(..))
 
 nomzServer :: ServerT NomzApi NomzServer
 nomzServer =
-  postRecipeImportLink
+  getUsers
+    :<|> postCreateUser
+    :<|> postRecipeImportLink
     :<|> postRecipeImportBody
     :<|> getRecipes
     :<|> deleteRecipe

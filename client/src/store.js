@@ -4,6 +4,8 @@ import thunk from "redux-thunk";
 import _ from "lodash";
 
 const defaultState = {
+  username: "",
+  users: {},
   recipes: {},
   ingredients: [],
   newLink: "",
@@ -13,12 +15,33 @@ const defaultState = {
 
 const mainReducer = function (state = defaultState, action) {
   switch (action.type) {
+    case "REDIRECT":
+      return {
+        ...state,
+        redirect: action.redirect,
+      };
+    case "SET_USERNAME":
+      return {
+        ...state,
+        username: action.username,
+      };
+    case "UNSET_USER":
+      return {
+        ...state,
+        username: "",
+      };
+    case "UPDATE_USERS":
+      return {
+        ...state,
+        users: action.users,
+      };
     case "UPDATE_RECIPES":
       const recipes = action.recipes;
-      _.map(recipes, (r) => (r.checked = false));
+      _.map(recipes, (r) => (r.checked = true));
       return {
         ...state,
         recipes,
+        includeAll: true,
       };
     case "UPDATE_INGREDIENTS":
       return {

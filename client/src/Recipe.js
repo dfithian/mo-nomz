@@ -1,9 +1,10 @@
 import React from "react";
 import { connect } from "react-redux";
 import { useParams } from "react-router";
-import { bindActionCreators } from "redux";
 import {
+  Breadcrumbs,
   IconButton,
+  Link,
   List,
   ListItem,
   ListItemText,
@@ -16,11 +17,25 @@ import store from "./store";
 import * as Actions from "./actions";
 
 const Recipe = ({ recipes }) => {
-  const { id } = useParams();
-  if (recipes && recipes[id]) {
-    const { name, ingredients, link } = recipes[id];
+  const { userId, recipeId } = useParams();
+  if (recipes && recipes[recipeId]) {
+    const { name, ingredients, link } = recipes[recipeId];
     return (
       <div>
+        <Breadcrumbs>
+          <Link href="/">
+            <Typography>Home</Typography>
+          </Link>
+          <Link href={`/user/${userId}`}>
+            <Typography>Recipes</Typography>
+          </Link>
+          <Link href={`/user/${userId}/recipe/${recipeId}`}>
+            <Typography>{name}</Typography>
+          </Link>
+        </Breadcrumbs>
+
+        <br />
+
         <Typography variant="h5">
           {name}
           {link ? (
@@ -30,7 +45,9 @@ const Recipe = ({ recipes }) => {
           ) : null}
           <IconButton
             edge="end"
-            onClick={() => store.dispatch(Actions.deleteRecipe(id))}
+            onClick={() =>
+              store.dispatch(Actions.deleteRecipe(userId, recipeId))
+            }
           >
             <DeleteIcon />
           </IconButton>
@@ -45,11 +62,8 @@ const Recipe = ({ recipes }) => {
       </div>
     );
   } else {
-    return (
-      <div>
-        <Typography>Loading...</Typography>
-      </div>
-    );
+    store.dispatch(Actions.fetchRecipes(userId));
+    return <Typography>Loading...</Typography>;
   }
 };
 
@@ -57,8 +71,4 @@ const mapStateToProps = (state) => ({
   recipes: state.recipes,
 });
 
-const mapDispatchToProps = (dispatch) => ({
-  actions: bindActionCreators(Actions, dispatch),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(Recipe);
+export default connect(mapStateToProps)(Recipe);
