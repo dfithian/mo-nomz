@@ -9,19 +9,21 @@ import Types
   , ounce, pinch, tablespoon, teaspoon
   )
 
-unitAliasTable :: Map RawUnit Unit
+unitAliasTable :: Map (CI Text) Unit
 unitAliasTable = mapFromList
-  [ (RawUnit "ounce", ounce)
-  , (RawUnit "ounces", ounce)
-  , (RawUnit "oz", ounce)
-  , (RawUnit "cup", cup)
-  , (RawUnit "cups", cup)
-  , (RawUnit "tablespoon", tablespoon)
-  , (RawUnit "tbsp", tablespoon)
-  , (RawUnit "teaspoon", teaspoon)
-  , (RawUnit "tsp", teaspoon)
-  , (RawUnit "pinch", pinch)
-  , (RawUnit "pinches", pinch)
+  [ ("ounce", ounce)
+  , ("ounces", ounce)
+  , ("oz", ounce)
+  , ("cup", cup)
+  , ("cups", cup)
+  , ("tablespoon", tablespoon)
+  , ("tablespoons", tablespoon)
+  , ("tbsp", tablespoon)
+  , ("teaspoon", teaspoon)
+  , ("teaspoons", teaspoon)
+  , ("tsp", teaspoon)
+  , ("pinch", pinch)
+  , ("pinches", pinch)
   ]
 
 quantityAliasTable :: Map (CI Text) Quantity
@@ -46,7 +48,9 @@ quantityAliasTable = mapFromList
   ]
 
 scrubUnit :: RawUnit -> Unit
-scrubUnit x = findWithDefault (Unit $ unRawUnit x) x unitAliasTable
+scrubUnit = \case
+  RawUnitWord x -> findWithDefault (Unit x) x unitAliasTable
+  RawUnitMissing -> Unit "whole"
 
 scrubQuantity :: RawQuantity -> Quantity
 scrubQuantity = \case

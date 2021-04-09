@@ -40,7 +40,9 @@ newtype RecipeLink = RecipeLink { unRecipeLink :: Text }
 newtype RecipeId = RecipeId { unRecipeId :: Int }
   deriving (Eq, Ord, Show, FromJSON, FromJSONKey, ToJSON, ToJSONKey, FromField, ToField, FromHttpApiData, ToHttpApiData)
 
-newtype RawUnit = RawUnit { unRawUnit :: CI Text }
+data RawUnit
+  = RawUnitWord (CI Text)
+  | RawUnitMissing
   deriving (Eq, Ord, Show)
 
 newtype Unit = Unit { unUnit :: CI Text }

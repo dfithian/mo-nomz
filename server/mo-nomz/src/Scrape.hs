@@ -7,6 +7,7 @@ import Control.Monad.Except (MonadError, throwError)
 import Data.Char (isAlpha, isDigit, isSpace)
 import Data.Text (split, strip)
 import Network.URI (URI)
+import Text.HTML.Scalpel ((//), (@:))
 import qualified Data.Attoparsec.Text as Atto
 import qualified Data.CaseInsensitive as CI
 import qualified Text.HTML.Scalpel as Scalpel
@@ -16,36 +17,67 @@ import Types (IngredientName(..), Quantity(..), RawIngredient(..), RawQuantity(.
 
 scrapeUrl :: (MonadIO m, MonadError Text m) => URI -> m Text
 scrapeUrl uri = do
-  liftIO (Scalpel.scrapeURL (show uri) (Scalpel.chroot "body" (Scalpel.texts Scalpel.anySelector))) >>= \case
+  let containsIngredientClass = Scalpel.match $ \attributeKey attributeValue -> case attributeKey of
+        "class" -> "ingredient" `isInfixOf` toLower attributeValue
+        _ -> False
+  liftIO (Scalpel.scrapeURL (show uri) (Scalpel.chroots (Scalpel.AnyTag @: [containsIngredientClass] // "li") (Scalpel.texts Scalpel.anySelector))) >>= \case
     Nothing -> throwError "Failed to scrape URL"
-    Just xs -> pure . unlines . ordNub . filter (not . null) . map strip . lines . unlines $ xs
+    Just xs -> pure . (<> "\n") . unlines . ordNub . filter (not . null) . map strip . lines . unlines . map unlines $ xs
 
 quantityP :: Atto.Parser RawQuantity
-quantityP = quantityPure <|> quantityFrac <|> quantityDec <|> quantityWord <|> quantityMissing
+quantityP = quantityExpression <|> quantityWord <|> quantityMissing
   where
-    isQuantityC c = isDigit c || isSpace c || c == '/' || c == '.'
-    parsePure str = maybe (fail $ unpack str <> " is not a quantity") (pure . Quantity) . readMay . unpack . filter (not . isSpace) $ str
-    parseFrac str = case split ((==) '/') $ filter (not . isSpace) str of
-      [x, y] -> maybe (fail $ unpack str <> " is not a quantity") (pure . Quantity) $
-        (/) <$> readMay x <*> readMay y
-      _ -> fail $ unpack str <> " is not a quantity"
-    parseDec str = case split ((==) '.') $ filter (not . isSpace) str of
-      [x, y] -> maybe (fail $ unpack str <> " is not a quantity") (pure . Quantity) $ do
+    isQuantityC c = isDigit c || isSpace c || elem c ['/', '.', '-', '¼', '½', '¾', '⅓', '⅔']
+    quantityParser p = p =<< Atto.takeWhile isQuantityC
+    strictQuantityParser p = p . strip =<< Atto.takeWhile1 isQuantityC
+
+    quantitySingle str = maybe (fail $ unpack str <> " is not a single quantity") (pure . Quantity) . readMay . unpack . filter (not . isSpace) $ str
+    quantityUnicode = \case
+      "¼" -> pure $ Quantity 0.25
+      "½" -> pure $ Quantity 0.5
+      "¾" -> pure $ Quantity 0.75
+      "⅓" -> pure $ Quantity $ 1 / 3
+      "⅔" -> pure $ Quantity $ 2 / 3
+      str -> fail $ unpack str <> " is not a unicode quantity"
+    quantityDecimal str = case split ((==) '.') str of
+      [x, y] -> maybe (fail $ unpack str <> " is not a decimal quantity") (pure . Quantity) $ do
         x' <- fromInteger <$> readMay x
         y' <- fromInteger <$> readMay y
         pure $ x' + (y' / (fromIntegral $ 10 * length y))
-      _ -> fail $ unpack str <> " is not a quantity"
-    quantityPure = RawQuantityPure <$> (parsePure =<< Atto.takeWhile1 isQuantityC)
-    quantityFrac = RawQuantityPure <$> (parseFrac =<< Atto.takeWhile1 isQuantityC)
-    quantityDec = RawQuantityPure <$> (parseDec =<< Atto.takeWhile1 isQuantityC)
+      _ -> fail $ unpack str <> " is not a decimal quantity"
+    quantityFraction str = case split ((==) '/') str of
+      [x, y] -> maybe (fail $ unpack str <> " is not a fractional quantity") (pure . Quantity) $
+        (/) <$> readMay x <*> readMay y
+      _ -> fail $ unpack str <> " is not a fractional quantity"
+
+    quantityImproper = quantityParser $ \str -> case filter (not . null) . mconcat . map (split isSpace) . split ((==) '-') $ str of
+      [x, y] -> (+) <$> quantitySimple x <*> quantitySimple y
+      _ -> fail $ unpack str <> " is not an improper quantity"
+
+    quantitySimple str =
+      quantitySingle str
+        <|> quantityUnicode str
+        <|> quantityDecimal str
+        <|> quantityFraction str
+
+    quantityExpression = RawQuantityPure <$> (strictQuantityParser quantitySimple <|> quantityImproper)
     quantityWord = RawQuantityWord . CI.mk <$> ((\str -> if CI.mk str `elem` keys quantityAliasTable then pure str else fail $ unpack str <> " is not a quantity") =<< spaced (Atto.takeWhile1 isAlpha))
-    quantityMissing = pure RawQuantityMissing
+    quantityMissing = quantityParser $ \str -> case null str of
+      True -> pure RawQuantityMissing
+      False -> fail $ unpack str <> " is a quantity, but thought it was missing"
 
 spaced :: Atto.Parser a -> Atto.Parser a
 spaced p = optional (void Atto.space) *> (p <* optional (void Atto.space))
 
 unitP :: Atto.Parser RawUnit
-unitP = RawUnit . CI.mk <$> spaced (Atto.takeWhile1 isAlpha)
+unitP = unitWord <|> unitMissing
+  where
+    unitWord = RawUnitWord . CI.mk <$> spaced (Atto.takeWhile1 isAlpha)
+    unitMissing = do
+      str <- spaced (Atto.takeWhile isAlpha)
+      case null str of
+        True -> pure RawUnitMissing
+        False -> fail $ unpack str <> " is a unit, but thought it was missing"
 
 nameP :: Atto.Parser IngredientName
 nameP = IngredientName . CI.mk <$> spaced (Atto.takeWhile1 (not . (==) '\n'))
@@ -59,10 +91,4 @@ ingredientsP :: Atto.Parser [RawIngredient]
 ingredientsP = Atto.many' ingredientP
 
 parseIngredients :: (MonadError Text m) => Text -> m [RawIngredient]
-parseIngredients val = do
-  let startsWithIngredients x = "ingredient" `isPrefixOf` toLower x
-      accumulatePosibilities acc next = case startsWithIngredients next of
-        False -> (next:) <$> acc
-        True -> []:acc
-      possibilities = map (unlines . reverse) . foldl' accumulatePosibilities mempty . dropWhile (not . startsWithIngredients) . lines $ val
-  maybe (throwError "Failed to parse ingredients") pure . headMay . sortOn length . rights . map (Atto.parseOnly ingredientsP) $ possibilities
+parseIngredients = either (const $ throwError "Failed to parse ingredients") pure . Atto.parseOnly ingredientsP
