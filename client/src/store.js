@@ -4,10 +4,13 @@ import thunk from "redux-thunk";
 import _ from "lodash";
 
 const defaultState = {
-  username: "",
+  newUsername: "",
   users: {},
+  usersFetched: false,
   recipes: {},
+  recipesFetched: false,
   ingredients: [],
+  ingredientsFetched: false,
   newLink: "",
   includeAll: false,
   ingredientsDirty: false,
@@ -23,17 +26,13 @@ const mainReducer = function (state = defaultState, action) {
     case "SET_USERNAME":
       return {
         ...state,
-        username: action.username,
-      };
-    case "UNSET_USER":
-      return {
-        ...state,
-        username: "",
+        newUsername: action.newUsername,
       };
     case "UPDATE_USERS":
       return {
         ...state,
         users: action.users,
+        usersFetched: true,
       };
     case "UPDATE_RECIPES":
       const recipes = action.recipes;
@@ -41,12 +40,14 @@ const mainReducer = function (state = defaultState, action) {
       return {
         ...state,
         recipes,
+        recipesFetched: true,
         includeAll: true,
       };
     case "UPDATE_INGREDIENTS":
       return {
         ...state,
         ingredients: action.ingredients,
+        ingredientsFetched: true,
       };
     case "SET_NEW_LINK":
       return {

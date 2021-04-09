@@ -65,6 +65,7 @@ export const postNewRecipeLink = (userId, link) => {
         await axios.post(`/api/v1/user/${userId}/recipe/import/link`, { link });
         dispatch(setNewLink(""));
         dispatch(fetchRecipes(userId));
+        dispatch(fetchIngredients(userId, []));
       }
     } catch (e) {
       console.log(e);
@@ -86,7 +87,7 @@ export const deleteRecipe = (userId, key) => {
 
 export const setUsername = (payload) => ({
   type: "SET_USERNAME",
-  username: payload,
+  newUsername: payload,
 });
 
 export const setUser = (payload) => ({

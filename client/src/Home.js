@@ -1,4 +1,3 @@
-import _ from "lodash";
 import React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
@@ -16,7 +15,7 @@ import LockOpenIcon from "@material-ui/icons/LockOpen";
 import store from "./store";
 import * as Actions from "./actions";
 
-const Home = ({ redirect, users, username, actions }) => {
+const Home = ({ redirect, users, usersFetched, newUsername, actions }) => {
   const renderedUsers = Object.keys(users).map((key, _) => (
     <ListItem key={`user-${key}`}>
       <Link href={`/user/${key}`}>
@@ -39,7 +38,7 @@ const Home = ({ redirect, users, username, actions }) => {
       <div>
         <Typography variant="h5">Select or create user</Typography>
         <List component="nav">
-          {_.isEmpty(users) ? renderedLoading() : renderedUsers}
+          {usersFetched ? renderedUsers : renderedLoading()}
           <ListItem key="user-add">
             <TextField
               id="standard-basic"
@@ -47,7 +46,7 @@ const Home = ({ redirect, users, username, actions }) => {
               onBlur={(e) => actions.setUsername(e.target.value)}
             />
             <IconButton
-              onClick={() => store.dispatch(Actions.createUser(username))}
+              onClick={() => store.dispatch(Actions.createUser(newUsername))}
             >
               <LockOpenIcon />
             </IconButton>
@@ -60,7 +59,8 @@ const Home = ({ redirect, users, username, actions }) => {
 
 const mapStateToProps = (state) => ({
   users: state.users,
-  username: state.username,
+  usersFetched: state.usersFetched,
+  newUsername: state.newUsername,
   redirect: state.redirect,
 });
 

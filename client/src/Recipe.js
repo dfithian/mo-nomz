@@ -16,9 +16,9 @@ import OpenInNewIcon from "@material-ui/icons/OpenInNew";
 import store from "./store";
 import * as Actions from "./actions";
 
-const Recipe = ({ recipes }) => {
+const Recipe = ({ recipes, recipesFetched }) => {
   const { userId, recipeId } = useParams();
-  if (recipes && recipes[recipeId]) {
+  if (recipesFetched) {
     const { name, ingredients, link } = recipes[recipeId];
     return (
       <div>
@@ -69,6 +69,7 @@ const Recipe = ({ recipes }) => {
 
 const mapStateToProps = (state) => ({
   recipes: state.recipes,
+  recipesFetched: state.recipesFetched,
 });
 
 export default connect(mapStateToProps)(Recipe);
