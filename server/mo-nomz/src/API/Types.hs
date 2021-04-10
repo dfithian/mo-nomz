@@ -5,12 +5,7 @@ import ClassyPrelude
 import Data.Aeson.TH (deriveJSON)
 
 import Json (jsonOptions)
-import Types (Ingredient, Recipe, RecipeId, RecipeLink, RecipeName, User, UserId, Username)
-
-data ListUserResponse = ListUserResponse
-  { listUserResponseUsers :: Map UserId User
-  }
-  deriving (Eq, Ord, Show)
+import Types (IngredientId, IngredientName, ReadableQuantity, RecipeLink, Unit, UserId, Username)
 
 data UserCreateRequest = UserCreateRequest
   { userCreateRequestUsername :: Username
@@ -27,38 +22,42 @@ data RecipeImportLinkRequest = RecipeImportLinkRequest
   }
   deriving (Eq, Ord, Show)
 
-data RecipeImportBodyRequest = RecipeImportBodyRequest
-  { recipeImportBodyRequestName        :: RecipeName
-  , recipeImportBodyRequestIngredients :: [Ingredient]
+data MergeIngredientRequest = MergeIngredientRequest
+  { mergeIngredientRequestIds      :: Set IngredientId
+  , mergeIngredientRequestName     :: IngredientName
+  , mergeIngredientRequestQuantity :: ReadableQuantity
+  , mergeIngredientRequestUnit     :: Unit
   }
   deriving (Eq, Ord, Show)
 
-data RecipeImportResponse = RecipeImportResponse
-  { recipeImportResponseId :: RecipeId
+data DeleteIngredientRequest = DeleteIngredientRequest
+  { deleteIngredientRequestIds :: Set IngredientId
   }
   deriving (Eq, Ord, Show)
 
-data UpdateRecipeRequest = UpdateRecipeRequest
-  { updateRecipeRequestIngredients :: [Ingredient]
+data ReadableIngredient = ReadableIngredient
+  { readableIngredientName     :: IngredientName
+  , readableIngredientQuantity :: ReadableQuantity
+  , readableIngredientUnit     :: Unit
   }
   deriving (Eq, Ord, Show)
 
-data ListRecipeResponse = ListRecipeResponse
-  { listRecipeResponseRecipes :: Map RecipeId Recipe
+data ReadableIngredientAggregate = ReadableIngredientAggregate
+  { readableIngredientAggregateIds        :: Set IngredientId
+  , readableIngredientAggregateIngredient :: ReadableIngredient
   }
   deriving (Eq, Ord, Show)
 
 data ListIngredientResponse = ListIngredientResponse
-  { listIngredientResponseIngredients :: [Ingredient]
+  { listIngredientResponseIngredients :: [ReadableIngredientAggregate]
   }
   deriving (Eq, Ord, Show)
 
-deriveJSON (jsonOptions "listUserResponse") ''ListUserResponse
 deriveJSON (jsonOptions "userCreateRequest") ''UserCreateRequest
 deriveJSON (jsonOptions "userCreateResponse") ''UserCreateResponse
 deriveJSON (jsonOptions "recipeImportLinkRequest") ''RecipeImportLinkRequest
-deriveJSON (jsonOptions "recipeImportBodyRequest") ''RecipeImportBodyRequest
-deriveJSON (jsonOptions "recipeImportResponse") ''RecipeImportResponse
-deriveJSON (jsonOptions "updateRecipeRequest") ''UpdateRecipeRequest
-deriveJSON (jsonOptions "listRecipeResponse") ''ListRecipeResponse
+deriveJSON (jsonOptions "mergeIngredientRequest") ''MergeIngredientRequest
+deriveJSON (jsonOptions "deleteIngredientRequest") ''DeleteIngredientRequest
+deriveJSON (jsonOptions "readableIngredient") ''ReadableIngredient
+deriveJSON (jsonOptions "readableIngredientAggregate") ''ReadableIngredientAggregate
 deriveJSON (jsonOptions "listIngredientResponse") ''ListIngredientResponse

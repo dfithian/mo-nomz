@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="aBx-mC-ITf">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Login Controller-->
+        <scene sceneID="8fP-qx-N9f">
+            <objects>
+                <viewController id="aBx-mC-ITf" customClass="LoginController" customModule="mo_nomz" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="2hi-dX-Qqs">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Username" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="sJc-JQ-Csn">
+                                <rect key="frame" x="20" y="435.5" width="336" height="25.5"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="336" id="5pb-is-uXB"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="g0H-bD-ItO">
+                                <rect key="frame" x="364" y="433" width="30" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="30" id="DfT-F8-OrV"/>
+                                    <constraint firstAttribute="height" constant="30" id="LsX-GA-31b"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                <state key="normal" title="Go"/>
+                                <connections>
+                                    <action selector="didTapLogin:" destination="aBx-mC-ITf" eventType="touchUpInside" id="5Cb-bi-5C9"/>
+                                </connections>
+                            </button>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="yum" translatesAutoresizingMaskIntoConstraints="NO" id="4mW-tH-q37">
+                                <rect key="frame" x="87" y="268.5" width="240" height="128"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="128" id="KDp-Bp-IUI"/>
+                                    <constraint firstAttribute="width" constant="240" id="hiY-s3-IUd"/>
+                                </constraints>
+                            </imageView>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" text="Welcome to the Mo Nomz recipe aggregator! Log in to continue." textAlignment="center" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JJM-2U-8Hu">
+                                <rect key="frame" x="20" y="502" width="374" height="76"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="76" id="iNH-ME-Nhw"/>
+                                </constraints>
+                                <color key="textColor" systemColor="labelColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="Ar1-i0-unQ"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="g0H-bD-ItO" firstAttribute="centerY" secondItem="2hi-dX-Qqs" secondAttribute="centerY" id="CQe-Nm-gD5"/>
+                            <constraint firstItem="sJc-JQ-Csn" firstAttribute="centerY" secondItem="2hi-dX-Qqs" secondAttribute="centerY" id="GA3-uy-jEn"/>
+                            <constraint firstItem="g0H-bD-ItO" firstAttribute="leading" secondItem="sJc-JQ-Csn" secondAttribute="trailing" constant="8" symbolic="YES" id="Hqh-iW-OQ2"/>
+                            <constraint firstItem="JJM-2U-8Hu" firstAttribute="top" secondItem="g0H-bD-ItO" secondAttribute="bottom" constant="39" id="LIB-Jz-4x5"/>
+                            <constraint firstItem="Ar1-i0-unQ" firstAttribute="trailing" secondItem="g0H-bD-ItO" secondAttribute="trailing" constant="20" id="SRC-mb-4WD"/>
+                            <constraint firstItem="4mW-tH-q37" firstAttribute="centerX" secondItem="2hi-dX-Qqs" secondAttribute="centerX" id="Vip-bT-Kke"/>
+                            <constraint firstItem="sJc-JQ-Csn" firstAttribute="top" secondItem="4mW-tH-q37" secondAttribute="bottom" constant="39" id="XCS-hE-Or1"/>
+                            <constraint firstItem="sJc-JQ-Csn" firstAttribute="leading" secondItem="Ar1-i0-unQ" secondAttribute="leading" constant="20" id="fHd-WN-XY8"/>
+                            <constraint firstItem="Ar1-i0-unQ" firstAttribute="trailing" secondItem="JJM-2U-8Hu" secondAttribute="trailing" constant="20" id="uly-Sk-gcT"/>
+                            <constraint firstItem="JJM-2U-8Hu" firstAttribute="leading" secondItem="Ar1-i0-unQ" secondAttribute="leading" constant="20" id="wie-Aa-ueD"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="go" destination="g0H-bD-ItO" id="q9I-Zj-b1N"/>
+                        <outlet property="username" destination="sJc-JQ-Csn" id="MkC-oR-IkI"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="1O3-hu-xIh" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="173.91304347826087" y="160.71428571428569"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="yum" width="960" height="960"/>
+        <systemColor name="labelColor">
+            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>

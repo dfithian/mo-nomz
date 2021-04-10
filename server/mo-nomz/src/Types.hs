@@ -31,14 +31,8 @@ data RawQuantity
 newtype Quantity = Quantity { unQuantity :: Double }
   deriving (Eq, Ord, Show, Num, Fractional, FromJSON, FromJSONKey, ToJSON, ToJSONKey, FromField, ToField)
 
-newtype RecipeName = RecipeName { unRecipeName :: Text }
-  deriving (Eq, Ord, Show, FromJSON, FromJSONKey, ToJSON, ToJSONKey, FromField, ToField)
-
 newtype RecipeLink = RecipeLink { unRecipeLink :: Text }
   deriving (Eq, Ord, Show, FromJSON, FromJSONKey, ToJSON, ToJSONKey, FromField, ToField)
-
-newtype RecipeId = RecipeId { unRecipeId :: Int }
-  deriving (Eq, Ord, Show, FromJSON, FromJSONKey, ToJSON, ToJSONKey, FromField, ToField, FromHttpApiData, ToHttpApiData)
 
 data RawUnit
   = RawUnitWord (CI Text)
@@ -47,6 +41,21 @@ data RawUnit
 
 newtype Unit = Unit { unUnit :: CI Text }
   deriving (Eq, Ord, Show, FromJSON, FromJSONKey, ToJSON, ToJSONKey, FromField, ToField)
+
+newtype IngredientId = IngredientId { unIngredientId :: Int }
+  deriving (Eq, Ord, Show, FromJSON, FromJSONKey, ToJSON, ToJSONKey, FromField, ToField, FromHttpApiData, ToHttpApiData)
+
+data ReadableFraction = ReadableFraction
+  { readableFractionNumerator   :: Int
+  , readableFractionDenominator :: Int
+  }
+  deriving (Eq, Show, Ord)
+
+data ReadableQuantity = ReadableQuantity
+  { readableQuantityWhole    :: Maybe Int
+  , readableQuantityFraction :: Maybe ReadableFraction
+  }
+  deriving (Eq, Show, Ord)
 
 data User = User
   { userUsername :: Username
@@ -67,18 +76,10 @@ data RawIngredient = RawIngredient
   }
   deriving (Eq, Ord, Show)
 
-data Recipe = Recipe
-  { recipeName        :: RecipeName
-  , recipeIngredients :: [Ingredient]
-  -- ^ The ingredients in the recipe.
-  , recipeLink        :: Maybe RecipeLink
-  -- ^ The link to the recipe, if it exists.
-  }
-  deriving (Eq, Ord, Show)
-
+deriveJSON (jsonOptions "readableFraction") ''ReadableFraction
+deriveJSON (jsonOptions "readableQuantity") ''ReadableQuantity
 deriveJSON (jsonOptions "user") ''User
 deriveJSON (jsonOptions "ingredient") ''Ingredient
-deriveJSON (jsonOptions "recipe") ''Recipe
 
 uncurry3 :: (a -> b -> c -> d) -> (a, b, c) -> d
 uncurry3 f (x, y, z) = f x y z

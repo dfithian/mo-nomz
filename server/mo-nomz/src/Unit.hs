@@ -2,7 +2,12 @@ module Unit where
 
 import ClassyPrelude
 
-import Types (Quantity(..), Unit(..), cup, ounce, pinch, tablespoon, teaspoon)
+import Data.Monoid (Sum(Sum), getSum)
+
+import Types
+  ( Quantity(..), ReadableFraction(..), ReadableQuantity(..), Unit(..), cup, ounce, pinch
+  , tablespoon, teaspoon
+  )
 
 data UnitHierarchy
   = UnitHierarchyEnd (Unit, Quantity)
@@ -44,16 +49,51 @@ unitOrdering x y = case (lookup x knownUnitOrdering, lookup y knownUnitOrdering)
   (Nothing, Just _) -> GT
   (Nothing, Nothing) -> compare x y
 
-combineQuantities :: Map Unit Quantity -> Map Unit Quantity
-combineQuantities = foldr go mempty . reverse . sortBy (\(x, _) (y, _) -> unitOrdering x y) . mapToList
+combineQuantities :: Semigroup a => Map Unit (a, Quantity) -> Map Unit (a, ReadableQuantity)
+combineQuantities = map (second (mkReadableQuantity . getSum)) . foldr go mempty . reverse . sortBy (\(x, _) (y, _) -> unitOrdering x y) . mapToList
   where
-    go (nextUnit, nextQuantity) acc = case lookup nextUnit acc of
-      Just existingQuantity -> insertMap nextUnit (nextQuantity + existingQuantity) acc
+    go (nextUnit, (nextExtra, nextQuantity)) acc = case lookup nextUnit acc of
+      Just (existingExtra, existingQuantity) -> asMap $ insertMap nextUnit (nextExtra <> existingExtra, Sum nextQuantity <> existingQuantity) acc
       Nothing ->
         let allConversions = getAllConversions nextUnit
             allConversionsKeys = asSet . setFromList . keys $ allConversions
             existingKeys = asSet . setFromList . keys $ acc
             overlappingKeys = headMay . sortBy unitOrdering . setToList . intersect allConversionsKeys $ existingKeys
         in case overlappingKeys of
-          Nothing -> insertMap nextUnit nextQuantity acc
-          Just existingKey -> insertWith (+) existingKey (nextQuantity * findWithDefault 1 existingKey allConversions) acc
+          Nothing -> insertMap nextUnit (nextExtra, Sum nextQuantity) acc
+          Just existingKey -> insertWith (<>) existingKey (nextExtra, Sum (nextQuantity * findWithDefault 1 existingKey allConversions)) acc
+
+readableQuantityPrecision :: Double
+readableQuantityPrecision = 0.001
+
+readableQuantities :: [((Double, Double), (Int, Int))]
+readableQuantities =
+  [ ((quarter - readableQuantityPrecision, quarter + readableQuantityPrecision), (1, 4))
+  , ((third - readableQuantityPrecision, third + readableQuantityPrecision), (1, 3))
+  , ((half - readableQuantityPrecision, half + readableQuantityPrecision), (1, 2))
+  , ((twoThird - readableQuantityPrecision, twoThird + readableQuantityPrecision), (2, 3))
+  , ((threeQuarter - readableQuantityPrecision, threeQuarter + readableQuantityPrecision), (3, 4))
+  ]
+  where
+    quarter = 0.25
+    third = 1 / 3
+    half = 0.5
+    twoThird = 2 / 3
+    threeQuarter = 0.75
+
+mkReadableQuantity :: Quantity -> ReadableQuantity
+mkReadableQuantity (Quantity q) =
+  let whole = truncate q
+      decimal = q - fromIntegral whole
+  in case (whole == 0, find (\((lo, hi), _) -> lo <= decimal && decimal <= hi) readableQuantities) of
+    (False, Just (_, (numerator, denominator))) -> ReadableQuantity (Just whole) (Just (ReadableFraction numerator denominator))
+    (True, Just (_, (numerator, denominator))) -> ReadableQuantity Nothing (Just (ReadableFraction numerator denominator))
+    (False, Nothing) -> ReadableQuantity (Just whole) Nothing
+    (True, Nothing) -> ReadableQuantity Nothing Nothing
+
+mkQuantity :: ReadableQuantity -> Quantity
+mkQuantity = \case
+  ReadableQuantity (Just whole) (Just (ReadableFraction numerator denominator)) -> Quantity $ fromIntegral whole + (fromIntegral numerator / fromIntegral denominator)
+  ReadableQuantity Nothing (Just (ReadableFraction numerator denominator)) -> Quantity $ fromIntegral numerator / fromIntegral denominator
+  ReadableQuantity (Just whole) Nothing -> Quantity $ fromIntegral whole
+  ReadableQuantity Nothing Nothing -> Quantity 0
