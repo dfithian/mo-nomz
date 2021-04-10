@@ -17,7 +17,7 @@ import Foundation (App(..), NomzServer, runNomzServer)
 import Servant (NomzApi, nomzApi)
 import Server
   ( deleteRecipe, getIngredients, getRecipes, getUsers, postCreateUser, postRecipeImportBody
-  , postRecipeImportLink
+  , postRecipeImportLink, postUpdateRecipe
   )
 import Settings (AppSettings(..))
 
@@ -27,6 +27,7 @@ nomzServer =
     :<|> postCreateUser
     :<|> postRecipeImportLink
     :<|> postRecipeImportBody
+    :<|> postUpdateRecipe
     :<|> getRecipes
     :<|> deleteRecipe
     :<|> getIngredients

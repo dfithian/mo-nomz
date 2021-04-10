@@ -2,6 +2,13 @@
 
 A Haskell / React webapp which will scrape provided recipe URLs ingredients and aggregate them into grocery lists.
 
+## Future features
+
+- [ ] Merge ingredients
+- [ ] Edit ingredients
+- [ ] Quantities should be rounded to the nearest proper fraction up to a quarter
+- [ ] Toast messages for errors
+
 ## Start the server
 
 ```bash

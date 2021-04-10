@@ -110,3 +110,18 @@ spec = describe "Scrape" $ do
             , rawPure 4 "sheets" "refrigerated pie crust"
             ]
       in runExcept (parseIngredients $ decodeUtf8 $(embedFile =<< fileRelativeToAbsoluteStr "./fixtures/chicken-pot-pie-tasteofhome.txt")) `shouldBe` Right expected
+
+    it "can parse rachel mansfield" $
+      let expected =
+            [ rawPure 3 "medium/large" "ripe bananas mashed"
+            , rawPure 0.5 "cup" "SunButter (or your nut butter of choice)"
+            , rawPure 3 "eggs" "at room temperature"
+            , rawPure 1 "tablespoon" "maple syrup"
+            , rawPure 1 "tablespoon" "melted & cooled coconut oil"
+            , rawMissing "splash" "of vanilla extract"
+            , rawPure (2 + (1 / 3)) "cup + tablespoons" "coconut flour"
+            , rawPure 0.5 "teaspoon" "of baking powder"
+            , rawMissing "sprinkle" "of cinnamon"
+            , rawPure 0.5 "cup" "of dark chocolate chips"
+            ]
+      in runExcept (parseIngredients $ decodeUtf8 $(embedFile =<< fileRelativeToAbsoluteStr "./fixtures/banana-bread-rachelmansfield.txt")) `shouldBe` Right expected

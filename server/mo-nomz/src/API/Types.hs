@@ -5,7 +5,7 @@ import ClassyPrelude
 import Data.Aeson.TH (deriveJSON)
 
 import Json (jsonOptions)
-import Types (Ingredient, Recipe, RecipeId, RecipeName, User, UserId, Username)
+import Types (Ingredient, Recipe, RecipeId, RecipeLink, RecipeName, User, UserId, Username)
 
 data ListUserResponse = ListUserResponse
   { listUserResponseUsers :: Map UserId User
@@ -23,7 +23,7 @@ data UserCreateResponse = UserCreateResponse
   deriving (Eq, Ord, Show)
 
 data RecipeImportLinkRequest = RecipeImportLinkRequest
-  { recipeImportLinkRequestLink :: Text
+  { recipeImportLinkRequestLink :: RecipeLink
   }
   deriving (Eq, Ord, Show)
 
@@ -35,6 +35,11 @@ data RecipeImportBodyRequest = RecipeImportBodyRequest
 
 data RecipeImportResponse = RecipeImportResponse
   { recipeImportResponseId :: RecipeId
+  }
+  deriving (Eq, Ord, Show)
+
+data UpdateRecipeRequest = UpdateRecipeRequest
+  { updateRecipeRequestIngredients :: [Ingredient]
   }
   deriving (Eq, Ord, Show)
 
@@ -54,5 +59,6 @@ deriveJSON (jsonOptions "userCreateResponse") ''UserCreateResponse
 deriveJSON (jsonOptions "recipeImportLinkRequest") ''RecipeImportLinkRequest
 deriveJSON (jsonOptions "recipeImportBodyRequest") ''RecipeImportBodyRequest
 deriveJSON (jsonOptions "recipeImportResponse") ''RecipeImportResponse
+deriveJSON (jsonOptions "updateRecipeRequest") ''UpdateRecipeRequest
 deriveJSON (jsonOptions "listRecipeResponse") ''ListRecipeResponse
 deriveJSON (jsonOptions "listIngredientResponse") ''ListIngredientResponse

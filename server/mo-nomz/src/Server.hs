@@ -10,12 +10,12 @@ import Servant.Server (ServerError, err400, err404, err500, errReasonPhrase)
 import API.Types
   ( ListIngredientResponse(..), ListRecipeResponse(..), ListUserResponse(..)
   , RecipeImportBodyRequest(..), RecipeImportLinkRequest(..), RecipeImportResponse(..)
-  , UserCreateRequest(..), UserCreateResponse(..)
+  , UpdateRecipeRequest(..), UserCreateRequest(..), UserCreateResponse(..)
   )
 import Foundation (HasDatabase, withDbConn)
 import Scrape (parseIngredients, scrapeUrl)
 import Scrub (scrubIngredient)
-import Types (Ingredient(..), RecipeLink(..), RecipeName(..), RecipeId, UserId, mapError)
+import Types (Ingredient(..), Recipe(..), RecipeLink(..), RecipeName(..), RecipeId, UserId, mapError)
 import Unit (combineQuantities)
 import qualified Database
 
@@ -41,14 +41,19 @@ ensureUserExists userId = do
 postRecipeImportLink :: (HasDatabase r, MonadError ServerError m, MonadIO m, MonadReader r m) => UserId -> RecipeImportLinkRequest -> m RecipeImportResponse
 postRecipeImportLink userId RecipeImportLinkRequest {..} = do
   ensureUserExists userId
-  uri <- maybe (throwError err400 { errReasonPhrase = "Invalid link" }) pure $ parseURI (unpack recipeImportLinkRequestLink)
+  uri <- maybe (throwError err400 { errReasonPhrase = "Invalid link" }) pure $ parseURI (unpack $ unRecipeLink recipeImportLinkRequestLink)
   let recipeNameMay = do
         uriAuth <- uriAuthority uri
         pure . RecipeName . pack $ uriRegName uriAuth <> uriPath uri
   recipeName <- maybe (throwError err400 { errReasonPhrase = "Invalid domain" }) pure recipeNameMay
   rawIngredients <- mapError (\e -> err500 { errReasonPhrase = unpack e }) $ parseIngredients =<< scrapeUrl uri
   let ingredients = scrubIngredient <$> rawIngredients
-  recipeId <- withDbConn $ \c -> Database.insertRecipe c userId recipeName (Just $ RecipeLink recipeImportLinkRequestLink) ingredients
+      recipe = Recipe
+        { recipeName = recipeName
+        , recipeIngredients = ingredients
+        , recipeLink = Just recipeImportLinkRequestLink
+        }
+  recipeId <- withDbConn $ \c -> Database.insertRecipe c userId recipe
   pure RecipeImportResponse
     { recipeImportResponseId = recipeId
     }
@@ -56,15 +61,27 @@ postRecipeImportLink userId RecipeImportLinkRequest {..} = do
 postRecipeImportBody :: (HasDatabase r, MonadError ServerError m, MonadIO m, MonadReader r m) => UserId -> RecipeImportBodyRequest -> m RecipeImportResponse
 postRecipeImportBody userId RecipeImportBodyRequest {..} = do
   ensureUserExists userId
-  recipeId <- withDbConn $ \c -> Database.insertRecipe c userId recipeImportBodyRequestName Nothing recipeImportBodyRequestIngredients
+  let recipe = Recipe
+        { recipeName = recipeImportBodyRequestName
+        , recipeIngredients = recipeImportBodyRequestIngredients
+        , recipeLink = Nothing
+        }
+  recipeId <- withDbConn $ \c -> Database.insertRecipe c userId recipe
   pure RecipeImportResponse
     { recipeImportResponseId = recipeId
     }
 
+postUpdateRecipe :: (HasDatabase r, MonadError ServerError m, MonadIO m, MonadReader r m) => UserId -> RecipeId -> UpdateRecipeRequest -> m NoContent
+postUpdateRecipe userId recipeId UpdateRecipeRequest {..} = do
+  recipe <- maybe (throwError err404) pure . lookup recipeId
+    =<< withDbConn (\c -> Database.selectRecipes c userId [recipeId])
+  withDbConn $ \c -> Database.updateRecipe c recipeId recipe { recipeIngredients = updateRecipeRequestIngredients }
+  pure NoContent
+
 getRecipes :: (HasDatabase r, MonadError ServerError m, MonadIO m, MonadReader r m) => UserId -> [RecipeId] -> m ListRecipeResponse
 getRecipes userId recipeIds = do
   ensureUserExists userId
-  recipes <- withDbConn $ \c -> Database.selectRecipeIngredients c userId recipeIds
+  recipes <- withDbConn $ \c -> Database.selectRecipes c userId recipeIds
   pure ListRecipeResponse
     { listRecipeResponseRecipes = recipes
     }
