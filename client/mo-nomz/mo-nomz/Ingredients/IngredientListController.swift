@@ -153,16 +153,16 @@ class IngredientListController: UITableViewController, UITableViewDragDelegate, 
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         switch indexPath.section {
-        case 1: return 43.5
-        case 3: return 43.5
-        default: return 28
+        case 0: return self.table.sectionHeaderHeight
+        case 2: return self.table.sectionHeaderHeight
+        default: return UITableView.automaticDimension
         }
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch indexPath.section {
         case 0:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! IngredientSectionHeader
+            let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SectionHeader
             let image = collapsed[1] ?? false ? UIImage(systemName: "chevron.forward.circle") : UIImage(systemName: "chevron.down.circle")
             cell.indicator.setImage(image, for: .normal)
             cell.label.text = "To buy (\(ingredients.count))"
@@ -175,7 +175,7 @@ class IngredientListController: UITableViewController, UITableViewDragDelegate, 
             cell.select.addTarget(self, action: #selector(selectItem), for: .touchUpInside)
             return cell
         case 2:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! IngredientSectionHeader
+            let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SectionHeader
             let image = collapsed[3] ?? false ? UIImage(systemName: "chevron.forward.circle") : UIImage(systemName: "chevron.down.circle")
             cell.indicator.setImage(image, for: .normal)
             cell.label.text = "Bought (\(bought.count))"
@@ -188,7 +188,7 @@ class IngredientListController: UITableViewController, UITableViewDragDelegate, 
             cell.select.addTarget(self, action: #selector(deselectItem), for: .touchUpInside)
             return cell
         default:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! IngredientSectionHeader
+            let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SectionHeader
             return cell
         }
     }

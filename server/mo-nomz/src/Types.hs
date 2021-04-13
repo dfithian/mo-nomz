@@ -22,6 +22,9 @@ newtype Username = Username { unUsername :: CI Text }
 newtype IngredientName = IngredientName { unIngredientName :: CI Text }
   deriving (Eq, Ord, Show, FromJSON, FromJSONKey, ToJSON, ToJSONKey, FromField, ToField)
 
+newtype RecipeName = RecipeName { unRecipeName :: Text }
+  deriving (Eq, Ord, Show, FromJSON, FromJSONKey, ToJSON, ToJSONKey, FromField, ToField)
+
 data RawQuantity
   = RawQuantityPure Quantity
   | RawQuantityWord (CI Text)
@@ -43,6 +46,9 @@ newtype Unit = Unit { unUnit :: CI Text }
   deriving (Eq, Ord, Show, FromJSON, FromJSONKey, ToJSON, ToJSONKey, FromField, ToField)
 
 newtype IngredientId = IngredientId { unIngredientId :: Int }
+  deriving (Eq, Ord, Show, FromJSON, FromJSONKey, ToJSON, ToJSONKey, FromField, ToField, FromHttpApiData, ToHttpApiData)
+
+newtype RecipeId = RecipeId { unRecipeId :: Int }
   deriving (Eq, Ord, Show, FromJSON, FromJSONKey, ToJSON, ToJSONKey, FromField, ToField, FromHttpApiData, ToHttpApiData)
 
 data ReadableFraction = ReadableFraction
@@ -76,10 +82,27 @@ data RawIngredient = RawIngredient
   }
   deriving (Eq, Ord, Show)
 
+data RecipeIngredient = RecipeIngredient
+  { recipeIngredientName     :: IngredientName
+  , recipeIngredientQuantity :: Quantity
+  , recipeIngredientUnit     :: Unit
+  }
+  deriving (Eq, Ord, Show)
+
+data Recipe = Recipe
+  { recipeName        :: RecipeName
+  , recipeLink        :: RecipeLink
+  , recipeIngredients :: [RecipeIngredient]
+  , recipeActive      :: Bool
+  }
+  deriving (Eq, Ord, Show)
+
 deriveJSON (jsonOptions "readableFraction") ''ReadableFraction
 deriveJSON (jsonOptions "readableQuantity") ''ReadableQuantity
 deriveJSON (jsonOptions "user") ''User
 deriveJSON (jsonOptions "ingredient") ''Ingredient
+deriveJSON (jsonOptions "recipeIngredient") ''RecipeIngredient
+deriveJSON (jsonOptions "recipe") ''Recipe
 
 uncurry3 :: (a -> b -> c -> d) -> (a, b, c) -> d
 uncurry3 f (x, y, z) = f x y z

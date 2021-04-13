@@ -98,11 +98,7 @@ struct DeleteIngredientRequest: Codable {
     let ids: [Int]
 }
 
-struct ImportRecipeLinkRequest: Codable {
-    let link: String
-}
-
-struct User: Decodable {
+struct User: Codable {
     let username: String
 }
 
@@ -110,6 +106,30 @@ struct CreateUserRequest: Codable {
     let username: String
 }
 
-struct CreateUserResponse: Decodable {
+struct CreateUserResponse: Codable {
     let userId: Int
+}
+
+struct ReadableRecipe: Codable {
+    let name: String
+    let link: String
+    let active: Bool
+    let ingredients: [ReadableIngredient]
+}
+
+struct ImportRecipeLinkRequest: Codable {
+    let link: String
+}
+
+struct UpdateRecipeRequest: Codable {
+    let id: Int
+    let active: Bool
+}
+
+struct ListRecipeResponse: Codable {
+    let recipes: Dictionary<Int, ReadableRecipe>
+}
+
+struct DeleteRecipeRequest: Codable {
+    let ids: [Int]
 }

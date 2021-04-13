@@ -39,16 +39,6 @@ class Actions {
         task.resume()
     }
     
-    static func addRecipeLink(link: String, completion: (() -> Void)?) {
-        let state = Persistence.loadState()!
-        var req = URLRequest(url: URL(string: Configuration.environment.baseURL + "api/v1/user/" + String(state.userId) + "/recipe/link")!)
-        req.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        req.httpMethod = "POST"
-        req.httpBody = try? JSONEncoder().encode(ImportRecipeLinkRequest(link: link))
-        let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in completion?() })
-        task.resume()
-    }
-    
     static func mergeIngredients(ingredientIds: [Int], ingredient: ReadableIngredient, completion: (() -> Void)?) {
         let state = Persistence.loadState()!
         var req = URLRequest(url: URL(string: Configuration.environment.baseURL + "api/v1/user/" + String(state.userId) + "/ingredient")!)
@@ -65,6 +55,51 @@ class Actions {
         req.addValue("application/json", forHTTPHeaderField: "Content-Type")
         req.httpMethod = "DELETE"
         req.httpBody = try? JSONEncoder().encode(DeleteIngredientRequest(ids: ingredientIds))
+        let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in completion?() })
+        task.resume()
+    }
+    
+    static func loadRecipes(completion: ((ListRecipeResponse) -> Void)?) {
+        let state = Persistence.loadState()!
+        var req = URLRequest(url: URL(string: Configuration.environment.baseURL + "api/v1/user/" + String(state.userId) + "/recipe")!)
+        req.addValue("application/json", forHTTPHeaderField: "Accept")
+        let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
+            do {
+                let output = try JSONDecoder().decode(ListRecipeResponse.self, from: data!)
+                completion?(output)
+            } catch {
+                print("Error fetching recipes \(error)")
+            }
+        })
+        task.resume()
+    }
+    
+    static func addRecipeLink(link: String, completion: (() -> Void)?) {
+        let state = Persistence.loadState()!
+        var req = URLRequest(url: URL(string: Configuration.environment.baseURL + "api/v1/user/" + String(state.userId) + "/recipe/link")!)
+        req.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        req.httpMethod = "POST"
+        req.httpBody = try? JSONEncoder().encode(ImportRecipeLinkRequest(link: link))
+        let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in completion?() })
+        task.resume()
+    }
+    
+    static func updateRecipe(id: Int, active: Bool, completion: (() -> Void)?) {
+        let state = Persistence.loadState()!
+        var req = URLRequest(url: URL(string: Configuration.environment.baseURL + "api/v1/user/" + String(state.userId) + "/recipe")!)
+        req.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        req.httpMethod = "POST"
+        req.httpBody = try? JSONEncoder().encode(UpdateRecipeRequest(id: id, active: active))
+        let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in completion?() })
+        task.resume()
+    }
+    
+    static func deleteRecipes(recipeIds: [Int], completion: (() -> Void)?) {
+        let state = Persistence.loadState()!
+        var req = URLRequest(url: URL(string: Configuration.environment.baseURL + "api/v1/user/" + String(state.userId) + "/recipe")!)
+        req.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        req.httpMethod = "DELETE"
+        req.httpBody = try? JSONEncoder().encode(DeleteRecipeRequest(ids: recipeIds))
         let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in completion?() })
         task.resume()
     }

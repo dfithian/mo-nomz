@@ -5,7 +5,10 @@ import ClassyPrelude
 import Data.Aeson.TH (deriveJSON)
 
 import Json (jsonOptions)
-import Types (IngredientId, IngredientName, ReadableQuantity, RecipeLink, Unit, UserId, Username)
+import Types
+  ( IngredientId, IngredientName, ReadableQuantity, RecipeId, RecipeLink, RecipeName, Unit, UserId
+  , Username
+  )
 
 data UserCreateRequest = UserCreateRequest
   { userCreateRequestUsername :: Username
@@ -14,11 +17,6 @@ data UserCreateRequest = UserCreateRequest
 
 data UserCreateResponse = UserCreateResponse
   { userCreateResponseUserId :: UserId
-  }
-  deriving (Eq, Ord, Show)
-
-data RecipeImportLinkRequest = RecipeImportLinkRequest
-  { recipeImportLinkRequestLink :: RecipeLink
   }
   deriving (Eq, Ord, Show)
 
@@ -53,11 +51,44 @@ data ListIngredientResponse = ListIngredientResponse
   }
   deriving (Eq, Ord, Show)
 
+data RecipeImportLinkRequest = RecipeImportLinkRequest
+  { recipeImportLinkRequestLink :: RecipeLink
+  }
+  deriving (Eq, Ord, Show)
+
+data UpdateRecipeRequest = UpdateRecipeRequest
+  { updateRecipeRequestId     :: RecipeId
+  , updateRecipeRequestActive :: Bool
+  }
+  deriving (Eq, Ord, Show)
+
+data DeleteRecipeRequest = DeleteRecipeRequest
+  { deleteRecipeRequestIds :: Set RecipeId
+  }
+  deriving (Eq, Ord, Show)
+
+data ReadableRecipe = ReadableRecipe
+  { readableRecipeName        :: RecipeName
+  , readableRecipeLink        :: RecipeLink
+  , readableRecipeIngredients :: [ReadableIngredient]
+  , readableRecipeActive      :: Bool
+  }
+  deriving (Eq, Ord, Show)
+
+data ListRecipeResponse = ListRecipeResponse
+  { listRecipeResponseRecipes :: Map RecipeId ReadableRecipe
+  }
+  deriving (Eq, Ord, Show)
+
 deriveJSON (jsonOptions "userCreateRequest") ''UserCreateRequest
 deriveJSON (jsonOptions "userCreateResponse") ''UserCreateResponse
-deriveJSON (jsonOptions "recipeImportLinkRequest") ''RecipeImportLinkRequest
 deriveJSON (jsonOptions "mergeIngredientRequest") ''MergeIngredientRequest
 deriveJSON (jsonOptions "deleteIngredientRequest") ''DeleteIngredientRequest
 deriveJSON (jsonOptions "readableIngredient") ''ReadableIngredient
 deriveJSON (jsonOptions "readableIngredientAggregate") ''ReadableIngredientAggregate
 deriveJSON (jsonOptions "listIngredientResponse") ''ListIngredientResponse
+deriveJSON (jsonOptions "recipeImportLinkRequest") ''RecipeImportLinkRequest
+deriveJSON (jsonOptions "updateRecipeRequest") ''UpdateRecipeRequest
+deriveJSON (jsonOptions "deleteRecipeRequest") ''DeleteRecipeRequest
+deriveJSON (jsonOptions "readableRecipe") ''ReadableRecipe
+deriveJSON (jsonOptions "listRecipeResponse") ''ListRecipeResponse

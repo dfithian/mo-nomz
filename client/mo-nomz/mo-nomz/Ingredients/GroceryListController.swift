@@ -22,14 +22,14 @@ class GroceryListController: UIViewController {
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let vc = segue.destination as? IngredientListController, segue.identifier == "embedIngredients" {
-            ingredientVc = vc
-            loadIngredients()
+        if let vc = segue.destination as? RecipeAddLinkController, segue.identifier == "addLink" {
             vc.onChange = { () -> Void in
                 self.loadIngredients()
             }
         }
-        if let vc = segue.destination as? RecipeAddLinkController, segue.identifier == "addLink" {
+        if let vc = segue.destination as? IngredientListController, segue.identifier == "embedIngredients" {
+            ingredientVc = vc
+            loadIngredients()
             vc.onChange = { () -> Void in
                 self.loadIngredients()
             }

@@ -3,10 +3,13 @@ module Database where
 import ClassyPrelude hiding (link)
 
 import Database.PostgreSQL.Simple
-  ( In(In), Only(Only), Connection, execute, executeMany, query, returning, withTransaction
+  ( In(In), Only(Only), Connection, execute, executeMany, execute_, query, returning
   )
 
-import Types (Ingredient(..), IngredientId, UserId, Username)
+import Types
+  ( Ingredient(..), Recipe(..), RecipeIngredient(..), IngredientId, RecipeId, UserId, Username
+  , uncurry3
+  )
 
 newtype DatabaseException = DatabaseException Text
   deriving (Eq, Show)
@@ -43,12 +46,51 @@ insertIngredients conn userId ingredients =
     map (\Ingredient {..} -> (userId, ingredientName, ingredientQuantity, ingredientUnit)) ingredients
 
 mergeIngredients :: Connection -> UserId -> [IngredientId] -> Ingredient -> IO ()
-mergeIngredients conn userId ingredientIds ingredient = withTransaction conn $ do
+mergeIngredients conn userId ingredientIds ingredient = do
   deleteIngredients conn userId ingredientIds
   insertIngredients conn userId [ingredient]
 
 deleteIngredients :: Connection -> UserId -> [IngredientId] -> IO ()
 deleteIngredients conn userId ingredientIds = do
   case null ingredientIds of
-    True -> throwIO $ DatabaseException "No ingredient ids provided"
+    True -> void $ execute conn "delete from nomz.ingredient where user_id = ?" (Only userId)
     False -> void $ execute conn "delete from nomz.ingredient where id in ? and user_id = ?" (In ingredientIds, userId)
+
+selectActiveIngredients :: Connection -> UserId -> IO [RecipeIngredient]
+selectActiveIngredients conn userId =
+  map (uncurry3 RecipeIngredient)
+    <$> query conn "select ri.name, ri.quantity, ri.unit from nomz.recipe_ingredient ri join nomz.recipe r on r.id = ri.recipe_id where r.user_id = ? and r.active" (Only userId)
+
+selectRecipes :: Connection -> UserId -> [RecipeId] -> IO (Map RecipeId Recipe)
+selectRecipes conn userId recipeIds = do
+  case null recipeIds of
+    True -> do
+      recipes <- query conn "select r.id, r.name, r.link, r.active from nomz.recipe r where r.user_id = ?" (Only userId)
+      recipeIngredients <- asMap . unionsWith (<>) . map (\(recipeId, name, quantity, unit) -> singletonMap recipeId [RecipeIngredient name quantity unit])
+        <$> query conn "select r.id, ri.name, ri.quantity, ri.unit from nomz.recipe r join nomz.recipe_ingredient ri on r.id = ri.recipe_id where r.user_id = ?" (Only userId)
+      pure $ foldr (\(recipeId, name, link, active) -> insertMap recipeId (Recipe name link (findWithDefault [] recipeId recipeIngredients) active)) mempty recipes
+    False -> do
+      recipes <- query conn "select r.id, r.name, r.link, r.active from nomz.recipe r where r.user_id = ? and r.id in ?" (userId, In recipeIds)
+      recipeIngredients <- asMap . unionsWith (<>) . map (\(recipeId, name, quantity, unit) -> singletonMap recipeId [RecipeIngredient name quantity unit])
+        <$> query conn "select r.id, ri.name, ri.quantity, ri.unit from nomz.recipe r join nomz.recipe_ingredient ri on r.id = ri.recipe_id where r.user_id = ? and r.id in ?" (userId, In recipeIds)
+      pure $ foldr (\(recipeId, name, link, active) -> insertMap recipeId (Recipe name link (findWithDefault [] recipeId recipeIngredients) active)) mempty recipes
+
+insertRecipe :: Connection -> UserId -> Recipe -> IO ()
+insertRecipe conn userId Recipe {..} = do
+  [(Only (recipeId :: RecipeId))] <- returning conn "insert into nomz.recipe (user_id, name, link, active) values (?, ?, ?, ?) returning id" [(userId, recipeName, recipeLink, recipeActive)]
+  void $ executeMany conn "insert into nomz.recipe_ingredient (recipe_id, name, quantity, unit) values (?, ?, ?, ?)" $
+    map (\RecipeIngredient {..} -> (recipeId, recipeIngredientName, recipeIngredientQuantity, recipeIngredientUnit)) recipeIngredients
+
+updateRecipe :: Connection -> UserId -> RecipeId -> Bool -> IO ()
+updateRecipe conn userId recipeId active = do
+  void $ execute conn "update nomz.recipe set active = ? where id = ? and user_id = ?" (active, recipeId, userId)
+
+deleteRecipes :: Connection -> UserId -> [RecipeId] -> IO ()
+deleteRecipes conn userId recipeIds = do
+  case null recipeIds of
+    True -> do
+      void $ execute_ conn "delete from nomz.recipe_ingredient"
+      void $ execute conn "delete from nomz.recipe where user_id = ?" (Only userId)
+    False -> do
+      void $ execute conn "delete from nomz.recipe_ingredient where recipe_id in ?" (Only (In recipeIds))
+      void $ execute conn "delete from nomz.recipe where user_id = ? and id in ?" (userId, In recipeIds)
