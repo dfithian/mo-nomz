@@ -83,6 +83,7 @@ mkReadableRecipe Recipe {..} = ReadableRecipe
 
 getIngredients :: (HasDatabase r, MonadError ServerError m, MonadIO m, MonadReader r m) => UserId -> m ListIngredientResponse
 getIngredients userId = do
+  ensureUserExists userId
   ingredients <- withDbConn $ \c -> Database.selectIngredients c userId []
   let readableIngredients = sortOn (readableIngredientName . readableIngredientAggregateIngredient)
         . map (uncurry ReadableIngredientAggregate . first singleton)
@@ -94,6 +95,7 @@ getIngredients userId = do
 
 postMergeIngredient :: (HasDatabase r, MonadError ServerError m, MonadIO m, MonadReader r m) => UserId -> MergeIngredientRequest -> m NoContent
 postMergeIngredient userId MergeIngredientRequest {..} = do
+  ensureUserExists userId
   existingIds <- asSet . setFromList . keys <$> withDbConn (\c -> Database.selectIngredients c userId (setToList mergeIngredientRequestIds))
   unless (null $ difference mergeIngredientRequestIds existingIds) $
     throwError err400
@@ -107,6 +109,7 @@ postMergeIngredient userId MergeIngredientRequest {..} = do
 
 deleteIngredient :: (HasDatabase r, MonadError ServerError m, MonadIO m, MonadReader r m) => UserId -> DeleteIngredientRequest -> m NoContent
 deleteIngredient userId DeleteIngredientRequest {..} = do
+  ensureUserExists userId
   existingIds <- asSet . setFromList . keys <$> withDbConn (\c -> Database.selectIngredients c userId (setToList deleteIngredientRequestIds))
   unless (null $ difference deleteIngredientRequestIds existingIds) $
     throwError err400
@@ -143,6 +146,7 @@ refreshIngredients userId = do
 
 postUpdateRecipe :: (HasDatabase r, MonadError ServerError m, MonadIO m, MonadReader r m) => UserId -> UpdateRecipeRequest -> m NoContent
 postUpdateRecipe userId UpdateRecipeRequest {..} = do
+  ensureUserExists userId
   void $ maybe (throwError err404) pure . headMay =<< withDbConn (\c -> Database.selectRecipes c userId [updateRecipeRequestId])
   withDbConn $ \c -> Database.updateRecipe c userId updateRecipeRequestId updateRecipeRequestActive
   refreshIngredients userId
@@ -150,6 +154,7 @@ postUpdateRecipe userId UpdateRecipeRequest {..} = do
 
 getRecipes :: (HasDatabase r, MonadError ServerError m, MonadIO m, MonadReader r m) => UserId -> m ListRecipeResponse
 getRecipes userId = do
+  ensureUserExists userId
   recipes <- withDbConn $ \c -> Database.selectRecipes c userId []
   pure ListRecipeResponse
     { listRecipeResponseRecipes = mkReadableRecipe <$> recipes
@@ -157,6 +162,7 @@ getRecipes userId = do
 
 deleteRecipes :: (HasDatabase r, MonadError ServerError m, MonadIO m, MonadReader r m) => UserId -> DeleteRecipeRequest -> m NoContent
 deleteRecipes userId DeleteRecipeRequest {..} = do
+  ensureUserExists userId
   existingIds <- asSet . setFromList . keys <$> withDbConn (\c -> Database.selectRecipes c userId (setToList deleteRecipeRequestIds))
   unless (null $ difference deleteRecipeRequestIds existingIds) $
     throwError err400

@@ -14,7 +14,7 @@ enum Environment: String {
     var baseURL: String {
         switch self {
         case .Debug: return "http://localhost:8080/"
-        case .Release: return "http://localhost:8080/"
+        case .Release: return "https://mo-nomz.herokuapp.com/"
         }
     }
     
