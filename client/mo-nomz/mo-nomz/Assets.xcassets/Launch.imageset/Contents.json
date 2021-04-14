@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "yum.png",
+      "filename" : "icon60x60.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "yum-1.png",
+      "filename" : "icon120x120.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "yum-2.png",
+      "filename" : "icon180x180.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

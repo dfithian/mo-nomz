@@ -8,7 +8,7 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--My Profile-->
+        <!--Info-->
         <scene sceneID="tZm-dd-fE0">
             <objects>
                 <viewController id="Em2-cS-aPW" customClass="ProfileController" customModule="mo_nomz" customModuleProvider="target" sceneMemberID="viewController">
@@ -16,8 +16,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="b9z-Pr-XLu">
-                                <rect key="frame" x="176" y="44" width="62" height="32"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Info" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="b9z-Pr-XLu">
+                                <rect key="frame" x="186" y="44" width="42" height="32"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="26"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -28,16 +28,6 @@
                                 <state key="normal" title="Contact support"/>
                                 <connections>
                                     <action selector="didTapContactSupport:" destination="Em2-cS-aPW" eventType="touchUpInside" id="7CK-6N-h4u"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="V2p-FP-avi">
-                                <rect key="frame" x="176" y="474" width="62" height="36"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                                <state key="normal" title="Logout">
-                                    <color key="titleColor" systemColor="systemRedColor"/>
-                                </state>
-                                <connections>
-                                    <action selector="didTapLogout:" destination="Em2-cS-aPW" eventType="touchUpInside" id="xWw-nn-Tv0"/>
                                 </connections>
                             </button>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" text="Thanks for using this app! We appreciate your feedback." textAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="10b-uv-gVg">
@@ -56,19 +46,14 @@
                         <constraints>
                             <constraint firstItem="a9G-LJ-KUm" firstAttribute="top" secondItem="10b-uv-gVg" secondAttribute="bottom" constant="8" symbolic="YES" id="8Io-hC-oJu"/>
                             <constraint firstItem="bXI-3c-IJ7" firstAttribute="trailing" secondItem="10b-uv-gVg" secondAttribute="trailing" constant="20" id="KYZ-Su-rZa"/>
-                            <constraint firstItem="V2p-FP-avi" firstAttribute="centerX" secondItem="rkk-lA-9eQ" secondAttribute="centerX" id="Kau-ar-bkH"/>
                             <constraint firstItem="b9z-Pr-XLu" firstAttribute="centerX" secondItem="rkk-lA-9eQ" secondAttribute="centerX" id="NHm-lG-beo"/>
-                            <constraint firstItem="V2p-FP-avi" firstAttribute="top" secondItem="a9G-LJ-KUm" secondAttribute="bottom" constant="8" symbolic="YES" id="Xqc-jw-8Xt"/>
                             <constraint firstItem="a9G-LJ-KUm" firstAttribute="centerX" secondItem="rkk-lA-9eQ" secondAttribute="centerX" id="dFR-DE-mkh"/>
                             <constraint firstItem="a9G-LJ-KUm" firstAttribute="centerY" secondItem="rkk-lA-9eQ" secondAttribute="centerY" id="hOk-E7-eOS"/>
                             <constraint firstItem="b9z-Pr-XLu" firstAttribute="top" secondItem="bXI-3c-IJ7" secondAttribute="top" id="q8l-Ml-R67"/>
                             <constraint firstItem="10b-uv-gVg" firstAttribute="leading" secondItem="bXI-3c-IJ7" secondAttribute="leading" constant="20" id="w3C-bQ-HBl"/>
                         </constraints>
                     </view>
-                    <tabBarItem key="tabBarItem" title="My Profile" image="person" catalog="system" id="az5-FS-E4s"/>
-                    <connections>
-                        <outlet property="username" destination="b9z-Pr-XLu" id="iwR-6l-bdM"/>
-                    </connections>
+                    <tabBarItem key="tabBarItem" title="Info" image="person" catalog="system" id="az5-FS-E4s"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="8hr-f9-eYo" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
