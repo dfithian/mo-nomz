@@ -4,9 +4,9 @@ import Data.Proxy (Proxy(..))
 import Servant.API ((:<|>), (:>), Capture, DeleteNoContent, Get, JSON, Post, PostNoContent, ReqBody)
 
 import API.Types
-  ( DeleteIngredientRequest, DeleteRecipeRequest, ListIngredientResponse, ListRecipeResponse
-  , MergeIngredientRequest, RecipeImportLinkRequest, UpdateRecipeRequest, UserCreateRequest
-  , UserCreateResponse
+  ( DeleteIngredientRequest, DeleteRecipeRequest, GetHealthResponse, ListIngredientResponse
+  , ListRecipeResponse, MergeIngredientRequest, RecipeImportLinkRequest, UpdateRecipeRequest
+  , UserCreateRequest, UserCreateResponse
   )
 import Types (UserId)
 
@@ -14,7 +14,8 @@ nomzApi :: Proxy NomzApi
 nomzApi = Proxy
 
 type NomzApi =
-  "api" :> "v1" :> "user" :> ReqBody '[JSON] UserCreateRequest :> Post '[JSON] UserCreateResponse
+  "health" :> Get '[JSON] GetHealthResponse
+    :<|> "api" :> "v1" :> "user" :> ReqBody '[JSON] UserCreateRequest :> Post '[JSON] UserCreateResponse
     :<|> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "ingredient" :> Get '[JSON] ListIngredientResponse
     :<|> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "ingredient" :> ReqBody '[JSON] MergeIngredientRequest :> PostNoContent
     :<|> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "ingredient" :> ReqBody '[JSON] DeleteIngredientRequest :> DeleteNoContent

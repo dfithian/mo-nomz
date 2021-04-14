@@ -9,10 +9,11 @@ import Servant.API (NoContent(NoContent))
 import Servant.Server (ServerError, err400, err404, err500, errReasonPhrase)
 
 import API.Types
-  ( DeleteIngredientRequest(..), DeleteRecipeRequest(..), ListIngredientResponse(..)
-  , ListRecipeResponse(..), MergeIngredientRequest(..), ReadableIngredient(..)
-  , ReadableIngredientAggregate(..), ReadableRecipe(..), RecipeImportLinkRequest(..)
-  , UpdateRecipeRequest(..), UserCreateRequest(..), UserCreateResponse(..)
+  ( DeleteIngredientRequest(..), DeleteRecipeRequest(..), GetHealthResponse(..)
+  , ListIngredientResponse(..), ListRecipeResponse(..), MergeIngredientRequest(..)
+  , ReadableIngredient(..), ReadableIngredientAggregate(..), ReadableRecipe(..)
+  , RecipeImportLinkRequest(..), UpdateRecipeRequest(..), UserCreateRequest(..)
+  , UserCreateResponse(..)
   )
 import Foundation (HasDatabase, withDbConn)
 import Scrape (parseIngredients, scrapeUrl)
@@ -23,6 +24,13 @@ import Types
   )
 import Unit (mkQuantity, mkReadableQuantity)
 import qualified Database
+
+getHealth :: (HasDatabase r, MonadError ServerError m, MonadIO m, MonadReader r m) => m GetHealthResponse
+getHealth = do
+  withDbConn Database.health
+  pure GetHealthResponse
+    { getHealthResponseStatus = "ok"
+    }
 
 postCreateUser :: (HasDatabase r, MonadError ServerError m, MonadIO m, MonadReader r m) => UserCreateRequest -> m UserCreateResponse
 postCreateUser UserCreateRequest {..} = do

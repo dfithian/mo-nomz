@@ -3,7 +3,7 @@ module Database where
 import ClassyPrelude hiding (link)
 
 import Database.PostgreSQL.Simple
-  ( In(In), Only(Only), Connection, execute, executeMany, execute_, query, returning
+  ( In(In), Only(Only), Connection, execute, executeMany, execute_, query, query_, returning
   )
 
 import Types
@@ -11,10 +11,10 @@ import Types
   , uncurry3
   )
 
-newtype DatabaseException = DatabaseException Text
-  deriving (Eq, Show)
-
-instance Exception DatabaseException
+health :: Connection -> IO ()
+health conn = do
+  [Only (1 :: Int)] <- query_ conn "select 1"
+  pure ()
 
 insertUser :: Connection -> Username -> IO UserId
 insertUser conn username = do

@@ -19,14 +19,15 @@ import Servant.Server (ServerT, hoistServer, serve)
 import Foundation (App(..), NomzServer, runNomzServer, withDbConn)
 import Servant (NomzApi, nomzApi)
 import Server
-  ( deleteIngredient, deleteRecipes, getIngredients, getRecipes, postCreateUser, postMergeIngredient
-  , postRecipeImportLink, postUpdateRecipe
+  ( deleteIngredient, deleteRecipes, getHealth, getIngredients, getRecipes, postCreateUser
+  , postMergeIngredient, postRecipeImportLink, postUpdateRecipe
   )
 import Settings (AppSettings(..), DatabaseSettings(..), staticSettings)
 
 nomzServer :: ServerT NomzApi NomzServer
 nomzServer =
-  postCreateUser
+  getHealth
+    :<|> postCreateUser
     :<|> getIngredients
     :<|> postMergeIngredient
     :<|> deleteIngredient

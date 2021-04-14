@@ -10,6 +10,11 @@ import Types
   , Username
   )
 
+data GetHealthResponse = GetHealthResponse
+  { getHealthResponseStatus :: Text
+  }
+  deriving (Eq, Ord, Show)
+
 data UserCreateRequest = UserCreateRequest
   { userCreateRequestUsername :: Username
   }
@@ -80,6 +85,7 @@ data ListRecipeResponse = ListRecipeResponse
   }
   deriving (Eq, Ord, Show)
 
+deriveJSON (jsonOptions "getHealthResponse") ''GetHealthResponse
 deriveJSON (jsonOptions "userCreateRequest") ''UserCreateRequest
 deriveJSON (jsonOptions "userCreateResponse") ''UserCreateResponse
 deriveJSON (jsonOptions "mergeIngredientRequest") ''MergeIngredientRequest
