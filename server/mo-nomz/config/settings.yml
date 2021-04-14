@@ -1,9 +1,7 @@
-port: '_env:MO_NOMZ_PORT:8080'
+port: "_env:PORT:8080"
 
 database:
-  database: "_env:POSTGRES_DATABASE:postgres"
-  host:     "_env:POSTGRES_ADDR:127.0.0.1"
-  port:     "_env:POSTGRES_PORT:5432"
-  user:     "_env:POSTGRES_USER:postgres"
-  password: "_env:POSTGRES_PASSWORD:postgres"
-  poolsize: "_env:POSTGRES_POOLSIZE:3"
+  conn-str: "_env:DATABASE_URL:postgres://postgres:postgres@localhost:5432/postgres"
+  poolsize: "_env:DATABASE_POOLSIZE:3"
+
+migration-dir: "_env:MIGRATION_DIR:server/mo-nomz/sql/migrations/"

@@ -2,24 +2,27 @@ module Application where
 
 import ClassyPrelude
 
+import Control.Monad (fail)
 import Control.Monad.Logger (defaultOutput)
 import Data.Default (def)
 import Data.Pool (createPool)
-import Data.Yaml.Config (loadYamlSettings, useEnv)
-import Database.PostgreSQL.Config (pgConnStr, pgPoolSize, pgPoolStripes)
+import Data.Yaml.Config (loadYamlSettingsArgs, useEnv)
 import Database.PostgreSQL.Simple (close, connectPostgreSQL)
+import Database.PostgreSQL.Simple.Migration
+  ( MigrationCommand(..), MigrationResult(..), runMigrations
+  )
 import Network.Wai.Handler.Warp (Settings, defaultSettings, runSettings, setPort)
 import Network.Wai.Middleware.RequestLogger (mkRequestLogger)
 import Servant.API ((:<|>)(..))
 import Servant.Server (ServerT, hoistServer, serve)
 
-import Foundation (App(..), NomzServer, runNomzServer)
+import Foundation (App(..), NomzServer, runNomzServer, withDbConn)
 import Servant (NomzApi, nomzApi)
 import Server
   ( deleteIngredient, deleteRecipes, getIngredients, getRecipes, postCreateUser, postMergeIngredient
   , postRecipeImportLink, postUpdateRecipe
   )
-import Settings (AppSettings(..))
+import Settings (AppSettings(..), DatabaseSettings(..), staticSettings)
 
 nomzServer :: ServerT NomzApi NomzServer
 nomzServer =
@@ -32,9 +35,20 @@ nomzServer =
     :<|> getRecipes
     :<|> deleteRecipes
 
+migrateDatabase :: App -> IO ()
+migrateDatabase app = do
+  result <- flip runReaderT app $ withDbConn $ \c -> runMigrations True c $
+    [ MigrationInitialization
+    , MigrationDirectory (appMigrationDir (appSettings app))
+    ]
+  case result of
+    MigrationError str -> fail $ "Failed to run migrations due to " <> str
+    MigrationSuccess -> pure ()
+
 makeFoundation :: AppSettings -> IO App
 makeFoundation appSettings@AppSettings {..} = do
-  appConnectionPool <- createPool (connectPostgreSQL $ pgConnStr appPostgresConf) close (pgPoolSize appPostgresConf) 15 (pgPoolStripes appPostgresConf)
+  let DatabaseSettings {..} = appDatabase
+  appConnectionPool <- createPool (connectPostgreSQL $ encodeUtf8 databaseSettingsConnStr) close databaseSettingsPoolsize 15 1
   let appLogFunc = defaultOutput stdout
   pure App {..}
 
@@ -45,8 +59,9 @@ warpSettings app =
 
 appMain :: IO ()
 appMain = do
-  settings <- loadYamlSettings ["config/settings.yml"] [] useEnv
+  settings <- loadYamlSettingsArgs [staticSettings] useEnv
   app <- makeFoundation settings
+  migrateDatabase app
   let appl = serve nomzApi $ hoistServer nomzApi (runNomzServer app) nomzServer
   requestLogger <- mkRequestLogger def
   runSettings (warpSettings app) $ requestLogger appl
