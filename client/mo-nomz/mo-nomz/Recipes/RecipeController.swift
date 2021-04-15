@@ -25,7 +25,7 @@ class RecipeController: UIViewController {
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let vc = segue.destination as? RecipeAddLinkController, segue.identifier == "addLink" {
+        if let vc = segue.destination as? RecipeAddController, segue.identifier == "addRecipe" {
             vc.onChange = { () -> Void in
                 self.loadRecipes()
             }

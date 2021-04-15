@@ -12,8 +12,8 @@ import API.Types
   ( DeleteIngredientRequest(..), DeleteRecipeRequest(..), GetHealthResponse(..)
   , ListIngredientResponse(..), ListRecipeResponse(..), MergeIngredientRequest(..)
   , ReadableIngredient(..), ReadableIngredientAggregate(..), ReadableRecipe(..)
-  , RecipeImportLinkRequest(..), UpdateRecipeRequest(..), UserCreateRequest(..)
-  , UserCreateResponse(..)
+  , RecipeImportBodyRequest(..), RecipeImportLinkRequest(..), UpdateRecipeRequest(..)
+  , UserCreateRequest(..), UserCreateResponse(..)
   )
 import Foundation (HasDatabase, withDbConn)
 import Scrape (ScrapedRecipe(..), parseIngredients, scrapeUrl)
@@ -133,7 +133,23 @@ postRecipeImportLink userId RecipeImportLinkRequest {..} = do
   let ingredients = scrubIngredient <$> rawIngredients
       recipe = Recipe
         { recipeName = RecipeName scrapedRecipeTitle
-        , recipeLink = recipeImportLinkRequestLink
+        , recipeLink = Just recipeImportLinkRequestLink
+        , recipeIngredients = mkRecipeIngredient <$> ingredients
+        , recipeActive = True
+        }
+  withDbConn $ \c -> withTransaction c $ do
+    Database.insertIngredients c userId ingredients
+    Database.insertRecipe c userId recipe
+  pure NoContent
+
+postRecipeImportBody :: (HasDatabase r, MonadError ServerError m, MonadIO m, MonadReader r m) => UserId -> RecipeImportBodyRequest -> m NoContent
+postRecipeImportBody userId RecipeImportBodyRequest {..} = do
+  ensureUserExists userId
+  rawIngredients <- mapError (\e -> err500 { errReasonPhrase = unpack e }) $ parseIngredients recipeImportBodyRequestContent
+  let ingredients = scrubIngredient <$> rawIngredients
+      recipe = Recipe
+        { recipeName = recipeImportBodyRequestName
+        , recipeLink = Nothing
         , recipeIngredients = mkRecipeIngredient <$> ingredients
         , recipeActive = True
         }

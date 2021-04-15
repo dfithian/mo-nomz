@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		37145F2B2623CE460011C6C1 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37145F2A2623CE460011C6C1 /* Configuration.swift */; };
+		3750F93F2627F42D0094E733 /* Import.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3750F93E2627F42D0094E733 /* Import.swift */; };
 		376095C0262125C10015B6F0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 376095BF262125C10015B6F0 /* AppDelegate.swift */; };
 		376095C2262125C10015B6F0 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 376095C1262125C10015B6F0 /* SceneDelegate.swift */; };
 		376095C7262125C10015B6F0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 376095C5262125C10015B6F0 /* Main.storyboard */; };
@@ -17,7 +18,7 @@
 		3774A5A12623EE430029E35D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3774A59F2623EE430029E35D /* LaunchScreen.storyboard */; };
 		3774A5A82624769F0029E35D /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3774A5A72624769F0029E35D /* Persistence.swift */; };
 		3774A5B5262489F70029E35D /* ProfileController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3774A5B4262489F70029E35D /* ProfileController.swift */; };
-		3774A5C92624B3E90029E35D /* RecipeAddLinkController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3774A5C82624B3E90029E35D /* RecipeAddLinkController.swift */; };
+		3774A5C92624B3E90029E35D /* RecipeAddController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3774A5C82624B3E90029E35D /* RecipeAddController.swift */; };
 		378EBD5126214A41008FF6C4 /* Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = 378EBD5026214A41008FF6C4 /* Types.swift */; };
 		378EBD5726214DFE008FF6C4 /* IngredientListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 378EBD5626214DFE008FF6C4 /* IngredientListController.swift */; };
 		379D4786262555FB003DD2C6 /* IngredientMergeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 379D4785262555FB003DD2C6 /* IngredientMergeController.swift */; };
@@ -33,6 +34,7 @@
 /* Begin PBXFileReference section */
 		370F287626228726008C3AC0 /* mo-nomz.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "mo-nomz.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		37145F2A2623CE460011C6C1 /* Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
+		3750F93E2627F42D0094E733 /* Import.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Import.swift; sourceTree = "<group>"; };
 		376095BF262125C10015B6F0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		376095C1262125C10015B6F0 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		376095C6262125C10015B6F0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -43,7 +45,7 @@
 		3774A5A02623EE430029E35D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		3774A5A72624769F0029E35D /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
 		3774A5B4262489F70029E35D /* ProfileController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileController.swift; sourceTree = "<group>"; };
-		3774A5C82624B3E90029E35D /* RecipeAddLinkController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeAddLinkController.swift; sourceTree = "<group>"; };
+		3774A5C82624B3E90029E35D /* RecipeAddController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeAddController.swift; sourceTree = "<group>"; };
 		378EBD5026214A41008FF6C4 /* Types.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Types.swift; sourceTree = "<group>"; };
 		378EBD5626214DFE008FF6C4 /* IngredientListController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IngredientListController.swift; sourceTree = "<group>"; };
 		379D4785262555FB003DD2C6 /* IngredientMergeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IngredientMergeController.swift; sourceTree = "<group>"; };
@@ -113,6 +115,7 @@
 				3774A5A72624769F0029E35D /* Persistence.swift */,
 				378EBD5026214A41008FF6C4 /* Types.swift */,
 				37C6714D2627BFB100B5838C /* ErrorHandler.swift */,
+				3750F93E2627F42D0094E733 /* Import.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -128,7 +131,7 @@
 		379D479526264B05003DD2C6 /* Recipes */ = {
 			isa = PBXGroup;
 			children = (
-				3774A5C82624B3E90029E35D /* RecipeAddLinkController.swift */,
+				3774A5C82624B3E90029E35D /* RecipeAddController.swift */,
 				379D479726264D47003DD2C6 /* RecipeController.swift */,
 				379D479A26264D6E003DD2C6 /* RecipeListController.swift */,
 				379D479D26264DD5003DD2C6 /* RecipeListItem.swift */,
@@ -215,6 +218,7 @@
 				3774A5A82624769F0029E35D /* Persistence.swift in Sources */,
 				379D479E26264DD5003DD2C6 /* RecipeListItem.swift in Sources */,
 				378EBD5726214DFE008FF6C4 /* IngredientListController.swift in Sources */,
+				3750F93F2627F42D0094E733 /* Import.swift in Sources */,
 				376095D926212FBB0015B6F0 /* GroceryListController.swift in Sources */,
 				379D479B26264D6E003DD2C6 /* RecipeListController.swift in Sources */,
 				376095C0262125C10015B6F0 /* AppDelegate.swift in Sources */,
@@ -222,7 +226,7 @@
 				3774A5B5262489F70029E35D /* ProfileController.swift in Sources */,
 				379D479826264D47003DD2C6 /* RecipeController.swift in Sources */,
 				37C6714E2627BFB100B5838C /* ErrorHandler.swift in Sources */,
-				3774A5C92624B3E90029E35D /* RecipeAddLinkController.swift in Sources */,
+				3774A5C92624B3E90029E35D /* RecipeAddController.swift in Sources */,
 				379D478A2625E22A003DD2C6 /* SectionHeader.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -91,7 +91,7 @@ data RecipeIngredient = RecipeIngredient
 
 data Recipe = Recipe
   { recipeName        :: RecipeName
-  , recipeLink        :: RecipeLink
+  , recipeLink        :: Maybe RecipeLink
   , recipeIngredients :: [RecipeIngredient]
   , recipeActive      :: Bool
   }

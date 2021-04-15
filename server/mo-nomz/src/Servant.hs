@@ -5,8 +5,8 @@ import Servant.API ((:<|>), (:>), Capture, DeleteNoContent, Get, JSON, Post, Pos
 
 import API.Types
   ( DeleteIngredientRequest, DeleteRecipeRequest, GetHealthResponse, ListIngredientResponse
-  , ListRecipeResponse, MergeIngredientRequest, RecipeImportLinkRequest, UpdateRecipeRequest
-  , UserCreateRequest, UserCreateResponse
+  , ListRecipeResponse, MergeIngredientRequest, RecipeImportBodyRequest, RecipeImportLinkRequest
+  , UpdateRecipeRequest, UserCreateRequest, UserCreateResponse
   )
 import Types (UserId)
 
@@ -20,6 +20,7 @@ type NomzApi =
     :<|> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "ingredient" :> ReqBody '[JSON] MergeIngredientRequest :> PostNoContent
     :<|> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "ingredient" :> ReqBody '[JSON] DeleteIngredientRequest :> DeleteNoContent
     :<|> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "recipe" :> "link" :> ReqBody '[JSON] RecipeImportLinkRequest :> PostNoContent
+    :<|> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "recipe" :> "body" :> ReqBody '[JSON] RecipeImportBodyRequest :> PostNoContent
     :<|> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "recipe" :> ReqBody '[JSON] UpdateRecipeRequest :> PostNoContent
     :<|> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "recipe" :> Get '[JSON] ListRecipeResponse
     :<|> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "recipe" :> ReqBody '[JSON] DeleteRecipeRequest :> DeleteNoContent

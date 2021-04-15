@@ -88,7 +88,7 @@ class IngredientListController: UITableViewController, UITableViewDragDelegate, 
     }
     
     func deleteRow(ids: [Int]) {
-        let ok = UIAlertAction(title: "OK", style: .default, handler: { [weak self] (action) -> Void in Actions.deleteIngredients(ingredientIds: ids, completion: self?.onChange!) })
+        let ok = UIAlertAction(title: "OK", style: .default, handler: { [weak self] (action) -> Void in Actions.deleteIngredients(ingredientIds: ids, completion: self?.onChange, onError: self?.defaultOnError) })
         let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         let confirmation = UIAlertController(title: "Delete", message: "Are you sure you want to delete this ingredient?", preferredStyle: .alert)
         confirmation.addAction(ok)
@@ -163,7 +163,7 @@ class IngredientListController: UITableViewController, UITableViewDragDelegate, 
         switch indexPath.section {
         case 0:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SectionHeader
-            let image = collapsed[1] ?? false ? UIImage(systemName: "chevron.forward.circle") : UIImage(systemName: "chevron.down.circle")
+            let image = collapsed[1] ?? false ? UIImage(systemName: "chevron.forward.circle.fill") : UIImage(systemName: "chevron.down.circle.fill")
             cell.indicator.setImage(image, for: .normal)
             cell.label.text = "To buy (\(ingredients.count))"
             return cell
@@ -176,7 +176,7 @@ class IngredientListController: UITableViewController, UITableViewDragDelegate, 
             return cell
         case 2:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SectionHeader
-            let image = collapsed[3] ?? false ? UIImage(systemName: "chevron.forward.circle") : UIImage(systemName: "chevron.down.circle")
+            let image = collapsed[3] ?? false ? UIImage(systemName: "chevron.forward.circle.fill") : UIImage(systemName: "chevron.down.circle.fill")
             cell.indicator.setImage(image, for: .normal)
             cell.label.text = "Bought (\(bought.count))"
             return cell
@@ -271,5 +271,6 @@ class IngredientListController: UITableViewController, UITableViewDragDelegate, 
         table.dragDelegate = self
         table.dropDelegate = self
         table.dragInteractionEnabled = true
+        table.layer.cornerRadius = 5
     }
 }

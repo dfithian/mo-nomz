@@ -20,7 +20,7 @@ import Foundation (App(..), NomzServer, runNomzServer, withDbConn)
 import Servant (NomzApi, nomzApi)
 import Server
   ( deleteIngredient, deleteRecipes, getHealth, getIngredients, getRecipes, postCreateUser
-  , postMergeIngredient, postRecipeImportLink, postUpdateRecipe
+  , postMergeIngredient, postRecipeImportBody, postRecipeImportLink, postUpdateRecipe
   )
 import Settings (AppSettings(..), DatabaseSettings(..), staticSettings)
 
@@ -32,6 +32,7 @@ nomzServer =
     :<|> postMergeIngredient
     :<|> deleteIngredient
     :<|> postRecipeImportLink
+    :<|> postRecipeImportBody
     :<|> postUpdateRecipe
     :<|> getRecipes
     :<|> deleteRecipes

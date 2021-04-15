@@ -29,12 +29,13 @@ class IngredientMergeController: UIViewController, UIPickerViewDataSource, UIPic
     
     @IBAction func didTapSave(_ sender: Any?) {
         let ingredient = ReadableIngredient(name: name.text!, quantity: ReadableQuantity(whole: currentWholeQuantity, fraction: currentFractionQuantity), unit: unit.text!)
-        Actions.mergeIngredients(ingredientIds: ingredientIds, ingredient: ingredient, completion: {
+        let completion = {
             DispatchQueue.main.async {
                 self.dismiss(animated: true, completion: nil)
             }
             self.onChange?()
-        })
+        }
+        Actions.mergeIngredients(ingredientIds: ingredientIds, ingredient: ingredient, completion: completion, onError: defaultOnError)
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {

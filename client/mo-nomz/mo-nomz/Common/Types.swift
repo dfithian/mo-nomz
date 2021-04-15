@@ -112,13 +112,18 @@ struct CreateUserResponse: Codable {
 
 struct ReadableRecipe: Codable {
     let name: String
-    let link: String
+    let link: String?
     let active: Bool
     let ingredients: [ReadableIngredient]
 }
 
 struct ImportRecipeLinkRequest: Codable {
     let link: String
+}
+
+struct ImportRecipeBodyRequest: Codable {
+    let name: String
+    let content: String
 }
 
 struct UpdateRecipeRequest: Codable {

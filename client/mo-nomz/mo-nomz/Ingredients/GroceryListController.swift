@@ -13,11 +13,11 @@ class GroceryListController: UIViewController {
     @IBAction func export(_ sender: Any?) {
         var allIngredients: [IngredientWithStartingIndex] = ((ingredientVc?.ingredients ?? []) + (ingredientVc?.bought ?? []))
         allIngredients.sort()
-        let exportText: [String] = allIngredients.map({ (x: IngredientWithStartingIndex) -> String in
+        let exportText: String = allIngredients.map({ (x: IngredientWithStartingIndex) -> String in
             let y = x.ingredient.ingredient
             return "\(y.quantity.render()) \(y.unit) \(y.name)"
-        })
-        let vc = UIActivityViewController(activityItems: exportText, applicationActivities: nil)
+        }).joined(separator: "\n")
+        let vc = UIActivityViewController(activityItems: [exportText], applicationActivities: nil)
         present(vc, animated: true, completion: nil)
     }
     
@@ -35,7 +35,7 @@ class GroceryListController: UIViewController {
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let vc = segue.destination as? RecipeAddLinkController, segue.identifier == "addLink" {
+        if let vc = segue.destination as? RecipeAddController, segue.identifier == "addRecipe" {
             vc.onChange = { () -> Void in
                 self.loadIngredients()
             }

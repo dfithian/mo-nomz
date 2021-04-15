@@ -8,7 +8,8 @@
 import UIKit
 
 extension UIViewController {
-    func defaultOnError() {
+    func defaultOnError(error: Error?) {
+        print(error as Any)
         let ok = UIAlertAction(title: "OK", style: .default, handler: nil)
         let confirmation = UIAlertController(title: "Error", message: "Mo Nomz is not available right now. Please try again later.", preferredStyle: .alert)
         confirmation.addAction(ok)

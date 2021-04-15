@@ -51,7 +51,9 @@ class RecipeListController: UITableViewController, UITableViewDragDelegate, UITa
                 self.table.reloadData()
             }
         case 1:
-            openLink(link: active[indexPath.row].recipe.link)
+            if let link = active[indexPath.row].recipe.link {
+                openLink(link: link)
+            }
             break;
         case 2:
             collapsed[3] = !collapsed[3]!
@@ -59,7 +61,9 @@ class RecipeListController: UITableViewController, UITableViewDragDelegate, UITa
                 self.table.reloadData()
             }
         case 3:
-            openLink(link: saved[indexPath.row].recipe.link)
+            if let link = active[indexPath.row].recipe.link {
+                openLink(link: link)
+            }
             break;
         default:
             break;
@@ -67,7 +71,7 @@ class RecipeListController: UITableViewController, UITableViewDragDelegate, UITa
     }
     
     func deleteRow(id: Int) {
-        let ok = UIAlertAction(title: "OK", style: .default, handler: { [weak self] (action) -> Void in Actions.deleteRecipes(recipeIds: [id], completion: self?.onChange!) })
+        let ok = UIAlertAction(title: "OK", style: .default, handler: { [weak self] (action) -> Void in Actions.deleteRecipes(recipeIds: [id], completion: self?.onChange, onError: self?.defaultOnError) })
         let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         let confirmation = UIAlertController(title: "Delete", message: "Are you sure you want to delete this recipe?", preferredStyle: .alert)
         confirmation.addAction(ok)
@@ -112,7 +116,7 @@ class RecipeListController: UITableViewController, UITableViewDragDelegate, UITa
         switch indexPath.section {
         case 0:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SectionHeader
-            let image = collapsed[1] ?? false ? UIImage(systemName: "chevron.forward.circle") : UIImage(systemName: "chevron.down.circle")
+            let image = collapsed[1] ?? false ? UIImage(systemName: "chevron.forward.circle.fill") : UIImage(systemName: "chevron.down.circle.fill")
             cell.indicator.setImage(image, for: .normal)
             cell.label.text = "Active (\(active.count))"
             return cell
@@ -123,7 +127,7 @@ class RecipeListController: UITableViewController, UITableViewDragDelegate, UITa
             return cell
         case 2:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SectionHeader
-            let image = collapsed[3] ?? false ? UIImage(systemName: "chevron.forward.circle") : UIImage(systemName: "chevron.down.circle")
+            let image = collapsed[3] ?? false ? UIImage(systemName: "chevron.forward.circle.fill") : UIImage(systemName: "chevron.down.circle.fill")
             cell.indicator.setImage(image, for: .normal)
             cell.label.text = "Saved for later (\(saved.count))"
             return cell
@@ -180,9 +184,7 @@ class RecipeListController: UITableViewController, UITableViewDragDelegate, UITa
                 do {
                     let new = try JSONDecoder().decode(RecipeWithId.self, from: string.data(using: .utf8)!)
                     if new.recipe.active != willBeActive {
-                        Actions.updateRecipe(id: new.id, active: willBeActive, completion: {
-                            self.onChange?()
-                        })
+                        Actions.updateRecipe(id: new.id, active: willBeActive, completion: self.onChange, onError: self.defaultOnError)
                     }
                 } catch {
                     print("Failed completing drag and drop \(error)")
@@ -196,5 +198,6 @@ class RecipeListController: UITableViewController, UITableViewDragDelegate, UITa
         table.dragDelegate = self
         table.dropDelegate = self
         table.dragInteractionEnabled = true
+        table.layer.cornerRadius = 5
     }
 }

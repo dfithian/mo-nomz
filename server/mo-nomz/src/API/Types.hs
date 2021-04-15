@@ -61,6 +61,12 @@ data RecipeImportLinkRequest = RecipeImportLinkRequest
   }
   deriving (Eq, Ord, Show)
 
+data RecipeImportBodyRequest = RecipeImportBodyRequest
+  { recipeImportBodyRequestName    :: RecipeName
+  , recipeImportBodyRequestContent :: Text
+  }
+  deriving (Eq, Ord, Show)
+
 data UpdateRecipeRequest = UpdateRecipeRequest
   { updateRecipeRequestId     :: RecipeId
   , updateRecipeRequestActive :: Bool
@@ -74,7 +80,7 @@ data DeleteRecipeRequest = DeleteRecipeRequest
 
 data ReadableRecipe = ReadableRecipe
   { readableRecipeName        :: RecipeName
-  , readableRecipeLink        :: RecipeLink
+  , readableRecipeLink        :: Maybe RecipeLink
   , readableRecipeIngredients :: [ReadableIngredient]
   , readableRecipeActive      :: Bool
   }
@@ -94,6 +100,7 @@ deriveJSON (jsonOptions "readableIngredient") ''ReadableIngredient
 deriveJSON (jsonOptions "readableIngredientAggregate") ''ReadableIngredientAggregate
 deriveJSON (jsonOptions "listIngredientResponse") ''ListIngredientResponse
 deriveJSON (jsonOptions "recipeImportLinkRequest") ''RecipeImportLinkRequest
+deriveJSON (jsonOptions "recipeImportBodyRequest") ''RecipeImportBodyRequest
 deriveJSON (jsonOptions "updateRecipeRequest") ''UpdateRecipeRequest
 deriveJSON (jsonOptions "deleteRecipeRequest") ''DeleteRecipeRequest
 deriveJSON (jsonOptions "readableRecipe") ''ReadableRecipe
