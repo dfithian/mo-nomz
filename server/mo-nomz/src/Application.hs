@@ -15,9 +15,10 @@ import Network.Wai.Handler.Warp (Settings, defaultSettings, runSettings, setPort
 import Network.Wai.Middleware.RequestLogger (mkRequestLogger)
 import Servant.API ((:<|>)(..))
 import Servant.Server (ServerT, hoistServer, serve)
+import Servant.Server.StaticFiles (serveDirectoryFileServer)
 
 import Foundation (App(..), NomzServer, runNomzServer, withDbConn)
-import Servant (NomzApi, nomzApi)
+import Servant (NomzApi, nomzApi, wholeApi)
 import Server
   ( deleteIngredient, deleteRecipes, getHealth, getIngredients, getRecipes, postCreateUser
   , postMergeIngredient, postRecipeImportBody, postRecipeImportLink, postUpdateRecipe
@@ -64,6 +65,8 @@ appMain = do
   settings <- loadYamlSettingsArgs [staticSettings] useEnv
   app <- makeFoundation settings
   migrateDatabase app
-  let appl = serve nomzApi $ hoistServer nomzApi (runNomzServer app) nomzServer
+  let appl = serve wholeApi $
+        hoistServer nomzApi (runNomzServer app) nomzServer
+          :<|> serveDirectoryFileServer (appStaticDir $ appSettings app)
   requestLogger <- mkRequestLogger def
   runSettings (warpSettings app) $ requestLogger appl

@@ -13,6 +13,7 @@ data AppSettings = AppSettings
   { appPort         :: Int -- ^ The port to serve the application on.
   , appDatabase     :: DatabaseSettings -- ^ The database settings.
   , appMigrationDir :: FilePath -- ^ Where the migrations are located.
+  , appStaticDir    :: FilePath -- ^ Where the static files are located.
   }
 
 instance FromJSON DatabaseSettings where
@@ -33,12 +34,14 @@ instance FromJSON AppSettings where
       <$> obj .: "port"
       <*> obj .: "database"
       <*> obj .: "migration-dir"
+      <*> obj .: "static-dir"
 
 instance ToJSON AppSettings where
   toJSON AppSettings {..} = object
     [ "port" .= appPort
     , "database" .= appDatabase
     , "migration-dir" .= appMigrationDir
+    , "static-dir" .= appStaticDir
     ]
 
 staticSettings :: Value
@@ -49,4 +52,5 @@ staticSettings = toJSON $ AppSettings
     , databaseSettingsPoolsize = 3
     }
   , appMigrationDir = "server/mo-nomz/sql/migrations/"
+  , appStaticDir = "server/mo-nomz/assets"
   }

@@ -5,3 +5,4 @@ database:
   poolsize: "_env:DATABASE_POOLSIZE:3"
 
 migration-dir: "_env:MIGRATION_DIR:server/mo-nomz/sql/migrations/"
+static-dir: "_env:STATIC_DIR:server/mo-nomz/assets/"

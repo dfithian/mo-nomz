@@ -1,7 +1,9 @@
 module Servant where
 
 import Data.Proxy (Proxy(..))
-import Servant.API ((:<|>), (:>), Capture, DeleteNoContent, Get, JSON, Post, PostNoContent, ReqBody)
+import Servant.API
+  ( (:<|>), (:>), Capture, DeleteNoContent, Get, JSON, Post, PostNoContent, Raw, ReqBody
+  )
 
 import API.Types
   ( DeleteIngredientRequest, DeleteRecipeRequest, GetHealthResponse, ListIngredientResponse
@@ -9,6 +11,9 @@ import API.Types
   , UpdateRecipeRequest, UserCreateRequest, UserCreateResponse
   )
 import Types (UserId)
+
+wholeApi :: Proxy (NomzApi :<|> Raw)
+wholeApi = Proxy
 
 nomzApi :: Proxy NomzApi
 nomzApi = Proxy
