@@ -53,7 +53,7 @@
       <EnvironmentVariables>
          <EnvironmentVariable
             key = "CONFIGURATION"
-            value = "debug"
+            value = "release"
             isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>

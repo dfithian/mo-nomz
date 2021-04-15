@@ -240,6 +240,18 @@
                                     <segue destination="hwZ-fE-i0b" kind="show" identifier="addLink" id="9EU-TY-vLF"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Itp-2Z-zZ5">
+                                <rect key="frame" x="20" y="48" width="19" height="24"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="19" id="6bR-7S-yRN"/>
+                                    <constraint firstAttribute="height" constant="24" id="CtF-NQ-xkr"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                <state key="normal" image="square.and.arrow.up" catalog="system"/>
+                                <connections>
+                                    <action selector="export:" destination="6IF-YC-SCE" eventType="touchUpInside" id="a4o-kw-Phr"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="o2T-mH-jqp"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -250,7 +262,9 @@
                             <constraint firstItem="Qnv-G4-Huf" firstAttribute="centerX" secondItem="MSn-X2-lUA" secondAttribute="centerX" id="lFx-MX-WgD"/>
                             <constraint firstItem="Hmb-wi-Kz8" firstAttribute="bottom" secondItem="o2T-mH-jqp" secondAttribute="bottom" id="lTz-Pg-wVt"/>
                             <constraint firstItem="Bx8-kV-uTY" firstAttribute="top" secondItem="o2T-mH-jqp" secondAttribute="top" constant="4" id="oNf-iQ-GEc"/>
+                            <constraint firstItem="Hmb-wi-Kz8" firstAttribute="top" secondItem="Itp-2Z-zZ5" secondAttribute="bottom" constant="12" id="qmk-aV-zRI"/>
                             <constraint firstItem="Qnv-G4-Huf" firstAttribute="top" secondItem="o2T-mH-jqp" secondAttribute="top" id="rOe-f0-ovJ"/>
+                            <constraint firstItem="Itp-2Z-zZ5" firstAttribute="leading" secondItem="o2T-mH-jqp" secondAttribute="leading" constant="20" id="rbm-u0-SdY"/>
                             <constraint firstItem="o2T-mH-jqp" firstAttribute="trailing" secondItem="Bx8-kV-uTY" secondAttribute="trailing" constant="20" id="wPz-2X-lOf"/>
                         </constraints>
                     </view>
@@ -811,6 +825,7 @@
         <image name="list.dash" catalog="system" width="128" height="85"/>
         <image name="person" catalog="system" width="128" height="117"/>
         <image name="plus" catalog="system" width="128" height="113"/>
+        <image name="square.and.arrow.up" catalog="system" width="115" height="128"/>
         <systemColor name="labelColor">
             <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
