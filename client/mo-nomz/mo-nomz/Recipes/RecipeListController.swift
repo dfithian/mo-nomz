@@ -167,8 +167,26 @@ class RecipeListController: UITableViewController, UITableViewDragDelegate, UITa
     
     func tableView(_ tableView: UITableView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UITableViewDropProposal {
         var proposal = UITableViewDropProposal(operation: .cancel)
-        guard destinationIndexPath != nil else { return proposal }
+        guard let indexPath = destinationIndexPath else { return proposal }
+        guard indexPath.section == 1 || indexPath.section == 3 else { return proposal }
         guard session.items.count == 1 else { return proposal }
+        switch indexPath.section {
+        case 1:
+            if indexPath.row < active.count {
+                table.scrollToRow(at: indexPath, at: .none, animated: true)
+            } else {
+                table.scrollToRow(at: IndexPath(row: active.count - 1, section: 1), at: .none, animated: true)
+            }
+            break
+        case 3:
+            if indexPath.row < saved.count {
+                table.scrollToRow(at: indexPath, at: .none, animated: true)
+            } else {
+                table.scrollToRow(at: IndexPath(row: saved.count - 1, section: 1), at: .none, animated: true)
+            }
+            break
+        default: break
+        }
         if table.hasActiveDrag {
             proposal = UITableViewDropProposal(operation: .move, intent: .insertAtDestinationIndexPath)
         }
