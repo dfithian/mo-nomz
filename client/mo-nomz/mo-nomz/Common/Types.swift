@@ -76,6 +76,7 @@ struct ReadableIngredient: Codable {
     let name: String
     let quantity: ReadableQuantity
     let unit: String
+    let active: Bool
 }
 
 struct ReadableIngredientAggregate: Codable {
@@ -92,6 +93,7 @@ struct MergeIngredientRequest: Codable {
     let name: String
     let quantity: ReadableQuantity
     let unit: String
+    let active: Bool
 }
 
 struct DeleteIngredientRequest: Codable {

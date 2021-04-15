@@ -63,4 +63,5 @@ scrubIngredient RawIngredient {..} = Ingredient
   { ingredientName = rawIngredientName
   , ingredientQuantity = scrubQuantity rawIngredientQuantity
   , ingredientUnit = scrubUnit rawIngredientUnit
+  , ingredientActive = True
   }

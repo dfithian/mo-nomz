@@ -8,48 +8,15 @@
 import MobileCoreServices
 import UIKit
 
-struct IngredientWithStartingIndex: Codable, Comparable, Equatable {
-    let ingredient: ReadableIngredientAggregate
-    let startingIndex: Int
-    
-    static func == (lhs: IngredientWithStartingIndex, rhs: IngredientWithStartingIndex) -> Bool {
-        return lhs.startingIndex == rhs.startingIndex
-    }
-
-    static func < (lhs: IngredientWithStartingIndex, rhs: IngredientWithStartingIndex) -> Bool {
-        return lhs.startingIndex < rhs.startingIndex
-    }
-}
-
 class IngredientListController: UITableViewController, UITableViewDragDelegate, UITableViewDropDelegate {
     @IBOutlet weak var table: UITableView!
 
-    var ingredients: [IngredientWithStartingIndex] = []
-    var bought: [IngredientWithStartingIndex] = []
+    var ingredients: [ReadableIngredientAggregate] = []
+    var bought: [ReadableIngredientAggregate] = []
     var onChange: (() -> Void)? = nil
     var mergeIngredients: (ReadableIngredient, ReadableIngredient, [Int])? = nil
     var editIngredient: ReadableIngredientAggregate? = nil
     var collapsed: Dictionary<Int, Bool> = [1: false, 3: true]
-    
-    func sortAndReload() {
-        ingredients.sort()
-        bought.sort()
-        DispatchQueue.main.async {
-            self.table.reloadData()
-        }
-    }
-    
-    func selectRow(row: Int) {
-        bought.append(ingredients[row])
-        ingredients.remove(at: row)
-        sortAndReload()
-    }
-    
-    func deselectRow(row: Int) {
-        ingredients.append(bought[row])
-        bought.remove(at: row)
-        sortAndReload()
-    }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.section {
@@ -59,7 +26,9 @@ class IngredientListController: UITableViewController, UITableViewDragDelegate, 
                 self.table.reloadData()
             }
         case 1:
-            selectRow(row: indexPath.row)
+            let ingredient = ingredients[indexPath.row]
+            let newIngredient = ReadableIngredient(name: ingredient.ingredient.name, quantity: ingredient.ingredient.quantity, unit: ingredient.ingredient.unit, active: false)
+            Actions.mergeIngredients(ingredientIds: ingredient.ids, ingredient: newIngredient, completion: onChange, onError: defaultOnError)
             break;
         case 2:
             collapsed[3] = !collapsed[3]!
@@ -67,7 +36,9 @@ class IngredientListController: UITableViewController, UITableViewDragDelegate, 
                 self.table.reloadData()
             }
         case 3:
-            deselectRow(row: indexPath.row)
+            let ingredient = bought[indexPath.row]
+            let newIngredient = ReadableIngredient(name: ingredient.ingredient.name, quantity: ingredient.ingredient.quantity, unit: ingredient.ingredient.unit, active: true)
+            Actions.mergeIngredients(ingredientIds: ingredient.ids, ingredient: newIngredient, completion: onChange, onError: defaultOnError)
             break;
         default:
             break;
@@ -105,10 +76,10 @@ class IngredientListController: UITableViewController, UITableViewDragDelegate, 
         let ids: [Int]
         switch indexPath.section {
         case 1:
-            ids = ingredients[indexPath.row].ingredient.ids
+            ids = ingredients[indexPath.row].ids
             break
         case 3:
-            ids = bought[indexPath.row].ingredient.ids
+            ids = bought[indexPath.row].ids
             break
         default:
             return nil
@@ -125,10 +96,10 @@ class IngredientListController: UITableViewController, UITableViewDragDelegate, 
         let ingredient: ReadableIngredientAggregate
         switch indexPath.section {
         case 1:
-            ingredient = ingredients[indexPath.row].ingredient
+            ingredient = ingredients[indexPath.row]
             break
         case 3:
-            ingredient = bought[indexPath.row].ingredient
+            ingredient = bought[indexPath.row]
             break
         default:
             return nil
@@ -139,16 +110,6 @@ class IngredientListController: UITableViewController, UITableViewDragDelegate, 
         }
         action.backgroundColor = .systemBlue
         return UISwipeActionsConfiguration(actions: [action])
-    }
-    
-    @objc func selectItem(_ sender: Any?) {
-        let b = sender as! UIButton
-        selectRow(row: b.tag)
-    }
-    
-    @objc func deselectItem(_ sender: Any?) {
-        let b = sender as! UIButton
-        deselectRow(row: b.tag)
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -169,10 +130,9 @@ class IngredientListController: UITableViewController, UITableViewDragDelegate, 
             return cell
         case 1:
             let cell = tableView.dequeueReusableCell(withIdentifier: "ingredientListItem") as! IngredientListItem
-            let ingredient = ingredients[indexPath.row].ingredient.ingredient
+            let ingredient = ingredients[indexPath.row].ingredient
             cell.name.text = "\(ingredient.quantity.render()) \(ingredient.unit) \(ingredient.name)"
             cell.select.tag = indexPath.row
-            cell.select.addTarget(self, action: #selector(selectItem), for: .touchUpInside)
             return cell
         case 2:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SectionHeader
@@ -182,10 +142,9 @@ class IngredientListController: UITableViewController, UITableViewDragDelegate, 
             return cell
         case 3:
             let cell = tableView.dequeueReusableCell(withIdentifier: "boughtListItem") as! IngredientListItem
-            let ingredient = bought[indexPath.row].ingredient.ingredient
+            let ingredient = bought[indexPath.row].ingredient
             cell.name.text = "\(ingredient.quantity.render()) \(ingredient.unit) \(ingredient.name)"
             cell.select.tag = indexPath.row
-            cell.select.addTarget(self, action: #selector(deselectItem), for: .touchUpInside)
             return cell
         default:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SectionHeader
@@ -197,10 +156,10 @@ class IngredientListController: UITableViewController, UITableViewDragDelegate, 
         var ingredient: ReadableIngredientAggregate? = nil
         switch indexPath.section {
         case 1:
-            ingredient = ingredients[indexPath.row].ingredient
+            ingredient = ingredients[indexPath.row]
             break
         case 3:
-            ingredient = bought[indexPath.row].ingredient
+            ingredient = bought[indexPath.row]
             break
         default:
             break
@@ -231,10 +190,10 @@ class IngredientListController: UITableViewController, UITableViewDragDelegate, 
         let existing: ReadableIngredientAggregate
         switch indexPath.section {
         case 1:
-            existing = ingredients[indexPath.row].ingredient
+            existing = ingredients[indexPath.row]
             break
         case 3:
-            existing = bought[indexPath.row].ingredient
+            existing = bought[indexPath.row]
             break
         default:
             return

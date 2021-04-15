@@ -51,6 +51,7 @@ mkReadableIngredient Ingredient {..} = ReadableIngredient
   { readableIngredientName = ingredientName
   , readableIngredientQuantity = mkReadableQuantity ingredientQuantity
   , readableIngredientUnit = ingredientUnit
+  , readableIngredientActive = ingredientActive
   }
 
 mkRecipeIngredient :: Ingredient -> RecipeIngredient
@@ -65,6 +66,7 @@ mkIngredient ReadableIngredient {..} = Ingredient
   { ingredientName = readableIngredientName
   , ingredientQuantity = mkQuantity readableIngredientQuantity
   , ingredientUnit = readableIngredientUnit
+  , ingredientActive = readableIngredientActive
   }
 
 mkIngredient' :: RecipeIngredient -> Ingredient
@@ -72,6 +74,7 @@ mkIngredient' RecipeIngredient {..} = Ingredient
   { ingredientName = recipeIngredientName
   , ingredientQuantity = recipeIngredientQuantity
   , ingredientUnit = recipeIngredientUnit
+  , ingredientActive = True
   }
 
 mkReadableIngredient' :: RecipeIngredient -> ReadableIngredient
@@ -79,6 +82,7 @@ mkReadableIngredient' RecipeIngredient {..} = ReadableIngredient
   { readableIngredientName = recipeIngredientName
   , readableIngredientQuantity = mkReadableQuantity recipeIngredientQuantity
   , readableIngredientUnit = recipeIngredientUnit
+  , readableIngredientActive = True
   }
 
 mkReadableRecipe :: Recipe -> ReadableRecipe
@@ -111,6 +115,7 @@ postMergeIngredient userId MergeIngredientRequest {..} = do
         { ingredientName = mergeIngredientRequestName
         , ingredientQuantity = mkQuantity mergeIngredientRequestQuantity
         , ingredientUnit = mergeIngredientRequestUnit
+        , ingredientActive = mergeIngredientRequestActive
         }
   withDbConn $ \c -> withTransaction c $ Database.mergeIngredients c userId (setToList mergeIngredientRequestIds) newIngredient
   pure NoContent

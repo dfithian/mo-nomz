@@ -9,8 +9,8 @@ import UIKit
 
 class IngredientMergeController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate {
     var ingredientIds: [Int] = []
-    var existing: ReadableIngredient = ReadableIngredient(name: "", quantity: ReadableQuantity(whole: nil, fraction: nil), unit: "")
-    var new: ReadableIngredient = ReadableIngredient(name: "", quantity: ReadableQuantity(whole: nil, fraction: nil), unit: "")
+    var existing: ReadableIngredient = ReadableIngredient(name: "", quantity: ReadableQuantity(whole: nil, fraction: nil), unit: "", active: true)
+    var new: ReadableIngredient = ReadableIngredient(name: "", quantity: ReadableQuantity(whole: nil, fraction: nil), unit: "", active: true)
     var onChange: (() -> Void)? = nil
     var currentWholeQuantity: Int? = nil
     var currentFractionQuantity: ReadableFraction? = nil
@@ -28,7 +28,7 @@ class IngredientMergeController: UIViewController, UIPickerViewDataSource, UIPic
     }
     
     @IBAction func didTapSave(_ sender: Any?) {
-        let ingredient = ReadableIngredient(name: name.text!, quantity: ReadableQuantity(whole: currentWholeQuantity, fraction: currentFractionQuantity), unit: unit.text!)
+        let ingredient = ReadableIngredient(name: name.text!, quantity: ReadableQuantity(whole: currentWholeQuantity, fraction: currentFractionQuantity), unit: unit.text!, active: existing.active)
         let completion = {
             DispatchQueue.main.async {
                 self.dismiss(animated: true, completion: nil)

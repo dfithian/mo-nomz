@@ -30,6 +30,7 @@ data MergeIngredientRequest = MergeIngredientRequest
   , mergeIngredientRequestName     :: IngredientName
   , mergeIngredientRequestQuantity :: ReadableQuantity
   , mergeIngredientRequestUnit     :: Unit
+  , mergeIngredientRequestActive   :: Bool
   }
   deriving (Eq, Ord, Show)
 
@@ -42,6 +43,7 @@ data ReadableIngredient = ReadableIngredient
   { readableIngredientName     :: IngredientName
   , readableIngredientQuantity :: ReadableQuantity
   , readableIngredientUnit     :: Unit
+  , readableIngredientActive   :: Bool
   }
   deriving (Eq, Ord, Show)
 

@@ -8,7 +8,7 @@
 import UIKit
 
 class IngredientEditController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate {
-    var existing: ReadableIngredientAggregate = ReadableIngredientAggregate(ids: [], ingredient: ReadableIngredient(name: "", quantity: ReadableQuantity(whole: nil, fraction: nil), unit: ""))
+    var existing: ReadableIngredientAggregate = ReadableIngredientAggregate(ids: [], ingredient: ReadableIngredient(name: "", quantity: ReadableQuantity(whole: nil, fraction: nil), unit: "", active: true))
     var onChange: (() -> Void)? = nil
     var currentWholeQuantity: Int? = nil
     var currentFractionQuantity: ReadableFraction? = nil
@@ -25,7 +25,7 @@ class IngredientEditController: UIViewController, UIPickerViewDataSource, UIPick
     }
     
     @IBAction func didTapSave(_ sender: Any?) {
-        let ingredient = ReadableIngredient(name: name.text!, quantity: ReadableQuantity(whole: currentWholeQuantity, fraction: currentFractionQuantity), unit: unit.text!)
+        let ingredient = ReadableIngredient(name: name.text!, quantity: ReadableQuantity(whole: currentWholeQuantity, fraction: currentFractionQuantity), unit: unit.text!, active: existing.ingredient.active)
         let completion = {
             DispatchQueue.main.async {
                 self.dismiss(animated: true, completion: nil)

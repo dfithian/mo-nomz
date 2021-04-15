@@ -72,6 +72,7 @@ data Ingredient = Ingredient
   { ingredientName     :: IngredientName
   , ingredientQuantity :: Quantity
   , ingredientUnit     :: Unit
+  , ingredientActive   :: Bool
   }
   deriving (Eq, Ord, Show)
 
