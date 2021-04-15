@@ -1,14 +1,12 @@
 module Scrub where
 
 import ClassyPrelude
-import Data.Char (isAlpha)
-import Data.Text (replace, splitOn)
 
 import Data.CaseInsensitive (CI)
 
 import Types
-  ( Ingredient(..), Quantity(..), RawIngredient(..), RawQuantity(..), RawUnit(..), RecipeName(..)
-  , Unit(..), cup, ounce, pinch, tablespoon, teaspoon
+  ( Ingredient(..), Quantity(..), RawIngredient(..), RawQuantity(..), RawUnit(..), Unit(..), cup
+  , ounce, pinch, tablespoon, teaspoon
   )
 
 unitAliasTable :: Map (CI Text) Unit
@@ -66,13 +64,3 @@ scrubIngredient RawIngredient {..} = Ingredient
   , ingredientQuantity = scrubQuantity rawIngredientQuantity
   , ingredientUnit = scrubUnit rawIngredientUnit
   }
-
-scrubRecipeName :: RecipeName -> RecipeName
-scrubRecipeName (RecipeName n) =
-  let subdomain = take 15 . intercalate "." . filter (not . null) . dropEnd 1 . splitOn "." . takeWhile (not . (==) '/') . replace "www" "" . replace "http://" "" $ n
-      name = take 15 . fromMaybe "" . lastMay . sortOn length . filter (all (\c -> isAlpha c || c == '-')) . drop 1 . splitOn "/" $ n
-  in case (null subdomain, null name) of
-    (True, True) -> RecipeName n
-    (False, True) -> RecipeName subdomain
-    (True, False) -> RecipeName name
-    (False, False) -> RecipeName $ subdomain <> " " <> name

@@ -4,7 +4,7 @@ import ClassyPrelude
 
 import Control.Monad.Except (MonadError, throwError)
 import Database.PostgreSQL.Simple (withTransaction)
-import Network.URI (parseURI, uriAuthority, uriPath, uriRegName)
+import Network.URI (parseURI)
 import Servant.API (NoContent(NoContent))
 import Servant.Server (ServerError, err400, err404, err500, errReasonPhrase)
 
@@ -16,8 +16,8 @@ import API.Types
   , UserCreateResponse(..)
   )
 import Foundation (HasDatabase, withDbConn)
-import Scrape (parseIngredients, scrapeUrl)
-import Scrub (scrubIngredient, scrubRecipeName)
+import Scrape (ScrapedRecipe(..), parseIngredients, scrapeUrl)
+import Scrub (scrubIngredient)
 import Types
   ( Ingredient(..), Recipe(..), RecipeIngredient(..), RecipeLink(..), RecipeName(..), UserId
   , mapError
@@ -128,14 +128,11 @@ postRecipeImportLink :: (HasDatabase r, MonadError ServerError m, MonadIO m, Mon
 postRecipeImportLink userId RecipeImportLinkRequest {..} = do
   ensureUserExists userId
   uri <- maybe (throwError err400 { errReasonPhrase = "Invalid link" }) pure $ parseURI (unpack $ unRecipeLink recipeImportLinkRequestLink)
-  let recipeNameMay = do
-        uriAuth <- uriAuthority uri
-        pure . RecipeName . pack $ uriRegName uriAuth <> uriPath uri
-  recipeName <- maybe (throwError err400 { errReasonPhrase = "Invalid link" }) (pure . scrubRecipeName) recipeNameMay
-  rawIngredients <- mapError (\e -> err500 { errReasonPhrase = unpack e }) $ parseIngredients =<< scrapeUrl uri
+  ScrapedRecipe {..} <- mapError (\e -> err500 { errReasonPhrase = unpack e }) $ scrapeUrl uri
+  rawIngredients <- mapError (\e -> err500 { errReasonPhrase = unpack e }) $ parseIngredients scrapedRecipeContents
   let ingredients = scrubIngredient <$> rawIngredients
       recipe = Recipe
-        { recipeName = recipeName
+        { recipeName = RecipeName scrapedRecipeTitle
         , recipeLink = recipeImportLinkRequestLink
         , recipeIngredients = mkRecipeIngredient <$> ingredients
         , recipeActive = True

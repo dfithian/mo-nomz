@@ -15,14 +15,21 @@ import qualified Text.HTML.Scalpel as Scalpel
 import Scrub (quantityAliasTable)
 import Types (IngredientName(..), Quantity(..), RawIngredient(..), RawQuantity(..), RawUnit(..))
 
-scrapeUrl :: (MonadIO m, MonadError Text m) => URI -> m Text
+data ScrapedRecipe = ScrapedRecipe
+  { scrapedRecipeTitle    :: Text
+  , scrapedRecipeContents :: Text
+  }
+
+scrapeUrl :: (MonadIO m, MonadError Text m) => URI -> m ScrapedRecipe
 scrapeUrl uri = do
   let containsIngredientClass = Scalpel.match $ \attributeKey attributeValue -> case attributeKey of
         "class" -> "ingredient" `isInfixOf` toLower attributeValue
         _ -> False
-  liftIO (Scalpel.scrapeURL (show uri) (Scalpel.chroots (Scalpel.AnyTag @: [containsIngredientClass] // "li") (Scalpel.texts Scalpel.anySelector))) >>= \case
+      title = Scalpel.text "title"
+      contents = Scalpel.chroots (Scalpel.AnyTag @: [containsIngredientClass] // "li") (Scalpel.texts Scalpel.anySelector)
+  liftIO (Scalpel.scrapeURL (show uri) ((,) <$> title <*> contents)) >>= \case
     Nothing -> throwError "Failed to scrape URL"
-    Just xs -> pure . (<> "\n") . unlines . ordNub . filter (not . null) . map strip . lines . unlines . map unlines $ xs
+    Just (x, xs) -> pure . ScrapedRecipe x . (<> "\n") . unlines . ordNub . filter (not . null) . map strip . lines . unlines . map unlines $ xs
 
 quantityP :: Atto.Parser RawQuantity
 quantityP = quantityExpression <|> quantityWord <|> quantityMissing
