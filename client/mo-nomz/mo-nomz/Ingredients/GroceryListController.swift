@@ -28,7 +28,7 @@ class GroceryListController: UIViewController {
                 self?.ingredientVc?.table.reloadData()
             }
         }
-        Actions.loadIngredients(completion: completion, onError: self.defaultOnError)
+        loadIngredients(completion: completion)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

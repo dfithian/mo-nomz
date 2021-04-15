@@ -21,7 +21,7 @@ class RecipeController: UIViewController {
                 self?.recipeVc?.table.reloadData()
             }
         }
-        Actions.loadRecipes(completion: completion, onError: self.defaultOnError)
+        loadRecipes(completion: completion)
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

@@ -5,19 +5,19 @@
 //  Created by Dan Fithian on 4/15/21.
 //
 
-import Foundation
+import UIKit
 
-class Import {
-    static func importFile(url: URL, completion: (() -> Void)?, onError: ((Error?) -> Void)?) {
+extension UIViewController {
+    func importFile(url: URL, completion: (() -> Void)?) {
         do {
             let name = url.lastPathComponent
             let content = try String(contentsOf: url, encoding: .utf8)
-            Actions.addRecipeBody(name: name, content: content, completion: completion, onError: onError)
+            addRecipeBody(name: name, content: content, completion: completion)
         } catch {
             print("Failed to get file \(error)")
         }
     }
-    static func importUrl(url: URL, completion: (() -> Void)?, onError: ((Error?) -> Void)?) {
-        Actions.addRecipeLink(link: url.absoluteString, completion: completion, onError: onError)
+    func importUrl(url: URL, completion: (() -> Void)?) {
+        addRecipeLink(link: url.absoluteString, completion: completion)
     }
 }

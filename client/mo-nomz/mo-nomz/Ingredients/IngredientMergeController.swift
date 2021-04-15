@@ -35,7 +35,7 @@ class IngredientMergeController: UIViewController, UIPickerViewDataSource, UIPic
             }
             self.onChange?()
         }
-        Actions.mergeIngredients(ingredientIds: ingredientIds, ingredient: ingredient, completion: completion, onError: defaultOnError)
+        mergeIngredients(ingredientIds: ingredientIds, ingredient: ingredient, completion: completion)
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {

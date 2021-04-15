@@ -20,10 +20,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
         switch context.url.scheme {
         case "file":
-            Import.importFile(url: context.url, completion: completion, onError: window?.rootViewController?.defaultOnError)
+            window?.rootViewController?.importFile(url: context.url, completion: completion)
             break;
         case "http", "https":
-            Import.importUrl(url: context.url, completion: completion, onError: window?.rootViewController?.defaultOnError)
+            window?.rootViewController?.importUrl(url: context.url, completion: completion)
             break;
         default: return
         }
@@ -48,7 +48,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     self.window?.rootViewController = mainVc
                 }
             }
-            Actions.loadUser(username: username, completion: completion, onError: launchVc?.defaultOnError)
+            window?.rootViewController?.loadUser(username: username, completion: completion)
         } else {
             window?.rootViewController = mainVc
         }

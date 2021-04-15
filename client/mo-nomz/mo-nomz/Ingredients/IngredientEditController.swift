@@ -32,7 +32,7 @@ class IngredientEditController: UIViewController, UIPickerViewDataSource, UIPick
             }
             self.onChange?()
         }
-        Actions.mergeIngredients(ingredientIds: existing.ids, ingredient: ingredient, completion: completion, onError: defaultOnError)
+        mergeIngredients(ingredientIds: existing.ids, ingredient: ingredient, completion: completion)
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {

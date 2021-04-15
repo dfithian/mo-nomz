@@ -28,7 +28,7 @@ class IngredientListController: UITableViewController, UITableViewDragDelegate, 
         case 1:
             let ingredient = ingredients[indexPath.row]
             let newIngredient = ReadableIngredient(name: ingredient.ingredient.name, quantity: ingredient.ingredient.quantity, unit: ingredient.ingredient.unit, active: false)
-            Actions.mergeIngredients(ingredientIds: ingredient.ids, ingredient: newIngredient, completion: onChange, onError: defaultOnError)
+            mergeIngredients(ingredientIds: ingredient.ids, ingredient: newIngredient, completion: onChange)
             break;
         case 2:
             collapsed[3] = !collapsed[3]!
@@ -38,7 +38,7 @@ class IngredientListController: UITableViewController, UITableViewDragDelegate, 
         case 3:
             let ingredient = bought[indexPath.row]
             let newIngredient = ReadableIngredient(name: ingredient.ingredient.name, quantity: ingredient.ingredient.quantity, unit: ingredient.ingredient.unit, active: true)
-            Actions.mergeIngredients(ingredientIds: ingredient.ids, ingredient: newIngredient, completion: onChange, onError: defaultOnError)
+            mergeIngredients(ingredientIds: ingredient.ids, ingredient: newIngredient, completion: onChange)
             break;
         default:
             break;
@@ -59,7 +59,7 @@ class IngredientListController: UITableViewController, UITableViewDragDelegate, 
     }
     
     func deleteRow(ids: [Int]) {
-        let ok = UIAlertAction(title: "OK", style: .default, handler: { [weak self] (action) -> Void in Actions.deleteIngredients(ingredientIds: ids, completion: self?.onChange, onError: self?.defaultOnError) })
+        let ok = UIAlertAction(title: "OK", style: .default, handler: { [weak self] (action) -> Void in self?.deleteIngredients(ingredientIds: ids, completion: self?.onChange) })
         let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         let confirmation = UIAlertController(title: "Delete", message: "Are you sure you want to delete this ingredient?", preferredStyle: .alert)
         confirmation.addAction(ok)

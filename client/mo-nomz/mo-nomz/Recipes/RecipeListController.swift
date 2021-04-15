@@ -71,7 +71,7 @@ class RecipeListController: UITableViewController, UITableViewDragDelegate, UITa
     }
     
     func deleteRow(id: Int) {
-        let ok = UIAlertAction(title: "OK", style: .default, handler: { [weak self] (action) -> Void in Actions.deleteRecipes(recipeIds: [id], completion: self?.onChange, onError: self?.defaultOnError) })
+        let ok = UIAlertAction(title: "OK", style: .default, handler: { [weak self] (action) -> Void in self?.deleteRecipes(recipeIds: [id], completion: self?.onChange) })
         let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         let confirmation = UIAlertController(title: "Delete", message: "Are you sure you want to delete this recipe?", preferredStyle: .alert)
         confirmation.addAction(ok)
@@ -202,7 +202,7 @@ class RecipeListController: UITableViewController, UITableViewDragDelegate, UITa
                 do {
                     let new = try JSONDecoder().decode(RecipeWithId.self, from: string.data(using: .utf8)!)
                     if new.recipe.active != willBeActive {
-                        Actions.updateRecipe(id: new.id, active: willBeActive, completion: self.onChange, onError: self.defaultOnError)
+                        self.updateRecipe(id: new.id, active: willBeActive, completion: self.onChange)
                     }
                 } catch {
                     print("Failed completing drag and drop \(error)")

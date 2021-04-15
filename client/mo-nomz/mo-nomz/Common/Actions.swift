@@ -8,8 +8,8 @@
 import UIKit
 import Foundation
 
-class Actions {
-    static func loadUser(username: String, completion: ((CreateUserResponse) -> Void)?, onError: ((Error?) -> Void)?) {
+extension UIViewController {
+    func loadUser(username: String, completion: ((CreateUserResponse) -> Void)?) {
         var req = URLRequest(url: URL(string: Configuration.environment.baseURL + "api/v1/user")!)
         req.addValue("application/json", forHTTPHeaderField: "Content-Type")
         req.httpMethod = "POST"
@@ -20,17 +20,17 @@ class Actions {
                     let output = try JSONDecoder().decode(CreateUserResponse.self, from: d)
                     completion?(output)
                 } else {
-                    onError?(error)
+                    self.defaultOnError(error: error)
                 }
             } catch {
                 print("Error loading user \(error)")
-                onError?(error)
+                self.defaultOnError(error: error)
             }
         })
         task.resume()
     }
     
-    static func loadIngredients(completion: ((ListIngredientResponse) -> Void)?, onError: ((Error?) -> Void)?) {
+    func loadIngredients(completion: ((ListIngredientResponse) -> Void)?) {
         let state = Persistence.loadState()!
         var req = URLRequest(url: URL(string: Configuration.environment.baseURL + "api/v1/user/" + String(state.userId) + "/ingredient")!)
         req.addValue("application/json", forHTTPHeaderField: "Accept")
@@ -40,17 +40,17 @@ class Actions {
                     let output = try JSONDecoder().decode(ListIngredientResponse.self, from: d)
                     completion?(output)
                 } else {
-                    onError?(error)
+                    self.defaultOnError(error: error)
                 }
             } catch {
                 print("Error fetching ingredients \(error)")
-                onError?(error)
+                self.defaultOnError(error: error)
             }
         })
         task.resume()
     }
     
-    static func mergeIngredients(ingredientIds: [Int], ingredient: ReadableIngredient, completion: (() -> Void)?, onError: ((Error?) -> Void)?) {
+    func mergeIngredients(ingredientIds: [Int], ingredient: ReadableIngredient, completion: (() -> Void)?) {
         let state = Persistence.loadState()!
         var req = URLRequest(url: URL(string: Configuration.environment.baseURL + "api/v1/user/" + String(state.userId) + "/ingredient")!)
         req.addValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -60,13 +60,13 @@ class Actions {
             if error == nil {
                 completion?()
             } else {
-                onError?(error)
+                self.defaultOnError(error: error)
             }
         })
         task.resume()
     }
     
-    static func deleteIngredients(ingredientIds: [Int], completion: (() -> Void)?, onError: ((Error?) -> Void)?) {
+    func deleteIngredients(ingredientIds: [Int], completion: (() -> Void)?) {
         let state = Persistence.loadState()!
         var req = URLRequest(url: URL(string: Configuration.environment.baseURL + "api/v1/user/" + String(state.userId) + "/ingredient")!)
         req.addValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -76,13 +76,13 @@ class Actions {
             if error == nil {
                 completion?()
             } else {
-                onError?(error)
+                self.defaultOnError(error: error)
             }
         })
         task.resume()
     }
     
-    static func loadRecipes(completion: ((ListRecipeResponse) -> Void)?, onError: ((Error?) -> Void)?) {
+    func loadRecipes(completion: ((ListRecipeResponse) -> Void)?) {
         let state = Persistence.loadState()!
         var req = URLRequest(url: URL(string: Configuration.environment.baseURL + "api/v1/user/" + String(state.userId) + "/recipe")!)
         req.addValue("application/json", forHTTPHeaderField: "Accept")
@@ -92,17 +92,17 @@ class Actions {
                     let output = try JSONDecoder().decode(ListRecipeResponse.self, from: d)
                     completion?(output)
                 } else {
-                    onError?(error)
+                    self.defaultOnError(error: error)
                 }
             } catch {
                 print("Error fetching recipes \(error)")
-                onError?(error)
+                self.defaultOnError(error: error)
             }
         })
         task.resume()
     }
     
-    static func addRecipeLink(link: String, completion: (() -> Void)?, onError: ((Error?) -> Void)?) {
+    func addRecipeLink(link: String, completion: (() -> Void)?) {
         let state = Persistence.loadState()!
         var req = URLRequest(url: URL(string: Configuration.environment.baseURL + "api/v1/user/" + String(state.userId) + "/recipe/link")!)
         req.addValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -112,13 +112,13 @@ class Actions {
             if error == nil {
                 completion?()
             } else {
-                onError?(error)
+                self.defaultOnError(error: error)
             }
         })
         task.resume()
     }
     
-    static func addRecipeBody(name: String, content: String, completion: (() -> Void)?, onError: ((Error?) -> Void)?) {
+    func addRecipeBody(name: String, content: String, completion: (() -> Void)?) {
         let state = Persistence.loadState()!
         var req = URLRequest(url: URL(string: Configuration.environment.baseURL + "api/v1/user/" + String(state.userId) + "/recipe/body")!)
         req.addValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -128,13 +128,13 @@ class Actions {
             if error == nil {
                 completion?()
             } else {
-                onError?(error)
+                self.defaultOnError(error: error)
             }
         })
         task.resume()
     }
     
-    static func updateRecipe(id: Int, active: Bool, completion: (() -> Void)?, onError: ((Error?) -> Void)?) {
+    func updateRecipe(id: Int, active: Bool, completion: (() -> Void)?) {
         let state = Persistence.loadState()!
         var req = URLRequest(url: URL(string: Configuration.environment.baseURL + "api/v1/user/" + String(state.userId) + "/recipe")!)
         req.addValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -144,13 +144,13 @@ class Actions {
             if error == nil {
                 completion?()
             } else {
-                onError?(error)
+                self.defaultOnError(error: error)
             }
         })
         task.resume()
     }
     
-    static func deleteRecipes(recipeIds: [Int], completion: (() -> Void)?, onError: ((Error?) -> Void)?) {
+    func deleteRecipes(recipeIds: [Int], completion: (() -> Void)?) {
         let state = Persistence.loadState()!
         var req = URLRequest(url: URL(string: Configuration.environment.baseURL + "api/v1/user/" + String(state.userId) + "/recipe")!)
         req.addValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -160,7 +160,7 @@ class Actions {
             if error == nil {
                 completion?()
             } else {
-                onError?(error)
+                self.defaultOnError(error: error)
             }
         })
         task.resume()
