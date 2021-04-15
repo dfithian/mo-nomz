@@ -11,14 +11,15 @@ class GroceryListController: UIViewController {
     var ingredientVc: IngredientListController? = nil
     
     private func loadIngredients() {
-        Actions.loadIngredients(completion: { [weak self] (resp) -> Void in
+        let completion = { [weak self] (resp: ListIngredientResponse) -> Void in
             self?.ingredientVc?.ingredients = zip(resp.ingredients, (0...resp.ingredients.count)).map {
                 IngredientWithStartingIndex(ingredient: $0.0, startingIndex: $0.1)
             }
             DispatchQueue.main.async {
                 self?.ingredientVc?.table.reloadData()
             }
-        })
+        }
+        Actions.loadIngredients(completion: completion, onError: self.defaultOnError)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

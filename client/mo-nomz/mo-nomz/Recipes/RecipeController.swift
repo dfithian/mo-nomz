@@ -11,7 +11,7 @@ class RecipeController: UIViewController {
     var recipeVc: RecipeListController? = nil
 
     private func loadRecipes() {
-        Actions.loadRecipes(completion: { [weak self] (resp) -> Void in
+        let completion = { [weak self] (resp: ListRecipeResponse) -> Void in
             let recipes = resp.recipes.map({
                 RecipeWithId(recipe: $0.value, id: $0.key)
             })
@@ -20,7 +20,8 @@ class RecipeController: UIViewController {
             DispatchQueue.main.async {
                 self?.recipeVc?.table.reloadData()
             }
-        })
+        }
+        Actions.loadRecipes(completion: completion, onError: self.defaultOnError)
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

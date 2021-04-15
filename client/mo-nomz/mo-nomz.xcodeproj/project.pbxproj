@@ -27,6 +27,7 @@
 		379D479B26264D6E003DD2C6 /* RecipeListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 379D479A26264D6E003DD2C6 /* RecipeListController.swift */; };
 		379D479E26264DD5003DD2C6 /* RecipeListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 379D479D26264DD5003DD2C6 /* RecipeListItem.swift */; };
 		37AEE6382623D5710052304F /* Actions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37AEE6372623D5710052304F /* Actions.swift */; };
+		37C6714E2627BFB100B5838C /* ErrorHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C6714D2627BFB100B5838C /* ErrorHandler.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -52,6 +53,7 @@
 		379D479A26264D6E003DD2C6 /* RecipeListController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeListController.swift; sourceTree = "<group>"; };
 		379D479D26264DD5003DD2C6 /* RecipeListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeListItem.swift; sourceTree = "<group>"; };
 		37AEE6372623D5710052304F /* Actions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Actions.swift; sourceTree = "<group>"; };
+		37C6714D2627BFB100B5838C /* ErrorHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorHandler.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -110,6 +112,7 @@
 				37145F2A2623CE460011C6C1 /* Configuration.swift */,
 				3774A5A72624769F0029E35D /* Persistence.swift */,
 				378EBD5026214A41008FF6C4 /* Types.swift */,
+				37C6714D2627BFB100B5838C /* ErrorHandler.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -218,6 +221,7 @@
 				376095C2262125C10015B6F0 /* SceneDelegate.swift in Sources */,
 				3774A5B5262489F70029E35D /* ProfileController.swift in Sources */,
 				379D479826264D47003DD2C6 /* RecipeController.swift in Sources */,
+				37C6714E2627BFB100B5838C /* ErrorHandler.swift in Sources */,
 				3774A5C92624B3E90029E35D /* RecipeAddLinkController.swift in Sources */,
 				379D478A2625E22A003DD2C6 /* SectionHeader.swift in Sources */,
 			);
