@@ -6,32 +6,31 @@ import Database.PostgreSQL.Simple
   ( In(In), Only(Only), Connection, execute, executeMany, execute_, query, query_, returning
   )
 
+import Auth (BcryptedAuthorization)
 import Types
-  ( Ingredient(..), Recipe(..), RecipeIngredient(..), IngredientId, RecipeId, UserId, Username
-  , uncurry3
+  ( Ingredient(..), Recipe(..), RecipeIngredient(..), IngredientId, RecipeId, UserId, uncurry3
   )
+
+data DatabaseException = DatabaseException Text
+  deriving (Eq, Show)
+
+instance Exception DatabaseException
 
 health :: Connection -> IO ()
 health conn = do
   [Only (1 :: Int)] <- query_ conn "select 1"
   pure ()
 
-insertUser :: Connection -> Username -> IO UserId
-insertUser conn username = do
-  [Only userId] <- returning conn "insert into nomz.user (username) values (?) returning (id)" [Only username]
+insertToken :: Connection -> BcryptedAuthorization -> IO UserId
+insertToken conn token = do
+  [(Only userId)] <- returning conn "insert into nomz.user (token, is_valid) values (?, ?) returning id" [(token, True)]
   pure userId
 
-fetchUserIdByUsername :: Connection -> Username -> IO (Maybe UserId)
-fetchUserIdByUsername conn username = do
-  query conn "select u.id from nomz.user u where u.username = ?" (Only username) >>= \case
-    [Only userId] -> pure $ Just userId
+fetchToken :: Connection -> UserId -> IO (Maybe BcryptedAuthorization)
+fetchToken conn userId = do
+  query conn "select token from nomz.user where id = ? and is_valid" (Only userId) >>= \case
+    [(Only token)] -> pure token
     _ -> pure Nothing
-
-fetchUserExists :: Connection -> UserId -> IO Bool
-fetchUserExists conn userId = do
-  query conn "select 1 from nomz.user u where u.id = ?" (Only userId) >>= \case
-    [Only (1 :: Int)] -> pure True
-    _ -> pure False
 
 selectIngredients :: Connection -> UserId -> [IngredientId] -> IO (Map IngredientId Ingredient)
 selectIngredients conn userId ingredientIds = do

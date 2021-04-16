@@ -100,16 +100,9 @@ struct DeleteIngredientRequest: Codable {
     let ids: [Int]
 }
 
-struct User: Codable {
-    let username: String
-}
-
-struct CreateUserRequest: Codable {
-    let username: String
-}
-
 struct CreateUserResponse: Codable {
     let userId: Int
+    let apiToken: String
 }
 
 struct ReadableRecipe: Codable {

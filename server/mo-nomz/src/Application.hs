@@ -3,7 +3,7 @@ module Application where
 import ClassyPrelude
 
 import Control.Monad (fail)
-import Control.Monad.Logger (defaultOutput)
+import Control.Monad.Logger (defaultOutput, runLoggingT)
 import Data.Default (def)
 import Data.Pool (createPool)
 import Data.Yaml.Config (loadYamlSettingsArgs, useEnv)
@@ -40,13 +40,14 @@ nomzServer =
 
 migrateDatabase :: App -> IO ()
 migrateDatabase app = do
-  result <- flip runReaderT app $ withDbConn $ \c -> runMigrations True c $
+  result <- flip runLoggingT (appLogFunc app) $ flip runReaderT app $ withDbConn $ \c -> runMigrations True c $
     [ MigrationInitialization
     , MigrationDirectory (appMigrationDir (appSettings app))
     ]
   case result of
-    MigrationError str -> fail $ "Failed to run migrations due to " <> str
-    MigrationSuccess -> pure ()
+    Left err -> fail $ "Failed to run migrations due to database exception " <> show err
+    Right (MigrationError str) -> fail $ "Failed to run migrations due to " <> str
+    Right MigrationSuccess -> pure ()
 
 makeFoundation :: AppSettings -> IO App
 makeFoundation appSettings@AppSettings {..} = do

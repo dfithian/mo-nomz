@@ -14,6 +14,7 @@ data AppSettings = AppSettings
   , appDatabase     :: DatabaseSettings -- ^ The database settings.
   , appMigrationDir :: FilePath -- ^ Where the migrations are located.
   , appStaticDir    :: FilePath -- ^ Where the static files are located.
+  , appBcryptCost   :: Int -- ^ Bcrypt cost.
   }
 
 instance FromJSON DatabaseSettings where
@@ -35,6 +36,7 @@ instance FromJSON AppSettings where
       <*> obj .: "database"
       <*> obj .: "migration-dir"
       <*> obj .: "static-dir"
+      <*> obj .: "bcrypt-cost"
 
 instance ToJSON AppSettings where
   toJSON AppSettings {..} = object
@@ -42,6 +44,7 @@ instance ToJSON AppSettings where
     , "database" .= appDatabase
     , "migration-dir" .= appMigrationDir
     , "static-dir" .= appStaticDir
+    , "bcrypt-cost" .= appBcryptCost
     ]
 
 staticSettings :: Value
@@ -53,4 +56,5 @@ staticSettings = toJSON $ AppSettings
     }
   , appMigrationDir = "server/mo-nomz/sql/migrations/"
   , appStaticDir = "server/mo-nomz/assets"
+  , appBcryptCost = 4
   }

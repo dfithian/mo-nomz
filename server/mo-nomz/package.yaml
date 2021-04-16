@@ -48,15 +48,19 @@ dependencies:
   - aeson
   - attoparsec
   - base
+  - bytestring
   - case-insensitive
   - classy-prelude
+  - cryptonite
   - data-default
+  - memory
   - monad-logger
   - mtl
   - network-uri
   - postgresql-config
   - postgresql-simple
   - postgresql-simple-migration
+  - random
   - resource-pool
   - scalpel
   - servant

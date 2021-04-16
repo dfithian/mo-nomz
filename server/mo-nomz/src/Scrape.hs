@@ -25,7 +25,7 @@ scrapeUrl uri = do
   let containsIngredientClass = Scalpel.match $ \attributeKey attributeValue -> case attributeKey of
         "class" -> "ingredient" `isInfixOf` toLower attributeValue
         _ -> False
-      title = Scalpel.text "title"
+      title = strip <$> Scalpel.text "title"
       contents = Scalpel.chroots (Scalpel.AnyTag @: [containsIngredientClass] // "li") (Scalpel.texts Scalpel.anySelector)
   liftIO (Scalpel.scrapeURL (show uri) ((,) <$> title <*> contents)) >>= \case
     Nothing -> throwError "Failed to scrape URL"

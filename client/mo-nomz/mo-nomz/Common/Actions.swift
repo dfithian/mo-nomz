@@ -9,11 +9,10 @@ import UIKit
 import Foundation
 
 extension UIViewController {
-    func loadUser(username: String, completion: ((CreateUserResponse) -> Void)?) {
+    func loadUser(completion: ((CreateUserResponse) -> Void)?) {
         var req = URLRequest(url: URL(string: Configuration.environment.baseURL + "api/v1/user")!)
         req.addValue("application/json", forHTTPHeaderField: "Content-Type")
         req.httpMethod = "POST"
-        req.httpBody = try? JSONEncoder().encode(CreateUserRequest(username: username))
         let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
             do {
                 if error == nil, let d = data {
@@ -33,6 +32,7 @@ extension UIViewController {
     func loadIngredients(completion: ((ListIngredientResponse) -> Void)?) {
         let state = Persistence.loadState()!
         var req = URLRequest(url: URL(string: Configuration.environment.baseURL + "api/v1/user/" + String(state.userId) + "/ingredient")!)
+        req.addValue(state.apiToken, forHTTPHeaderField: "X-Mo-Nomz-API-Token")
         req.addValue("application/json", forHTTPHeaderField: "Accept")
         let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
             do {
@@ -53,6 +53,7 @@ extension UIViewController {
     func mergeIngredients(ingredientIds: [Int], ingredient: ReadableIngredient, completion: (() -> Void)?) {
         let state = Persistence.loadState()!
         var req = URLRequest(url: URL(string: Configuration.environment.baseURL + "api/v1/user/" + String(state.userId) + "/ingredient")!)
+        req.addValue(state.apiToken, forHTTPHeaderField: "X-Mo-Nomz-API-Token")
         req.addValue("application/json", forHTTPHeaderField: "Content-Type")
         req.httpMethod = "POST"
         req.httpBody = try? JSONEncoder().encode(MergeIngredientRequest(ids: ingredientIds, name: ingredient.name, quantity: ingredient.quantity, unit: ingredient.unit, active: ingredient.active))
@@ -69,6 +70,7 @@ extension UIViewController {
     func deleteIngredients(ingredientIds: [Int], completion: (() -> Void)?) {
         let state = Persistence.loadState()!
         var req = URLRequest(url: URL(string: Configuration.environment.baseURL + "api/v1/user/" + String(state.userId) + "/ingredient")!)
+        req.addValue(state.apiToken, forHTTPHeaderField: "X-Mo-Nomz-API-Token")
         req.addValue("application/json", forHTTPHeaderField: "Content-Type")
         req.httpMethod = "DELETE"
         req.httpBody = try? JSONEncoder().encode(DeleteIngredientRequest(ids: ingredientIds))
@@ -85,6 +87,7 @@ extension UIViewController {
     func loadRecipes(completion: ((ListRecipeResponse) -> Void)?) {
         let state = Persistence.loadState()!
         var req = URLRequest(url: URL(string: Configuration.environment.baseURL + "api/v1/user/" + String(state.userId) + "/recipe")!)
+        req.addValue(state.apiToken, forHTTPHeaderField: "X-Mo-Nomz-API-Token")
         req.addValue("application/json", forHTTPHeaderField: "Accept")
         let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
             do {
@@ -105,6 +108,7 @@ extension UIViewController {
     func addRecipeLink(link: String, completion: (() -> Void)?) {
         let state = Persistence.loadState()!
         var req = URLRequest(url: URL(string: Configuration.environment.baseURL + "api/v1/user/" + String(state.userId) + "/recipe/link")!)
+        req.addValue(state.apiToken, forHTTPHeaderField: "X-Mo-Nomz-API-Token")
         req.addValue("application/json", forHTTPHeaderField: "Content-Type")
         req.httpMethod = "POST"
         req.httpBody = try? JSONEncoder().encode(ImportRecipeLinkRequest(link: link))
@@ -121,6 +125,7 @@ extension UIViewController {
     func addRecipeBody(name: String, content: String, completion: (() -> Void)?) {
         let state = Persistence.loadState()!
         var req = URLRequest(url: URL(string: Configuration.environment.baseURL + "api/v1/user/" + String(state.userId) + "/recipe/body")!)
+        req.addValue(state.apiToken, forHTTPHeaderField: "X-Mo-Nomz-API-Token")
         req.addValue("application/json", forHTTPHeaderField: "Content-Type")
         req.httpMethod = "POST"
         req.httpBody = try? JSONEncoder().encode(ImportRecipeBodyRequest(name: name, content: content))
@@ -137,6 +142,7 @@ extension UIViewController {
     func updateRecipe(id: Int, active: Bool, completion: (() -> Void)?) {
         let state = Persistence.loadState()!
         var req = URLRequest(url: URL(string: Configuration.environment.baseURL + "api/v1/user/" + String(state.userId) + "/recipe")!)
+        req.addValue(state.apiToken, forHTTPHeaderField: "X-Mo-Nomz-API-Token")
         req.addValue("application/json", forHTTPHeaderField: "Content-Type")
         req.httpMethod = "POST"
         req.httpBody = try? JSONEncoder().encode(UpdateRecipeRequest(id: id, active: active))
@@ -153,6 +159,7 @@ extension UIViewController {
     func deleteRecipes(recipeIds: [Int], completion: (() -> Void)?) {
         let state = Persistence.loadState()!
         var req = URLRequest(url: URL(string: Configuration.environment.baseURL + "api/v1/user/" + String(state.userId) + "/recipe")!)
+        req.addValue(state.apiToken, forHTTPHeaderField: "X-Mo-Nomz-API-Token")
         req.addValue("application/json", forHTTPHeaderField: "Content-Type")
         req.httpMethod = "DELETE"
         req.httpBody = try? JSONEncoder().encode(DeleteRecipeRequest(ids: recipeIds))

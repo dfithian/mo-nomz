@@ -6,3 +6,4 @@ database:
 
 migration-dir: "_env:MIGRATION_DIR:server/mo-nomz/sql/migrations/"
 static-dir: "_env:STATIC_DIR:server/mo-nomz/assets/"
+bcrypt-cost: "_env:BCRYPT_COST:4"

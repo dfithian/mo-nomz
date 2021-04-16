@@ -16,9 +16,6 @@ import Json (jsonOptions)
 newtype UserId = UserId { unUserId :: Int }
   deriving (Eq, Ord, Show, FromJSON, FromJSONKey, ToJSON, ToJSONKey, FromField, ToField, FromHttpApiData, ToHttpApiData)
 
-newtype Username = Username { unUsername :: CI Text }
-  deriving (Eq, Ord, Show, FromJSON, FromJSONKey, ToJSON, ToJSONKey, FromField, ToField)
-
 newtype IngredientName = IngredientName { unIngredientName :: CI Text }
   deriving (Eq, Ord, Show, FromJSON, FromJSONKey, ToJSON, ToJSONKey, FromField, ToField)
 
@@ -63,11 +60,6 @@ data ReadableQuantity = ReadableQuantity
   }
   deriving (Eq, Show, Ord)
 
-data User = User
-  { userUsername :: Username
-  }
-  deriving (Eq, Ord, Show)
-
 data Ingredient = Ingredient
   { ingredientName     :: IngredientName
   , ingredientQuantity :: Quantity
@@ -100,7 +92,6 @@ data Recipe = Recipe
 
 deriveJSON (jsonOptions "readableFraction") ''ReadableFraction
 deriveJSON (jsonOptions "readableQuantity") ''ReadableQuantity
-deriveJSON (jsonOptions "user") ''User
 deriveJSON (jsonOptions "ingredient") ''Ingredient
 deriveJSON (jsonOptions "recipeIngredient") ''RecipeIngredient
 deriveJSON (jsonOptions "recipe") ''Recipe

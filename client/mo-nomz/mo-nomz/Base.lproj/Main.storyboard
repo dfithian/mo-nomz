@@ -40,13 +40,25 @@
                                 <fontDescription key="fontDescription" type="italicSystem" pointSize="20"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="h9H-Ki-kIj">
+                                <rect key="frame" x="176" y="474" width="62" height="36"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                <state key="normal" title="Logout">
+                                    <color key="titleColor" systemColor="systemRedColor"/>
+                                </state>
+                                <connections>
+                                    <action selector="didTapLogout:" destination="Em2-cS-aPW" eventType="touchUpInside" id="q5e-1M-au9"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="bXI-3c-IJ7"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="a9G-LJ-KUm" firstAttribute="top" secondItem="10b-uv-gVg" secondAttribute="bottom" constant="8" symbolic="YES" id="8Io-hC-oJu"/>
                             <constraint firstItem="bXI-3c-IJ7" firstAttribute="trailing" secondItem="10b-uv-gVg" secondAttribute="trailing" constant="20" id="KYZ-Su-rZa"/>
+                            <constraint firstItem="h9H-Ki-kIj" firstAttribute="top" secondItem="a9G-LJ-KUm" secondAttribute="bottom" constant="8" symbolic="YES" id="KYt-y8-Lfv"/>
                             <constraint firstItem="b9z-Pr-XLu" firstAttribute="centerX" secondItem="rkk-lA-9eQ" secondAttribute="centerX" id="NHm-lG-beo"/>
+                            <constraint firstItem="h9H-Ki-kIj" firstAttribute="centerX" secondItem="rkk-lA-9eQ" secondAttribute="centerX" id="Uvp-hh-2py"/>
                             <constraint firstItem="a9G-LJ-KUm" firstAttribute="centerX" secondItem="rkk-lA-9eQ" secondAttribute="centerX" id="dFR-DE-mkh"/>
                             <constraint firstItem="a9G-LJ-KUm" firstAttribute="centerY" secondItem="rkk-lA-9eQ" secondAttribute="centerY" id="hOk-E7-eOS"/>
                             <constraint firstItem="b9z-Pr-XLu" firstAttribute="top" secondItem="bXI-3c-IJ7" secondAttribute="top" id="q8l-Ml-R67"/>

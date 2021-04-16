@@ -41,14 +41,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         if Persistence.loadState() == nil {
             window?.rootViewController = launchVc
-            let username = UUID().uuidString
             let completion = { (resp: CreateUserResponse) -> Void in
-                Persistence.setState(state: State(username: username, userId: resp.userId))
                 DispatchQueue.main.async {
+                    Persistence.setState(state: State(userId: resp.userId, apiToken: resp.apiToken))
                     self.window?.rootViewController = mainVc
                 }
             }
-            window?.rootViewController?.loadUser(username: username, completion: completion)
+            window?.rootViewController?.loadUser(completion: completion)
         } else {
             window?.rootViewController = mainVc
         }

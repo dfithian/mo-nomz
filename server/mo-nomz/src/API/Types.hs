@@ -4,10 +4,10 @@ import ClassyPrelude
 
 import Data.Aeson.TH (deriveJSON)
 
+import Auth (Authorization)
 import Json (jsonOptions)
 import Types
   ( IngredientId, IngredientName, ReadableQuantity, RecipeId, RecipeLink, RecipeName, Unit, UserId
-  , Username
   )
 
 data GetHealthResponse = GetHealthResponse
@@ -15,13 +15,9 @@ data GetHealthResponse = GetHealthResponse
   }
   deriving (Eq, Ord, Show)
 
-data UserCreateRequest = UserCreateRequest
-  { userCreateRequestUsername :: Username
-  }
-  deriving (Eq, Ord, Show)
-
 data UserCreateResponse = UserCreateResponse
-  { userCreateResponseUserId :: UserId
+  { userCreateResponseUserId   :: UserId
+  , userCreateResponseApiToken :: Authorization
   }
   deriving (Eq, Ord, Show)
 
@@ -94,7 +90,6 @@ data ListRecipeResponse = ListRecipeResponse
   deriving (Eq, Ord, Show)
 
 deriveJSON (jsonOptions "getHealthResponse") ''GetHealthResponse
-deriveJSON (jsonOptions "userCreateRequest") ''UserCreateRequest
 deriveJSON (jsonOptions "userCreateResponse") ''UserCreateResponse
 deriveJSON (jsonOptions "mergeIngredientRequest") ''MergeIngredientRequest
 deriveJSON (jsonOptions "deleteIngredientRequest") ''DeleteIngredientRequest
