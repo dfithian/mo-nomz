@@ -59,12 +59,8 @@ class IngredientListController: UITableViewController, UITableViewDragDelegate, 
     }
     
     func deleteRow(ids: [Int]) {
-        let ok = UIAlertAction(title: "OK", style: .default, handler: { [weak self] (action) -> Void in self?.deleteIngredients(ingredientIds: ids, completion: self?.onChange) })
-        let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        let confirmation = UIAlertController(title: "Delete", message: "Are you sure you want to delete this ingredient?", preferredStyle: .alert)
-        confirmation.addAction(ok)
-        confirmation.addAction(cancel)
-        self.present(confirmation, animated: true, completion: nil)
+        let handler = { [weak self] (action: UIAlertAction) -> Void in self?.deleteIngredients(ingredientIds: ids, completion: self?.onChange) }
+        promptForConfirmation(title: "Delete", message: "Are you sure you want to delete this ingredient?", handler: handler)
     }
     
     func editRow(ingredient: ReadableIngredientAggregate) {

@@ -52,6 +52,7 @@ class RecipeAddController: UIViewController, UITextViewDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        hideKeyboardWhenTappedAround()
         link.becomeFirstResponder()
         attribution = content.attributedText
         content.attributedText = name.attributedPlaceholder

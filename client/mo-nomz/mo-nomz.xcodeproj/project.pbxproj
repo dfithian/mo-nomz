@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		37145F2B2623CE460011C6C1 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37145F2A2623CE460011C6C1 /* Configuration.swift */; };
+		372DDC1E262B1BE200CA83A8 /* Confirmation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372DDC1D262B1BE200CA83A8 /* Confirmation.swift */; };
+		372DDC40262B435400CA83A8 /* Keyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372DDC3F262B435400CA83A8 /* Keyboard.swift */; };
+		372DDC43262B43CB00CA83A8 /* Loading.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372DDC42262B43CB00CA83A8 /* Loading.swift */; };
 		3750F93F2627F42D0094E733 /* Import.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3750F93E2627F42D0094E733 /* Import.swift */; };
 		376095C0262125C10015B6F0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 376095BF262125C10015B6F0 /* AppDelegate.swift */; };
 		376095C2262125C10015B6F0 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 376095C1262125C10015B6F0 /* SceneDelegate.swift */; };
@@ -34,6 +37,9 @@
 /* Begin PBXFileReference section */
 		370F287626228726008C3AC0 /* mo-nomz.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "mo-nomz.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		37145F2A2623CE460011C6C1 /* Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
+		372DDC1D262B1BE200CA83A8 /* Confirmation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Confirmation.swift; sourceTree = "<group>"; };
+		372DDC3F262B435400CA83A8 /* Keyboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keyboard.swift; sourceTree = "<group>"; };
+		372DDC42262B43CB00CA83A8 /* Loading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Loading.swift; sourceTree = "<group>"; };
 		3750F93E2627F42D0094E733 /* Import.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Import.swift; sourceTree = "<group>"; };
 		376095BF262125C10015B6F0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		376095C1262125C10015B6F0 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -116,6 +122,9 @@
 				378EBD5026214A41008FF6C4 /* Types.swift */,
 				37C6714D2627BFB100B5838C /* ErrorHandler.swift */,
 				3750F93E2627F42D0094E733 /* Import.swift */,
+				372DDC1D262B1BE200CA83A8 /* Confirmation.swift */,
+				372DDC3F262B435400CA83A8 /* Keyboard.swift */,
+				372DDC42262B43CB00CA83A8 /* Loading.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -211,6 +220,7 @@
 			files = (
 				376095E0262138720015B6F0 /* IngredientListItem.swift in Sources */,
 				37AEE6382623D5710052304F /* Actions.swift in Sources */,
+				372DDC1E262B1BE200CA83A8 /* Confirmation.swift in Sources */,
 				378EBD5126214A41008FF6C4 /* Types.swift in Sources */,
 				379D479326262104003DD2C6 /* IngredientEditController.swift in Sources */,
 				37145F2B2623CE460011C6C1 /* Configuration.swift in Sources */,
@@ -222,8 +232,10 @@
 				376095D926212FBB0015B6F0 /* GroceryListController.swift in Sources */,
 				379D479B26264D6E003DD2C6 /* RecipeListController.swift in Sources */,
 				376095C0262125C10015B6F0 /* AppDelegate.swift in Sources */,
+				372DDC43262B43CB00CA83A8 /* Loading.swift in Sources */,
 				376095C2262125C10015B6F0 /* SceneDelegate.swift in Sources */,
 				3774A5B5262489F70029E35D /* ProfileController.swift in Sources */,
+				372DDC40262B435400CA83A8 /* Keyboard.swift in Sources */,
 				379D479826264D47003DD2C6 /* RecipeController.swift in Sources */,
 				37C6714E2627BFB100B5838C /* ErrorHandler.swift in Sources */,
 				3774A5C92624B3E90029E35D /* RecipeAddController.swift in Sources */,
@@ -294,10 +306,7 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
+				GCC_PREPROCESSOR_DEFINITIONS = "DEBUG=1";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -376,6 +385,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = "mo-nomz/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -386,7 +396,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -397,6 +407,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_TEAM = 5A6Y383S44;
 				INFOPLIST_FILE = "mo-nomz/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -407,7 +418,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

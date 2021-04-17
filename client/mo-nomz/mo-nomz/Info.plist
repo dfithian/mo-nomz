@@ -11,8 +11,10 @@
 		<dict>
 			<key>CFBundleTypeName</key>
 			<string>plain-text</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
 			<key>LSHandlerRank</key>
-			<string>Default</string>
+			<string>Alternate</string>
 			<key>LSItemContentTypes</key>
 			<array>
 				<string>public.plain-text</string>
@@ -21,8 +23,10 @@
 		<dict>
 			<key>CFBundleTypeName</key>
 			<string>url</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
 			<key>LSHandlerRank</key>
-			<string>Default</string>
+			<string>Alternate</string>
 			<key>LSItemContentTypes</key>
 			<array>
 				<string>public.url</string>
@@ -31,8 +35,10 @@
 		<dict>
 			<key>CFBundleTypeName</key>
 			<string>file-url</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
 			<key>LSHandlerRank</key>
-			<string>Default</string>
+			<string>Alternate</string>
 			<key>LSItemContentTypes</key>
 			<array>
 				<string>public.file-url</string>
@@ -41,11 +47,25 @@
 		<dict>
 			<key>CFBundleTypeName</key>
 			<string>text</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
 			<key>LSHandlerRank</key>
-			<string>Default</string>
+			<string>Alternate</string>
 			<key>LSItemContentTypes</key>
 			<array>
 				<string>public.text</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeName</key>
+			<string>data</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSHandlerRank</key>
+			<string>Alternate</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>public.data</string>
 			</array>
 		</dict>
 	</array>
@@ -62,7 +82,9 @@
 	<key>CFBundleShortVersionString</key>
 	<string>1.0</string>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>LSSupportsOpeningDocumentsInPlace</key>
@@ -120,7 +142,18 @@
 	<false/>
 	<key>UTImportedTypeDeclarations</key>
 	<array>
-		<dict/>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array/>
+			<key>UTTypeDescription</key>
+			<string></string>
+			<key>UTTypeIconFiles</key>
+			<array/>
+			<key>UTTypeIdentifier</key>
+			<string></string>
+			<key>UTTypeTagSpecification</key>
+			<dict/>
+		</dict>
 	</array>
 </dict>
 </plist>

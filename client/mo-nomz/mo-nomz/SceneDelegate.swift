@@ -21,10 +21,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         switch context.url.scheme {
         case "file":
             window?.rootViewController?.importFile(url: context.url, completion: completion)
-            break;
+            break
         case "http", "https":
             window?.rootViewController?.importUrl(url: context.url, completion: completion)
-            break;
+            break
         default: return
         }
     }

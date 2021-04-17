@@ -69,6 +69,7 @@ class IngredientMergeController: UIViewController, UIPickerViewDataSource, UIPic
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        hideKeyboardWhenTappedAround()
         existingInfo.text = "\(existing.quantity.render()) \(existing.unit) \(existing.name)"
         newInfo.text = "\(new.quantity.render()) \(new.unit) \(new.name)"
         unit.text = existing.unit

@@ -71,12 +71,8 @@ class RecipeListController: UITableViewController, UITableViewDragDelegate, UITa
     }
     
     func deleteRow(id: Int) {
-        let ok = UIAlertAction(title: "OK", style: .default, handler: { [weak self] (action) -> Void in self?.deleteRecipes(recipeIds: [id], completion: self?.onChange) })
-        let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        let confirmation = UIAlertController(title: "Delete", message: "Are you sure you want to delete this recipe?", preferredStyle: .alert)
-        confirmation.addAction(ok)
-        confirmation.addAction(cancel)
-        self.present(confirmation, animated: true, completion: nil)
+        let handler = { [weak self] (action: UIAlertAction) -> Void in self?.deleteRecipes(recipeIds: [id], completion: self?.onChange) }
+        promptForConfirmation(title: "Delete", message: "Are you sure you want to delete this recipe?", handler: handler)
     }
     
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
@@ -162,26 +158,8 @@ class RecipeListController: UITableViewController, UITableViewDragDelegate, UITa
     
     func tableView(_ tableView: UITableView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UITableViewDropProposal {
         var proposal = UITableViewDropProposal(operation: .cancel)
-        guard let indexPath = destinationIndexPath else { return proposal }
-        guard indexPath.section == 1 || indexPath.section == 3 else { return proposal }
+        guard destinationIndexPath != nil else { return proposal }
         guard session.items.count == 1 else { return proposal }
-        switch indexPath.section {
-        case 1:
-            if indexPath.row < active.count {
-                table.scrollToRow(at: indexPath, at: .none, animated: true)
-            } else {
-                table.scrollToRow(at: IndexPath(row: active.count - 1, section: 1), at: .none, animated: true)
-            }
-            break
-        case 3:
-            if indexPath.row < saved.count {
-                table.scrollToRow(at: indexPath, at: .none, animated: true)
-            } else {
-                table.scrollToRow(at: IndexPath(row: saved.count - 1, section: 1), at: .none, animated: true)
-            }
-            break
-        default: break
-        }
         if table.hasActiveDrag {
             proposal = UITableViewDropProposal(operation: .move, intent: .insertAtDestinationIndexPath)
         }
@@ -189,7 +167,13 @@ class RecipeListController: UITableViewController, UITableViewDragDelegate, UITa
     }
     
     func tableView(_ tableView: UITableView, performDropWith coordinator: UITableViewDropCoordinator) {
-        guard let indexPath = coordinator.destinationIndexPath else { return }
+        guard var indexPath = coordinator.destinationIndexPath else { return }
+        if indexPath.section == 0 {
+            indexPath.section = 1
+        }
+        if indexPath.section == 2 {
+            indexPath.section = 3
+        }
         let willBeActive = [0, 1].contains(indexPath.section)
         coordinator.session.loadObjects(ofClass: NSString.self, completion: { items in
             guard let strings = items as? [String] else { return }

@@ -66,6 +66,7 @@ class IngredientEditController: UIViewController, UIPickerViewDataSource, UIPick
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        hideKeyboardWhenTappedAround()
         existingInfo.text = "\(existing.ingredient.quantity.render()) \(existing.ingredient.unit) \(existing.ingredient.name)"
         unit.text = existing.ingredient.unit
         name.text = existing.ingredient.name
