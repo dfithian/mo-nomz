@@ -79,11 +79,6 @@ class RecipeListController: UITableViewController, UITableViewDragDelegate, UITa
         self.present(confirmation, animated: true, completion: nil)
     }
     
-    func editRow(recipe: RecipeWithId) {
-        editRecipe = recipe
-        self.performSegue(withIdentifier: "editRecipe", sender: nil)
-    }
-    
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let id: Int
         switch indexPath.section {
