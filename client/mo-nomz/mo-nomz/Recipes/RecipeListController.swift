@@ -27,6 +27,7 @@ class RecipeListController: UITableViewController, UITableViewDragDelegate, UITa
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if collapsed[section] ?? false { return 0 }
         switch section {
         case 1: return active.count
         case 3: return saved.count
@@ -50,23 +51,25 @@ class RecipeListController: UITableViewController, UITableViewDragDelegate, UITa
             DispatchQueue.main.async {
                 self.table.reloadData()
             }
+            break
         case 1:
             if let link = active[indexPath.row].recipe.link {
                 openLink(link: link)
             }
-            break;
+            break
         case 2:
             collapsed[3] = !collapsed[3]!
             DispatchQueue.main.async {
                 self.table.reloadData()
             }
+            break
         case 3:
             if let link = active[indexPath.row].recipe.link {
                 openLink(link: link)
             }
-            break;
+            break
         default:
-            break;
+            break
         }
     }
     
