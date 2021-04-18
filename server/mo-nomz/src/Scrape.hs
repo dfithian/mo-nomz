@@ -64,35 +64,35 @@ unitAliasTable = mapFromList
 
 quantityAliasTable :: Map (CI Text) Quantity
 quantityAliasTable = mapFromList
-  [ ("half dozen", Quantity 6)
-  , ("dozen", Quantity 12)
-  , ("quarter", Quantity 0.25)
-  , ("third", Quantity $ 1 / 3)
-  , ("half", Quantity 0.5)
-  , ("one", Quantity 1)
-  , ("two", Quantity 2)
-  , ("three", Quantity 3)
-  , ("four", Quantity 4)
-  , ("five", Quantity 5)
-  , ("six", Quantity 6)
-  , ("seven", Quantity 7)
-  , ("eight", Quantity 8)
-  , ("nine", Quantity 9)
-  , ("ten", Quantity 10)
-  , ("eleven", Quantity 11)
-  , ("twelve", Quantity 12)
+  [ ("half dozen", 6)
+  , ("dozen", 12)
+  , ("quarter", 0.25)
+  , ("third", 1 / 3)
+  , ("half", 0.5)
+  , ("one", 1)
+  , ("two", 2)
+  , ("three", 3)
+  , ("four", 4)
+  , ("five", 5)
+  , ("six", 6)
+  , ("seven", 7)
+  , ("eight", 8)
+  , ("nine", 9)
+  , ("ten", 10)
+  , ("eleven", 11)
+  , ("twelve", 12)
   ]
 
 scrubUnit :: RawUnit -> Unit
 scrubUnit = \case
-  RawUnitWord x -> findWithDefault (Unit x) x unitAliasTable
-  RawUnitMissing -> whole
+  RawUnit x -> findWithDefault (Unit x) x unitAliasTable
+  RawUnitMissing -> UnitMissing
 
 scrubQuantity :: RawQuantity -> Quantity
 scrubQuantity = \case
-  RawQuantityPure q -> q
-  RawQuantityWord w -> findWithDefault 1 w quantityAliasTable
-  RawQuantityMissing -> 1
+  RawQuantity q -> Quantity q
+  RawQuantityWord w -> findWithDefault QuantityMissing w quantityAliasTable
+  RawQuantityMissing -> QuantityMissing
 
 scrubIngredient :: RawIngredient -> Ingredient
 scrubIngredient RawIngredient {..} = Ingredient
@@ -101,6 +101,7 @@ scrubIngredient RawIngredient {..} = Ingredient
   , ingredientUnit = scrubUnit rawIngredientUnit
   , ingredientActive = True
   }
+
 quantityP :: Atto.Parser RawQuantity
 quantityP = quantityExpression <|> quantityWord <|> quantityMissing
   where
@@ -108,22 +109,22 @@ quantityP = quantityExpression <|> quantityWord <|> quantityMissing
     quantityParser p = p =<< Atto.takeWhile isQuantityC
     strictQuantityParser p = p . strip =<< Atto.takeWhile1 isQuantityC
 
-    quantitySingle str = maybe (fail $ unpack str <> " is not a single quantity") (pure . Quantity) . readMay . unpack . filter (not . isSpace) $ str
+    quantitySingle str = maybe (fail $ unpack str <> " is not a single quantity") pure . readMay . unpack . filter (not . isSpace) $ str
     quantityUnicode = \case
-      "¼" -> pure $ Quantity 0.25
-      "½" -> pure $ Quantity 0.5
-      "¾" -> pure $ Quantity 0.75
-      "⅓" -> pure $ Quantity $ 1 / 3
-      "⅔" -> pure $ Quantity $ 2 / 3
+      "¼" -> pure 0.25
+      "½" -> pure 0.5
+      "¾" -> pure 0.75
+      "⅓" -> pure $ 1 / 3
+      "⅔" -> pure $ 2 / 3
       str -> fail $ unpack str <> " is not a unicode quantity"
     quantityDecimal str = case split ((==) '.') str of
-      [x, y] -> maybe (fail $ unpack str <> " is not a decimal quantity") (pure . Quantity) $ do
+      [x, y] -> maybe (fail $ unpack str <> " is not a decimal quantity") pure $ do
         x' <- fromInteger <$> readMay x
         y' <- fromInteger <$> readMay y
         pure $ x' + (y' / (fromIntegral $ 10 * length y))
       _ -> fail $ unpack str <> " is not a decimal quantity"
     quantityFraction str = case split ((==) '/') str of
-      [x, y] -> maybe (fail $ unpack str <> " is not a fractional quantity") (pure . Quantity) $
+      [x, y] -> maybe (fail $ unpack str <> " is not a fractional quantity") pure $
         (/) <$> readMay x <*> readMay y
       _ -> fail $ unpack str <> " is not a fractional quantity"
 
@@ -137,7 +138,7 @@ quantityP = quantityExpression <|> quantityWord <|> quantityMissing
         <|> quantityDecimal str
         <|> quantityFraction str
 
-    quantityExpression = RawQuantityPure <$> (strictQuantityParser quantitySimple <|> quantityImproper)
+    quantityExpression = RawQuantity <$> (strictQuantityParser quantitySimple <|> quantityImproper)
     quantityWord = RawQuantityWord . CI.mk <$> ((\str -> if CI.mk str `elem` keys quantityAliasTable then pure str else fail $ unpack str <> " is not a quantity") =<< spaced (Atto.takeWhile1 isAlpha))
     quantityMissing = quantityParser $ \str -> case null str of
       True -> pure RawQuantityMissing
@@ -152,7 +153,7 @@ unitP = unitWord <|> pure RawUnitMissing
     unitWord = do
       unit <- CI.mk <$> spaced (Atto.takeWhile1 isAlpha)
       case unit `elem` keys unitAliasTable of
-        True -> pure $ RawUnitWord unit
+        True -> pure $ RawUnit unit
         False -> fail "no unit found"
 
 nameP :: Atto.Parser IngredientName

@@ -7,7 +7,8 @@ import Data.Aeson.TH (deriveJSON)
 import Auth (Authorization)
 import Json (jsonOptions)
 import Types
-  ( IngredientId, IngredientName, ReadableQuantity, RecipeId, RecipeLink, RecipeName, Unit, UserId
+  ( IngredientId, IngredientName, ReadableQuantity, ReadableUnit, RecipeId, RecipeLink, RecipeName
+  , UserId
   )
 
 data GetHealthResponse = GetHealthResponse
@@ -25,7 +26,7 @@ data MergeIngredientRequest = MergeIngredientRequest
   { mergeIngredientRequestIds      :: Set IngredientId
   , mergeIngredientRequestName     :: IngredientName
   , mergeIngredientRequestQuantity :: ReadableQuantity
-  , mergeIngredientRequestUnit     :: Unit
+  , mergeIngredientRequestUnit     :: Maybe ReadableUnit
   , mergeIngredientRequestActive   :: Bool
   }
   deriving (Eq, Ord, Show)
@@ -38,7 +39,7 @@ data DeleteIngredientRequest = DeleteIngredientRequest
 data ReadableIngredient = ReadableIngredient
   { readableIngredientName     :: IngredientName
   , readableIngredientQuantity :: ReadableQuantity
-  , readableIngredientUnit     :: Unit
+  , readableIngredientUnit     :: Maybe ReadableUnit
   , readableIngredientActive   :: Bool
   }
   deriving (Eq, Ord, Show)

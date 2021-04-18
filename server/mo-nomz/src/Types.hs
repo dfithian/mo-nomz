@@ -6,8 +6,8 @@ import Control.Monad.Except (ExceptT, MonadError, runExceptT, throwError)
 import Data.Aeson (FromJSON, FromJSONKey, ToJSON, ToJSONKey)
 import Data.Aeson.TH (deriveJSON)
 import Data.CaseInsensitive (CI)
-import Database.PostgreSQL.Simple.FromField (FromField)
-import Database.PostgreSQL.Simple.ToField (ToField)
+import Database.PostgreSQL.Simple.FromField (FromField, fromField)
+import Database.PostgreSQL.Simple.ToField (ToField, toField)
 import Servant.API (FromHttpApiData, ToHttpApiData)
 
 import CI.Orphans ()
@@ -17,30 +17,39 @@ newtype UserId = UserId { unUserId :: Int }
   deriving (Eq, Ord, Show, FromJSON, FromJSONKey, ToJSON, ToJSONKey, FromField, ToField, FromHttpApiData, ToHttpApiData)
 
 newtype IngredientName = IngredientName { unIngredientName :: CI Text }
-  deriving (Eq, Ord, Show, FromJSON, FromJSONKey, ToJSON, ToJSONKey, FromField, ToField)
+  deriving (Eq, Ord, Show, FromJSON, ToJSON, FromField, ToField)
 
 newtype RecipeName = RecipeName { unRecipeName :: Text }
-  deriving (Eq, Ord, Show, FromJSON, FromJSONKey, ToJSON, ToJSONKey, FromField, ToField)
+  deriving (Eq, Ord, Show, FromJSON, ToJSON, FromField, ToField)
 
 data RawQuantity
-  = RawQuantityPure Quantity
+  = RawQuantity Double
   | RawQuantityWord (CI Text)
   | RawQuantityMissing
   deriving (Eq, Ord, Show)
 
-newtype Quantity = Quantity { unQuantity :: Double }
-  deriving (Eq, Ord, Show, Num, Fractional, FromJSON, FromJSONKey, ToJSON, ToJSONKey, FromField, ToField)
+data Quantity
+  = Quantity Double
+  | QuantityMissing
+  deriving (Eq, Ord, Show)
+
+quantityToValue :: Quantity -> Double
+quantityToValue = \case
+  Quantity x -> x
+  QuantityMissing -> 1
 
 newtype RecipeLink = RecipeLink { unRecipeLink :: Text }
-  deriving (Eq, Ord, Show, FromJSON, FromJSONKey, ToJSON, ToJSONKey, FromField, ToField)
+  deriving (Eq, Ord, Show, FromJSON, ToJSON, FromField, ToField)
 
 data RawUnit
-  = RawUnitWord (CI Text)
+  = RawUnit (CI Text)
   | RawUnitMissing
   deriving (Eq, Ord, Show)
 
-newtype Unit = Unit { unUnit :: CI Text }
-  deriving (Eq, Ord, Show, FromJSON, FromJSONKey, ToJSON, ToJSONKey, FromField, ToField)
+data Unit
+  = Unit (CI Text)
+  | UnitMissing
+  deriving (Eq, Ord, Show)
 
 newtype IngredientId = IngredientId { unIngredientId :: Int }
   deriving (Eq, Ord, Show, FromJSON, FromJSONKey, ToJSON, ToJSONKey, FromField, ToField, FromHttpApiData, ToHttpApiData)
@@ -59,6 +68,9 @@ data ReadableQuantity = ReadableQuantity
   , readableQuantityFraction :: Maybe ReadableFraction
   }
   deriving (Eq, Show, Ord)
+
+newtype ReadableUnit = ReadableUnit { unReadableUnit :: CI Text }
+  deriving (Eq, Ord, Show, FromJSON, ToJSON, FromField, ToField)
 
 data Ingredient = Ingredient
   { ingredientName     :: IngredientName
@@ -90,11 +102,24 @@ data Recipe = Recipe
   }
   deriving (Eq, Ord, Show)
 
+instance FromField Quantity where
+  fromField f bs = maybe QuantityMissing Quantity <$> fromField f bs
+
+instance ToField Quantity where
+  toField = \case
+    Quantity q -> toField (Just q)
+    QuantityMissing -> toField (Nothing :: Maybe Double)
+
+instance FromField Unit where
+  fromField f bs = maybe UnitMissing Unit <$> fromField f bs
+
+instance ToField Unit where
+  toField = \case
+    Unit q -> toField (Just q)
+    UnitMissing -> toField (Nothing :: Maybe Double)
+
 deriveJSON (jsonOptions "readableFraction") ''ReadableFraction
 deriveJSON (jsonOptions "readableQuantity") ''ReadableQuantity
-deriveJSON (jsonOptions "ingredient") ''Ingredient
-deriveJSON (jsonOptions "recipeIngredient") ''RecipeIngredient
-deriveJSON (jsonOptions "recipe") ''Recipe
 
 uncurry3 :: (a -> b -> c -> d) -> (a, b, c) -> d
 uncurry3 f (x, y, z) = f x y z
@@ -128,3 +153,30 @@ mkIngredient' RecipeIngredient {..} = Ingredient
   , ingredientUnit = recipeIngredientUnit
   , ingredientActive = True
   }
+
+instance Num Quantity where
+  QuantityMissing + QuantityMissing = QuantityMissing
+  x + y = Quantity $ quantityToValue x + quantityToValue y
+
+  QuantityMissing * QuantityMissing = QuantityMissing
+  x * y = Quantity $ quantityToValue x * quantityToValue y
+
+  abs = \case
+    Quantity x -> Quantity $ abs x
+    QuantityMissing -> QuantityMissing
+
+  signum = \case
+    Quantity x -> Quantity $ signum x
+    QuantityMissing -> QuantityMissing
+
+  fromInteger = Quantity . fromInteger
+
+  negate = \case
+    Quantity x -> Quantity $ negate x
+    QuantityMissing -> QuantityMissing
+
+instance Fractional Quantity where
+  fromRational = Quantity . fromRational
+
+  QuantityMissing / QuantityMissing = QuantityMissing
+  x / y = Quantity $ quantityToValue x / quantityToValue y

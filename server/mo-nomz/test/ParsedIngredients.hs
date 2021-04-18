@@ -3,7 +3,7 @@ module ParsedIngredients where
 import ClassyPrelude
 import qualified Data.CaseInsensitive as CI
 
-import Types (Ingredient(..), Unit(..), Quantity(..), whole, IngredientName(..))
+import Types (Ingredient(..), IngredientName(..), Quantity(..), Unit(..))
 
 allParsedIngredients :: [[Ingredient]]
 allParsedIngredients =
@@ -25,7 +25,7 @@ pureIngredient q u i = Ingredient
 pureIngredientNoQuantity :: Text -> Text -> Ingredient
 pureIngredientNoQuantity u i = Ingredient
   { ingredientName = IngredientName $ CI.mk i
-  , ingredientQuantity = 1
+  , ingredientQuantity = QuantityMissing
   , ingredientUnit = Unit $ CI.mk u
   , ingredientActive = True
   }
@@ -34,15 +34,15 @@ pureIngredientNoUnit :: Double -> Text -> Ingredient
 pureIngredientNoUnit q i = Ingredient
   { ingredientName = IngredientName $ CI.mk i
   , ingredientQuantity = Quantity q
-  , ingredientUnit = whole
+  , ingredientUnit = UnitMissing
   , ingredientActive = True
   }
 
 pureIngredientName :: Text -> Ingredient
 pureIngredientName i = Ingredient
   { ingredientName = IngredientName $ CI.mk i
-  , ingredientQuantity = 1
-  , ingredientUnit = whole
+  , ingredientQuantity = QuantityMissing
+  , ingredientUnit = UnitMissing
   , ingredientActive = True
   }
 

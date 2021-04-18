@@ -6,8 +6,8 @@ import Data.Monoid (Sum(Sum), getSum)
 
 import API.Types (ReadableIngredient(..), ReadableRecipe(..))
 import Types
-  ( Ingredient(..), Quantity(..), ReadableFraction(..), ReadableQuantity(..), Recipe(..)
-  , RecipeIngredient(..), Unit(..), cup, ounce, pinch, tablespoon, teaspoon
+  ( Ingredient(..), Quantity(..), ReadableFraction(..), ReadableQuantity(..), ReadableUnit(..)
+  , Recipe(..), RecipeIngredient(..), Unit(..), cup, ounce, pinch, tablespoon, teaspoon
   )
 
 data UnitHierarchy
@@ -91,32 +91,47 @@ readableQuantities =
     twoThird = 2 / 3
     threeQuarter = 0.75
 
-splitQuantity :: Quantity -> (Int, Double)
-splitQuantity (Quantity q) = case abs (fromIntegral (round q :: Int) - q) < readableQuantityPrecision of
-  True -> (round q, 0.0)
-  False -> let whole = truncate q in (whole, q - fromIntegral whole)
+splitQuantity :: Quantity -> Maybe (Int, Double)
+splitQuantity = \case
+  QuantityMissing -> Nothing
+  Quantity q -> case abs (fromIntegral (round q :: Int) - q) < readableQuantityPrecision of
+    True -> Just (round q, 0.0)
+    False -> let whole = truncate q in Just (whole, q - fromIntegral whole)
 
 mkReadableQuantity :: Quantity -> ReadableQuantity
-mkReadableQuantity q =
-  let (whole, decimal) = splitQuantity q
-  in case (whole == 0, find (\((lo, hi), _) -> lo <= decimal && decimal <= hi) readableQuantities) of
-    (False, Just (_, (numerator, denominator))) -> ReadableQuantity (Just whole) (Just (ReadableFraction numerator denominator))
-    (True, Just (_, (numerator, denominator))) -> ReadableQuantity Nothing (Just (ReadableFraction numerator denominator))
-    (False, Nothing) -> ReadableQuantity (Just whole) Nothing
-    (True, Nothing) -> ReadableQuantity Nothing Nothing
+mkReadableQuantity q = case splitQuantity q of
+  Nothing -> ReadableQuantity Nothing Nothing
+  Just (whole, decimal) ->
+    case (whole == 0, find (\((lo, hi), _) -> lo <= decimal && decimal <= hi) readableQuantities) of
+      (False, Just (_, (numerator, denominator))) -> ReadableQuantity (Just whole) (Just (ReadableFraction numerator denominator))
+      (True, Just (_, (numerator, denominator))) -> ReadableQuantity Nothing (Just (ReadableFraction numerator denominator))
+      (False, Nothing) -> ReadableQuantity (Just whole) Nothing
+      (True, Nothing) -> ReadableQuantity Nothing Nothing
 
 mkQuantity :: ReadableQuantity -> Quantity
-mkQuantity = \case
-  ReadableQuantity (Just whole) (Just (ReadableFraction numerator denominator)) -> Quantity $ fromIntegral whole + (fromIntegral numerator / fromIntegral denominator)
-  ReadableQuantity Nothing (Just (ReadableFraction numerator denominator)) -> Quantity $ fromIntegral numerator / fromIntegral denominator
-  ReadableQuantity (Just whole) Nothing -> Quantity $ fromIntegral whole
-  ReadableQuantity Nothing Nothing -> Quantity 0
+mkQuantity q =
+  let raw = case q of
+        ReadableQuantity (Just whole) (Just (ReadableFraction numerator denominator)) -> fromIntegral whole + (fromIntegral numerator / fromIntegral denominator)
+        ReadableQuantity Nothing (Just (ReadableFraction numerator denominator)) -> fromIntegral numerator / fromIntegral denominator
+        ReadableQuantity (Just whole) Nothing -> fromIntegral whole
+        ReadableQuantity Nothing Nothing -> 0
+  in if raw == 0 then QuantityMissing else Quantity raw
+
+mkReadableUnit :: Unit -> Maybe ReadableUnit
+mkReadableUnit = \case
+  Unit x -> Just (ReadableUnit x)
+  UnitMissing -> Nothing
+
+mkUnit :: Maybe ReadableUnit -> Unit
+mkUnit = \case
+  Just (ReadableUnit x) | x /= "" -> Unit x
+  _ -> UnitMissing
 
 mkReadableIngredient :: Ingredient -> ReadableIngredient
 mkReadableIngredient Ingredient {..} = ReadableIngredient
   { readableIngredientName = ingredientName
   , readableIngredientQuantity = mkReadableQuantity ingredientQuantity
-  , readableIngredientUnit = ingredientUnit
+  , readableIngredientUnit = mkReadableUnit ingredientUnit
   , readableIngredientActive = ingredientActive
   }
 
@@ -124,7 +139,7 @@ mkIngredient :: ReadableIngredient -> Ingredient
 mkIngredient ReadableIngredient {..} = Ingredient
   { ingredientName = readableIngredientName
   , ingredientQuantity = mkQuantity readableIngredientQuantity
-  , ingredientUnit = readableIngredientUnit
+  , ingredientUnit = mkUnit readableIngredientUnit
   , ingredientActive = readableIngredientActive
   }
 
@@ -132,7 +147,7 @@ mkReadableIngredient' :: RecipeIngredient -> ReadableIngredient
 mkReadableIngredient' RecipeIngredient {..} = ReadableIngredient
   { readableIngredientName = recipeIngredientName
   , readableIngredientQuantity = mkReadableQuantity recipeIngredientQuantity
-  , readableIngredientUnit = recipeIngredientUnit
+  , readableIngredientUnit = mkReadableUnit recipeIngredientUnit
   , readableIngredientActive = True
   }
 

@@ -16,7 +16,7 @@ import API.Types
   , RecipeImportLinkRequest(..), UpdateRecipeRequest(..), UserCreateResponse(..)
   )
 import Auth (Authorization, generateToken, validateToken)
-import Conversion (combineIngredients, mkQuantity, mkReadableIngredient, mkReadableRecipe)
+import Conversion (combineIngredients, mkQuantity, mkReadableIngredient, mkReadableRecipe, mkUnit)
 import Foundation (AppM, settings, withDbConn)
 import Scrape (ScrapedRecipe(..), parseIngredients, scrapeUrl)
 import Settings (AppSettings(..))
@@ -80,7 +80,7 @@ postMergeIngredient token userId MergeIngredientRequest {..} = do
     let newIngredient = Ingredient
           { ingredientName = mergeIngredientRequestName
           , ingredientQuantity = mkQuantity mergeIngredientRequestQuantity
-          , ingredientUnit = mergeIngredientRequestUnit
+          , ingredientUnit = mkUnit mergeIngredientRequestUnit
           , ingredientActive = mergeIngredientRequestActive
           }
     Database.mergeIngredients c userId (setToList mergeIngredientRequestIds) newIngredient

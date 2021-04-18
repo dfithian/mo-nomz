@@ -23,18 +23,18 @@ parseStrict expected parser input = Atto.parseOnly parser input `shouldBe` Right
 spec :: Spec
 spec = describe "Scrape" $ do
   describe "Examples" $ do
-    it "can parse a unit" $ parseStrict (RawUnitWord "ounces") unitP " ounces "
-    it "can parse a fraction" $ parseStrict (RawQuantityPure $ 1 / 3) quantityP "1/3"
-    it "can parse an improper fraction" $ parseStrict (RawQuantityPure 1.5) quantityP "1-1/2"
-    it "can parse an improper fraction with spaces" $ parseStrict (RawQuantityPure 1.5) quantityP "1 1/2"
-    it "can parse a decimal" $ parseStrict (RawQuantityPure 0.25) quantityP "0.25"
+    it "can parse a unit" $ parseStrict (RawUnit "ounces") unitP " ounces "
+    it "can parse a fraction" $ parseStrict (RawQuantity $ 1 / 3) quantityP "1/3"
+    it "can parse an improper fraction" $ parseStrict (RawQuantity 1.5) quantityP "1-1/2"
+    it "can parse an improper fraction with spaces" $ parseStrict (RawQuantity 1.5) quantityP "1 1/2"
+    it "can parse a decimal" $ parseStrict (RawQuantity 0.25) quantityP "0.25"
     it "can parse a word" $ parseStrict (RawQuantityWord "half") quantityP "\nhalf\n"
     it "can parse an ingredient name" $ parseStrict (IngredientName "chicken") nameP " chicken"
     it "can parse \"chicken\"" $ parseStrict (RawIngredient (IngredientName "chicken") RawQuantityMissing RawUnitMissing) ingredientP "chicken"
     it "can parse \"one chicken\"" $ parseStrict (RawIngredient (IngredientName "chicken") (RawQuantityWord "one") RawUnitMissing) ingredientP "one chicken"
-    it "can parse \"whole chicken\"" $ parseStrict (RawIngredient (IngredientName "chicken") RawQuantityMissing (RawUnitWord "whole")) ingredientP "whole chicken"
-    it "can parse \"one whole chicken\"" $ parseStrict (RawIngredient (IngredientName "chicken") (RawQuantityWord "one") (RawUnitWord "whole")) ingredientP "one whole chicken"
-    it "can parse \"1/4 cup broth\"" $ parseStrict (RawIngredient (IngredientName "broth") (RawQuantityPure 0.25) (RawUnitWord "cup")) ingredientP "1/4\ncup\nbroth"
+    it "can parse \"whole chicken\"" $ parseStrict (RawIngredient (IngredientName "chicken") RawQuantityMissing (RawUnit "whole")) ingredientP "whole chicken"
+    it "can parse \"one whole chicken\"" $ parseStrict (RawIngredient (IngredientName "chicken") (RawQuantityWord "one") (RawUnit "whole")) ingredientP "one whole chicken"
+    it "can parse \"1/4 cup broth\"" $ parseStrict (RawIngredient (IngredientName "broth") (RawQuantity 0.25) (RawUnit "cup")) ingredientP "1/4\ncup\nbroth"
 
   describe "Golden" $ do
     it "can parse allrecipes" $

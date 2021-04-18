@@ -97,5 +97,6 @@ let x = "https://www.allrecipes.com/recipe/26317/chicken-pot-pie-ix/"
 let y = "https://www.pillsbury.com/recipes/classic-chicken-pot-pie/1401d418-ac0b-4b50-ad09-c6f1243fb992"
 let z = "https://www.tasteofhome.com/recipes/favorite-chicken-potpie/"
 let w = "https://www.foodnetwork.com/recipes/ina-garten/perfect-roast-chicken-recipe-1940592"
+let v = "https://rachlmansfield.com/paleo-chocolate-chip-banana-bread/"
 runExceptT $ scrapeUrl =<< maybe (fail "missing") pure (parseURI x)
 ```
