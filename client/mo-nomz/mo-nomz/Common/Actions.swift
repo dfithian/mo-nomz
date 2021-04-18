@@ -15,18 +15,15 @@ extension UIViewController {
         req.addValue("application/json", forHTTPHeaderField: "Content-Type")
         req.httpMethod = "POST"
         let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
-            self.stopLoading(spinner: spinner)
-            do {
-                if error == nil, let d = data {
-                    let output = try JSONDecoder().decode(CreateUserResponse.self, from: d)
+            self.stopLoading(spinner)
+            self.defaultWithCompletion(data: data, resp: resp, error: error, completion: {
+                do {
+                    let output = try JSONDecoder().decode(CreateUserResponse.self, from: data!)
                     completion?(output)
-                } else {
-                    self.defaultOnError(error: error)
+                } catch {
+                    self.defaultOnError(error)
                 }
-            } catch {
-                print("Error loading user \(error)")
-                self.defaultOnError(error: error)
-            }
+            })
         })
         task.resume()
     }
@@ -38,18 +35,15 @@ extension UIViewController {
         req.addValue(state.apiToken, forHTTPHeaderField: "X-Mo-Nomz-API-Token")
         req.addValue("application/json", forHTTPHeaderField: "Accept")
         let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
-            self.stopLoading(spinner: spinner)
-            do {
-                if error == nil, let d = data {
-                    let output = try JSONDecoder().decode(ListIngredientResponse.self, from: d)
+            self.stopLoading(spinner)
+            self.defaultWithCompletion(data: data, resp: resp, error: error, completion: {
+                do {
+                    let output = try JSONDecoder().decode(ListIngredientResponse.self, from: data!)
                     completion?(output)
-                } else {
-                    self.defaultOnError(error: error)
+                } catch {
+                    self.defaultOnError(error)
                 }
-            } catch {
-                print("Error fetching ingredients \(error)")
-                self.defaultOnError(error: error)
-            }
+            })
         })
         task.resume()
     }
@@ -63,12 +57,8 @@ extension UIViewController {
         req.httpMethod = "POST"
         req.httpBody = try? JSONEncoder().encode(MergeIngredientRequest(ids: ingredientIds, name: ingredient.name, quantity: ingredient.quantity, unit: ingredient.unit, active: ingredient.active))
         let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
-            self.stopLoading(spinner: spinner)
-            if error == nil {
-                completion?()
-            } else {
-                self.defaultOnError(error: error)
-            }
+            self.stopLoading(spinner)
+            self.defaultWithCompletion(data: data, resp: resp, error: error, completion: completion)
         })
         task.resume()
     }
@@ -82,12 +72,8 @@ extension UIViewController {
         req.httpMethod = "DELETE"
         req.httpBody = try? JSONEncoder().encode(DeleteIngredientRequest(ids: ingredientIds))
         let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
-            self.stopLoading(spinner: spinner)
-            if error == nil {
-                completion?()
-            } else {
-                self.defaultOnError(error: error)
-            }
+            self.stopLoading(spinner)
+            self.defaultWithCompletion(data: data, resp: resp, error: error, completion: completion)
         })
         task.resume()
     }
@@ -99,18 +85,15 @@ extension UIViewController {
         req.addValue(state.apiToken, forHTTPHeaderField: "X-Mo-Nomz-API-Token")
         req.addValue("application/json", forHTTPHeaderField: "Accept")
         let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
-            self.stopLoading(spinner: spinner)
-            do {
-                if error == nil, let d = data {
-                    let output = try JSONDecoder().decode(ListRecipeResponse.self, from: d)
+            self.stopLoading(spinner)
+            self.defaultWithCompletion(data: data, resp: resp, error: error, completion: {
+                do {
+                    let output = try JSONDecoder().decode(ListRecipeResponse.self, from: data!)
                     completion?(output)
-                } else {
-                    self.defaultOnError(error: error)
+                } catch {
+                    self.defaultOnError(error)
                 }
-            } catch {
-                print("Error fetching recipes \(error)")
-                self.defaultOnError(error: error)
-            }
+            })
         })
         task.resume()
     }
@@ -124,12 +107,10 @@ extension UIViewController {
         req.httpMethod = "POST"
         req.httpBody = try? JSONEncoder().encode(ImportRecipeLinkRequest(link: link))
         let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
-            self.stopLoading(spinner: spinner)
-            if error == nil {
-                completion?()
-            } else {
-                self.defaultOnError(error: error)
+            self.stopLoading(spinner)
+            let onUnsuccessfulStatus = { (resp: URLResponse?) -> Void in self.alertUnsuccessful("Please paste or enter ingredients manually.")
             }
+            self.withCompletion(data: data, resp: resp, error: error, completion: completion, onUnsuccessfulStatus: onUnsuccessfulStatus, onError: self.defaultOnError)
         })
         task.resume()
     }
@@ -143,12 +124,8 @@ extension UIViewController {
         req.httpMethod = "POST"
         req.httpBody = try? JSONEncoder().encode(ImportRecipeBodyRequest(name: name, content: content))
         let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
-            self.stopLoading(spinner: spinner)
-            if error == nil {
-                completion?()
-            } else {
-                self.defaultOnError(error: error)
-            }
+            self.stopLoading(spinner)
+            self.defaultWithCompletion(data: data, resp: resp, error: error, completion: completion)
         })
         task.resume()
     }
@@ -162,12 +139,8 @@ extension UIViewController {
         req.httpMethod = "POST"
         req.httpBody = try? JSONEncoder().encode(UpdateRecipeRequest(id: id, active: active))
         let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
-            self.stopLoading(spinner: spinner)
-            if error == nil {
-                completion?()
-            } else {
-                self.defaultOnError(error: error)
-            }
+            self.stopLoading(spinner)
+            self.defaultWithCompletion(data: data, resp: resp, error: error, completion: completion)
         })
         task.resume()
     }
@@ -181,12 +154,8 @@ extension UIViewController {
         req.httpMethod = "DELETE"
         req.httpBody = try? JSONEncoder().encode(DeleteRecipeRequest(ids: recipeIds))
         let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
-            self.stopLoading(spinner: spinner)
-            if error == nil {
-                completion?()
-            } else {
-                self.defaultOnError(error: error)
-            }
+            self.stopLoading(spinner)
+            self.defaultWithCompletion(data: data, resp: resp, error: error, completion: completion)
         })
         task.resume()
     }

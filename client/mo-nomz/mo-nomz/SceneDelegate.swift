@@ -43,7 +43,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             window?.rootViewController = launchVc
             let completion = { (resp: CreateUserResponse) -> Void in
                 DispatchQueue.main.async {
-                    Persistence.setState(state: State(userId: resp.userId, apiToken: resp.apiToken))
+                    Persistence.setState(State(userId: resp.userId, apiToken: resp.apiToken))
                     self.window?.rootViewController = mainVc
                 }
             }

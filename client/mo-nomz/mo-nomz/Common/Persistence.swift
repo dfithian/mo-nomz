@@ -37,7 +37,7 @@ class Persistence {
         ] as CFDictionary
         SecItemDelete(query)
     }
-    static func setState(state: State) {
+    static func setState(_ state: State) {
         UserDefaults.standard.set(state.userId, forKey: "userId")
         let query = [
             kSecClass as String: kSecClassInternetPassword,

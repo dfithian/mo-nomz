@@ -35,7 +35,7 @@ extension UIViewController {
         return spinner
     }
     
-    func stopLoading(spinner: SpinnerViewController) {
+    func stopLoading(_ spinner: SpinnerViewController) {
         DispatchQueue.main.async {
             spinner.willMove(toParent: nil)
             spinner.view.removeFromSuperview()

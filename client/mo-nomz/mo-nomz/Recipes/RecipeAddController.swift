@@ -23,11 +23,11 @@ class RecipeAddController: UIViewController, UITextViewDelegate {
             }
             self.onChange?()
         }
-        if !(link.text?.isEmpty ?? true) {
-            addRecipeLink(link: link.text!, completion: completion)
-        } else if !content.text.isEmpty {
+        if (!content.text.isEmpty && content.text != "Ingredients") {
             let newName = (name.text?.isEmpty ?? true) ? "Untitled" : name.text!
             addRecipeBody(name: newName, content: content.text, completion: completion)
+        } else if !(link.text?.isEmpty ?? true) {
+            addRecipeLink(link: link.text!, completion: completion)
         }
     }
     

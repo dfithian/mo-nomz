@@ -35,7 +35,7 @@ class RecipeListController: UITableViewController, UITableViewDragDelegate, UITa
         }
     }
     
-    func openLink(link: String) {
+    func openLink(_ link: String) {
         let url = URL(string: link)!
         if #available(iOS 10.0, *) {
             UIApplication.shared.open(url, options: [:], completionHandler: nil)
@@ -54,7 +54,7 @@ class RecipeListController: UITableViewController, UITableViewDragDelegate, UITa
             break
         case 1:
             if let link = active[indexPath.row].recipe.link {
-                openLink(link: link)
+                openLink(link)
             }
             break
         case 2:
@@ -65,7 +65,7 @@ class RecipeListController: UITableViewController, UITableViewDragDelegate, UITa
             break
         case 3:
             if let link = active[indexPath.row].recipe.link {
-                openLink(link: link)
+                openLink(link)
             }
             break
         default:
@@ -73,7 +73,7 @@ class RecipeListController: UITableViewController, UITableViewDragDelegate, UITa
         }
     }
     
-    func deleteRow(id: Int) {
+    func deleteRow(_ id: Int) {
         let handler = { [weak self] (action: UIAlertAction) -> Void in self?.deleteRecipes(recipeIds: [id], completion: self?.onChange) }
         promptForConfirmation(title: "Delete", message: "Are you sure you want to delete this recipe?", handler: handler)
     }
@@ -91,7 +91,7 @@ class RecipeListController: UITableViewController, UITableViewDragDelegate, UITa
             return nil
         }
         let action = UIContextualAction(style: .destructive, title: "Delete") { [weak self] (action, view, completionHandler) in
-            self?.deleteRow(id: id)
+            self?.deleteRow(id)
             completionHandler(true)
         }
         action.backgroundColor = .systemRed

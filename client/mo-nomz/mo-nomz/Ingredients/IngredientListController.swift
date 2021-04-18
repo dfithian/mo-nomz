@@ -58,7 +58,7 @@ class IngredientListController: UITableViewController, UITableViewDragDelegate, 
         }
     }
     
-    func deleteRow(ids: [Int]) {
+    func deleteRow(_ ids: [Int]) {
         let handler = { [weak self] (action: UIAlertAction) -> Void in self?.deleteIngredients(ingredientIds: ids, completion: self?.onChange) }
         promptForConfirmation(title: "Delete", message: "Are you sure you want to delete this ingredient?", handler: handler)
     }
@@ -81,7 +81,7 @@ class IngredientListController: UITableViewController, UITableViewDragDelegate, 
             return nil
         }
         let action = UIContextualAction(style: .destructive, title: "Delete") { [weak self] (action, view, completionHandler) in
-            self?.deleteRow(ids: ids)
+            self?.deleteRow(ids)
             completionHandler(true)
         }
         action.backgroundColor = .systemRed

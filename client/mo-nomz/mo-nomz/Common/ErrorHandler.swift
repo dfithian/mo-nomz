@@ -8,7 +8,52 @@
 import UIKit
 
 extension UIViewController {
-    func defaultOnError(error: Error?) {
+    func withCompletion(data: Data?, resp: URLResponse?, error: Error?, completion: (() -> Void)?, onUnsuccessfulStatus: ((URLResponse?) -> Void), onError: ((Error?) -> Void)) {
+        if error == nil {
+            if self.statusIsSuccessful(resp) {
+                completion?()
+            } else {
+                onUnsuccessfulStatus(resp)
+            }
+        } else {
+            onError(error)
+        }
+    }
+
+    func defaultWithCompletion(data: Data?, resp: URLResponse?, error: Error?, completion: (() -> Void)?) {
+        self.withCompletion(data: data, resp: resp, error: error, completion: completion, onUnsuccessfulStatus: self.defaultOnUnsuccessfulStatus, onError: self.defaultOnError)
+    }
+
+    func statusIsSuccessful(_ resp: URLResponse?) -> Bool {
+        if let statusCode = (resp as? HTTPURLResponse)?.statusCode {
+            return statusCode >= 200 && statusCode < 300
+        }
+        return false
+    }
+    
+    func alertUnsuccessful(_ message: String) {
+        let ok = UIAlertAction(title: "OK", style: .default, handler: nil)
+        let confirmation = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+        confirmation.addAction(ok)
+        DispatchQueue.main.async {
+            self.present(confirmation, animated: true, completion: nil)
+        }
+    }
+    
+    func defaultOnUnsuccessfulStatus(_ resp: URLResponse?) {
+        let message: String
+        switch Configuration.environment {
+        case .Release:
+            message = "An error occurred."
+            break
+        default:
+            message = "\(resp as Any)"
+            break
+        }
+        alertUnsuccessful(message)
+    }
+
+    func defaultOnError(_ error: Error?) {
         let message: String
         switch Configuration.environment {
         case .Release:
@@ -18,11 +63,6 @@ extension UIViewController {
             message = "\(error as Any)"
             break
         }
-        let ok = UIAlertAction(title: "OK", style: .default, handler: nil)
-        let confirmation = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
-        confirmation.addAction(ok)
-        DispatchQueue.main.async {
-            self.present(confirmation, animated: true, completion: nil)
-        }
+        alertUnsuccessful(message)
     }
 }
