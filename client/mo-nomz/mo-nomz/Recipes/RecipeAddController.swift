@@ -11,6 +11,7 @@ class RecipeAddController: UIViewController, UITextViewDelegate {
     @IBOutlet weak var link: UITextField!
     @IBOutlet weak var name: UITextField!
     @IBOutlet weak var content: UITextView!
+    @IBOutlet weak var toolbar: UIToolbar!
     var onChange: (() -> Void)?
     var placeholderAttribution: NSAttributedString?
     var attribution: NSAttributedString?
@@ -52,11 +53,13 @@ class RecipeAddController: UIViewController, UITextViewDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        hideKeyboardWhenTappedAround()
         link.becomeFirstResponder()
         attribution = content.attributedText
         content.attributedText = name.attributedPlaceholder
         content.text = "Ingredients"
         placeholderAttribution = content.attributedText
+        link.addDoneButtonOnKeyboard()
+        name.addDoneButtonOnKeyboard()
+        content.addDoneButtonOnKeyboard()
     }
 }

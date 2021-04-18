@@ -69,7 +69,6 @@ class IngredientMergeController: UIViewController, UIPickerViewDataSource, UIPic
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        hideKeyboardWhenTappedAround()
         existingInfo.text = "\(existing.quantity.render()) \(existing.unit) \(existing.name)"
         newInfo.text = "\(new.quantity.render()) \(new.unit) \(new.name)"
         unit.text = existing.unit
@@ -79,5 +78,7 @@ class IngredientMergeController: UIViewController, UIPickerViewDataSource, UIPic
         currentFractionQuantity = q.fraction
         quantity.selectRow(q.whole ?? 0, inComponent: 0, animated: true)
         quantity.selectRow(q.fraction?.toInt() ?? 0, inComponent: 1, animated: true)
+        name.addDoneButtonOnKeyboard()
+        unit.addDoneButtonOnKeyboard()
     }
 }

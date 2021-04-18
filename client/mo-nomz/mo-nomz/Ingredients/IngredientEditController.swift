@@ -66,7 +66,6 @@ class IngredientEditController: UIViewController, UIPickerViewDataSource, UIPick
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        hideKeyboardWhenTappedAround()
         existingInfo.text = "\(existing.ingredient.quantity.render()) \(existing.ingredient.unit) \(existing.ingredient.name)"
         unit.text = existing.ingredient.unit
         name.text = existing.ingredient.name
@@ -74,5 +73,7 @@ class IngredientEditController: UIViewController, UIPickerViewDataSource, UIPick
         currentFractionQuantity = existing.ingredient.quantity.fraction
         quantity.selectRow(existing.ingredient.quantity.whole ?? 0, inComponent: 0, animated: true)
         quantity.selectRow(existing.ingredient.quantity.fraction?.toInt() ?? 0, inComponent: 1, animated: true)
+        unit.addDoneButtonOnKeyboard()
+        name.addDoneButtonOnKeyboard()
     }
 }

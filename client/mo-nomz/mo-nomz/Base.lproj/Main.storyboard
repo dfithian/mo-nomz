@@ -780,6 +780,7 @@
                         <outlet property="content" destination="g9H-Sm-b7l" id="ZRa-2N-fbO"/>
                         <outlet property="link" destination="zam-b0-VUn" id="YCK-UO-ayg"/>
                         <outlet property="name" destination="I3p-by-33V" id="qPo-Xu-djo"/>
+                        <outlet property="toolbar" destination="gS2-Wq-2Nv" id="q5N-zq-E9g"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="gLa-e2-diO" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
