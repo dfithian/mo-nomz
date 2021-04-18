@@ -2,10 +2,10 @@ import ClassyPrelude
 
 import Test.Hspec (hspec)
 
+import qualified ConversionSpec
 import qualified ScrapeSpec
-import qualified UnitSpec
 
 main :: IO ()
 main = hspec $ do
-  UnitSpec.spec
+  ConversionSpec.spec
   ScrapeSpec.spec

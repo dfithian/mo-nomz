@@ -102,7 +102,7 @@ uncurry3 f (x, y, z) = f x y z
 mapError :: (MonadError e2 m) => (e1 -> e2) -> ExceptT e1 m a -> m a
 mapError f = either (throwError . f) pure <=< runExceptT
 
-pinch, teaspoon, tablespoon, cup, ounce, box, pound, splash, sprinkle :: Unit
+pinch, teaspoon, tablespoon, cup, ounce, box, pound, splash, sprinkle, whole :: Unit
 pinch = Unit "pinch"
 teaspoon = Unit "tsp"
 tablespoon = Unit "tbsp"
@@ -112,3 +112,19 @@ box = Unit "box"
 pound = Unit "pound"
 splash = Unit "splash"
 sprinkle = Unit "sprinkle"
+whole = Unit "whole"
+
+mkRecipeIngredient :: Ingredient -> RecipeIngredient
+mkRecipeIngredient Ingredient {..} = RecipeIngredient
+  { recipeIngredientName = ingredientName
+  , recipeIngredientQuantity = ingredientQuantity
+  , recipeIngredientUnit = ingredientUnit
+  }
+
+mkIngredient' :: RecipeIngredient -> Ingredient
+mkIngredient' RecipeIngredient {..} = Ingredient
+  { ingredientName = recipeIngredientName
+  , ingredientQuantity = recipeIngredientQuantity
+  , ingredientUnit = recipeIngredientUnit
+  , ingredientActive = True
+  }

@@ -4,6 +4,7 @@ import ClassyPrelude
 
 import Control.Monad (fail)
 import Control.Monad.Except (MonadError, throwError)
+import Data.CaseInsensitive (CI)
 import Data.Char (isAlpha, isDigit, isSpace)
 import Data.Text (split, strip)
 import Network.URI (URI)
@@ -13,10 +14,10 @@ import qualified Data.CaseInsensitive as CI
 import qualified Data.Map as Map
 import qualified Text.HTML.Scalpel as Scalpel
 
-import Scrub (quantityAliasTable, unitAliasTable)
 import Types
-  ( IngredientName(..), Quantity(..), RawIngredient(..), RawQuantity(..), RawUnit(..)
-  , RecipeName(..)
+  ( Ingredient(..), IngredientName(..), Quantity(..), RawIngredient(..), RawQuantity(..)
+  , RawUnit(..), RecipeName(..), Unit(..), Ingredient, box, cup, ounce, pinch, pound, splash
+  , sprinkle, tablespoon, teaspoon, whole
   )
 
 data ScrapedRecipe = ScrapedRecipe
@@ -35,6 +36,71 @@ scrapeUrl uri = do
     Nothing -> throwError "Failed to scrape URL"
     Just (x, xs) -> pure . ScrapedRecipe x . unlines . map unlines $ xs
 
+unitAliasTable :: Map (CI Text) Unit
+unitAliasTable = mapFromList
+  [ ("ounce", ounce)
+  , ("ounces", ounce)
+  , ("oz", ounce)
+  , ("cup", cup)
+  , ("cups", cup)
+  , ("tablespoon", tablespoon)
+  , ("tablespoons", tablespoon)
+  , ("tbsp", tablespoon)
+  , ("teaspoon", teaspoon)
+  , ("teaspoons", teaspoon)
+  , ("tsp", teaspoon)
+  , ("pinch", pinch)
+  , ("pinches", pinch)
+  , ("box", box)
+  , ("boxes", box)
+  , ("pound", pound)
+  , ("pounds", pound)
+  , ("splash", splash)
+  , ("splashes", splash)
+  , ("sprinkle", sprinkle)
+  , ("sprinkles", sprinkle)
+  , ("whole", whole)
+  ]
+
+quantityAliasTable :: Map (CI Text) Quantity
+quantityAliasTable = mapFromList
+  [ ("half dozen", Quantity 6)
+  , ("dozen", Quantity 12)
+  , ("quarter", Quantity 0.25)
+  , ("third", Quantity $ 1 / 3)
+  , ("half", Quantity 0.5)
+  , ("one", Quantity 1)
+  , ("two", Quantity 2)
+  , ("three", Quantity 3)
+  , ("four", Quantity 4)
+  , ("five", Quantity 5)
+  , ("six", Quantity 6)
+  , ("seven", Quantity 7)
+  , ("eight", Quantity 8)
+  , ("nine", Quantity 9)
+  , ("ten", Quantity 10)
+  , ("eleven", Quantity 11)
+  , ("twelve", Quantity 12)
+  ]
+
+scrubUnit :: RawUnit -> Unit
+scrubUnit = \case
+  RawUnitWord x -> findWithDefault (Unit x) x unitAliasTable
+  RawUnitMissing -> whole
+
+scrubQuantity :: RawQuantity -> Quantity
+scrubQuantity = \case
+  RawQuantityPure q -> q
+  RawQuantityWord w -> findWithDefault 1 w quantityAliasTable
+  RawQuantityMissing -> 1
+
+scrubIngredient :: RawIngredient -> Ingredient
+scrubIngredient RawIngredient {..} = Ingredient
+  { ingredientName = rawIngredientName
+  , ingredientQuantity = scrubQuantity rawIngredientQuantity
+  , ingredientUnit = scrubUnit rawIngredientUnit
+  , ingredientActive = True
+  }
 quantityP :: Atto.Parser RawQuantity
 quantityP = quantityExpression <|> quantityWord <|> quantityMissing
   where
@@ -103,9 +169,9 @@ ingredientsP = Atto.many' ingredientP
 deduplicateIngredients :: [RawIngredient] -> [RawIngredient]
 deduplicateIngredients = catMaybes . Map.elems . map (headMay . sort) . foldr (\raw@RawIngredient {..} -> insertWith (<>) rawIngredientName [raw]) mempty
 
-parseIngredients :: (MonadError Text m) => Text -> m [RawIngredient]
+parseIngredients :: (MonadError Text m) => Text -> m [Ingredient]
 parseIngredients =
-  either (const $ throwError "Failed to parse ingredients") (pure . deduplicateIngredients)
+  either (const $ throwError "Failed to parse ingredients") (pure . map scrubIngredient . deduplicateIngredients)
     . Atto.parseOnly ingredientsP
     . (<> "\n")
     . unlines

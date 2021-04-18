@@ -1,12 +1,13 @@
-module Unit where
+module Conversion where
 
 import ClassyPrelude
 
 import Data.Monoid (Sum(Sum), getSum)
 
+import API.Types (ReadableIngredient(..), ReadableRecipe(..))
 import Types
-  ( Quantity(..), ReadableFraction(..), ReadableQuantity(..), Unit(..), cup, ounce, pinch
-  , tablespoon, teaspoon
+  ( Ingredient(..), Quantity(..), ReadableFraction(..), ReadableQuantity(..), Recipe(..)
+  , RecipeIngredient(..), Unit(..), cup, ounce, pinch, tablespoon, teaspoon
   )
 
 data UnitHierarchy
@@ -49,19 +50,28 @@ unitOrdering x y = case (lookup x knownUnitOrdering, lookup y knownUnitOrdering)
   (Nothing, Just _) -> GT
   (Nothing, Nothing) -> compare x y
 
-combineQuantities :: Semigroup a => Map Unit (a, Quantity) -> Map Unit (a, ReadableQuantity)
-combineQuantities = map (second (mkReadableQuantity . getSum)) . foldr go mempty . reverse . sortBy (\(x, _) (y, _) -> unitOrdering x y) . mapToList
+combineQuantities :: Map Unit Quantity -> Map Unit Quantity
+combineQuantities = map getSum . foldr go mempty . reverse . sortBy (\(x, _) (y, _) -> unitOrdering x y) . mapToList
   where
-    go (nextUnit, (nextExtra, nextQuantity)) acc = case lookup nextUnit acc of
-      Just (existingExtra, existingQuantity) -> asMap $ insertMap nextUnit (nextExtra <> existingExtra, Sum nextQuantity <> existingQuantity) acc
+    go (nextUnit, nextQuantity) acc = case lookup nextUnit acc of
+      Just existingQuantity -> asMap $ insertMap nextUnit (Sum nextQuantity <> existingQuantity) acc
       Nothing ->
         let allConversions = getAllConversions nextUnit
             allConversionsKeys = asSet . setFromList . keys $ allConversions
             existingKeys = asSet . setFromList . keys $ acc
             overlappingKeys = headMay . sortBy unitOrdering . setToList . intersect allConversionsKeys $ existingKeys
         in case overlappingKeys of
-          Nothing -> insertMap nextUnit (nextExtra, Sum nextQuantity) acc
-          Just existingKey -> insertWith (<>) existingKey (nextExtra, Sum (nextQuantity * findWithDefault 1 existingKey allConversions)) acc
+          Nothing -> insertMap nextUnit (Sum nextQuantity) acc
+          Just existingKey -> insertWith (<>) existingKey (Sum (nextQuantity * findWithDefault 1 existingKey allConversions)) acc
+
+combineIngredients :: [RecipeIngredient] -> [RecipeIngredient]
+combineIngredients =
+  mconcat
+    . map (\(name, unitsWithQuantities) -> uncurry (flip (RecipeIngredient name)) <$> mapToList unitsWithQuantities)
+    . mapToList
+    . map (combineQuantities . foldr (uncurry (insertWith (+))) mempty)
+    . unionsWith (<>)
+    . map (\RecipeIngredient {..} -> asMap $ singletonMap recipeIngredientName [(recipeIngredientUnit, recipeIngredientQuantity)])
 
 readableQuantityPrecision :: Double
 readableQuantityPrecision = 0.001
@@ -81,10 +91,14 @@ readableQuantities =
     twoThird = 2 / 3
     threeQuarter = 0.75
 
+splitQuantity :: Quantity -> (Int, Double)
+splitQuantity (Quantity q) = case abs (fromIntegral (round q :: Int) - q) < readableQuantityPrecision of
+  True -> (round q, 0.0)
+  False -> let whole = truncate q in (whole, q - fromIntegral whole)
+
 mkReadableQuantity :: Quantity -> ReadableQuantity
-mkReadableQuantity (Quantity q) =
-  let whole = truncate q
-      decimal = q - fromIntegral whole
+mkReadableQuantity q =
+  let (whole, decimal) = splitQuantity q
   in case (whole == 0, find (\((lo, hi), _) -> lo <= decimal && decimal <= hi) readableQuantities) of
     (False, Just (_, (numerator, denominator))) -> ReadableQuantity (Just whole) (Just (ReadableFraction numerator denominator))
     (True, Just (_, (numerator, denominator))) -> ReadableQuantity Nothing (Just (ReadableFraction numerator denominator))
@@ -97,3 +111,35 @@ mkQuantity = \case
   ReadableQuantity Nothing (Just (ReadableFraction numerator denominator)) -> Quantity $ fromIntegral numerator / fromIntegral denominator
   ReadableQuantity (Just whole) Nothing -> Quantity $ fromIntegral whole
   ReadableQuantity Nothing Nothing -> Quantity 0
+
+mkReadableIngredient :: Ingredient -> ReadableIngredient
+mkReadableIngredient Ingredient {..} = ReadableIngredient
+  { readableIngredientName = ingredientName
+  , readableIngredientQuantity = mkReadableQuantity ingredientQuantity
+  , readableIngredientUnit = ingredientUnit
+  , readableIngredientActive = ingredientActive
+  }
+
+mkIngredient :: ReadableIngredient -> Ingredient
+mkIngredient ReadableIngredient {..} = Ingredient
+  { ingredientName = readableIngredientName
+  , ingredientQuantity = mkQuantity readableIngredientQuantity
+  , ingredientUnit = readableIngredientUnit
+  , ingredientActive = readableIngredientActive
+  }
+
+mkReadableIngredient' :: RecipeIngredient -> ReadableIngredient
+mkReadableIngredient' RecipeIngredient {..} = ReadableIngredient
+  { readableIngredientName = recipeIngredientName
+  , readableIngredientQuantity = mkReadableQuantity recipeIngredientQuantity
+  , readableIngredientUnit = recipeIngredientUnit
+  , readableIngredientActive = True
+  }
+
+mkReadableRecipe :: Recipe -> ReadableRecipe
+mkReadableRecipe Recipe {..} = ReadableRecipe
+  { readableRecipeName = recipeName
+  , readableRecipeLink = recipeLink
+  , readableRecipeActive = recipeActive
+  , readableRecipeIngredients = mkReadableIngredient' <$> recipeIngredients
+  }

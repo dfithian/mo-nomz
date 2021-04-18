@@ -12,20 +12,18 @@ import Servant.Server (ServerError, err400, err401, err403, err404, err500, errR
 import API.Types
   ( DeleteIngredientRequest(..), DeleteRecipeRequest(..), GetHealthResponse(..)
   , ListIngredientResponse(..), ListRecipeResponse(..), MergeIngredientRequest(..)
-  , ReadableIngredient(..), ReadableIngredientAggregate(..), ReadableRecipe(..)
-  , RecipeImportBodyRequest(..), RecipeImportLinkRequest(..), UpdateRecipeRequest(..)
-  , UserCreateResponse(..)
+  , ReadableIngredient(..), ReadableIngredientAggregate(..), RecipeImportBodyRequest(..)
+  , RecipeImportLinkRequest(..), UpdateRecipeRequest(..), UserCreateResponse(..)
   )
 import Auth (Authorization, generateToken, validateToken)
+import Conversion (combineIngredients, mkQuantity, mkReadableIngredient, mkReadableRecipe)
 import Foundation (AppM, settings, withDbConn)
 import Scrape (ScrapedRecipe(..), parseIngredients, scrapeUrl)
-import Scrub (scrubIngredient)
 import Settings (AppSettings(..))
 import Types
-  ( Ingredient(..), Recipe(..), RecipeIngredient(..), RecipeLink(..), RecipeName(..), UserId
-  , mapError
+  ( Ingredient(..), Recipe(..), RecipeLink(..), RecipeName(..), UserId, mapError, mkIngredient'
+  , mkRecipeIngredient
   )
-import Unit (mkQuantity, mkReadableQuantity)
 import qualified Database
 
 unwrapDb :: AppM m => m (Either SomeException a) -> m a
@@ -60,52 +58,6 @@ validateUserToken token userId = do
         $logError $ "User token validation failed due to " <> pack err
         throwError err403
     _ -> throwError err403
-
-mkRecipeIngredient :: Ingredient -> RecipeIngredient
-mkRecipeIngredient Ingredient {..} = RecipeIngredient
-  { recipeIngredientName = ingredientName
-  , recipeIngredientQuantity = ingredientQuantity
-  , recipeIngredientUnit = ingredientUnit
-  }
-
-mkIngredient' :: RecipeIngredient -> Ingredient
-mkIngredient' RecipeIngredient {..} = Ingredient
-  { ingredientName = recipeIngredientName
-  , ingredientQuantity = recipeIngredientQuantity
-  , ingredientUnit = recipeIngredientUnit
-  , ingredientActive = True
-  }
-mkReadableIngredient :: Ingredient -> ReadableIngredient
-mkReadableIngredient Ingredient {..} = ReadableIngredient
-  { readableIngredientName = ingredientName
-  , readableIngredientQuantity = mkReadableQuantity ingredientQuantity
-  , readableIngredientUnit = ingredientUnit
-  , readableIngredientActive = ingredientActive
-  }
-
-mkIngredient :: ReadableIngredient -> Ingredient
-mkIngredient ReadableIngredient {..} = Ingredient
-  { ingredientName = readableIngredientName
-  , ingredientQuantity = mkQuantity readableIngredientQuantity
-  , ingredientUnit = readableIngredientUnit
-  , ingredientActive = readableIngredientActive
-  }
-
-mkReadableIngredient' :: RecipeIngredient -> ReadableIngredient
-mkReadableIngredient' RecipeIngredient {..} = ReadableIngredient
-  { readableIngredientName = recipeIngredientName
-  , readableIngredientQuantity = mkReadableQuantity recipeIngredientQuantity
-  , readableIngredientUnit = recipeIngredientUnit
-  , readableIngredientActive = True
-  }
-
-mkReadableRecipe :: Recipe -> ReadableRecipe
-mkReadableRecipe Recipe {..} = ReadableRecipe
-  { readableRecipeName = recipeName
-  , readableRecipeLink = recipeLink
-  , readableRecipeActive = recipeActive
-  , readableRecipeIngredients = mkReadableIngredient' <$> recipeIngredients
-  }
 
 getIngredients :: AppM m => Authorization -> UserId -> m ListIngredientResponse
 getIngredients token userId = do
@@ -145,18 +97,17 @@ deleteIngredient token userId DeleteIngredientRequest {..} = do
 
 parseAndPersistRecipe :: AppM m => UserId -> RecipeName -> Maybe RecipeLink -> Text -> m ()
 parseAndPersistRecipe userId name linkMay content = do
-  rawIngredients <- mapError (\e -> err500 { errReasonPhrase = unpack e }) $ parseIngredients content
-  when (null rawIngredients) $ throwError err400 { errReasonPhrase = "Failed to parse ingredients" }
-  let ingredients = scrubIngredient <$> rawIngredients
-      recipe = Recipe
+  ingredients <- mapError (\e -> err500 { errReasonPhrase = unpack e }) $ parseIngredients content
+  when (null ingredients) $ throwError err400 { errReasonPhrase = "Failed to parse ingredients" }
+  let recipe = Recipe
         { recipeName = name
         , recipeLink = linkMay
         , recipeIngredients = mkRecipeIngredient <$> ingredients
         , recipeActive = True
         }
   unwrapDb $ withDbConn $ \c -> do
-    Database.insertIngredients c userId ingredients
     Database.insertRecipe c userId recipe
+    refreshIngredients c userId
 
 postRecipeImportLink :: AppM m => Authorization -> UserId -> RecipeImportLinkRequest -> m NoContent
 postRecipeImportLink token userId RecipeImportLinkRequest {..} = do
@@ -174,7 +125,7 @@ postRecipeImportBody token userId RecipeImportBodyRequest {..} = do
 
 refreshIngredients :: Connection -> UserId -> IO ()
 refreshIngredients c userId = do
-  ingredients <- map mkIngredient' <$> Database.selectActiveIngredients c userId
+  ingredients <- map mkIngredient' . combineIngredients <$> Database.selectActiveIngredients c userId
   Database.deleteIngredients c userId []
   Database.insertIngredients c userId ingredients
 
