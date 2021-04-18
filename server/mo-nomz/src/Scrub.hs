@@ -5,8 +5,8 @@ import ClassyPrelude
 import Data.CaseInsensitive (CI)
 
 import Types
-  ( Ingredient(..), Quantity(..), RawIngredient(..), RawQuantity(..), RawUnit(..), Unit(..), cup
-  , ounce, pinch, tablespoon, teaspoon
+  ( Ingredient(..), Quantity(..), RawIngredient(..), RawQuantity(..), RawUnit(..), Unit(..), box
+  , cup, ounce, pinch, pound, splash, sprinkle, tablespoon, teaspoon
   )
 
 unitAliasTable :: Map (CI Text) Unit
@@ -24,6 +24,14 @@ unitAliasTable = mapFromList
   , ("tsp", teaspoon)
   , ("pinch", pinch)
   , ("pinches", pinch)
+  , ("box", box)
+  , ("boxes", box)
+  , ("pound", pound)
+  , ("pounds", pound)
+  , ("splash", splash)
+  , ("splashes", splash)
+  , ("sprinkle", sprinkle)
+  , ("sprinkles", sprinkle)
   ]
 
 quantityAliasTable :: Map (CI Text) Quantity

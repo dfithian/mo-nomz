@@ -102,9 +102,13 @@ uncurry3 f (x, y, z) = f x y z
 mapError :: (MonadError e2 m) => (e1 -> e2) -> ExceptT e1 m a -> m a
 mapError f = either (throwError . f) pure <=< runExceptT
 
-pinch, teaspoon, tablespoon, cup, ounce :: Unit
+pinch, teaspoon, tablespoon, cup, ounce, box, pound, splash, sprinkle :: Unit
 pinch = Unit "pinch"
 teaspoon = Unit "tsp"
 tablespoon = Unit "tbsp"
 cup = Unit "cup"
 ounce = Unit "oz"
+box = Unit "box"
+pound = Unit "pound"
+splash = Unit "splash"
+sprinkle = Unit "sprinkle"

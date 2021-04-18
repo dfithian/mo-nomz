@@ -106,6 +106,7 @@ mkReadableRecipe Recipe {..} = ReadableRecipe
   , readableRecipeActive = recipeActive
   , readableRecipeIngredients = mkReadableIngredient' <$> recipeIngredients
   }
+
 getIngredients :: AppM m => Authorization -> UserId -> m ListIngredientResponse
 getIngredients token userId = do
   validateUserToken token userId
@@ -142,38 +143,33 @@ deleteIngredient token userId DeleteIngredientRequest {..} = do
     Database.deleteIngredients c userId (setToList deleteIngredientRequestIds)
   pure NoContent
 
+parseAndPersistRecipe :: AppM m => UserId -> RecipeName -> Maybe RecipeLink -> Text -> m ()
+parseAndPersistRecipe userId name linkMay content = do
+  rawIngredients <- mapError (\e -> err500 { errReasonPhrase = unpack e }) $ parseIngredients content
+  when (null rawIngredients) $ throwError err400 { errReasonPhrase = "Failed to parse ingredients" }
+  let ingredients = scrubIngredient <$> rawIngredients
+      recipe = Recipe
+        { recipeName = name
+        , recipeLink = linkMay
+        , recipeIngredients = mkRecipeIngredient <$> ingredients
+        , recipeActive = True
+        }
+  unwrapDb $ withDbConn $ \c -> do
+    Database.insertIngredients c userId ingredients
+    Database.insertRecipe c userId recipe
+
 postRecipeImportLink :: AppM m => Authorization -> UserId -> RecipeImportLinkRequest -> m NoContent
 postRecipeImportLink token userId RecipeImportLinkRequest {..} = do
   validateUserToken token userId
   uri <- maybe (throwError err400 { errReasonPhrase = "Invalid link" }) pure $ parseURI (unpack $ unRecipeLink recipeImportLinkRequestLink)
   ScrapedRecipe {..} <- mapError (\e -> err500 { errReasonPhrase = unpack e }) $ scrapeUrl uri
-  rawIngredients <- mapError (\e -> err500 { errReasonPhrase = unpack e }) $ parseIngredients scrapedRecipeContents
-  let ingredients = scrubIngredient <$> rawIngredients
-      recipe = Recipe
-        { recipeName = RecipeName scrapedRecipeTitle
-        , recipeLink = Just recipeImportLinkRequestLink
-        , recipeIngredients = mkRecipeIngredient <$> ingredients
-        , recipeActive = True
-        }
-  unwrapDb $ withDbConn $ \c -> do
-    Database.insertIngredients c userId ingredients
-    Database.insertRecipe c userId recipe
+  parseAndPersistRecipe userId scrapedRecipeTitle (Just recipeImportLinkRequestLink) scrapedRecipeContents
   pure NoContent
 
 postRecipeImportBody :: AppM m => Authorization -> UserId -> RecipeImportBodyRequest -> m NoContent
 postRecipeImportBody token userId RecipeImportBodyRequest {..} = do
   validateUserToken token userId
-  rawIngredients <- mapError (\e -> err500 { errReasonPhrase = unpack e }) $ parseIngredients recipeImportBodyRequestContent
-  let ingredients = scrubIngredient <$> rawIngredients
-      recipe = Recipe
-        { recipeName = recipeImportBodyRequestName
-        , recipeLink = Nothing
-        , recipeIngredients = mkRecipeIngredient <$> ingredients
-        , recipeActive = True
-        }
-  unwrapDb $ withDbConn $ \c -> do
-    Database.insertIngredients c userId ingredients
-    Database.insertRecipe c userId recipe
+  parseAndPersistRecipe userId recipeImportBodyRequestName Nothing recipeImportBodyRequestContent
   pure NoContent
 
 refreshIngredients :: Connection -> UserId -> IO ()

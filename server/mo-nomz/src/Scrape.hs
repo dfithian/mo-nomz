@@ -10,26 +10,30 @@ import Network.URI (URI)
 import Text.HTML.Scalpel ((//), (@:))
 import qualified Data.Attoparsec.Text as Atto
 import qualified Data.CaseInsensitive as CI
+import qualified Data.Map as Map
 import qualified Text.HTML.Scalpel as Scalpel
 
-import Scrub (quantityAliasTable)
-import Types (IngredientName(..), Quantity(..), RawIngredient(..), RawQuantity(..), RawUnit(..))
+import Scrub (quantityAliasTable, unitAliasTable)
+import Types
+  ( IngredientName(..), Quantity(..), RawIngredient(..), RawQuantity(..), RawUnit(..)
+  , RecipeName(..)
+  )
 
 data ScrapedRecipe = ScrapedRecipe
-  { scrapedRecipeTitle    :: Text
+  { scrapedRecipeTitle    :: RecipeName
   , scrapedRecipeContents :: Text
-  }
+  } deriving (Eq, Show)
 
 scrapeUrl :: (MonadIO m, MonadError Text m) => URI -> m ScrapedRecipe
 scrapeUrl uri = do
   let containsIngredientClass = Scalpel.match $ \attributeKey attributeValue -> case attributeKey of
         "class" -> "ingredient" `isInfixOf` toLower attributeValue
         _ -> False
-      title = strip <$> Scalpel.text "title"
+      title = RecipeName . strip <$> Scalpel.text "title"
       contents = Scalpel.chroots (Scalpel.AnyTag @: [containsIngredientClass] // "li") (Scalpel.texts Scalpel.anySelector)
   liftIO (Scalpel.scrapeURL (show uri) ((,) <$> title <*> contents)) >>= \case
     Nothing -> throwError "Failed to scrape URL"
-    Just (x, xs) -> pure . ScrapedRecipe x . (<> "\n") . unlines . ordNub . filter (not . null) . map strip . lines . unlines . map unlines $ xs
+    Just (x, xs) -> pure . ScrapedRecipe x . unlines . map unlines $ xs
 
 quantityP :: Atto.Parser RawQuantity
 quantityP = quantityExpression <|> quantityWord <|> quantityMissing
@@ -77,14 +81,13 @@ spaced :: Atto.Parser a -> Atto.Parser a
 spaced p = optional (void Atto.space) *> (p <* optional (void Atto.space))
 
 unitP :: Atto.Parser RawUnit
-unitP = unitWord <|> unitMissing
+unitP = unitWord <|> pure RawUnitMissing
   where
-    unitWord = RawUnitWord . CI.mk <$> spaced (Atto.takeWhile1 isAlpha)
-    unitMissing = do
-      str <- spaced (Atto.takeWhile isAlpha)
-      case null str of
-        True -> pure RawUnitMissing
-        False -> fail $ unpack str <> " is a unit, but thought it was missing"
+    unitWord = do
+      unit <- CI.mk <$> spaced (Atto.takeWhile1 isAlpha)
+      case unit `elem` keys unitAliasTable of
+        True -> pure $ RawUnitWord unit
+        False -> fail "no unit found"
 
 nameP :: Atto.Parser IngredientName
 nameP = IngredientName . CI.mk <$> spaced (Atto.takeWhile1 (not . (==) '\n'))
@@ -97,5 +100,16 @@ ingredientP = mk <$> ((,,) <$> quantityP <*> unitP <*> nameP)
 ingredientsP :: Atto.Parser [RawIngredient]
 ingredientsP = Atto.many' ingredientP
 
+deduplicateIngredients :: [RawIngredient] -> [RawIngredient]
+deduplicateIngredients = catMaybes . Map.elems . map (headMay . sort) . foldr (\raw@RawIngredient {..} -> insertWith (<>) rawIngredientName [raw]) mempty
+
 parseIngredients :: (MonadError Text m) => Text -> m [RawIngredient]
-parseIngredients = either (const $ throwError "Failed to parse ingredients") pure . Atto.parseOnly ingredientsP
+parseIngredients =
+  either (const $ throwError "Failed to parse ingredients") (pure . deduplicateIngredients)
+    . Atto.parseOnly ingredientsP
+    . (<> "\n")
+    . unlines
+    . ordNub
+    . filter (not . null)
+    . map strip
+    . lines

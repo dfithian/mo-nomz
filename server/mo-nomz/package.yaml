@@ -51,6 +51,7 @@ dependencies:
   - bytestring
   - case-insensitive
   - classy-prelude
+  - containers
   - cryptonite
   - data-default
   - memory
