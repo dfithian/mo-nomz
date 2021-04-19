@@ -8,10 +8,12 @@
 import UIKit
 
 class GroceryListController: UIViewController {
+    @IBOutlet weak var export: UIButton!
+
     var ingredientVc: IngredientListController? = nil
     
     @IBAction func export(_ sender: Any?) {
-        let ingredients: [ReadableIngredientAggregate] = ((ingredientVc?.ingredients ?? []) + (ingredientVc?.bought ?? []))
+        let ingredients: [ReadableIngredientAggregate] = ingredientVc?.ingredients ?? []
         let exportText: String = ingredients.map({ (x: ReadableIngredientAggregate) -> String in
             return x.ingredient.render()
         }).joined(separator: "\n")
@@ -25,6 +27,7 @@ class GroceryListController: UIViewController {
             self?.ingredientVc?.ingredients = ingredients.filter({ $0.ingredient.active })
             self?.ingredientVc?.bought = ingredients.filter({ !$0.ingredient.active })
             DispatchQueue.main.async {
+                self?.export.isEnabled = !ingredients.isEmpty
                 self?.ingredientVc?.table.reloadData()
             }
         }

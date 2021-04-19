@@ -30,7 +30,7 @@ class Configuration {
     }
     
     static var supportUrl: String {
-        return "https://monomz.wordpress.com"
+        return "https://monomzsupport.wordpress.com"
     }
     
     static var accountKey: String {

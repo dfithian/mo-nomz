@@ -20,17 +20,34 @@ class RecipeListController: UITableViewController, UITableViewDragDelegate, UITa
     var saved: [RecipeWithId] = []
     var onChange: (() -> Void)?
     var editRecipe: RecipeWithId? = nil
-    var collapsed: Dictionary<Int, Bool> = [1: false, 3: true]
+    var collapsed: [Bool] = [false, true]
+    
+    private func hasData() -> Bool {
+        return (active.count + saved.count) > 0
+    }
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 4
+        return 5
+    }
+    
+    private func collapsedSection(_ section: Int) -> Int? {
+        switch section {
+        case 2: return 0
+        case 4: return 1
+        default: return nil
+        }
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if collapsed[section] ?? false { return 0 }
+        if let c = collapsedSection(section) {
+            if collapsed[c] { return 0 }
+        }
         switch section {
-        case 1: return active.count
-        case 3: return saved.count
+        case 0: return hasData() ? 0 : 1
+        case 1: return hasData() ? 1 : 0
+        case 2: return active.count
+        case 3: return hasData() ? 1 : 0
+        case 4: return saved.count
         default: return 1
         }
     }
@@ -46,24 +63,24 @@ class RecipeListController: UITableViewController, UITableViewDragDelegate, UITa
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.section {
-        case 0:
-            collapsed[1] = !collapsed[1]!
+        case 1:
+            collapsed[0] = !collapsed[0]
             DispatchQueue.main.async {
                 self.table.reloadData()
             }
             break
-        case 1:
+        case 2:
             if let link = active[indexPath.row].recipe.link {
                 openLink(link)
             }
             break
-        case 2:
-            collapsed[3] = !collapsed[3]!
+        case 3:
+            collapsed[1] = !collapsed[1]
             DispatchQueue.main.async {
                 self.table.reloadData()
             }
             break
-        case 3:
+        case 4:
             if let link = active[indexPath.row].recipe.link {
                 openLink(link)
             }
@@ -81,10 +98,10 @@ class RecipeListController: UITableViewController, UITableViewDragDelegate, UITa
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let id: Int
         switch indexPath.section {
-        case 1:
+        case 2:
             id = active[indexPath.row].id
             break
-        case 3:
+        case 4:
             id = saved[indexPath.row].id
             break
         default:
@@ -100,8 +117,8 @@ class RecipeListController: UITableViewController, UITableViewDragDelegate, UITa
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         switch indexPath.section {
-        case 0: return self.table.sectionHeaderHeight
-        case 2: return self.table.sectionHeaderHeight
+        case 1: return self.table.sectionHeaderHeight
+        case 3: return self.table.sectionHeaderHeight
         default: return UITableView.automaticDimension
         }
     }
@@ -109,23 +126,26 @@ class RecipeListController: UITableViewController, UITableViewDragDelegate, UITa
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch indexPath.section {
         case 0:
+            let cell = tableView.dequeueReusableCell(withIdentifier: "emptyItem")!
+            return cell
+        case 1:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SectionHeader
-            let image = collapsed[1] ?? false ? UIImage(systemName: "chevron.forward.circle.fill") : UIImage(systemName: "chevron.down.circle.fill")
+            let image = collapsed[0] ? UIImage(systemName: "chevron.forward.circle.fill") : UIImage(systemName: "chevron.down.circle.fill")
             cell.indicator.setImage(image, for: .normal)
             cell.label.text = "Active (\(active.count))"
             return cell
-        case 1:
+        case 2:
             let cell = tableView.dequeueReusableCell(withIdentifier: "recipeListItem") as! RecipeListItem
             let name = active[indexPath.row].recipe.name
             cell.name.text = name
             return cell
-        case 2:
+        case 3:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SectionHeader
-            let image = collapsed[3] ?? false ? UIImage(systemName: "chevron.forward.circle.fill") : UIImage(systemName: "chevron.down.circle.fill")
+            let image = collapsed[1] ? UIImage(systemName: "chevron.forward.circle.fill") : UIImage(systemName: "chevron.down.circle.fill")
             cell.indicator.setImage(image, for: .normal)
             cell.label.text = "Saved for later (\(saved.count))"
             return cell
-        case 3:
+        case 4:
             let cell = tableView.dequeueReusableCell(withIdentifier: "recipeListItem") as! RecipeListItem
             let name = saved[indexPath.row].recipe.name
             cell.name.text = name
@@ -139,10 +159,10 @@ class RecipeListController: UITableViewController, UITableViewDragDelegate, UITa
     func tableView(_ tableView: UITableView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
         var recipe: RecipeWithId? = nil
         switch indexPath.section {
-        case 1:
+        case 2:
             recipe = active[indexPath.row]
             break
-        case 3:
+        case 4:
             recipe = saved[indexPath.row]
             break
         default:
@@ -171,13 +191,14 @@ class RecipeListController: UITableViewController, UITableViewDragDelegate, UITa
     
     func tableView(_ tableView: UITableView, performDropWith coordinator: UITableViewDropCoordinator) {
         guard var indexPath = coordinator.destinationIndexPath else { return }
-        if indexPath.section == 0 {
-            indexPath.section = 1
+        if indexPath.section == 0 { return }
+        if indexPath.section == 1 {
+            indexPath.section = 2
         }
-        if indexPath.section == 2 {
-            indexPath.section = 3
+        if indexPath.section == 3 {
+            indexPath.section = 4
         }
-        let willBeActive = [0, 1].contains(indexPath.section)
+        let willBeActive = [1, 2].contains(indexPath.section)
         coordinator.session.loadObjects(ofClass: NSString.self, completion: { items in
             guard let strings = items as? [String] else { return }
             for string in strings {

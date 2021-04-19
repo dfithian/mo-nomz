@@ -16,44 +16,81 @@ class IngredientListController: UITableViewController, UITableViewDragDelegate, 
     var onChange: (() -> Void)? = nil
     var mergeIngredients: (ReadableIngredient, ReadableIngredient, [Int])? = nil
     var editIngredient: ReadableIngredientAggregate? = nil
-    var collapsed: Dictionary<Int, Bool> = [1: false, 3: true]
+    var collapsed: [Bool] = [false, true]
+    
+    private func hasData() -> Bool {
+        return (ingredients.count + bought.count) > 0
+    }
+    
+    func selectRow(_ row: Int) {
+        let ingredient = ingredients[row]
+        let newIngredient = ReadableIngredient(name: ingredient.ingredient.name, quantity: ingredient.ingredient.quantity, unit: ingredient.ingredient.unit, active: false)
+        mergeIngredients(ingredientIds: ingredient.ids, ingredient: newIngredient, completion: onChange)
+    }
+    
+    func deselectRow(_ row: Int) {
+        let ingredient = bought[row]
+        let newIngredient = ReadableIngredient(name: ingredient.ingredient.name, quantity: ingredient.ingredient.quantity, unit: ingredient.ingredient.unit, active: true)
+        mergeIngredients(ingredientIds: ingredient.ids, ingredient: newIngredient, completion: onChange)
+    }
+    
+    @objc func didTapIngredient(_ sender: Any?) {
+        let b = sender as! UIButton
+        selectRow(b.tag)
+    }
+    
+    @objc func didTapBought(_ sender: Any?) {
+        let b = sender as! UIButton
+        deselectRow(b.tag)
+    }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.section {
-        case 0:
-            collapsed[1] = !collapsed[1]!
-            DispatchQueue.main.async {
-                self.table.reloadData()
-            }
         case 1:
-            let ingredient = ingredients[indexPath.row]
-            let newIngredient = ReadableIngredient(name: ingredient.ingredient.name, quantity: ingredient.ingredient.quantity, unit: ingredient.ingredient.unit, active: false)
-            mergeIngredients(ingredientIds: ingredient.ids, ingredient: newIngredient, completion: onChange)
-            break;
-        case 2:
-            collapsed[3] = !collapsed[3]!
+            collapsed[0] = !collapsed[0]
             DispatchQueue.main.async {
                 self.table.reloadData()
             }
+            break
+        case 2:
+            editRow(ingredient: ingredients[indexPath.row])
+            break
         case 3:
-            let ingredient = bought[indexPath.row]
-            let newIngredient = ReadableIngredient(name: ingredient.ingredient.name, quantity: ingredient.ingredient.quantity, unit: ingredient.ingredient.unit, active: true)
-            mergeIngredients(ingredientIds: ingredient.ids, ingredient: newIngredient, completion: onChange)
-            break;
+            collapsed[1] = !collapsed[1]
+            DispatchQueue.main.async {
+                self.table.reloadData()
+            }
+            break
+        case 4:
+            editRow(ingredient: bought[indexPath.row])
+            break
         default:
-            break;
+            break
         }
     }
     
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 4
+        return 5
+    }
+    
+    private func collapsedSection(_ section: Int) -> Int? {
+        switch section {
+        case 2: return 0
+        case 4: return 1
+        default: return nil
+        }
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if collapsed[section] ?? false { return 0 }
+        if let c = collapsedSection(section) {
+            if collapsed[c] { return 0 }
+        }
         switch section {
-        case 1: return ingredients.count
-        case 3: return bought.count
+        case 0: return hasData() ? 0 : 1
+        case 1: return hasData() ? 1 : 0
+        case 2: return ingredients.count
+        case 3: return hasData() ? 1 : 0
+        case 4: return bought.count
         default: return 1
         }
     }
@@ -71,10 +108,10 @@ class IngredientListController: UITableViewController, UITableViewDragDelegate, 
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let ids: [Int]
         switch indexPath.section {
-        case 1:
+        case 2:
             ids = ingredients[indexPath.row].ids
             break
-        case 3:
+        case 4:
             ids = bought[indexPath.row].ids
             break
         default:
@@ -88,30 +125,10 @@ class IngredientListController: UITableViewController, UITableViewDragDelegate, 
         return UISwipeActionsConfiguration(actions: [action])
     }
     
-    override func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        let ingredient: ReadableIngredientAggregate
-        switch indexPath.section {
-        case 1:
-            ingredient = ingredients[indexPath.row]
-            break
-        case 3:
-            ingredient = bought[indexPath.row]
-            break
-        default:
-            return nil
-        }
-        let action = UIContextualAction(style: .normal, title: "Edit") { [weak self] (action, view, completionHandler) in
-            self?.editRow(ingredient: ingredient)
-            completionHandler(true)
-        }
-        action.backgroundColor = .systemBlue
-        return UISwipeActionsConfiguration(actions: [action])
-    }
-    
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         switch indexPath.section {
-        case 0: return self.table.sectionHeaderHeight
-        case 2: return self.table.sectionHeaderHeight
+        case 1: return self.table.sectionHeaderHeight
+        case 3: return self.table.sectionHeaderHeight
         default: return UITableView.automaticDimension
         }
     }
@@ -119,28 +136,33 @@ class IngredientListController: UITableViewController, UITableViewDragDelegate, 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch indexPath.section {
         case 0:
+            let cell = tableView.dequeueReusableCell(withIdentifier: "emptyItem")!
+            return cell
+        case 1:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SectionHeader
-            let image = collapsed[1] ?? false ? UIImage(systemName: "chevron.forward.circle.fill") : UIImage(systemName: "chevron.down.circle.fill")
+            let image = collapsed[0] ? UIImage(systemName: "chevron.forward.circle.fill") : UIImage(systemName: "chevron.down.circle.fill")
             cell.indicator.setImage(image, for: .normal)
             cell.label.text = "To buy (\(ingredients.count))"
             return cell
-        case 1:
+        case 2:
             let cell = tableView.dequeueReusableCell(withIdentifier: "ingredientListItem") as! IngredientListItem
             let ingredient = ingredients[indexPath.row].ingredient
             cell.name.text = ingredient.render()
             cell.select.tag = indexPath.row
+            cell.select.addTarget(self, action: #selector(didTapIngredient), for: .touchUpInside)
             return cell
-        case 2:
+        case 3:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SectionHeader
-            let image = collapsed[3] ?? false ? UIImage(systemName: "chevron.forward.circle.fill") : UIImage(systemName: "chevron.down.circle.fill")
+            let image = collapsed[1] ? UIImage(systemName: "chevron.forward.circle.fill") : UIImage(systemName: "chevron.down.circle.fill")
             cell.indicator.setImage(image, for: .normal)
             cell.label.text = "Bought (\(bought.count))"
             return cell
-        case 3:
+        case 4:
             let cell = tableView.dequeueReusableCell(withIdentifier: "boughtListItem") as! IngredientListItem
             let ingredient = bought[indexPath.row].ingredient
             cell.name.text = ingredient.render()
             cell.select.tag = indexPath.row
+            cell.select.addTarget(self, action: #selector(didTapBought), for: .touchUpInside)
             return cell
         default:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SectionHeader
@@ -151,10 +173,10 @@ class IngredientListController: UITableViewController, UITableViewDragDelegate, 
     func tableView(_ tableView: UITableView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
         var ingredient: ReadableIngredientAggregate? = nil
         switch indexPath.section {
-        case 1:
+        case 2:
             ingredient = ingredients[indexPath.row]
             break
-        case 3:
+        case 4:
             ingredient = bought[indexPath.row]
             break
         default:
@@ -177,14 +199,14 @@ class IngredientListController: UITableViewController, UITableViewDragDelegate, 
         guard indexPath.section == 1 || indexPath.section == 3 else { return proposal }
         guard session.items.count == 1 else { return proposal }
         switch indexPath.section {
-        case 1:
+        case 2:
             if indexPath.row < ingredients.count {
                 table.scrollToRow(at: indexPath, at: .none, animated: true)
             } else {
                 table.scrollToRow(at: IndexPath(row: ingredients.count - 1, section: 1), at: .none, animated: true)
             }
             break
-        case 3:
+        case 4:
             if indexPath.row < bought.count {
                 table.scrollToRow(at: indexPath, at: .none, animated: true)
             } else {
@@ -203,10 +225,10 @@ class IngredientListController: UITableViewController, UITableViewDragDelegate, 
         guard let indexPath = coordinator.destinationIndexPath else { return }
         let existing: ReadableIngredientAggregate
         switch indexPath.section {
-        case 1:
+        case 2:
             existing = ingredients[indexPath.row]
             break
-        case 3:
+        case 4:
             existing = bought[indexPath.row]
             break
         default:
