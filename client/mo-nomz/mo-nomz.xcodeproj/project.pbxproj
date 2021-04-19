@@ -91,9 +91,9 @@
 				3774A5D02624B53E0029E35D /* Users */,
 				3774A5CF2624B5260029E35D /* Common */,
 				3774A59F2623EE430029E35D /* LaunchScreen.storyboard */,
+				376095C5262125C10015B6F0 /* Main.storyboard */,
 				376095BF262125C10015B6F0 /* AppDelegate.swift */,
 				376095C1262125C10015B6F0 /* SceneDelegate.swift */,
-				376095C5262125C10015B6F0 /* Main.storyboard */,
 				376095C8262125C10015B6F0 /* Assets.xcassets */,
 				376095CD262125C10015B6F0 /* Info.plist */,
 			);
@@ -115,16 +115,16 @@
 		3774A5CF2624B5260029E35D /* Common */ = {
 			isa = PBXGroup;
 			children = (
-				379D47892625E22A003DD2C6 /* SectionHeader.swift */,
 				37AEE6372623D5710052304F /* Actions.swift */,
 				37145F2A2623CE460011C6C1 /* Configuration.swift */,
-				3774A5A72624769F0029E35D /* Persistence.swift */,
-				378EBD5026214A41008FF6C4 /* Types.swift */,
+				372DDC1D262B1BE200CA83A8 /* Confirmation.swift */,
 				37C6714D2627BFB100B5838C /* ErrorHandler.swift */,
 				3750F93E2627F42D0094E733 /* Import.swift */,
-				372DDC1D262B1BE200CA83A8 /* Confirmation.swift */,
 				372DDC3F262B435400CA83A8 /* Keyboard.swift */,
 				372DDC42262B43CB00CA83A8 /* Loading.swift */,
+				3774A5A72624769F0029E35D /* Persistence.swift */,
+				379D47892625E22A003DD2C6 /* SectionHeader.swift */,
+				378EBD5026214A41008FF6C4 /* Types.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -385,7 +385,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_TEAM = 5A6Y383S44;
 				INFOPLIST_FILE = "mo-nomz/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -407,7 +407,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_TEAM = 5A6Y383S44;
 				INFOPLIST_FILE = "mo-nomz/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (

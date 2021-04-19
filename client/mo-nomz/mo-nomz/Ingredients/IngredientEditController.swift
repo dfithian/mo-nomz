@@ -25,7 +25,7 @@ class IngredientEditController: UIViewController, UIPickerViewDataSource, UIPick
     }
     
     @IBAction func didTapSave(_ sender: Any?) {
-        let ingredient = ReadableIngredient(name: name.text!, quantity: ReadableQuantity(whole: currentWholeQuantity, fraction: currentFractionQuantity), unit: unit.text!, active: existing.ingredient.active)
+        let ingredient = ReadableIngredient(name: name.text!, quantity: ReadableQuantity(whole: currentWholeQuantity, fraction: currentFractionQuantity), unit: unit.text, active: existing.ingredient.active)
         let completion = {
             DispatchQueue.main.async {
                 self.dismiss(animated: true, completion: nil)
@@ -66,7 +66,7 @@ class IngredientEditController: UIViewController, UIPickerViewDataSource, UIPick
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        existingInfo.text = "\(existing.ingredient.quantity.render()) \(existing.ingredient.unit) \(existing.ingredient.name)"
+        existingInfo.text = existing.ingredient.render()
         unit.text = existing.ingredient.unit
         name.text = existing.ingredient.name
         currentWholeQuantity = existing.ingredient.quantity.whole

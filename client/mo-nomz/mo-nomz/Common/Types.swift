@@ -42,9 +42,9 @@ struct ReadableQuantity: Codable {
     let whole: Int?
     let fraction: ReadableFraction?
     
-    func render() -> String {
+    func render() -> String? {
         switch (whole, fraction) {
-        case (.none, .none): return ""
+        case (.none, .none): return nil
         case (.some(let w), .none): return String(w)
         case (.none, .some(let f)): return "\(f.render())"
         case (.some(let w), .some(let f)): return "\(w) \(f.render())"
@@ -75,8 +75,17 @@ struct ReadableQuantity: Codable {
 struct ReadableIngredient: Codable {
     let name: String
     let quantity: ReadableQuantity
-    let unit: String
+    let unit: String?
     let active: Bool
+    
+    func render() -> String {
+        switch (quantity.render(), unit) {
+        case (.some(let q), .some(let u)): return "\(q) \(u) \(name)"
+        case (.some(let q), .none): return "\(q) \(name)"
+        case (.none, .some(let u)): return "\(u) \(name)"
+        case (.none, .none): return name
+        }
+    }
 }
 
 struct ReadableIngredientAggregate: Codable {
@@ -92,7 +101,7 @@ struct MergeIngredientRequest: Codable {
     let ids: [Int]
     let name: String
     let quantity: ReadableQuantity
-    let unit: String
+    let unit: String?
     let active: Bool
 }
 

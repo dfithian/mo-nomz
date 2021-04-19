@@ -13,8 +13,8 @@ struct State {
 }
 
 class Persistence {
-    static let account: Data = "mo-nomz.mo-nomz.user-data".data(using: .utf8)!
-    static let server: Data = "mo-nomz.herokuapp.com".data(using: .utf8)!
+    static let account: Data = Configuration.accountKey.data(using: .utf8)!
+    static let server: Data = Configuration.serverKey.data(using: .utf8)!
     static func loadState() -> State? {
         let query = [
             kSecClass as String: kSecClassInternetPassword,
@@ -27,7 +27,8 @@ class Persistence {
         guard status == errSecSuccess else { return nil }
         let userId = UserDefaults.standard.integer(forKey: "userId")
         guard userId > 0 else { return nil }
-        return State(userId: userId, apiToken: String(data: item as! Data, encoding: .utf8)!)
+        let apiToken = String(data: item as! Data, encoding: .utf8)!
+        return State(userId: userId, apiToken: apiToken)
     }
     static func clearState() {
         let query = [

@@ -28,7 +28,7 @@ class IngredientMergeController: UIViewController, UIPickerViewDataSource, UIPic
     }
     
     @IBAction func didTapSave(_ sender: Any?) {
-        let ingredient = ReadableIngredient(name: name.text!, quantity: ReadableQuantity(whole: currentWholeQuantity, fraction: currentFractionQuantity), unit: unit.text!, active: existing.active)
+        let ingredient = ReadableIngredient(name: name.text!, quantity: ReadableQuantity(whole: currentWholeQuantity, fraction: currentFractionQuantity), unit: unit.text, active: existing.active)
         let completion = {
             DispatchQueue.main.async {
                 self.dismiss(animated: true, completion: nil)
@@ -69,8 +69,8 @@ class IngredientMergeController: UIViewController, UIPickerViewDataSource, UIPic
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        existingInfo.text = "\(existing.quantity.render()) \(existing.unit) \(existing.name)"
-        newInfo.text = "\(new.quantity.render()) \(new.unit) \(new.name)"
+        existingInfo.text = existing.render()
+        newInfo.text = new.render()
         unit.text = existing.unit
         name.text = existing.name
         let q = existing.unit == new.unit ? existing.quantity + new.quantity : existing.quantity

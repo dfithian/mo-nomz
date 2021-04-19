@@ -17,8 +17,4 @@ class ProfileController: UIViewController {
             }
         }
     }
-    @IBAction func didTapLogout(_ sender: Any) {
-        let handler = { (action: UIAlertAction) -> Void in Persistence.clearState() }
-        promptForConfirmation(title: "Logout", message: "Are you sure you want to logout? You will need to close and reopen the app to log back in.", handler: handler)
-    }
 }

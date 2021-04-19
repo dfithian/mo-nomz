@@ -13,7 +13,7 @@ class GroceryListController: UIViewController {
     @IBAction func export(_ sender: Any?) {
         let ingredients: [ReadableIngredientAggregate] = ((ingredientVc?.ingredients ?? []) + (ingredientVc?.bought ?? []))
         let exportText: String = ingredients.map({ (x: ReadableIngredientAggregate) -> String in
-            return "\(x.ingredient.quantity.render()) \(x.ingredient.unit) \(x.ingredient.name)"
+            return x.ingredient.render()
         }).joined(separator: "\n")
         let vc = UIActivityViewController(activityItems: [exportText], applicationActivities: nil)
         present(vc, animated: true, completion: nil)

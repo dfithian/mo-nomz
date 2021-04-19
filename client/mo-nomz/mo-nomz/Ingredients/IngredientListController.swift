@@ -127,7 +127,7 @@ class IngredientListController: UITableViewController, UITableViewDragDelegate, 
         case 1:
             let cell = tableView.dequeueReusableCell(withIdentifier: "ingredientListItem") as! IngredientListItem
             let ingredient = ingredients[indexPath.row].ingredient
-            cell.name.text = "\(ingredient.quantity.render()) \(ingredient.unit) \(ingredient.name)"
+            cell.name.text = ingredient.render()
             cell.select.tag = indexPath.row
             return cell
         case 2:
@@ -139,7 +139,7 @@ class IngredientListController: UITableViewController, UITableViewDragDelegate, 
         case 3:
             let cell = tableView.dequeueReusableCell(withIdentifier: "boughtListItem") as! IngredientListItem
             let ingredient = bought[indexPath.row].ingredient
-            cell.name.text = "\(ingredient.quantity.render()) \(ingredient.unit) \(ingredient.name)"
+            cell.name.text = ingredient.render()
             cell.select.tag = indexPath.row
             return cell
         default:

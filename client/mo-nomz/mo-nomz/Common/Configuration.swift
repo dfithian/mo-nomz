@@ -23,7 +23,7 @@ class Configuration {
     
     static var baseURL: String {
         #if DEBUG
-        return "http://localhost:8080/"
+        return "http://mo-nomz-dev.herokuapp.com/"
         #else
         return "https://mo-nomz.herokuapp.com/"
         #endif
@@ -31,5 +31,21 @@ class Configuration {
     
     static var supportUrl: String {
         return "https://monomz.wordpress.com"
+    }
+    
+    static var accountKey: String {
+        #if DEBUG
+        return "mo-nomz.mo-nomz.user-data-dev"
+        #else
+        return "mo-nomz.mo-nomz.user-data"
+        #endif
+    }
+    
+    static var serverKey: String {
+        #if DEBUG
+        return "mo-nomz-dev.herokuapp.com"
+        #else
+        return "mo-nomz.herokuapp.com"
+        #endif
     }
 }
