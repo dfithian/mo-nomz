@@ -3,6 +3,8 @@ module Application where
 import ClassyPrelude
 
 import Control.Monad (fail)
+import WaiAppStatic.Storage.Filesystem (defaultFileServerSettings)
+import WaiAppStatic.Types (ssListing)
 import Control.Monad.Logger (defaultOutput, runLoggingT)
 import Data.Default (def)
 import Data.Pool (createPool)
@@ -15,7 +17,7 @@ import Network.Wai.Handler.Warp (Settings, defaultSettings, runSettings, setPort
 import Network.Wai.Middleware.RequestLogger (mkRequestLogger)
 import Servant.API ((:<|>)(..))
 import Servant.Server (ServerT, hoistServer, serve)
-import Servant.Server.StaticFiles (serveDirectoryFileServer)
+import Servant.Server.StaticFiles (serveDirectoryWith)
 
 import Foundation (App(..), NomzServer, runNomzServer, withDbConn)
 import Servant (NomzApi, nomzApi, wholeApi)
@@ -66,8 +68,11 @@ appMain = do
   settings <- loadYamlSettingsArgs [staticSettings] useEnv
   app <- makeFoundation settings
   migrateDatabase app
-  let appl = serve wholeApi $
+  let staticFileSettings = (defaultFileServerSettings $ appStaticDir $ appSettings app)
+        { ssListing = Nothing
+        }
+      appl = serve wholeApi $
         hoistServer nomzApi (runNomzServer app) nomzServer
-          :<|> serveDirectoryFileServer (appStaticDir $ appSettings app)
+          :<|> serveDirectoryWith staticFileSettings
   requestLogger <- mkRequestLogger def
   runSettings (warpSettings app) $ requestLogger appl

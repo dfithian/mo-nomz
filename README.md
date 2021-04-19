@@ -1,6 +1,6 @@
 # Mo Nomz
 
-A Haskell / React webapp which will scrape provided recipe URLs ingredients and aggregate them into grocery lists.
+A Haskell / Swift app which will scrape provided recipe URLs ingredients and aggregate them into grocery lists.
 
 ## Start the server
 
@@ -19,74 +19,7 @@ psql -d postgres -c "grant create on database postgres to postgres"
 psql -d postgres -U postgres -f sql/init.sql
 ```
 
-## Start the client
-
-```bash
-cd client
-yarn start
-```
-
-Visit [http://localhost:3000](http://localhost:3000) in a browser.
-
-## Seed data
-
-```bash
-USER_ID=$(curl \
-  -H 'Content-Type: application/json' \
-  http://localhost:8080/api/v1/user \
-  -d '{
-    "username": "dfithian"
-  }' | jq .userId)
-
-curl \
-  -H 'Content-Type: application/json' \
-  "http://localhost:8080/api/v1/user/${USER_ID}/recipe/import/json" \
-  -d '{
-    "name": "Chicken Parmesan",
-    "ingredients": [{
-      "name": "chicken",
-      "quantity": 2,
-      "unit": "pounds"
-    }, {
-      "name": "marinara sauce",
-      "quantity": 16,
-      "unit": "oz"
-    }, {
-      "name": "mozzarella",
-      "quantity": 1,
-      "unit": "ball"
-    }]
-  }'
-
-curl \
-  -H 'Content-Type: application/json' \
-  "http://localhost:8080/api/v1/user/${USER_ID}/recipe/import/json" \
-  -d '{
-    "name": "Eggplant Parmesan",
-    "ingredients": [{
-      "name": "eggplant",
-      "quantity": 2,
-      "unit": "large"
-    }, {
-      "name": "marinara sauce",
-      "quantity": 16,
-      "unit": "oz"
-    }, {
-      "name": "mozzarella",
-      "quantity": 1,
-      "unit": "ball"
-    }]
-  }'
-
-curl \
-  -H 'Content-Type: application/json' \
-  "http://localhost:8080/api/v1/user/${USER_ID}/recipe/import/link" \
-  -d '{
-    "link": "https://www.allrecipes.com/recipe/26317/chicken-pot-pie-ix/"
-  }'
-```
-
-## Scraper
+## Use the Scraper
 
 ```haskell
 import Control.Monad (fail)
