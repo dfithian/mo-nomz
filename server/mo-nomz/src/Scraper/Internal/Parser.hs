@@ -130,8 +130,10 @@ spaced p = optional (void Atto.space) *> (p <* optional (void Atto.space))
 unitP :: Atto.Parser RawUnit
 unitP = unitWord <|> pure RawUnitMissing
   where
+    isIgnoredC c = elem c ['.']
+    isUnitC c = isAlpha c || isIgnoredC c
     unitWord = do
-      unit <- CI.mk <$> spaced (Atto.takeWhile1 isAlpha)
+      unit <- CI.mk . filter (not . isIgnoredC) <$> spaced (Atto.takeWhile1 isUnitC)
       case unit `elem` keys unitAliasTable of
         True -> pure $ RawUnit unit
         False -> fail "no unit found"
