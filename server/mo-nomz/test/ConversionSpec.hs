@@ -38,10 +38,10 @@ spec = describe "Conversion" $ do
             [
             -- combined
               pureIngredient 2.75 "cup" "sliced carrots"
-            , pureIngredient 2 "cup" "chopped onion"
-            , pureIngredient (7 / 3) "cup" "all-purpose flour"
+            , pureIngredient (4 / 3) "cup" "chopped onion"
+            , pureIngredient (5 / 3) "cup" "all-purpose flour"
             , pureIngredient 2.75 "tsp" "salt"
-            , pureIngredient (5 / 3) "cup" "milk"
+            , pureIngredient 1 "cup" "milk"
             , pureIngredient 1 "tsp" "pepper"
             , pureIngredient 4.75 "cup" "chicken broth"
 
@@ -58,17 +58,17 @@ spec = describe "Conversion" $ do
             , pureIngredient 0.25 "tsp" "celery seed"
             -- , pureIngredient 1.75 "cup" "chicken broth"
             -- , pureIngredient (2 / 3) "cup" "milk"
-            , pureIngredientNoUnit 2 "(9 inch)  unbaked pie crusts"
+            , pureIngredientNoUnit 2 "(9 inch) unbaked pie crusts"
 
             -- pillsbury
-            , pureIngredient 1 "box" "pillsbury\\8482 refrigerated pie crusts, softened as directed on box"
+            , pureIngredient 1 "box" "pillsbury\8482 refrigerated pie crusts, softened as directed on box"
             , pureIngredient (1 / 3) "cup" "butter or margarine"
-            -- , pureIngredientNoQuantity "cup" "chopped onion"
-            -- , pureIngredientNoQuantity "cup" "all-purpose flour"
+            -- , pureIngredient (1 / 3) "cup" "chopped onion"
+            -- , pureIngredient (1 / 3) "cup" "all-purpose flour"
             -- , pureIngredient 0.5 "tsp" "salt"
             -- , pureIngredient 0.25 "tsp" "pepper"
-            , pureIngredient 1.75 "cup" "progresso\\8482 chicken broth (from 32-oz carton)"
-            -- , pureIngredientNoQuantity "cup" "milk"
+            , pureIngredient 1.75 "cup" "progresso\8482 chicken broth (from 32-oz carton)"
+            -- , pureIngredient (1 / 2) "cup" "milk"
             , pureIngredient 2.5 "cup" "shredded cooked chicken or turkey"
             , pureIngredient 2 "cup" "frozen mixed vegetables, thawed"
 
@@ -90,7 +90,6 @@ spec = describe "Conversion" $ do
 
             -- rachel mansfield
             , pureIngredient (1 / 3) "cup" "+ 2 tablespoons coconut flour"
-            , pureIngredient 2 "tbsp" "coconut flour"
             , pureIngredientNoUnit 3 "eggs at room temperature"
             , pureIngredient 1 "tbsp" "maple syrup"
             , pureIngredientNoUnit 3 "medium/large ripe bananas mashed"
@@ -100,10 +99,9 @@ spec = describe "Conversion" $ do
             , pureIngredient 0.5 "cup" "sunbutter (or your nut butter of choice)"
             , pureIngredientNoQuantity "sprinkle" "of cinnamon"
             , pureIngredientNoQuantity "splash" "of vanilla extract"
-            , pureIngredient (1 / 3) "cup" "+"
-            , pureIngredientName "dry ingredients:"
-            , pureIngredientName "topping:"
-            , pureIngredientName "wet ingredients:"
+            , pureIngredientName "Dry ingredients:"
+            , pureIngredientName "Wet ingredients:"
+            , pureIngredientName "Topping:"
 
             -- food network
             , pureIngredientNoUnit 1 "(5 to 6 pound) roasting chicken"

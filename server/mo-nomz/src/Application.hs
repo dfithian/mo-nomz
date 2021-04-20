@@ -3,8 +3,6 @@ module Application where
 import ClassyPrelude
 
 import Control.Monad (fail)
-import WaiAppStatic.Storage.Filesystem (defaultFileServerSettings)
-import WaiAppStatic.Types (ssListing)
 import Control.Monad.Logger (defaultOutput, runLoggingT)
 import Data.Default (def)
 import Data.Pool (createPool)
@@ -18,6 +16,8 @@ import Network.Wai.Middleware.RequestLogger (mkRequestLogger)
 import Servant.API ((:<|>)(..))
 import Servant.Server (ServerT, hoistServer, serve)
 import Servant.Server.StaticFiles (serveDirectoryWith)
+import WaiAppStatic.Storage.Filesystem (defaultFileServerSettings)
+import WaiAppStatic.Types (ssListing)
 
 import Foundation (App(..), NomzServer, runNomzServer, withDbConn)
 import Servant (NomzApi, nomzApi, wholeApi)
