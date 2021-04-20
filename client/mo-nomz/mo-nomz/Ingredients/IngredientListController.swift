@@ -196,21 +196,21 @@ class IngredientListController: UITableViewController, UITableViewDragDelegate, 
     func tableView(_ tableView: UITableView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UITableViewDropProposal {
         var proposal = UITableViewDropProposal(operation: .cancel)
         guard let indexPath = destinationIndexPath else { return proposal }
-        guard indexPath.section == 1 || indexPath.section == 3 else { return proposal }
+        guard indexPath.section == 2 || indexPath.section == 4 else { return proposal }
         guard session.items.count == 1 else { return proposal }
         switch indexPath.section {
         case 2:
             if indexPath.row < ingredients.count {
                 table.scrollToRow(at: indexPath, at: .none, animated: true)
             } else {
-                table.scrollToRow(at: IndexPath(row: ingredients.count - 1, section: 1), at: .none, animated: true)
+                table.scrollToRow(at: IndexPath(row: ingredients.count - 1, section: indexPath.section), at: .none, animated: true)
             }
             break
         case 4:
             if indexPath.row < bought.count {
                 table.scrollToRow(at: indexPath, at: .none, animated: true)
             } else {
-                table.scrollToRow(at: IndexPath(row: bought.count - 1, section: 1), at: .none, animated: true)
+                table.scrollToRow(at: IndexPath(row: bought.count - 1, section: indexPath.section), at: .none, animated: true)
             }
             break
         default: break
