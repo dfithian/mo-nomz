@@ -2,26 +2,23 @@ module Scraper.Internal.Types where
 
 import ClassyPrelude
 import Data.Text (strip)
-import Text.HTML.Scalpel (AttributePredicate, Scraper, (//), (@:))
+import Text.HTML.Scalpel (Scraper)
 import qualified Text.HTML.Scalpel as Scalpel
 
-import Types (RecipeName(..))
+import Types (RecipeName(..), Ingredient)
 
 data ScrapedRecipe = ScrapedRecipe
-  { scrapedRecipeTitle    :: RecipeName
-  , scrapedRecipeContents :: Text
+  { scrapedRecipeName        :: RecipeName
+  , scrapedRecipeIngredients :: [Ingredient]
   } deriving (Eq, Show)
 
+data SiteScraper = SiteScraper
+  { siteScraperName :: Text
+  , siteScraperRun  :: Scraper Text Text
+  }
+
 newtype SiteName = SiteName { unSiteName :: Text }
-  deriving (Eq, Ord, Show, IsString)
+  deriving (Eq, Ord, Show, IsString, Hashable)
 
 title :: Scraper Text RecipeName
 title = RecipeName . strip <$> Scalpel.text "title"
-
-containsIngredientClass :: AttributePredicate
-containsIngredientClass = Scalpel.match $ \attributeKey attributeValue -> case attributeKey of
-  "class" -> "ingredient" `isInfixOf` toLower attributeValue
-  _ -> False
-
-defaultScraper :: Scraper Text Text
-defaultScraper = unlines . map unlines <$> Scalpel.chroots (Scalpel.AnyTag @: [containsIngredientClass] // "li") (Scalpel.texts Scalpel.anySelector)

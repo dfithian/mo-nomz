@@ -2,52 +2,160 @@ module Scraper.Internal.Site where
 
 import ClassyPrelude
 import Data.Text (replace)
-import Text.HTML.Scalpel (Scraper, (@:), (//))
-import Network.URI (URI, uriRegName, uriAuthority)
+import Network.URI (URI, uriAuthority, uriRegName)
+import Text.HTML.Scalpel ((//), (@:), (@=), Scraper, Selector)
+import qualified Data.HashMap.Strict as HashMap
 import qualified Text.HTML.Scalpel as Scalpel
 
-import Scraper.Internal.Types (SiteName(..), defaultScraper)
+import Scraper.Internal.Types (SiteName(..), SiteScraper(..))
 
-siteScrapers :: Map SiteName (Scraper Text Text)
+siteScrapers :: HashMap SiteName SiteScraper
 siteScrapers = mapFromList
   [ ("allrecipes.com", allrecipes)
-  , ("food.com", food)
-  , ("geniuskitchen.com", food)
-  , ("pillsbury.com", pillsbury)
-  , ("tasteofhome.com", tasteOfHome)
-  , ("rachlmansfield.com", rachelMansfield)
+
+  , ("food.com", geniusKitchen)
+  , ("geniuskitchen.com", geniusKitchen)
+  , ("tasteofhome.com", geniusKitchen)
+
+  , ("pillsbury.com", generalMills)
+  , ("bettycrocker.com", generalMills)
+
+  , ("rachlmansfield.com", tasty1)
+  , ("cookieandkate.com", tasty1)
+  , ("simpleveganblog.com", tasty1)
+  , ("lexiscleankitchen.com", tasty1)
+  , ("eatyourselfskinny.com", tasty1)
+  , ("sallysbakingaddiction.com", tasty2)
+  , ("gimmesomeoven.com", tasty2)
+  , ("pinchofyum.com", tasty2)
+  , ("alexandracooks.com", tasty3)
+  , ("naturallyella.com", tasty3)
+  , ("brownedbutterblondie.com", tasty3)
+
   , ("foodnetwork.com", foodNetwork)
-  , ("sallysbakingaddiction.com", sallysBaking)
-  , ("cafedelites.com", cafeDelites)
+
+  , ("cafedelites.com", wprm)
+  , ("budgetbytes.com", wprm)
+  , ("daringgourmet.com", wprm)
+  , ("recipetineats.com", wprm)
+  , ("cookingclassy.com", wprm)
+  , ("natashaskitchen.com", wprm)
+  , ("justonecookbook.com", wprm)
+  , ("loveandlemons.com", wprm)
+  , ("foodiecrush.com", wprm)
+  , ("therecipecritic.com", wprm)
+  , ("ambitiouskitchen.com", wprm)
+  , ("halfbakedharvest.com", wprm)
+  , ("101cookbooks.com", wprm)
+  , ("ohsweetbasil.com", wprm)
+  , ("myfoodstory.com", wprm)
+  , ("easypeasyfoodie.com", wprm)
+  , ("veganricha.com", wprm)
+  , ("simplydeliciousfood.com", wprm)
+  , ("deliciouseveryday.com", wprm)
+  , ("iamafoodblog.com", wprm)
+  , ("thelastfoodblog.com", wprm)
+  , ("thefoodblog.net", wprm)
+  , ("onceuponafoodblog.com", wprm)
+  , ("anotherfoodblogger.com", wprm)
+
+  , ("melskitchencafe.com", mv)
+  , ("glutenfreecuppatea.co.uk", mv)
+
+  , ("localmilkblog.com", zl)
+
+  , ("smittenkitchen.com", jetpack)
+
+  , ("eatingwell.com", eatingWell)
+
+  , ("yummly.com", yummly)
+
+  , ("epicurious.com", ingredientLi1)
+  , ("tasty.co", ingredientLi1)
+  , ("lazycatkitchen.com", ingredientLi2)
+  , ("deliciousyella.com", ingredientLi3)
+  , ("cookingandcooking.com", ingredientLi5)
+  , ("damndelicious.net", ingredientLi6)
+  , ("hemsleyandhemsley.com", ingredientLi6)
+
+  , ("delish.com", delish)
+
+  , ("spoonacular.com", spoonacular)
   ]
 
-getSiteScraper :: URI -> Scraper Text Text
-getSiteScraper uri =
+-- |Take the top 10 most popular site scrapers as the defaults.
+defaultScrapers :: [Scraper Text Text]
+defaultScrapers = map siteScraperRun . take 10 . map unsafeHead . reverse . sortOn length  . groupBy ((==) `on` siteScraperName) . sortOn siteScraperName . HashMap.elems $ siteScrapers
+
+getSiteScrapers :: URI -> Either [Scraper Text Text] (Scraper Text Text)
+getSiteScrapers uri =
   let domainMay = SiteName . replace "www." "" . pack . uriRegName <$> uriAuthority uri
-  in case domainMay of
-    Nothing -> defaultScraper
-    Just domain -> findWithDefault defaultScraper domain siteScrapers
+  in case flip lookup siteScrapers =<< domainMay of
+    Nothing -> Left defaultScrapers
+    Just scraper -> Right $ siteScraperRun scraper
 
-allrecipes :: Scraper Text Text
-allrecipes = unlines <$> Scalpel.chroots ("span" @: [Scalpel.hasClass "ingredients-item-name"]) (Scalpel.text Scalpel.anySelector)
+simpleScraper :: Text -> Selector -> SiteScraper
+simpleScraper name select = SiteScraper name (unlines <$> Scalpel.chroots select (Scalpel.text Scalpel.anySelector))
 
-food :: Scraper Text Text
-food = unlines <$> Scalpel.chroots ("div" @: [Scalpel.hasClass "recipe-ingredients"] // "li") (Scalpel.text Scalpel.anySelector)
+allrecipes :: SiteScraper
+allrecipes = simpleScraper "allrecipes" ("span" @: [Scalpel.hasClass "ingredients-item-name"])
 
-pillsbury :: Scraper Text Text
-pillsbury = unlines <$> Scalpel.chroots ("div" @: [Scalpel.hasClass "recipePartIngredient"]) (Scalpel.text Scalpel.anySelector)
+geniusKitchen :: SiteScraper
+geniusKitchen = simpleScraper "geniusKitchen" ("div" @: [Scalpel.hasClass "recipe-ingredients"] // "li")
 
-tasteOfHome :: Scraper Text Text
-tasteOfHome = unlines <$> Scalpel.chroots ("div" @: [Scalpel.hasClass "recipe-ingredients"] // "li") (Scalpel.text Scalpel.anySelector)
+generalMills :: SiteScraper
+generalMills = simpleScraper "generalMills" ("div" @: [Scalpel.hasClass "recipePartIngredient"])
 
-rachelMansfield :: Scraper Text Text
-rachelMansfield = unlines <$> Scalpel.chroots ("div" @: [Scalpel.hasClass "tasty-recipe-ingredients"] // "li") (Scalpel.text Scalpel.anySelector)
+tasty1 :: SiteScraper
+tasty1 = simpleScraper "tasty1" ("div" @: [Scalpel.hasClass "tasty-recipe-ingredients"] // "li")
 
-foodNetwork :: Scraper Text Text
-foodNetwork = unlines . filter (not . (==) "Deselect All") <$> Scalpel.chroots ("div" @: [Scalpel.hasClass "o-Ingredients__m-Body"] // "span") (Scalpel.text Scalpel.anySelector)
+tasty2 :: SiteScraper
+tasty2 = simpleScraper "tasty2" ("div" @: [Scalpel.hasClass "tasty-recipes-ingredients"] // "li")
 
-sallysBaking :: Scraper Text Text
-sallysBaking = unlines <$> Scalpel.chroots ("div" @: [Scalpel.hasClass "tasty-recipes-ingredients"] // "li") (Scalpel.text Scalpel.anySelector)
+tasty3 :: SiteScraper
+tasty3 = simpleScraper "tasty3" ("div" @: [Scalpel.hasClass "tasty-recipes-ingredients"] // "p")
 
-cafeDelites :: Scraper Text Text
-cafeDelites = unlines <$> Scalpel.chroots ("li" @: [Scalpel.hasClass "wprm-recipe-ingredient"]) (Scalpel.text Scalpel.anySelector)
+foodNetwork :: SiteScraper
+foodNetwork = SiteScraper "foodNetwork" (unlines . filter (not . (==) "Deselect All") <$> Scalpel.chroots ("div" @: [Scalpel.hasClass "o-Ingredients__m-Body"] // "span") (Scalpel.text Scalpel.anySelector))
+
+wprm :: SiteScraper
+wprm = simpleScraper "wprm" ("li" @: [Scalpel.hasClass "wprm-recipe-ingredient"])
+
+mv :: SiteScraper
+mv = simpleScraper "mv" ("div" @: [Scalpel.hasClass "mv-create-ingredients"] // "li")
+
+zl :: SiteScraper
+zl = simpleScraper "zl" ("ul" @: ["id" @= "zlrecipe-ingredients-list"] // "li")
+
+jetpack :: SiteScraper
+jetpack = simpleScraper "jetpack" ("div" @: [Scalpel.hasClass "jetpack-recipe-ingredients"] // "li")
+
+eatingWell :: SiteScraper
+eatingWell = simpleScraper "eatingWell" ("ul" @: [Scalpel.hasClass "ingredients-section"])
+
+yummly :: SiteScraper
+yummly = simpleScraper "yummly" ("li" @: [Scalpel.hasClass "IngredientLine"])
+
+ingredientLi1 :: SiteScraper
+ingredientLi1 = simpleScraper "ingredientLi1" ("li" @: [Scalpel.hasClass "ingredient"])
+
+ingredientLi2 :: SiteScraper
+ingredientLi2 = simpleScraper "ingredientLi2" ("div" @: [Scalpel.hasClass "ingredients-list"] // "li")
+
+ingredientLi3 :: SiteScraper
+ingredientLi3 = simpleScraper "ingredientLi3" ("li" @: ["itemprop" @= "recipeIngredient"])
+
+ingredientLi4 :: SiteScraper
+ingredientLi4 = simpleScraper "ingredientLi4" ("div" @: [Scalpel.hasClass "ingredients"] // "li")
+
+ingredientLi5 :: SiteScraper
+ingredientLi5 = simpleScraper "ingredientLi5" ("div" @: [Scalpel.hasClass "listIngredient"] // "li")
+
+ingredientLi6 :: SiteScraper
+ingredientLi6 = simpleScraper "ingredientLi6" ("li" @: ["itemprop" @= "ingredients"])
+
+delish :: SiteScraper
+delish = simpleScraper "delish" ("div" @: [Scalpel.hasClass "ingredient-item"])
+
+spoonacular :: SiteScraper
+spoonacular = simpleScraper "spoontacular" ("div" @: [Scalpel.hasClass "spoonacular-ingredient"])

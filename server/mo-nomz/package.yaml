@@ -67,6 +67,7 @@ dependencies:
   - servant
   - servant-server
   - text
+  - unordered-containers
   - wai
   - wai-app-static
   - wai-extra

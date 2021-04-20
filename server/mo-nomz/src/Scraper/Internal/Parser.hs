@@ -5,15 +5,15 @@ import ClassyPrelude
 import Control.Monad (fail)
 import Data.CaseInsensitive (CI)
 import Data.Char (isAlpha, isDigit, isSpace)
-import Data.Text (split, strip, replace)
+import Data.Text (replace, split, strip)
 import qualified Data.Attoparsec.Text as Atto
 import qualified Data.CaseInsensitive as CI
 import qualified Data.Map as Map
 
 import Types
   ( Ingredient(..), IngredientName(..), Quantity(..), RawIngredient(..), RawQuantity(..)
-  , RawUnit(..), Unit(..), Ingredient, box, cup, ounce, pinch, pound, splash
-  , sprinkle, tablespoon, teaspoon, whole
+  , RawUnit(..), Unit(..), Ingredient, box, cup, ounce, pinch, pound, splash, sprinkle, tablespoon
+  , teaspoon, whole
   )
 
 unitAliasTable :: Map (CI Text) Unit
@@ -149,3 +149,8 @@ ingredientsP = Atto.many' ingredientP
 
 deduplicateIngredients :: [RawIngredient] -> [RawIngredient]
 deduplicateIngredients = catMaybes . Map.elems . map (headMay . sort) . foldr (\raw@RawIngredient {..} -> insertWith (<>) rawIngredientName [raw]) mempty
+
+sanitize :: Text -> Text
+sanitize = filter (not . isIgnoredC)
+  where
+    isIgnoredC c = elem c ['▢', 'Â']

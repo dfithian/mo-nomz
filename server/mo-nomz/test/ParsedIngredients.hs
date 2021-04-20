@@ -95,6 +95,18 @@ pillsburyIngredients =
   , pureIngredient 2 "cup" "frozen mixed vegetables, thawed"
   ]
 
+bettyCrockerIngredients :: [Ingredient]
+bettyCrockerIngredients =
+  [ pureIngredient 1 "box" "(18.3 oz) Betty Crocker\8482 traditional fudge brownie mix"
+  , pureIngredient 1 "cup" "Betty Crocker\8482 Rich & Creamy vanilla frosting (from 16-oz container)"
+  , pureIngredient 2 "cup" "Cool Whip frozen whipped topping (from 8-oz container), thawed"
+  , pureIngredient (1 / 3) "cup" "heavy whipping cream"
+  , pureIngredient 1 "cup" "miniature marshmallows"
+  , pureIngredientNoUnit 20 "Oreo chocolate sandwich cookies, coarsely chopped (about 2 2/3 cups)"
+  , pureIngredient 0.5 "cup" "semisweet chocolate chips"
+  , pureIngredientName "Water, vegetable oil and eggs called for on brownie mix box for cakelike brownies"
+  ]
+
 tasteOfHomeIngredients :: [Ingredient]
 tasteOfHomeIngredients =
   [ pureIngredient 2 "cup" "diced peeled potatoes"
@@ -149,7 +161,7 @@ sallysBakingIngredients :: [Ingredient]
 sallysBakingIngredients =
   [ pureIngredient 0.5 "cup" "(115g; 1 stick) unsalted butter"
   , pureIngredient 6.0 "oz" "(170g) high quality semi-sweet chocolate*"
-  , pureIngredient 0.25 "cup" "(31g) all-purpose flour\194 (spoon & leveled)"
+  , pureIngredient 0.25 "cup" "(31g) all-purpose flour (spoon & leveled)"
   , pureIngredient 0.5 "cup" "(60g) confectioners\8217 sugar"
   , pureIngredientNoUnit 2 "large egg yolks*"
   , pureIngredientNoUnit 2 "large eggs"
@@ -183,4 +195,17 @@ cafeDelitesIngredients =
   , pureIngredient 1 "tsp" "turmeric"
   , pureIngredient 1 "tsp" "turmeric powder"
   , pureIngredient 0.25 "cup" "water if needed"
+  ]
+
+eatingWellIngredients :: [Ingredient]
+eatingWellIngredients =
+  [ pureIngredientNoUnit 1 "(5-ounce) block feta cheese"
+  , pureIngredient 2 "cup" "boiling water"
+  , pureIngredient 1 "tsp" "dried dill"
+  , pureIngredient 3 "tbsp" "extra-virgin olive oil"
+  , pureIngredient 0.25 "tsp" "ground pepper"
+  , pureIngredient 0.25 "tsp" "kosher salt"
+  , pureIngredientNoUnit 2 "large cloves garlic, minced"
+  , pureIngredient 8 "cup" "lightly packed baby spinach (about 5 ounces)"
+  , pureIngredient 8 "oz" "penne or rotini"
   ]
