@@ -12,10 +12,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         print("Started with configuration \(Configuration.environment)")
-        if UserDefaults.standard.string(forKey: "firstRun") == nil {
+        if UserDefaults.shared.string(forKey: "firstRun") == nil {
             print("Initializing state")
             Persistence.clearState()
-            UserDefaults.standard.setValue("true", forKey: "firstRun")
+            UserDefaults.shared.setValue("true", forKey: "firstRun")
         }
         return true
     }

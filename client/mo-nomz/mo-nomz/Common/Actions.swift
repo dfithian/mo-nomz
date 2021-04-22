@@ -30,7 +30,7 @@ extension UIViewController {
     
     func loadIngredients(completion: ((ListIngredientResponse) -> Void)?) {
         let spinner = startLoading()
-        let state = Persistence.loadState()!
+        guard let state = Persistence.loadState() else { return }
         var req = URLRequest(url: URL(string: Configuration.baseURL + "api/v1/user/" + String(state.userId) + "/ingredient")!)
         req.addValue(state.apiToken, forHTTPHeaderField: "X-Mo-Nomz-API-Token")
         req.addValue("application/json", forHTTPHeaderField: "Accept")
@@ -50,7 +50,7 @@ extension UIViewController {
     
     func mergeIngredients(ingredientIds: [Int], ingredient: ReadableIngredient, completion: (() -> Void)?) {
         let spinner = startLoading()
-        let state = Persistence.loadState()!
+        guard let state = Persistence.loadState() else { return }
         var req = URLRequest(url: URL(string: Configuration.baseURL + "api/v1/user/" + String(state.userId) + "/ingredient")!)
         req.addValue(state.apiToken, forHTTPHeaderField: "X-Mo-Nomz-API-Token")
         req.addValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -65,7 +65,7 @@ extension UIViewController {
     
     func deleteIngredients(ingredientIds: [Int], completion: (() -> Void)?) {
         let spinner = startLoading()
-        let state = Persistence.loadState()!
+        guard let state = Persistence.loadState() else { return }
         var req = URLRequest(url: URL(string: Configuration.baseURL + "api/v1/user/" + String(state.userId) + "/ingredient")!)
         req.addValue(state.apiToken, forHTTPHeaderField: "X-Mo-Nomz-API-Token")
         req.addValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -80,7 +80,7 @@ extension UIViewController {
     
     func loadRecipes(completion: ((ListRecipeResponse) -> Void)?) {
         let spinner = startLoading()
-        let state = Persistence.loadState()!
+        guard let state = Persistence.loadState() else { return }
         var req = URLRequest(url: URL(string: Configuration.baseURL + "api/v1/user/" + String(state.userId) + "/recipe")!)
         req.addValue(state.apiToken, forHTTPHeaderField: "X-Mo-Nomz-API-Token")
         req.addValue("application/json", forHTTPHeaderField: "Accept")
@@ -100,7 +100,7 @@ extension UIViewController {
     
     func addRecipeLink(link: String, completion: (() -> Void)?) {
         let spinner = startLoading()
-        let state = Persistence.loadState()!
+        guard let state = Persistence.loadState() else { return }
         var req = URLRequest(url: URL(string: Configuration.baseURL + "api/v1/user/" + String(state.userId) + "/recipe/link")!)
         req.addValue(state.apiToken, forHTTPHeaderField: "X-Mo-Nomz-API-Token")
         req.addValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -117,7 +117,7 @@ extension UIViewController {
     
     func addRecipeBody(name: String, content: String, completion: (() -> Void)?) {
         let spinner = startLoading()
-        let state = Persistence.loadState()!
+        guard let state = Persistence.loadState() else { return }
         var req = URLRequest(url: URL(string: Configuration.baseURL + "api/v1/user/" + String(state.userId) + "/recipe/body")!)
         req.addValue(state.apiToken, forHTTPHeaderField: "X-Mo-Nomz-API-Token")
         req.addValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -132,7 +132,7 @@ extension UIViewController {
     
     func updateRecipe(id: Int, active: Bool, completion: (() -> Void)?) {
         let spinner = startLoading()
-        let state = Persistence.loadState()!
+        guard let state = Persistence.loadState() else { return }
         var req = URLRequest(url: URL(string: Configuration.baseURL + "api/v1/user/" + String(state.userId) + "/recipe")!)
         req.addValue(state.apiToken, forHTTPHeaderField: "X-Mo-Nomz-API-Token")
         req.addValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -147,7 +147,7 @@ extension UIViewController {
     
     func deleteRecipes(recipeIds: [Int], completion: (() -> Void)?) {
         let spinner = startLoading()
-        let state = Persistence.loadState()!
+        guard let state = Persistence.loadState() else { return }
         var req = URLRequest(url: URL(string: Configuration.baseURL + "api/v1/user/" + String(state.userId) + "/recipe")!)
         req.addValue(state.apiToken, forHTTPHeaderField: "X-Mo-Nomz-API-Token")
         req.addValue("application/json", forHTTPHeaderField: "Content-Type")

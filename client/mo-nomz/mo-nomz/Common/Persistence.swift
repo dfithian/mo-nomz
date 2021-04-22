@@ -25,7 +25,7 @@ class Persistence {
         var item: CFTypeRef?
         let status = SecItemCopyMatching(query as CFDictionary, &item)
         guard status == errSecSuccess else { return nil }
-        let userId = UserDefaults.standard.integer(forKey: "userId")
+        let userId = UserDefaults.shared.integer(forKey: "userId")
         guard userId > 0 else { return nil }
         let apiToken = String(data: item as! Data, encoding: .utf8)!
         return State(userId: userId, apiToken: apiToken)
@@ -39,7 +39,7 @@ class Persistence {
         SecItemDelete(query)
     }
     static func setState(_ state: State) {
-        UserDefaults.standard.set(state.userId, forKey: "userId")
+        UserDefaults.shared.set(state.userId, forKey: "userId")
         let query = [
             kSecClass as String: kSecClassInternetPassword,
             kSecAttrAccount as String: account,

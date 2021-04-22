@@ -10,29 +10,6 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
     
-    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
-        guard Persistence.loadState() != nil else { return }
-        guard let context = URLContexts.first else { return }
-        let completion = {
-            DispatchQueue.main.async {
-                self.launch()
-            }
-        }
-        switch context.url.scheme {
-        case "file":
-            window?.rootViewController?.importFile(url: context.url, completion: completion)
-            break
-        case "http", "https":
-            window?.rootViewController?.importUrl(url: context.url, completion: completion)
-            break
-        default: return
-        }
-    }
-    
-    func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
-        print(userActivity.activityType)
-    }
-    
     private func launch() {
         let launchSb = UIStoryboard(name: "LaunchScreen", bundle: nil)
         let launchVc = launchSb.instantiateInitialViewController()

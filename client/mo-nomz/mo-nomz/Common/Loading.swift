@@ -7,39 +7,24 @@
 
 import UIKit
 
-class SpinnerViewController: UIViewController {
-    var spinner = UIActivityIndicatorView(style: .medium)
-
-    override func loadView() {
-        view = UIView()
-        view.backgroundColor = UIColor(white: 0, alpha: 0.7)
-
-        spinner.translatesAutoresizingMaskIntoConstraints = false
-        spinner.startAnimating()
-        view.addSubview(spinner)
-
-        spinner.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        spinner.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-    }
-}
-
 extension UIViewController {
-    func startLoading() -> SpinnerViewController {
-        let spinner = SpinnerViewController()
+    func startLoading() -> UIActivityIndicatorView {
+        let progress = UIActivityIndicatorView(style: .large)
+        progress.translatesAutoresizingMaskIntoConstraints = true
         DispatchQueue.main.async {
-            self.addChild(spinner)
-            spinner.view.frame = self.view.frame
-            self.view.addSubview(spinner.view)
-            spinner.didMove(toParent: self)
+            self.view.isUserInteractionEnabled = false
+            progress.center = self.view.center
+            progress.startAnimating()
+            self.view.addSubview(progress)
         }
-        return spinner
+        return progress
     }
     
-    func stopLoading(_ spinner: SpinnerViewController) {
+    func stopLoading(_ progress: UIActivityIndicatorView) {
         DispatchQueue.main.async {
-            spinner.willMove(toParent: nil)
-            spinner.view.removeFromSuperview()
-            spinner.removeFromParent()
+            self.view.isUserInteractionEnabled = true
+            progress.stopAnimating()
+            progress.removeFromSuperview()
         }
     }
 }

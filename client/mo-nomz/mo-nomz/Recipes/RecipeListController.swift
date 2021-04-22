@@ -119,7 +119,7 @@ class RecipeListController: UITableViewController, UITableViewDragDelegate, UITa
         switch indexPath.section {
         case 1: return self.table.sectionHeaderHeight
         case 3: return self.table.sectionHeaderHeight
-        default: return UITableView.automaticDimension
+        default: return 44
         }
     }
     
