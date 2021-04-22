@@ -10,7 +10,7 @@ ghc-options:
   - -fwarn-redundant-constraints
   - -Wincomplete-uni-patterns
   - -eventlog
-  - -O0
+  - -O2
 
 default-extensions:
   - ConstraintKinds
