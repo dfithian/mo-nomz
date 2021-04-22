@@ -7,8 +7,9 @@ import Control.Monad.Except (runExceptT)
 import Data.FileEmbed (embedFile)
 import Network.URI (parseURI)
 import System.FilePath.TH (fileRelativeToAbsoluteStr)
-import Test.Hspec (Expectation, Spec, describe, it, shouldBe, shouldMatchList, shouldSatisfy)
+import Test.Hspec (Expectation, Spec, describe, it, shouldBe, shouldMatchList, shouldSatisfy, expectationFailure)
 import qualified Data.Attoparsec.Text as Atto
+import qualified Data.CaseInsensitive as CI
 
 import ParsedIngredients
   ( allRecipesIngredients, bettyCrockerIngredients, cafeDelitesIngredients, eatingWellIngredients
@@ -43,15 +44,7 @@ scrapeAndParse url expectedName expected = do
   scrapedRecipeIngredients `shouldMatchList` expected
 
 scrapeAndParseBasic :: String -> Expectation
-scrapeAndParseBasic url = do
-  uri <- maybe (fail "Invalid URL") pure $ parseURI url
-  ScrapedRecipe {..} <- either (fail . unpack) pure =<< runExceptT (scrapeUrl uri)
-  unRecipeName scrapedRecipeName `shouldSatisfy` not . null
-  scrapedRecipeIngredients `shouldSatisfy` testIngredients
-  where
-    hasQuantityAndUnit Ingredient {..} = ingredientQuantity /= QuantityMissing && ingredientUnit /= UnitMissing
-    noDuplicates = null . filter ((> 1) . length . snd) . mapToList . foldr (\x@Ingredient {..} -> asMap . insertWith (<>) ingredientName [x]) mempty
-    testIngredients xs = not (null xs) && any hasQuantityAndUnit xs && noDuplicates xs
+scrapeAndParseBasic = scrapeAndParseConfig defaultTestCfg
 
 scrapeAndParseConfig :: TestCfg -> String -> Expectation
 scrapeAndParseConfig TestCfg {..} url = do
@@ -59,10 +52,18 @@ scrapeAndParseConfig TestCfg {..} url = do
   ScrapedRecipe {..} <- either (fail . unpack) pure =<< runExceptT (scrapeUrl uri)
   unRecipeName scrapedRecipeName `shouldSatisfy` not . null
   scrapedRecipeIngredients `shouldSatisfy` testIngredients
+  noInfixes scrapedRecipeIngredients
   where
     hasQuantityAndUnit Ingredient {..} = ingredientQuantity /= QuantityMissing && (if requireUnit then ingredientUnit /= UnitMissing else True)
     noDuplicates = null . filter ((> 1) . length . snd) . mapToList . foldr (\x@Ingredient {..} -> asMap . insertWith (<>) ingredientName [x]) mempty
     testIngredients xs = not (null xs) && any hasQuantityAndUnit xs && noDuplicates xs
+    noInfixes xs = do
+      let names = ingredientName <$> xs
+          toStr = toLower . CI.original . unIngredientName
+          go x y = case toStr x `isPrefixOf` toStr y && name /= otherName of
+            True -> expectationFailure $ unpack (toStr x) <> " is a prefix of " <> unpack (toStr y)
+            False -> pure ()
+      for_ [(x, y) | x <- names, y <- names] $ uncurry go
 
 spec :: Spec
 spec = describe "Scrape" $ do
@@ -162,6 +163,7 @@ spec = describe "Scrape" $ do
         "Baked Spinach & Feta Pasta Recipe | EatingWell"
         eatingWellIngredients
 
+    -- START HERE
     it "handles yummly" $ scrapeAndParseBasic "https://www.yummly.com/recipe/Barbecue-Baked-Chicken-Legs-9073054"
     it "handles epicurious" $ scrapeAndParseBasic "https://www.epicurious.com/recipes/food/views/cashew-chicken"
     it "handles tasty" $ scrapeAndParseBasic "https://tasty.co/recipe/cilantro-lime-chicken-veggie-rice-meal-prep"

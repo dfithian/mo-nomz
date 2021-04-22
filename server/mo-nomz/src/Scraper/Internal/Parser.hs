@@ -85,9 +85,10 @@ scrubIngredient RawIngredient {..} = Ingredient
 quantityP :: Atto.Parser RawQuantity
 quantityP = quantityExpression <|> quantityWord <|> quantityMissing
   where
-    isQuantityC c = isDigit c || isSpace c || elem c ['/', '.', '-', '⁄', '¼', '½', '¾', '⅓', '⅔']
-    quantityParser p = p =<< Atto.takeWhile isQuantityC
-    strictQuantityParser p = p . strip =<< Atto.takeWhile1 isQuantityC
+    isIgnoredC c = elem c ['Â']
+    isQuantityC c = isDigit c || isSpace c || elem c ['/', '.', '-', '⁄', '¼', '½', '¾', '⅓', '⅔'] || isIgnoredC c
+    quantityParser p = p . filter (not . isIgnoredC) =<< Atto.takeWhile isQuantityC
+    strictQuantityParser p = p . strip . filter (not . isIgnoredC) =<< Atto.takeWhile1 isQuantityC
 
     quantitySingle str = maybe (fail $ unpack str <> " is not a single quantity") pure . readMay . unpack . filter (not . isSpace) $ str
     quantityUnicode = \case
@@ -136,7 +137,7 @@ unitP = unitWord <|> pure RawUnitMissing
       unit <- CI.mk . filter (not . isIgnoredC) <$> spaced (Atto.takeWhile1 isUnitC)
       case unit `elem` keys unitAliasTable of
         True -> pure $ RawUnit unit
-        False -> fail "no unit found"
+        False -> fail "No unit found"
 
 nameP :: Atto.Parser IngredientName
 nameP = IngredientName . CI.mk . strip . unwords . filter (not . null) . map strip . words <$> spaced (Atto.takeWhile1 (not . (==) '\n'))
@@ -155,4 +156,4 @@ deduplicateIngredients = catMaybes . Map.elems . map (headMay . sort) . foldr (\
 sanitize :: Text -> Text
 sanitize = filter (not . isIgnoredC)
   where
-    isIgnoredC c = elem c ['▢', 'Â']
+    isIgnoredC c = elem c ['▢']
