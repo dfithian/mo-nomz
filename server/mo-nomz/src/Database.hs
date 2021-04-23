@@ -53,18 +53,20 @@ deleteGroceryItems conn userId groceryItemIds = do
     True -> void $ execute conn "delete from nomz.grocery_item where user_id = ?" (Only userId)
     False -> void $ execute conn "delete from nomz.grocery_item where id in ? and user_id = ?" (In groceryItemIds, userId)
 
-insertIngredients :: Connection -> UserId -> [Ingredient] -> IO ()
-insertIngredients conn userId ingredients =
-  void $ executeMany conn "insert into nomz.ingredient (user_id, name, quantity, unit) values (?, ?, ?, ?)" $
-    map (\Ingredient {..} -> (userId, ingredientName, ingredientQuantity, ingredientUnit)) ingredients
+insertIngredients :: Connection -> UserId -> Maybe RecipeId -> [Ingredient] -> IO ()
+insertIngredients conn userId recipeIdMay ingredients =
+  case recipeIdMay of
+    Nothing ->
+      void $ executeMany conn "insert into nomz.ingredient (user_id, name, quantity, unit) values (?, ?, ?, ?)" $
+        map (\Ingredient {..} -> (userId, ingredientName, ingredientQuantity, ingredientUnit)) ingredients
+    Just recipeId ->
+      void $ executeMany conn "insert into nomz.ingredient (recipe_id, user_id, name, quantity, unit) values (?, ?, ?, ?, ?)" $
+        map (\Ingredient {..} -> (recipeId, ingredientName, ingredientQuantity, ingredientUnit)) ingredients
 
 selectActiveIngredients :: Connection -> UserId -> IO [Ingredient]
-selectActiveIngredients conn userId = do
-  recipeIngredients <- map (uncurry3 Ingredient)
-    <$> query conn "select ri.name, ri.quantity, ri.unit from nomz.recipe_ingredient ri join nomz.recipe r on r.id = ri.recipe_id where r.user_id = ? and r.active" (Only userId)
-  ingredients <- map (uncurry3 Ingredient)
-    <$> query conn "select name, quantity, unit from nomz.ingredient where user_id = ?" (Only userId)
-  pure $ recipeIngredients <> ingredients
+selectActiveIngredients conn userId =
+  map (uncurry3 Ingredient)
+    <$> query conn "select i.name, i.quantity, i.unit from nomz.ingredient i left join nomz.recipe r on r.id = i.recipe_id where i.user_id = ? and coalesce(r.active, true)" (Only userId)
 
 selectRecipes :: Connection -> UserId -> [RecipeId] -> IO (Map RecipeId Recipe)
 selectRecipes conn userId recipeIds = do
@@ -79,8 +81,7 @@ selectRecipes conn userId recipeIds = do
 insertRecipe :: Connection -> UserId -> Recipe -> [Ingredient] -> IO ()
 insertRecipe conn userId Recipe {..} ingredients = do
   [(Only (recipeId :: RecipeId))] <- returning conn "insert into nomz.recipe (user_id, name, link, active) values (?, ?, ?, ?) returning id" [(userId, recipeName, recipeLink, recipeActive)]
-  void $ executeMany conn "insert into nomz.recipe_ingredient (recipe_id, name, quantity, unit) values (?, ?, ?, ?)" $
-    map (\Ingredient {..} -> (recipeId, ingredientName, ingredientQuantity, ingredientUnit)) ingredients
+  insertIngredients conn userId (Just recipeId) ingredients
 
 updateRecipe :: Connection -> UserId -> RecipeId -> Bool -> IO ()
 updateRecipe conn userId recipeId active = do
@@ -91,5 +92,5 @@ deleteRecipes conn userId recipeIds = do
   case null recipeIds of
     True -> pure ()
     False -> do
-      void $ execute conn "delete from nomz.recipe_ingredient where recipe_id in ?" (Only (In recipeIds))
+      void $ execute conn "delete from nomz.ingredient where user_id = ? and recipe_id in ?" (userId, In recipeIds)
       void $ execute conn "delete from nomz.recipe where user_id = ? and id in ?" (userId, In recipeIds)

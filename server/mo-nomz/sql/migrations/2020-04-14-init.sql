@@ -17,23 +17,16 @@ create table nomz.recipe (
   active boolean not null
 );
 
-create table nomz.recipe_ingredient (
-  id bigserial primary key,
-  recipe_id bigserial not null references nomz.recipe(id),
-  name citext not null,
-  quantity real null,
-  unit citext null
-);
-
-create index recipe_ingredient__recipe_id on nomz.recipe_ingredient(recipe_id);
-
 create table nomz.ingredient (
   id bigserial primary key,
+  recipe_id bigserial null references nomz.recipe(id),
   user_id bigint not null references nomz.user(id),
   name citext not null,
   quantity real null,
   unit citext null
 );
+
+create index ingredient__recipe_id on nomz.ingredient(recipe_id);
 
 create table nomz.grocery_item (
   id bigserial primary key,

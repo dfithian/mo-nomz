@@ -121,7 +121,7 @@ postIngredientImportSingle token userId IngredientImportSingleRequest {..} = do
         , ingredientUnit = mkUnit ingredientImportSingleRequestUnit
         }
   unwrapDb $ withDbConn $ \c -> do
-    Database.insertIngredients c userId [ingredient]
+    Database.insertIngredients c userId Nothing [ingredient]
     refreshGroceryItems c userId
   pure NoContent
 
@@ -130,7 +130,7 @@ postIngredientImportBlob token userId IngredientImportBlobRequest {..} = do
   validateUserToken token userId
   ingredients <- mapError (\e -> err500 { errReasonPhrase = unpack e }) $ parseIngredients ingredientImportBlobRequestContent
   unwrapDb $ withDbConn $ \c -> do
-    Database.insertIngredients c userId ingredients
+    Database.insertIngredients c userId Nothing ingredients
     refreshGroceryItems c userId
   pure NoContent
 

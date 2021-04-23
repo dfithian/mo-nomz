@@ -54,9 +54,6 @@ data Unit
 newtype GroceryItemId = GroceryItemId { unGroceryItemId :: Int }
   deriving (Eq, Ord, Show, FromJSON, FromJSONKey, ToJSON, ToJSONKey, FromField, ToField, FromHttpApiData, ToHttpApiData)
 
-newtype IngredientId = IngredientId { unIngredientId :: Int }
-  deriving (Eq, Ord, Show, FromJSON, FromJSONKey, ToJSON, ToJSONKey, FromField, ToField, FromHttpApiData, ToHttpApiData)
-
 newtype RecipeId = RecipeId { unRecipeId :: Int }
   deriving (Eq, Ord, Show, FromJSON, FromJSONKey, ToJSON, ToJSONKey, FromField, ToField, FromHttpApiData, ToHttpApiData)
 
