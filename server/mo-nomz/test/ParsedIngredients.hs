@@ -19,7 +19,6 @@ pureIngredient q u i = Ingredient
   { ingredientName = IngredientName $ CI.mk i
   , ingredientQuantity = Quantity q
   , ingredientUnit = Unit $ CI.mk u
-  , ingredientActive = True
   }
 
 pureIngredientNoQuantity :: Text -> Text -> Ingredient
@@ -27,7 +26,6 @@ pureIngredientNoQuantity u i = Ingredient
   { ingredientName = IngredientName $ CI.mk i
   , ingredientQuantity = QuantityMissing
   , ingredientUnit = Unit $ CI.mk u
-  , ingredientActive = True
   }
 
 pureIngredientNoUnit :: Double -> Text -> Ingredient
@@ -35,7 +33,6 @@ pureIngredientNoUnit q i = Ingredient
   { ingredientName = IngredientName $ CI.mk i
   , ingredientQuantity = Quantity q
   , ingredientUnit = UnitMissing
-  , ingredientActive = True
   }
 
 pureIngredientName :: Text -> Ingredient
@@ -43,7 +40,6 @@ pureIngredientName i = Ingredient
   { ingredientName = IngredientName $ CI.mk i
   , ingredientQuantity = QuantityMissing
   , ingredientUnit = UnitMissing
-  , ingredientActive = True
   }
 
 allRecipesIngredients :: [Ingredient]

@@ -10,9 +10,8 @@ import UIKit
 extension UIViewController {
     func importFile(_ url: URL) {
         do {
-            let name = url.lastPathComponent
             let content = try String(contentsOf: url, encoding: .utf8)
-            addRecipeBody(name: name, content: content, completion: nil)
+            addIngredientBlob(content: content, completion: nil)
         } catch {
             print("Failed to get file \(error)")
         }
@@ -21,6 +20,6 @@ extension UIViewController {
         addRecipeLink(link: url.absoluteString, completion: nil)
     }
     func importData(_ text: String) {
-        addRecipeBody(name: "Import", content: text, completion: nil)
+        addIngredientBlob(content: text, completion: nil)
     }
 }

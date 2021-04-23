@@ -51,6 +51,9 @@ data Unit
   | UnitMissing
   deriving (Eq, Ord, Show)
 
+newtype GroceryItemId = GroceryItemId { unGroceryItemId :: Int }
+  deriving (Eq, Ord, Show, FromJSON, FromJSONKey, ToJSON, ToJSONKey, FromField, ToField, FromHttpApiData, ToHttpApiData)
+
 newtype IngredientId = IngredientId { unIngredientId :: Int }
   deriving (Eq, Ord, Show, FromJSON, FromJSONKey, ToJSON, ToJSONKey, FromField, ToField, FromHttpApiData, ToHttpApiData)
 
@@ -72,11 +75,18 @@ data ReadableQuantity = ReadableQuantity
 newtype ReadableUnit = ReadableUnit { unReadableUnit :: CI Text }
   deriving (Eq, Ord, Show, FromJSON, ToJSON, FromField, ToField)
 
+data GroceryItem = GroceryItem
+  { groceryItemName     :: IngredientName
+  , groceryItemQuantity :: Quantity
+  , groceryItemUnit     :: Unit
+  , groceryItemActive   :: Bool
+  }
+  deriving (Eq, Ord, Show)
+
 data Ingredient = Ingredient
   { ingredientName     :: IngredientName
   , ingredientQuantity :: Quantity
   , ingredientUnit     :: Unit
-  , ingredientActive   :: Bool
   }
   deriving (Eq, Ord, Show)
 
@@ -87,18 +97,10 @@ data RawIngredient = RawIngredient
   }
   deriving (Eq, Ord, Show)
 
-data RecipeIngredient = RecipeIngredient
-  { recipeIngredientName     :: IngredientName
-  , recipeIngredientQuantity :: Quantity
-  , recipeIngredientUnit     :: Unit
-  }
-  deriving (Eq, Ord, Show)
-
 data Recipe = Recipe
-  { recipeName        :: RecipeName
-  , recipeLink        :: Maybe RecipeLink
-  , recipeIngredients :: [RecipeIngredient]
-  , recipeActive      :: Bool
+  { recipeName   :: RecipeName
+  , recipeLink   :: Maybe RecipeLink
+  , recipeActive :: Bool
   }
   deriving (Eq, Ord, Show)
 
@@ -139,19 +141,19 @@ splash = Unit "splash"
 sprinkle = Unit "sprinkle"
 whole = Unit "whole"
 
-mkRecipeIngredient :: Ingredient -> RecipeIngredient
-mkRecipeIngredient Ingredient {..} = RecipeIngredient
-  { recipeIngredientName = ingredientName
-  , recipeIngredientQuantity = ingredientQuantity
-  , recipeIngredientUnit = ingredientUnit
+ingredientToGroceryItem :: Ingredient -> GroceryItem
+ingredientToGroceryItem Ingredient {..} = GroceryItem
+  { groceryItemName = ingredientName
+  , groceryItemQuantity = ingredientQuantity
+  , groceryItemUnit = ingredientUnit
+  , groceryItemActive = True
   }
 
-mkIngredient' :: RecipeIngredient -> Ingredient
-mkIngredient' RecipeIngredient {..} = Ingredient
-  { ingredientName = recipeIngredientName
-  , ingredientQuantity = recipeIngredientQuantity
-  , ingredientUnit = recipeIngredientUnit
-  , ingredientActive = True
+groceryItemToIngredient :: GroceryItem -> Ingredient
+groceryItemToIngredient GroceryItem {..} = Ingredient
+  { ingredientName = groceryItemName
+  , ingredientQuantity = groceryItemQuantity
+  , ingredientUnit = groceryItemUnit
   }
 
 instance Num Quantity where

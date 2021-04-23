@@ -1,5 +1,5 @@
 //
-//  IngredientListController.swift
+//  GroceryListController.swift
 //  mo-nomz
 //
 //  Created by Dan Fithian on 4/9/21.
@@ -8,33 +8,33 @@
 import MobileCoreServices
 import UIKit
 
-class IngredientListController: UITableViewController, UITableViewDragDelegate, UITableViewDropDelegate {
+class GroceryListController: UITableViewController, UITableViewDragDelegate, UITableViewDropDelegate {
     @IBOutlet weak var table: UITableView!
 
-    var ingredients: [ReadableIngredientAggregate] = []
-    var bought: [ReadableIngredientAggregate] = []
+    var toBuy: [ReadableGroceryItemAggregate] = []
+    var bought: [ReadableGroceryItemAggregate] = []
     var onChange: (() -> Void)? = nil
-    var mergeIngredients: (ReadableIngredient, ReadableIngredient, [Int])? = nil
-    var editIngredient: ReadableIngredientAggregate? = nil
+    var mergeItems: (ReadableGroceryItem, ReadableGroceryItem, [Int])? = nil
+    var editItem: ReadableGroceryItemAggregate? = nil
     var collapsed: [Bool] = [false, true]
     
     private func hasData() -> Bool {
-        return (ingredients.count + bought.count) > 0
+        return (toBuy.count + bought.count) > 0
     }
     
     func selectRow(_ row: Int) {
-        let ingredient = ingredients[row]
-        let newIngredient = ReadableIngredient(name: ingredient.ingredient.name, quantity: ingredient.ingredient.quantity, unit: ingredient.ingredient.unit, active: false)
-        mergeIngredients(ingredientIds: ingredient.ids, ingredient: newIngredient, completion: onChange)
+        let item = toBuy[row]
+        let newItem = ReadableGroceryItem(name: item.item.name, quantity: item.item.quantity, unit: item.item.unit, active: false)
+        mergeGroceryItems(groceryItemIds: item.ids, groceryItem: newItem, completion: onChange)
     }
     
     func deselectRow(_ row: Int) {
-        let ingredient = bought[row]
-        let newIngredient = ReadableIngredient(name: ingredient.ingredient.name, quantity: ingredient.ingredient.quantity, unit: ingredient.ingredient.unit, active: true)
-        mergeIngredients(ingredientIds: ingredient.ids, ingredient: newIngredient, completion: onChange)
+        let item = bought[row]
+        let newItem = ReadableGroceryItem(name: item.item.name, quantity: item.item.quantity, unit: item.item.unit, active: true)
+        mergeGroceryItems(groceryItemIds: item.ids, groceryItem: newItem, completion: onChange)
     }
     
-    @objc func didTapIngredient(_ sender: Any?) {
+    @objc func didTapToBuy(_ sender: Any?) {
         let b = sender as! UIButton
         selectRow(b.tag)
     }
@@ -53,7 +53,7 @@ class IngredientListController: UITableViewController, UITableViewDragDelegate, 
             }
             break
         case 2:
-            editRow(ingredient: ingredients[indexPath.row])
+            editRow(item: toBuy[indexPath.row])
             break
         case 3:
             collapsed[1] = !collapsed[1]
@@ -62,7 +62,7 @@ class IngredientListController: UITableViewController, UITableViewDragDelegate, 
             }
             break
         case 4:
-            editRow(ingredient: bought[indexPath.row])
+            editRow(item: bought[indexPath.row])
             break
         default:
             break
@@ -88,7 +88,7 @@ class IngredientListController: UITableViewController, UITableViewDragDelegate, 
         switch section {
         case 0: return hasData() ? 0 : 1
         case 1: return hasData() ? 1 : 0
-        case 2: return ingredients.count
+        case 2: return toBuy.count
         case 3: return hasData() ? 1 : 0
         case 4: return bought.count
         default: return 1
@@ -96,20 +96,20 @@ class IngredientListController: UITableViewController, UITableViewDragDelegate, 
     }
     
     func deleteRow(_ ids: [Int]) {
-        let handler = { [weak self] (action: UIAlertAction) -> Void in self?.deleteIngredients(ingredientIds: ids, completion: self?.onChange) }
-        promptForConfirmation(title: "Delete", message: "Are you sure you want to delete this ingredient?", handler: handler)
+        let handler = { [weak self] (action: UIAlertAction) -> Void in self?.deleteGroceryItems(groceryItemIds: ids, completion: self?.onChange) }
+        promptForConfirmation(title: "Delete", message: "Are you sure you want to delete this item?", handler: handler)
     }
     
-    func editRow(ingredient: ReadableIngredientAggregate) {
-        editIngredient = ingredient
-        self.performSegue(withIdentifier: "editIngredient", sender: nil)
+    func editRow(item: ReadableGroceryItemAggregate) {
+        editItem = item
+        self.performSegue(withIdentifier: "editItem", sender: nil)
     }
     
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let ids: [Int]
         switch indexPath.section {
         case 2:
-            ids = ingredients[indexPath.row].ids
+            ids = toBuy[indexPath.row].ids
             break
         case 4:
             ids = bought[indexPath.row].ids
@@ -142,14 +142,14 @@ class IngredientListController: UITableViewController, UITableViewDragDelegate, 
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SectionHeader
             let image = collapsed[0] ? UIImage(systemName: "chevron.forward.circle.fill") : UIImage(systemName: "chevron.down.circle.fill")
             cell.indicator.setImage(image, for: .normal)
-            cell.label.text = "To buy (\(ingredients.count))"
+            cell.label.text = "To buy (\(toBuy.count))"
             return cell
         case 2:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "ingredientListItem") as! IngredientListItem
-            let ingredient = ingredients[indexPath.row].ingredient
-            cell.name.text = ingredient.render()
+            let cell = tableView.dequeueReusableCell(withIdentifier: "toBuyListItem") as! GroceryListItem
+            let item = toBuy[indexPath.row].item
+            cell.name.text = item.render()
             cell.select.tag = indexPath.row
-            cell.select.addTarget(self, action: #selector(didTapIngredient), for: .touchUpInside)
+            cell.select.addTarget(self, action: #selector(didTapToBuy), for: .touchUpInside)
             return cell
         case 3:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SectionHeader
@@ -158,9 +158,9 @@ class IngredientListController: UITableViewController, UITableViewDragDelegate, 
             cell.label.text = "Bought (\(bought.count))"
             return cell
         case 4:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "boughtListItem") as! IngredientListItem
-            let ingredient = bought[indexPath.row].ingredient
-            cell.name.text = ingredient.render()
+            let cell = tableView.dequeueReusableCell(withIdentifier: "boughtListItem") as! GroceryListItem
+            let item = bought[indexPath.row].item
+            cell.name.text = item.render()
             cell.select.tag = indexPath.row
             cell.select.addTarget(self, action: #selector(didTapBought), for: .touchUpInside)
             return cell
@@ -171,19 +171,19 @@ class IngredientListController: UITableViewController, UITableViewDragDelegate, 
     }
     
     func tableView(_ tableView: UITableView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
-        var ingredient: ReadableIngredientAggregate? = nil
+        var item: ReadableGroceryItemAggregate? = nil
         switch indexPath.section {
         case 2:
-            ingredient = ingredients[indexPath.row]
+            item = toBuy[indexPath.row]
             break
         case 4:
-            ingredient = bought[indexPath.row]
+            item = bought[indexPath.row]
             break
         default:
             break
         }
         do {
-            if let i = ingredient {
+            if let i = item {
                 let data = try JSONEncoder().encode(i)
                 return [UIDragItem(itemProvider: NSItemProvider(item: data as NSData, typeIdentifier: kUTTypePlainText as String))]
             }
@@ -200,10 +200,10 @@ class IngredientListController: UITableViewController, UITableViewDragDelegate, 
         guard session.items.count == 1 else { return proposal }
         switch indexPath.section {
         case 2:
-            if indexPath.row < ingredients.count {
+            if indexPath.row < toBuy.count {
                 table.scrollToRow(at: indexPath, at: .none, animated: true)
             } else {
-                table.scrollToRow(at: IndexPath(row: ingredients.count - 1, section: indexPath.section), at: .none, animated: true)
+                table.scrollToRow(at: IndexPath(row: toBuy.count - 1, section: indexPath.section), at: .none, animated: true)
             }
             break
         case 4:
@@ -223,10 +223,10 @@ class IngredientListController: UITableViewController, UITableViewDragDelegate, 
 
     func tableView(_ tableView: UITableView, performDropWith coordinator: UITableViewDropCoordinator) {
         guard let indexPath = coordinator.destinationIndexPath else { return }
-        let existing: ReadableIngredientAggregate
+        let existing: ReadableGroceryItemAggregate
         switch indexPath.section {
         case 2:
-            existing = ingredients[indexPath.row]
+            existing = toBuy[indexPath.row]
             break
         case 4:
             existing = bought[indexPath.row]
@@ -238,9 +238,9 @@ class IngredientListController: UITableViewController, UITableViewDragDelegate, 
             guard let strings = items as? [String] else { return }
             for string in strings {
                 do {
-                    let new = try JSONDecoder().decode(ReadableIngredientAggregate.self, from: string.data(using: .utf8)!)
-                    self.mergeIngredients = (existing.ingredient, new.ingredient, existing.ids + new.ids)
-                    self.performSegue(withIdentifier: "mergeIngredients", sender: nil)
+                    let new = try JSONDecoder().decode(ReadableGroceryItemAggregate.self, from: string.data(using: .utf8)!)
+                    self.mergeItems = (existing.item, new.item, existing.ids + new.ids)
+                    self.performSegue(withIdentifier: "mergeItems", sender: nil)
                 } catch {
                     print("Failed completing drag and drop \(error)")
                 }
@@ -249,14 +249,14 @@ class IngredientListController: UITableViewController, UITableViewDragDelegate, 
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let vc = segue.destination as? IngredientMergeController, segue.identifier == "mergeIngredients" {
-            vc.existing = self.mergeIngredients!.0
-            vc.new = self.mergeIngredients!.1
-            vc.ingredientIds = self.mergeIngredients!.2
+        if let vc = segue.destination as? GroceryMergeController, segue.identifier == "mergeItems" {
+            vc.existing = self.mergeItems!.0
+            vc.new = self.mergeItems!.1
+            vc.ids = self.mergeItems!.2
             vc.onChange = onChange
         }
-        if let vc = segue.destination as? IngredientEditController, segue.identifier == "editIngredient" {
-            vc.existing = self.editIngredient!
+        if let vc = segue.destination as? GroceryEditController, segue.identifier == "editItem" {
+            vc.existing = self.editItem!
             vc.onChange = onChange
         }
     }

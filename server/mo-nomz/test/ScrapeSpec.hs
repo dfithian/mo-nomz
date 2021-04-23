@@ -7,7 +7,9 @@ import Control.Monad.Except (runExceptT)
 import Data.FileEmbed (embedFile)
 import Network.URI (parseURI)
 import System.FilePath.TH (fileRelativeToAbsoluteStr)
-import Test.Hspec (Expectation, Spec, describe, it, shouldBe, shouldMatchList, shouldSatisfy, expectationFailure)
+import Test.Hspec
+  ( Expectation, Spec, describe, expectationFailure, it, shouldBe, shouldMatchList, shouldSatisfy
+  )
 import qualified Data.Attoparsec.Text as Atto
 import qualified Data.CaseInsensitive as CI
 
@@ -60,9 +62,12 @@ scrapeAndParseConfig TestCfg {..} url = do
     noInfixes xs = do
       let names = ingredientName <$> xs
           toStr = toLower . CI.original . unIngredientName
-          go x y = case toStr x `isPrefixOf` toStr y && name /= otherName of
-            True -> expectationFailure $ unpack (toStr x) <> " is a prefix of " <> unpack (toStr y)
+          go x y = case name `isPrefixOf` otherName && name /= otherName of
+            True -> expectationFailure $ unpack name <> " is a prefix of " <> unpack otherName
             False -> pure ()
+            where
+              name = toStr x
+              otherName = toStr y
       for_ [(x, y) | x <- names, y <- names] $ uncurry go
 
 spec :: Spec

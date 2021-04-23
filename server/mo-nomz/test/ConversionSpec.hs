@@ -9,7 +9,7 @@ import ParsedIngredients
   ( allParsedIngredients, pureIngredient, pureIngredientName, pureIngredientNoQuantity
   , pureIngredientNoUnit
   )
-import Types (Unit(..), cup, mkRecipeIngredient, ounce, pinch, tablespoon, teaspoon, whole)
+import Types (Unit(..), cup, ounce, pinch, tablespoon, teaspoon, whole)
 
 import Conversion
 
@@ -116,4 +116,4 @@ spec = describe "Conversion" $ do
             , pureIngredientNoUnit 1 "bulb of fennel, tops removed, and cut into wedges"
             , pureIngredientName "olive oil"
             ]
-      in mkReadableIngredient' <$> (combineIngredients (mkRecipeIngredient <$> mconcat allParsedIngredients)) `shouldMatchList` mkReadableIngredient <$> expected
+      in combineIngredients (mconcat allParsedIngredients) `shouldMatchList` expected

@@ -15,7 +15,6 @@ class ShareViewController: SLComposeServiceViewController {
 
     override func isContentValid() -> Bool {
         if let attachment = (self.extensionContext?.inputItems.first as? NSExtensionItem)?.attachments?.first {
-            print(attachment.registeredTypeIdentifiers)
             return attachment.hasItemConformingToTypeIdentifier(textType) || attachment.hasItemConformingToTypeIdentifier(urlType)
         }
         return false

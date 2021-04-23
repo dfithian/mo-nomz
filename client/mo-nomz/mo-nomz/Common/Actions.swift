@@ -28,17 +28,17 @@ extension UIViewController {
         task.resume()
     }
     
-    func loadIngredients(completion: ((ListIngredientResponse) -> Void)?) {
+    func loadGroceryItems(completion: ((ListGroceryItemResponse) -> Void)?) {
         let spinner = startLoading()
         guard let state = Persistence.loadState() else { return }
-        var req = URLRequest(url: URL(string: Configuration.baseURL + "api/v1/user/" + String(state.userId) + "/ingredient")!)
+        var req = URLRequest(url: URL(string: Configuration.baseURL + "api/v1/user/" + String(state.userId) + "/grocery")!)
         req.addValue(state.apiToken, forHTTPHeaderField: "X-Mo-Nomz-API-Token")
         req.addValue("application/json", forHTTPHeaderField: "Accept")
         let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
             self.stopLoading(spinner)
             self.defaultWithCompletion(data: data, resp: resp, error: error, completion: {
                 do {
-                    let output = try JSONDecoder().decode(ListIngredientResponse.self, from: data!)
+                    let output = try JSONDecoder().decode(ListGroceryItemResponse.self, from: data!)
                     completion?(output)
                 } catch {
                     self.defaultOnError(error)
@@ -48,14 +48,14 @@ extension UIViewController {
         task.resume()
     }
     
-    func mergeIngredients(ingredientIds: [Int], ingredient: ReadableIngredient, completion: (() -> Void)?) {
+    func mergeGroceryItems(groceryItemIds: [Int], groceryItem: ReadableGroceryItem, completion: (() -> Void)?) {
         let spinner = startLoading()
         guard let state = Persistence.loadState() else { return }
-        var req = URLRequest(url: URL(string: Configuration.baseURL + "api/v1/user/" + String(state.userId) + "/ingredient")!)
+        var req = URLRequest(url: URL(string: Configuration.baseURL + "api/v1/user/" + String(state.userId) + "/grocery")!)
         req.addValue(state.apiToken, forHTTPHeaderField: "X-Mo-Nomz-API-Token")
         req.addValue("application/json", forHTTPHeaderField: "Content-Type")
         req.httpMethod = "POST"
-        req.httpBody = try? JSONEncoder().encode(MergeIngredientRequest(ids: ingredientIds, name: ingredient.name, quantity: ingredient.quantity, unit: ingredient.unit, active: ingredient.active))
+        req.httpBody = try? JSONEncoder().encode(MergeGroceryItemRequest(ids: groceryItemIds, name: groceryItem.name, quantity: groceryItem.quantity, unit: groceryItem.unit, active: groceryItem.active))
         let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
             self.stopLoading(spinner)
             self.defaultWithCompletion(data: data, resp: resp, error: error, completion: completion)
@@ -63,14 +63,14 @@ extension UIViewController {
         task.resume()
     }
     
-    func deleteIngredients(ingredientIds: [Int], completion: (() -> Void)?) {
+    func deleteGroceryItems(groceryItemIds: [Int], completion: (() -> Void)?) {
         let spinner = startLoading()
         guard let state = Persistence.loadState() else { return }
-        var req = URLRequest(url: URL(string: Configuration.baseURL + "api/v1/user/" + String(state.userId) + "/ingredient")!)
+        var req = URLRequest(url: URL(string: Configuration.baseURL + "api/v1/user/" + String(state.userId) + "/grocery")!)
         req.addValue(state.apiToken, forHTTPHeaderField: "X-Mo-Nomz-API-Token")
         req.addValue("application/json", forHTTPHeaderField: "Content-Type")
         req.httpMethod = "DELETE"
-        req.httpBody = try? JSONEncoder().encode(DeleteIngredientRequest(ids: ingredientIds))
+        req.httpBody = try? JSONEncoder().encode(DeleteGroceryItemRequest(ids: groceryItemIds))
         let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
             self.stopLoading(spinner)
             self.defaultWithCompletion(data: data, resp: resp, error: error, completion: completion)
@@ -98,6 +98,36 @@ extension UIViewController {
         task.resume()
     }
     
+    func addIngredientSingle(name: String, quantity: ReadableQuantity, unit: String?, completion: (() -> Void)?) {
+        let spinner = startLoading()
+        guard let state = Persistence.loadState() else { return }
+        var req = URLRequest(url: URL(string: Configuration.baseURL + "api/v1/user/" + String(state.userId) + "/ingredient/single")!)
+        req.addValue(state.apiToken, forHTTPHeaderField: "X-Mo-Nomz-API-Token")
+        req.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        req.httpMethod = "POST"
+        req.httpBody = try? JSONEncoder().encode(ImportIngredientSingleRequest(name: name, quantity: quantity, unit: unit))
+        let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
+            self.stopLoading(spinner)
+            self.defaultWithCompletion(data: data, resp: resp, error: error, completion: completion)
+        })
+        task.resume()
+    }
+    
+    func addIngredientBlob(content: String, completion: (() -> Void)?) {
+        let spinner = startLoading()
+        guard let state = Persistence.loadState() else { return }
+        var req = URLRequest(url: URL(string: Configuration.baseURL + "api/v1/user/" + String(state.userId) + "/ingredient/blob")!)
+        req.addValue(state.apiToken, forHTTPHeaderField: "X-Mo-Nomz-API-Token")
+        req.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        req.httpMethod = "POST"
+        req.httpBody = try? JSONEncoder().encode(ImportIngredientBlobRequest(content: content))
+        let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
+            self.stopLoading(spinner)
+            self.defaultWithCompletion(data: data, resp: resp, error: error, completion: completion)
+        })
+        task.resume()
+    }
+    
     func addRecipeLink(link: String, completion: (() -> Void)?) {
         let spinner = startLoading()
         guard let state = Persistence.loadState() else { return }
@@ -111,21 +141,6 @@ extension UIViewController {
             let onUnsuccessfulStatus = { (resp: URLResponse?) -> Void in self.alertUnsuccessful("Please paste or enter ingredients manually.")
             }
             self.withCompletion(data: data, resp: resp, error: error, completion: completion, onUnsuccessfulStatus: onUnsuccessfulStatus, onError: self.defaultOnError)
-        })
-        task.resume()
-    }
-    
-    func addRecipeBody(name: String, content: String, completion: (() -> Void)?) {
-        let spinner = startLoading()
-        guard let state = Persistence.loadState() else { return }
-        var req = URLRequest(url: URL(string: Configuration.baseURL + "api/v1/user/" + String(state.userId) + "/recipe/body")!)
-        req.addValue(state.apiToken, forHTTPHeaderField: "X-Mo-Nomz-API-Token")
-        req.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        req.httpMethod = "POST"
-        req.httpBody = try? JSONEncoder().encode(ImportRecipeBodyRequest(name: name, content: content))
-        let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
-            self.stopLoading(spinner)
-            self.defaultWithCompletion(data: data, resp: resp, error: error, completion: completion)
         })
         task.resume()
     }

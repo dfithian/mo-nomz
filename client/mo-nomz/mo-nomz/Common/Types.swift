@@ -72,7 +72,7 @@ struct ReadableQuantity: Codable {
     }
 }
 
-struct ReadableIngredient: Codable {
+struct ReadableGroceryItem: Codable {
     let name: String
     let quantity: ReadableQuantity
     let unit: String?
@@ -88,16 +88,16 @@ struct ReadableIngredient: Codable {
     }
 }
 
-struct ReadableIngredientAggregate: Codable {
+struct ReadableGroceryItemAggregate: Codable {
     let ids: [Int]
-    let ingredient: ReadableIngredient
+    let item: ReadableGroceryItem
 }
 
-struct ListIngredientResponse: Codable {
-    let ingredients: [ReadableIngredientAggregate]
+struct ListGroceryItemResponse: Codable {
+    let items: [ReadableGroceryItemAggregate]
 }
 
-struct MergeIngredientRequest: Codable {
+struct MergeGroceryItemRequest: Codable {
     let ids: [Int]
     let name: String
     let quantity: ReadableQuantity
@@ -105,7 +105,7 @@ struct MergeIngredientRequest: Codable {
     let active: Bool
 }
 
-struct DeleteIngredientRequest: Codable {
+struct DeleteGroceryItemRequest: Codable {
     let ids: [Int]
 }
 
@@ -118,15 +118,19 @@ struct ReadableRecipe: Codable {
     let name: String
     let link: String?
     let active: Bool
-    let ingredients: [ReadableIngredient]
 }
 
 struct ImportRecipeLinkRequest: Codable {
     let link: String
 }
 
-struct ImportRecipeBodyRequest: Codable {
+struct ImportIngredientSingleRequest: Codable {
     let name: String
+    let quantity: ReadableQuantity
+    let unit: String?
+}
+
+struct ImportIngredientBlobRequest: Codable {
     let content: String
 }
 

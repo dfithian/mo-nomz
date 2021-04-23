@@ -22,8 +22,9 @@ import WaiAppStatic.Types (ssListing)
 import Foundation (App(..), NomzServer, runNomzServer, withDbConn)
 import Servant (NomzApi, nomzApi, wholeApi)
 import Server
-  ( deleteIngredient, deleteRecipes, getHealth, getIngredients, getRecipes, postCreateUser
-  , postMergeIngredient, postRecipeImportBody, postRecipeImportLink, postUpdateRecipe
+  ( deleteGroceryItem, deleteRecipes, getGroceryItems, getHealth, getRecipes, postCreateUser
+  , postIngredientImportBlob, postIngredientImportSingle, postMergeGroceryItem, postRecipeImportLink
+  , postUpdateRecipe
   )
 import Settings (AppSettings(..), DatabaseSettings(..), staticSettings)
 
@@ -31,11 +32,12 @@ nomzServer :: ServerT NomzApi NomzServer
 nomzServer =
   getHealth
     :<|> postCreateUser
-    :<|> getIngredients
-    :<|> postMergeIngredient
-    :<|> deleteIngredient
+    :<|> getGroceryItems
+    :<|> postMergeGroceryItem
+    :<|> deleteGroceryItem
+    :<|> postIngredientImportSingle
+    :<|> postIngredientImportBlob
     :<|> postRecipeImportLink
-    :<|> postRecipeImportBody
     :<|> postUpdateRecipe
     :<|> getRecipes
     :<|> deleteRecipes

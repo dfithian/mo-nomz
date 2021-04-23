@@ -7,7 +7,7 @@ import Data.Aeson.TH (deriveJSON)
 import Auth (Authorization)
 import Json (jsonOptions)
 import Types
-  ( IngredientId, IngredientName, ReadableQuantity, ReadableUnit, RecipeId, RecipeLink, RecipeName
+  ( GroceryItemId, IngredientName, ReadableQuantity, ReadableUnit, RecipeId, RecipeLink, RecipeName
   , UserId
   )
 
@@ -22,36 +22,36 @@ data UserCreateResponse = UserCreateResponse
   }
   deriving (Eq, Ord, Show)
 
-data MergeIngredientRequest = MergeIngredientRequest
-  { mergeIngredientRequestIds      :: Set IngredientId
-  , mergeIngredientRequestName     :: IngredientName
-  , mergeIngredientRequestQuantity :: ReadableQuantity
-  , mergeIngredientRequestUnit     :: Maybe ReadableUnit
-  , mergeIngredientRequestActive   :: Bool
+data MergeGroceryItemRequest = MergeGroceryItemRequest
+  { mergeGroceryItemRequestIds      :: Set GroceryItemId
+  , mergeGroceryItemRequestName     :: IngredientName
+  , mergeGroceryItemRequestQuantity :: ReadableQuantity
+  , mergeGroceryItemRequestUnit     :: Maybe ReadableUnit
+  , mergeGroceryItemRequestActive   :: Bool
   }
   deriving (Eq, Ord, Show)
 
-data DeleteIngredientRequest = DeleteIngredientRequest
-  { deleteIngredientRequestIds :: Set IngredientId
+data DeleteGroceryItemRequest = DeleteGroceryItemRequest
+  { deleteGroceryItemRequestIds :: Set GroceryItemId
   }
   deriving (Eq, Ord, Show)
 
-data ReadableIngredient = ReadableIngredient
-  { readableIngredientName     :: IngredientName
-  , readableIngredientQuantity :: ReadableQuantity
-  , readableIngredientUnit     :: Maybe ReadableUnit
-  , readableIngredientActive   :: Bool
+data ReadableGroceryItem = ReadableGroceryItem
+  { readableGroceryItemName     :: IngredientName
+  , readableGroceryItemQuantity :: ReadableQuantity
+  , readableGroceryItemUnit     :: Maybe ReadableUnit
+  , readableGroceryItemActive   :: Bool
   }
   deriving (Eq, Ord, Show)
 
-data ReadableIngredientAggregate = ReadableIngredientAggregate
-  { readableIngredientAggregateIds        :: Set IngredientId
-  , readableIngredientAggregateIngredient :: ReadableIngredient
+data ReadableGroceryItemAggregate = ReadableGroceryItemAggregate
+  { readableGroceryItemAggregateIds  :: Set GroceryItemId
+  , readableGroceryItemAggregateItem :: ReadableGroceryItem
   }
   deriving (Eq, Ord, Show)
 
-data ListIngredientResponse = ListIngredientResponse
-  { listIngredientResponseIngredients :: [ReadableIngredientAggregate]
+data ListGroceryItemResponse = ListGroceryItemResponse
+  { listGroceryItemResponseItems :: [ReadableGroceryItemAggregate]
   }
   deriving (Eq, Ord, Show)
 
@@ -60,9 +60,15 @@ data RecipeImportLinkRequest = RecipeImportLinkRequest
   }
   deriving (Eq, Ord, Show)
 
-data RecipeImportBodyRequest = RecipeImportBodyRequest
-  { recipeImportBodyRequestName    :: RecipeName
-  , recipeImportBodyRequestContent :: Text
+data IngredientImportBlobRequest = IngredientImportBlobRequest
+  { ingredientImportBlobRequestContent :: Text
+  }
+  deriving (Eq, Ord, Show)
+
+data IngredientImportSingleRequest = IngredientImportSingleRequest
+  { ingredientImportSingleRequestName     :: IngredientName
+  , ingredientImportSingleRequestQuantity :: ReadableQuantity
+  , ingredientImportSingleRequestUnit     :: Maybe ReadableUnit
   }
   deriving (Eq, Ord, Show)
 
@@ -78,10 +84,9 @@ data DeleteRecipeRequest = DeleteRecipeRequest
   deriving (Eq, Ord, Show)
 
 data ReadableRecipe = ReadableRecipe
-  { readableRecipeName        :: RecipeName
-  , readableRecipeLink        :: Maybe RecipeLink
-  , readableRecipeIngredients :: [ReadableIngredient]
-  , readableRecipeActive      :: Bool
+  { readableRecipeName   :: RecipeName
+  , readableRecipeLink   :: Maybe RecipeLink
+  , readableRecipeActive :: Bool
   }
   deriving (Eq, Ord, Show)
 
@@ -92,13 +97,14 @@ data ListRecipeResponse = ListRecipeResponse
 
 deriveJSON (jsonOptions "getHealthResponse") ''GetHealthResponse
 deriveJSON (jsonOptions "userCreateResponse") ''UserCreateResponse
-deriveJSON (jsonOptions "mergeIngredientRequest") ''MergeIngredientRequest
-deriveJSON (jsonOptions "deleteIngredientRequest") ''DeleteIngredientRequest
-deriveJSON (jsonOptions "readableIngredient") ''ReadableIngredient
-deriveJSON (jsonOptions "readableIngredientAggregate") ''ReadableIngredientAggregate
-deriveJSON (jsonOptions "listIngredientResponse") ''ListIngredientResponse
+deriveJSON (jsonOptions "mergeGroceryItemRequest") ''MergeGroceryItemRequest
+deriveJSON (jsonOptions "deleteGroceryItemRequest") ''DeleteGroceryItemRequest
+deriveJSON (jsonOptions "readableGroceryItem") ''ReadableGroceryItem
+deriveJSON (jsonOptions "readableGroceryItemAggregate") ''ReadableGroceryItemAggregate
+deriveJSON (jsonOptions "listGroceryItemResponse") ''ListGroceryItemResponse
 deriveJSON (jsonOptions "recipeImportLinkRequest") ''RecipeImportLinkRequest
-deriveJSON (jsonOptions "recipeImportBodyRequest") ''RecipeImportBodyRequest
+deriveJSON (jsonOptions "ingredientImportSingleRequest") ''IngredientImportSingleRequest
+deriveJSON (jsonOptions "ingredientImportBlobRequest") ''IngredientImportBlobRequest
 deriveJSON (jsonOptions "updateRecipeRequest") ''UpdateRecipeRequest
 deriveJSON (jsonOptions "deleteRecipeRequest") ''DeleteRecipeRequest
 deriveJSON (jsonOptions "readableRecipe") ''ReadableRecipe

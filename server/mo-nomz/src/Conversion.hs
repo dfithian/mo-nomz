@@ -4,10 +4,10 @@ import ClassyPrelude
 
 import Data.Monoid (Sum(Sum), getSum)
 
-import API.Types (ReadableIngredient(..), ReadableRecipe(..))
+import API.Types (ReadableGroceryItem(..), ReadableRecipe(..))
 import Types
-  ( Ingredient(..), Quantity(..), ReadableFraction(..), ReadableQuantity(..), ReadableUnit(..)
-  , Recipe(..), RecipeIngredient(..), Unit(..), cup, ounce, pinch, tablespoon, teaspoon
+  ( GroceryItem(..), Ingredient(..), Quantity(..), ReadableFraction(..), ReadableQuantity(..)
+  , ReadableUnit(..), Recipe(..), Unit(..), cup, ounce, pinch, tablespoon, teaspoon
   )
 
 data UnitHierarchy
@@ -64,14 +64,14 @@ combineQuantities = map getSum . foldr go mempty . reverse . sortBy (\(x, _) (y,
           Nothing -> insertMap nextUnit (Sum nextQuantity) acc
           Just existingKey -> insertWith (<>) existingKey (Sum (nextQuantity * findWithDefault 1 existingKey allConversions)) acc
 
-combineIngredients :: [RecipeIngredient] -> [RecipeIngredient]
+combineIngredients :: [Ingredient] -> [Ingredient]
 combineIngredients =
   mconcat
-    . map (\(name, unitsWithQuantities) -> uncurry (flip (RecipeIngredient name)) <$> mapToList unitsWithQuantities)
+    . map (\(name, unitsWithQuantities) -> uncurry (flip (Ingredient name)) <$> mapToList unitsWithQuantities)
     . mapToList
     . map (combineQuantities . foldr (uncurry (insertWith (+))) mempty)
     . unionsWith (<>)
-    . map (\RecipeIngredient {..} -> asMap $ singletonMap recipeIngredientName [(recipeIngredientUnit, recipeIngredientQuantity)])
+    . map (\Ingredient {..} -> asMap $ singletonMap ingredientName [(ingredientUnit, ingredientQuantity)])
 
 readableQuantityPrecision :: Double
 readableQuantityPrecision = 0.001
@@ -127,28 +127,20 @@ mkUnit = \case
   Just (ReadableUnit x) | x /= "" -> Unit x
   _ -> UnitMissing
 
-mkReadableIngredient :: Ingredient -> ReadableIngredient
-mkReadableIngredient Ingredient {..} = ReadableIngredient
-  { readableIngredientName = ingredientName
-  , readableIngredientQuantity = mkReadableQuantity ingredientQuantity
-  , readableIngredientUnit = mkReadableUnit ingredientUnit
-  , readableIngredientActive = ingredientActive
+mkReadableGroceryItem :: GroceryItem -> ReadableGroceryItem
+mkReadableGroceryItem GroceryItem {..} = ReadableGroceryItem
+  { readableGroceryItemName = groceryItemName
+  , readableGroceryItemQuantity = mkReadableQuantity groceryItemQuantity
+  , readableGroceryItemUnit = mkReadableUnit groceryItemUnit
+  , readableGroceryItemActive = groceryItemActive
   }
 
-mkIngredient :: ReadableIngredient -> Ingredient
-mkIngredient ReadableIngredient {..} = Ingredient
-  { ingredientName = readableIngredientName
-  , ingredientQuantity = mkQuantity readableIngredientQuantity
-  , ingredientUnit = mkUnit readableIngredientUnit
-  , ingredientActive = readableIngredientActive
-  }
-
-mkReadableIngredient' :: RecipeIngredient -> ReadableIngredient
-mkReadableIngredient' RecipeIngredient {..} = ReadableIngredient
-  { readableIngredientName = recipeIngredientName
-  , readableIngredientQuantity = mkReadableQuantity recipeIngredientQuantity
-  , readableIngredientUnit = mkReadableUnit recipeIngredientUnit
-  , readableIngredientActive = True
+mkGroceryItem :: ReadableGroceryItem -> GroceryItem
+mkGroceryItem ReadableGroceryItem {..} = GroceryItem
+  { groceryItemName = readableGroceryItemName
+  , groceryItemQuantity = mkQuantity readableGroceryItemQuantity
+  , groceryItemUnit = mkUnit readableGroceryItemUnit
+  , groceryItemActive = readableGroceryItemActive
   }
 
 mkReadableRecipe :: Recipe -> ReadableRecipe
@@ -156,5 +148,4 @@ mkReadableRecipe Recipe {..} = ReadableRecipe
   { readableRecipeName = recipeName
   , readableRecipeLink = recipeLink
   , readableRecipeActive = recipeActive
-  , readableRecipeIngredients = mkReadableIngredient' <$> recipeIngredients
   }
