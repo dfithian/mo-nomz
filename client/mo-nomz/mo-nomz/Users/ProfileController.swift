@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ProfileController: UIViewController {
+class ProfileController: UITableViewController {
     @IBAction func didTapContactSupport(_ sender: Any) {
         if let url = URL(string: Configuration.supportUrl) {
             if #available(iOS 10.0, *) {
