@@ -11,7 +11,7 @@ extension UIViewController {
     func importFile(_ url: URL) {
         do {
             let content = try String(contentsOf: url, encoding: .utf8)
-            addIngredientBlob(content: content, completion: nil)
+            addGroceryBlob(content: content, completion: nil)
         } catch {
             print("Failed to get file \(error)")
         }
@@ -20,6 +20,6 @@ extension UIViewController {
         addRecipeLink(link: url.absoluteString, completion: nil)
     }
     func importData(_ text: String) {
-        addIngredientBlob(content: text, completion: nil)
+        addGroceryBlob(content: text, completion: nil)
     }
 }

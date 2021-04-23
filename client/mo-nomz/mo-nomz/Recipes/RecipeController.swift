@@ -18,14 +18,24 @@ class RecipeController: UIViewController {
             self?.recipeVc?.active = recipes.filter({ $0.recipe.active })
             self?.recipeVc?.saved = recipes.filter({ !$0.recipe.active })
             DispatchQueue.main.async {
-                self?.recipeVc?.table.reloadData()
+                self?.recipeVc?.tableView.reloadData()
             }
         }
         loadRecipes(completion: completion)
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let vc = segue.destination as? RecipeAddController, segue.identifier == "addItems" {
+        if let vc = segue.destination as? RecipeAddController, segue.identifier == "addLink" {
+            vc.onChange = { () -> Void in
+                self.loadRecipes()
+            }
+        }
+        if let vc = segue.destination as? GroceryAddBlobController, segue.identifier == "addBlob" {
+            vc.onChange = { () -> Void in
+                self.loadRecipes()
+            }
+        }
+        if let vc = segue.destination as? GroceryAddController, segue.identifier == "addGroceries" {
             vc.onChange = { () -> Void in
                 self.loadRecipes()
             }

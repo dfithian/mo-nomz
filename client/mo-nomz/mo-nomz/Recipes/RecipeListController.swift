@@ -14,8 +14,6 @@ struct RecipeWithId: Codable {
 }
 
 class RecipeListController: UITableViewController, UITableViewDragDelegate, UITableViewDropDelegate {
-    @IBOutlet weak var table: UITableView!
-    
     var active: [RecipeWithId] = []
     var saved: [RecipeWithId] = []
     var onChange: (() -> Void)?
@@ -66,7 +64,7 @@ class RecipeListController: UITableViewController, UITableViewDragDelegate, UITa
         case 1:
             collapsed[0] = !collapsed[0]
             DispatchQueue.main.async {
-                self.table.reloadData()
+                self.tableView.reloadData()
             }
             break
         case 2:
@@ -77,7 +75,7 @@ class RecipeListController: UITableViewController, UITableViewDragDelegate, UITa
         case 3:
             collapsed[1] = !collapsed[1]
             DispatchQueue.main.async {
-                self.table.reloadData()
+                self.tableView.reloadData()
             }
             break
         case 4:
@@ -117,8 +115,8 @@ class RecipeListController: UITableViewController, UITableViewDragDelegate, UITa
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         switch indexPath.section {
-        case 1: return self.table.sectionHeaderHeight
-        case 3: return self.table.sectionHeaderHeight
+        case 1: return self.tableView.sectionHeaderHeight
+        case 3: return self.tableView.sectionHeaderHeight
         default: return 44
         }
     }
@@ -183,7 +181,7 @@ class RecipeListController: UITableViewController, UITableViewDragDelegate, UITa
         var proposal = UITableViewDropProposal(operation: .cancel)
         guard destinationIndexPath != nil else { return proposal }
         guard session.items.count == 1 else { return proposal }
-        if table.hasActiveDrag {
+        if tableView.hasActiveDrag {
             proposal = UITableViewDropProposal(operation: .move, intent: .insertAtDestinationIndexPath)
         }
         return proposal
@@ -216,9 +214,9 @@ class RecipeListController: UITableViewController, UITableViewDragDelegate, UITa
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        table.dragDelegate = self
-        table.dropDelegate = self
-        table.dragInteractionEnabled = true
-        table.layer.cornerRadius = 5
+        tableView.dragDelegate = self
+        tableView.dropDelegate = self
+        tableView.dragInteractionEnabled = true
+        tableView.layer.cornerRadius = 5
     }
 }

@@ -22,6 +22,10 @@
 		3774A5A82624769F0029E35D /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3774A5A72624769F0029E35D /* Persistence.swift */; };
 		3774A5B5262489F70029E35D /* ProfileController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3774A5B4262489F70029E35D /* ProfileController.swift */; };
 		3774A5C92624B3E90029E35D /* RecipeAddController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3774A5C82624B3E90029E35D /* RecipeAddController.swift */; };
+		3779AB702632EE0600C332BC /* GroceryAddController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3779AB6F2632EE0600C332BC /* GroceryAddController.swift */; };
+		3779AB742632F07600C332BC /* GroceryAddItemController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3779AB732632F07600C332BC /* GroceryAddItemController.swift */; };
+		3779AB7E2632F39200C332BC /* GroceryAddItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3779AB7D2632F39200C332BC /* GroceryAddItem.swift */; };
+		3779AB8826330C2C00C332BC /* GroceryAddBlobController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3779AB8726330C2C00C332BC /* GroceryAddBlobController.swift */; };
 		378EBD5126214A41008FF6C4 /* Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = 378EBD5026214A41008FF6C4 /* Types.swift */; };
 		378EBD5726214DFE008FF6C4 /* GroceryListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 378EBD5626214DFE008FF6C4 /* GroceryListController.swift */; };
 		379D4786262555FB003DD2C6 /* GroceryMergeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 379D4785262555FB003DD2C6 /* GroceryMergeController.swift */; };
@@ -88,6 +92,10 @@
 		3774A5A72624769F0029E35D /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
 		3774A5B4262489F70029E35D /* ProfileController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileController.swift; sourceTree = "<group>"; };
 		3774A5C82624B3E90029E35D /* RecipeAddController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeAddController.swift; sourceTree = "<group>"; };
+		3779AB6F2632EE0600C332BC /* GroceryAddController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroceryAddController.swift; sourceTree = "<group>"; };
+		3779AB732632F07600C332BC /* GroceryAddItemController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroceryAddItemController.swift; sourceTree = "<group>"; };
+		3779AB7D2632F39200C332BC /* GroceryAddItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroceryAddItem.swift; sourceTree = "<group>"; };
+		3779AB8726330C2C00C332BC /* GroceryAddBlobController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroceryAddBlobController.swift; sourceTree = "<group>"; };
 		378EBD5026214A41008FF6C4 /* Types.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Types.swift; sourceTree = "<group>"; };
 		378EBD5626214DFE008FF6C4 /* GroceryListController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroceryListController.swift; sourceTree = "<group>"; };
 		379D4785262555FB003DD2C6 /* GroceryMergeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroceryMergeController.swift; sourceTree = "<group>"; };
@@ -161,6 +169,10 @@
 				378EBD5626214DFE008FF6C4 /* GroceryListController.swift */,
 				379D4785262555FB003DD2C6 /* GroceryMergeController.swift */,
 				379D479226262104003DD2C6 /* GroceryEditController.swift */,
+				3779AB6F2632EE0600C332BC /* GroceryAddController.swift */,
+				3779AB732632F07600C332BC /* GroceryAddItemController.swift */,
+				3779AB7D2632F39200C332BC /* GroceryAddItem.swift */,
+				3779AB8726330C2C00C332BC /* GroceryAddBlobController.swift */,
 			);
 			path = Groceries;
 			sourceTree = "<group>";
@@ -318,6 +330,7 @@
 				37AEE6382623D5710052304F /* Actions.swift in Sources */,
 				372DDC1E262B1BE200CA83A8 /* Confirmation.swift in Sources */,
 				378EBD5126214A41008FF6C4 /* Types.swift in Sources */,
+				3779AB8826330C2C00C332BC /* GroceryAddBlobController.swift in Sources */,
 				379D479326262104003DD2C6 /* GroceryEditController.swift in Sources */,
 				37145F2B2623CE460011C6C1 /* Configuration.swift in Sources */,
 				379D4786262555FB003DD2C6 /* GroceryMergeController.swift in Sources */,
@@ -327,7 +340,10 @@
 				3750F93F2627F42D0094E733 /* Import.swift in Sources */,
 				376095D926212FBB0015B6F0 /* GroceryController.swift in Sources */,
 				379D479B26264D6E003DD2C6 /* RecipeListController.swift in Sources */,
+				3779AB702632EE0600C332BC /* GroceryAddController.swift in Sources */,
+				3779AB7E2632F39200C332BC /* GroceryAddItem.swift in Sources */,
 				376095C0262125C10015B6F0 /* AppDelegate.swift in Sources */,
+				3779AB742632F07600C332BC /* GroceryAddItemController.swift in Sources */,
 				37E1DC1D2631B7C000330C5B /* UserDefaults.swift in Sources */,
 				372DDC43262B43CB00CA83A8 /* Loading.swift in Sources */,
 				376095C2262125C10015B6F0 /* SceneDelegate.swift in Sources */,

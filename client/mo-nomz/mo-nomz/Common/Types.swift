@@ -124,13 +124,26 @@ struct ImportRecipeLinkRequest: Codable {
     let link: String
 }
 
-struct ImportIngredientSingleRequest: Codable {
+struct ImportGrocerySingle: Codable {
     let name: String
     let quantity: ReadableQuantity
     let unit: String?
+    
+    func render() -> String {
+        switch (quantity.render(), unit) {
+        case (.some(let q), .some(let u)): return "\(q) \(u) \(name)"
+        case (.some(let q), .none): return "\(q) \(name)"
+        case (.none, .some(let u)): return "\(u) \(name)"
+        case (.none, .none): return name
+        }
+    }
 }
 
-struct ImportIngredientBlobRequest: Codable {
+struct ImportGroceryListRequest: Codable {
+    let items: [ImportGrocerySingle]
+}
+
+struct ImportGroceryBlobRequest: Codable {
     let content: String
 }
 

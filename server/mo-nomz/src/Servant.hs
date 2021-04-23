@@ -6,9 +6,9 @@ import Servant.API
   )
 
 import API.Types
-  ( DeleteGroceryItemRequest, DeleteRecipeRequest, GetHealthResponse, IngredientImportBlobRequest
-  , IngredientImportSingleRequest, ListGroceryItemResponse, ListRecipeResponse
-  , MergeGroceryItemRequest, RecipeImportLinkRequest, UpdateRecipeRequest, UserCreateResponse
+  ( DeleteGroceryItemRequest, DeleteRecipeRequest, GetHealthResponse, GroceryImportBlobRequest
+  , GroceryImportListRequest, ListGroceryItemResponse, ListRecipeResponse, MergeGroceryItemRequest
+  , RecipeImportLinkRequest, UpdateRecipeRequest, UserCreateResponse
   )
 import Auth (Authorized)
 import Types (UserId)
@@ -25,8 +25,9 @@ type NomzApi =
     :<|> Authorized :> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "grocery" :> Get '[JSON] ListGroceryItemResponse
     :<|> Authorized :> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "grocery" :> ReqBody '[JSON] MergeGroceryItemRequest :> PostNoContent
     :<|> Authorized :> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "grocery" :> ReqBody '[JSON] DeleteGroceryItemRequest :> DeleteNoContent
-    :<|> Authorized :> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "ingredient" :> "single" :> ReqBody '[JSON] IngredientImportSingleRequest :> PostNoContent
-    :<|> Authorized :> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "ingredient" :> "blob" :> ReqBody '[JSON] IngredientImportBlobRequest :> PostNoContent
+    :<|> Authorized :> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "grocery" :> "clear" :> PostNoContent
+    :<|> Authorized :> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "grocery" :> "list" :> ReqBody '[JSON] GroceryImportListRequest :> PostNoContent
+    :<|> Authorized :> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "grocery" :> "blob" :> ReqBody '[JSON] GroceryImportBlobRequest :> PostNoContent
     :<|> Authorized :> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "recipe" :> "link" :> ReqBody '[JSON] RecipeImportLinkRequest :> PostNoContent
     :<|> Authorized :> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "recipe" :> ReqBody '[JSON] UpdateRecipeRequest :> PostNoContent
     :<|> Authorized :> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "recipe" :> Get '[JSON] ListRecipeResponse

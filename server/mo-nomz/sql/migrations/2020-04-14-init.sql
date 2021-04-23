@@ -9,9 +9,18 @@ create table nomz.user (
   is_valid boolean not null
 );
 
+create table nomz.grocery_item (
+  id bigserial primary key,
+  user_id bigint not null references nomz.user(id) on delete cascade,
+  name citext not null,
+  quantity real null,
+  unit citext null,
+  active boolean not null
+);
+
 create table nomz.recipe (
   id bigserial primary key,
-  user_id bigint not null references nomz.user(id),
+  user_id bigint not null references nomz.user(id) on delete cascade,
   name text not null,
   link text null,
   active boolean not null
@@ -19,20 +28,12 @@ create table nomz.recipe (
 
 create table nomz.ingredient (
   id bigserial primary key,
-  recipe_id bigserial null references nomz.recipe(id),
-  user_id bigint not null references nomz.user(id),
+  recipe_id bigint null references nomz.recipe(id) on delete cascade,
+  grocery_id bigint null references nomz.grocery_item(id) on delete cascade,
+  user_id bigint not null references nomz.user(id) on delete cascade,
   name citext not null,
   quantity real null,
   unit citext null
 );
 
 create index ingredient__recipe_id on nomz.ingredient(recipe_id);
-
-create table nomz.grocery_item (
-  id bigserial primary key,
-  user_id bigint not null references nomz.user(id),
-  name citext not null,
-  quantity real null,
-  unit citext null,
-  active boolean not null
-);

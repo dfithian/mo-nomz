@@ -8,8 +8,6 @@
 import UIKit
 
 class GroceryController: UIViewController {
-    @IBOutlet weak var export: UIButton!
-
     var groceryVc: GroceryListController? = nil
     
     @IBAction func export(_ sender: Any?) {
@@ -21,21 +19,35 @@ class GroceryController: UIViewController {
         present(vc, animated: true, completion: nil)
     }
     
+    @IBAction func clear(_ sender: Any?) {
+        let handler = { [weak self] (action: UIAlertAction) -> Void in self?.clearGroceryItems(completion: self?.loadGroceryItems) }
+        promptForConfirmation(title: "Clear", message: "Are you sure you want to clear your grocery list?", handler: handler)
+    }
+    
     private func loadGroceryItems() {
         let completion = { [weak self] (resp: ListGroceryItemResponse) -> Void in
             let items = resp.items
             self?.groceryVc?.toBuy = items.filter({ $0.item.active })
             self?.groceryVc?.bought = items.filter({ !$0.item.active })
             DispatchQueue.main.async {
-                self?.export.isEnabled = !items.isEmpty
-                self?.groceryVc?.table.reloadData()
+                self?.groceryVc?.tableView.reloadData()
             }
         }
         loadGroceryItems(completion: completion)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let vc = segue.destination as? RecipeAddController, segue.identifier == "addItems" {
+        if let vc = segue.destination as? RecipeAddController, segue.identifier == "addLink" {
+            vc.onChange = { () -> Void in
+                self.loadGroceryItems()
+            }
+        }
+        if let vc = segue.destination as? GroceryAddBlobController, segue.identifier == "addBlob" {
+            vc.onChange = { () -> Void in
+                self.loadGroceryItems()
+            }
+        }
+        if let vc = segue.destination as? GroceryAddController, segue.identifier == "addGroceries" {
             vc.onChange = { () -> Void in
                 self.loadGroceryItems()
             }

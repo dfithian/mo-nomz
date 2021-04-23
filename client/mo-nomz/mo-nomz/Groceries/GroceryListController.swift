@@ -9,8 +9,6 @@ import MobileCoreServices
 import UIKit
 
 class GroceryListController: UITableViewController, UITableViewDragDelegate, UITableViewDropDelegate {
-    @IBOutlet weak var table: UITableView!
-
     var toBuy: [ReadableGroceryItemAggregate] = []
     var bought: [ReadableGroceryItemAggregate] = []
     var onChange: (() -> Void)? = nil
@@ -49,7 +47,7 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
         case 1:
             collapsed[0] = !collapsed[0]
             DispatchQueue.main.async {
-                self.table.reloadData()
+                self.tableView.reloadData()
             }
             break
         case 2:
@@ -58,7 +56,7 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
         case 3:
             collapsed[1] = !collapsed[1]
             DispatchQueue.main.async {
-                self.table.reloadData()
+                self.tableView.reloadData()
             }
             break
         case 4:
@@ -127,8 +125,8 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         switch indexPath.section {
-        case 1: return self.table.sectionHeaderHeight
-        case 3: return self.table.sectionHeaderHeight
+        case 1: return self.tableView.sectionHeaderHeight
+        case 3: return self.tableView.sectionHeaderHeight
         default: return 44
         }
     }
@@ -201,21 +199,21 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
         switch indexPath.section {
         case 2:
             if indexPath.row < toBuy.count {
-                table.scrollToRow(at: indexPath, at: .none, animated: true)
+                tableView.scrollToRow(at: indexPath, at: .none, animated: true)
             } else {
-                table.scrollToRow(at: IndexPath(row: toBuy.count - 1, section: indexPath.section), at: .none, animated: true)
+                tableView.scrollToRow(at: IndexPath(row: toBuy.count - 1, section: indexPath.section), at: .none, animated: true)
             }
             break
         case 4:
             if indexPath.row < bought.count {
-                table.scrollToRow(at: indexPath, at: .none, animated: true)
+                tableView.scrollToRow(at: indexPath, at: .none, animated: true)
             } else {
-                table.scrollToRow(at: IndexPath(row: bought.count - 1, section: indexPath.section), at: .none, animated: true)
+                tableView.scrollToRow(at: IndexPath(row: bought.count - 1, section: indexPath.section), at: .none, animated: true)
             }
             break
         default: break
         }
-        if table.hasActiveDrag {
+        if tableView.hasActiveDrag {
             proposal = UITableViewDropProposal(operation: .move, intent: .insertIntoDestinationIndexPath)
         }
         return proposal
@@ -263,9 +261,9 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        table.dragDelegate = self
-        table.dropDelegate = self
-        table.dragInteractionEnabled = true
-        table.layer.cornerRadius = 5
+        tableView.dragDelegate = self
+        tableView.dropDelegate = self
+        tableView.dragInteractionEnabled = true
+        tableView.layer.cornerRadius = 5
     }
 }

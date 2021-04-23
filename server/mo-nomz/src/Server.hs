@@ -8,13 +8,14 @@ import Database.PostgreSQL.Simple (Connection)
 import Network.URI (parseURI)
 import Servant.API (NoContent(NoContent))
 import Servant.Server (ServerError, err400, err401, err403, err404, err500, errReasonPhrase)
+import qualified Data.Map as Map
 
 import API.Types
   ( DeleteGroceryItemRequest(..), DeleteRecipeRequest(..), GetHealthResponse(..)
-  , IngredientImportBlobRequest(..), IngredientImportSingleRequest(..), ListGroceryItemResponse(..)
-  , ListRecipeResponse(..), MergeGroceryItemRequest(..), ReadableGroceryItem(..)
-  , ReadableGroceryItemAggregate(..), RecipeImportLinkRequest(..), UpdateRecipeRequest(..)
-  , UserCreateResponse(..)
+  , GroceryImportBlobRequest(..), GroceryImportListRequest(..), GroceryImportSingle(..)
+  , ListGroceryItemResponse(..), ListRecipeResponse(..), MergeGroceryItemRequest(..)
+  , ReadableGroceryItem(..), ReadableGroceryItemAggregate(..), RecipeImportLinkRequest(..)
+  , UpdateRecipeRequest(..), UserCreateResponse(..)
   )
 import Auth (Authorization, generateToken, validateToken)
 import Conversion (combineIngredients, mkQuantity, mkReadableGroceryItem, mkReadableRecipe, mkUnit)
@@ -96,6 +97,14 @@ deleteGroceryItem token userId DeleteGroceryItemRequest {..} = do
     Database.deleteGroceryItems c userId (setToList deleteGroceryItemRequestIds)
   pure NoContent
 
+postClearGroceryItems :: AppM m => Authorization -> UserId -> m NoContent
+postClearGroceryItems token userId = do
+  validateUserToken token userId
+  unwrapDb $ withDbConn $ \c -> do
+    Database.clearGroceryItems c userId
+    Database.updateRecipes c userId [] False
+  pure NoContent
+
 postRecipeImportLink :: AppM m => Authorization -> UserId -> RecipeImportLinkRequest -> m NoContent
 postRecipeImportLink token userId RecipeImportLinkRequest {..} = do
   validateUserToken token userId
@@ -112,40 +121,49 @@ postRecipeImportLink token userId RecipeImportLinkRequest {..} = do
     refreshGroceryItems c userId
   pure NoContent
 
-postIngredientImportSingle :: AppM m => Authorization -> UserId -> IngredientImportSingleRequest -> m NoContent
-postIngredientImportSingle token userId IngredientImportSingleRequest {..} = do
+postGroceryImportList :: AppM m => Authorization -> UserId -> GroceryImportListRequest -> m NoContent
+postGroceryImportList token userId GroceryImportListRequest {..} = do
   validateUserToken token userId
-  let ingredient = Ingredient
-        { ingredientName = ingredientImportSingleRequestName
-        , ingredientQuantity = mkQuantity ingredientImportSingleRequestQuantity
-        , ingredientUnit = mkUnit ingredientImportSingleRequestUnit
+  let ingredients = flip map groceryImportListRequestItems $ \GroceryImportSingle {..} -> Ingredient
+        { ingredientName = groceryImportSingleName
+        , ingredientQuantity = mkQuantity groceryImportSingleQuantity
+        , ingredientUnit = mkUnit groceryImportSingleUnit
         }
   unwrapDb $ withDbConn $ \c -> do
-    Database.insertIngredients c userId Nothing [ingredient]
+    groceryItemIds <- Database.insertGroceryItems c userId (ingredientToGroceryItem <$> ingredients)
+    Database.insertGroceryItemIngredients c userId $ zip groceryItemIds ingredients
     refreshGroceryItems c userId
   pure NoContent
 
-postIngredientImportBlob :: AppM m => Authorization -> UserId -> IngredientImportBlobRequest -> m NoContent
-postIngredientImportBlob token userId IngredientImportBlobRequest {..} = do
+postGroceryImportBlob :: AppM m => Authorization -> UserId -> GroceryImportBlobRequest -> m NoContent
+postGroceryImportBlob token userId GroceryImportBlobRequest {..} = do
   validateUserToken token userId
-  ingredients <- mapError (\e -> err500 { errReasonPhrase = unpack e }) $ parseIngredients ingredientImportBlobRequestContent
+  ingredients <- mapError (\e -> err500 { errReasonPhrase = unpack e }) $ parseIngredients groceryImportBlobRequestContent
   unwrapDb $ withDbConn $ \c -> do
-    Database.insertIngredients c userId Nothing ingredients
+    groceryItemIds <- Database.insertGroceryItems c userId (ingredientToGroceryItem <$> ingredients)
+    Database.insertGroceryItemIngredients c userId $ zip groceryItemIds ingredients
     refreshGroceryItems c userId
   pure NoContent
 
 refreshGroceryItems :: Connection -> UserId -> IO ()
 refreshGroceryItems c userId = do
-  groceryItems <- map ingredientToGroceryItem . combineIngredients <$> Database.selectActiveIngredients c userId
-  Database.deleteGroceryItems c userId []
-  Database.insertGroceryItems c userId groceryItems
+  existingGroceryItems <- Database.selectGroceryItems c userId []
+  ingredients <- Database.selectActiveIngredients c userId
+  let remap (groceryItemId, GroceryItem {..}) = insertWith (<>) (groceryItemName, groceryItemUnit) (asSet $ singletonSet groceryItemId)
+      existingGroceryItemIdsByNameAndUnit = asMap . foldr remap mempty . mapToList $ existingGroceryItems
+      groceryItems = ingredientToGroceryItem <$> combineIngredients ingredients
+  newGroceryItemIds <- Database.insertGroceryItems c userId groceryItems
+  for_ (zip newGroceryItemIds groceryItems) $ \(groceryItemId, GroceryItem {..}) -> do
+    let existingGroceryItemIds = findWithDefault mempty (groceryItemName, groceryItemUnit) existingGroceryItemIdsByNameAndUnit
+    Database.updateIngredientGroceryItemIds c userId (setToList existingGroceryItemIds) groceryItemId
+  Database.deleteGroceryItems c userId (Map.keys existingGroceryItems)
 
 postUpdateRecipe :: AppM m => Authorization -> UserId -> UpdateRecipeRequest -> m NoContent
 postUpdateRecipe token userId UpdateRecipeRequest {..} = do
   validateUserToken token userId
   unwrapDb $ withDbConn $ \c -> do
     void $ maybe (throwIO err404) pure . headMay =<< Database.selectRecipes c userId [updateRecipeRequestId]
-    Database.updateRecipe c userId updateRecipeRequestId updateRecipeRequestActive
+    Database.updateRecipes c userId [updateRecipeRequestId] updateRecipeRequestActive
     refreshGroceryItems c userId
   pure NoContent
 

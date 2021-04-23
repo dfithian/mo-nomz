@@ -17,4 +17,8 @@ class ProfileController: UITableViewController {
             }
         }
     }
+    
+    override func viewDidLoad() {
+        tableView.layer.cornerRadius = 5
+    }
 }

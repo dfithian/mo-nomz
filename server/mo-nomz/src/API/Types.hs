@@ -60,15 +60,20 @@ data RecipeImportLinkRequest = RecipeImportLinkRequest
   }
   deriving (Eq, Ord, Show)
 
-data IngredientImportBlobRequest = IngredientImportBlobRequest
-  { ingredientImportBlobRequestContent :: Text
+data GroceryImportBlobRequest = GroceryImportBlobRequest
+  { groceryImportBlobRequestContent :: Text
   }
   deriving (Eq, Ord, Show)
 
-data IngredientImportSingleRequest = IngredientImportSingleRequest
-  { ingredientImportSingleRequestName     :: IngredientName
-  , ingredientImportSingleRequestQuantity :: ReadableQuantity
-  , ingredientImportSingleRequestUnit     :: Maybe ReadableUnit
+data GroceryImportSingle = GroceryImportSingle
+  { groceryImportSingleName     :: IngredientName
+  , groceryImportSingleQuantity :: ReadableQuantity
+  , groceryImportSingleUnit     :: Maybe ReadableUnit
+  }
+  deriving (Eq, Ord, Show)
+
+data GroceryImportListRequest = GroceryImportListRequest
+  { groceryImportListRequestItems :: [GroceryImportSingle]
   }
   deriving (Eq, Ord, Show)
 
@@ -103,8 +108,9 @@ deriveJSON (jsonOptions "readableGroceryItem") ''ReadableGroceryItem
 deriveJSON (jsonOptions "readableGroceryItemAggregate") ''ReadableGroceryItemAggregate
 deriveJSON (jsonOptions "listGroceryItemResponse") ''ListGroceryItemResponse
 deriveJSON (jsonOptions "recipeImportLinkRequest") ''RecipeImportLinkRequest
-deriveJSON (jsonOptions "ingredientImportSingleRequest") ''IngredientImportSingleRequest
-deriveJSON (jsonOptions "ingredientImportBlobRequest") ''IngredientImportBlobRequest
+deriveJSON (jsonOptions "groceryImportSingle") ''GroceryImportSingle
+deriveJSON (jsonOptions "groceryImportListRequest") ''GroceryImportListRequest
+deriveJSON (jsonOptions "groceryImportBlobRequest") ''GroceryImportBlobRequest
 deriveJSON (jsonOptions "updateRecipeRequest") ''UpdateRecipeRequest
 deriveJSON (jsonOptions "deleteRecipeRequest") ''DeleteRecipeRequest
 deriveJSON (jsonOptions "readableRecipe") ''ReadableRecipe

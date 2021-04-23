@@ -78,6 +78,20 @@ extension UIViewController {
         task.resume()
     }
     
+    func clearGroceryItems(completion: (() -> Void)?) {
+        let spinner = startLoading()
+        guard let state = Persistence.loadState() else { return }
+        var req = URLRequest(url: URL(string: Configuration.baseURL + "api/v1/user/" + String(state.userId) + "/grocery/clear")!)
+        req.addValue(state.apiToken, forHTTPHeaderField: "X-Mo-Nomz-API-Token")
+        req.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        req.httpMethod = "POST"
+        let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
+            self.stopLoading(spinner)
+            self.defaultWithCompletion(data: data, resp: resp, error: error, completion: completion)
+        })
+        task.resume()
+    }
+    
     func loadRecipes(completion: ((ListRecipeResponse) -> Void)?) {
         let spinner = startLoading()
         guard let state = Persistence.loadState() else { return }
@@ -98,14 +112,14 @@ extension UIViewController {
         task.resume()
     }
     
-    func addIngredientSingle(name: String, quantity: ReadableQuantity, unit: String?, completion: (() -> Void)?) {
+    func addGroceryList(items: [ImportGrocerySingle], completion: (() -> Void)?) {
         let spinner = startLoading()
         guard let state = Persistence.loadState() else { return }
-        var req = URLRequest(url: URL(string: Configuration.baseURL + "api/v1/user/" + String(state.userId) + "/ingredient/single")!)
+        var req = URLRequest(url: URL(string: Configuration.baseURL + "api/v1/user/" + String(state.userId) + "/grocery/list")!)
         req.addValue(state.apiToken, forHTTPHeaderField: "X-Mo-Nomz-API-Token")
         req.addValue("application/json", forHTTPHeaderField: "Content-Type")
         req.httpMethod = "POST"
-        req.httpBody = try? JSONEncoder().encode(ImportIngredientSingleRequest(name: name, quantity: quantity, unit: unit))
+        req.httpBody = try? JSONEncoder().encode(ImportGroceryListRequest(items: items))
         let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
             self.stopLoading(spinner)
             self.defaultWithCompletion(data: data, resp: resp, error: error, completion: completion)
@@ -113,14 +127,14 @@ extension UIViewController {
         task.resume()
     }
     
-    func addIngredientBlob(content: String, completion: (() -> Void)?) {
+    func addGroceryBlob(content: String, completion: (() -> Void)?) {
         let spinner = startLoading()
         guard let state = Persistence.loadState() else { return }
-        var req = URLRequest(url: URL(string: Configuration.baseURL + "api/v1/user/" + String(state.userId) + "/ingredient/blob")!)
+        var req = URLRequest(url: URL(string: Configuration.baseURL + "api/v1/user/" + String(state.userId) + "/grocery/blob")!)
         req.addValue(state.apiToken, forHTTPHeaderField: "X-Mo-Nomz-API-Token")
         req.addValue("application/json", forHTTPHeaderField: "Content-Type")
         req.httpMethod = "POST"
-        req.httpBody = try? JSONEncoder().encode(ImportIngredientBlobRequest(content: content))
+        req.httpBody = try? JSONEncoder().encode(ImportGroceryBlobRequest(content: content))
         let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
             self.stopLoading(spinner)
             self.defaultWithCompletion(data: data, resp: resp, error: error, completion: completion)
@@ -138,7 +152,7 @@ extension UIViewController {
         req.httpBody = try? JSONEncoder().encode(ImportRecipeLinkRequest(link: link))
         let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
             self.stopLoading(spinner)
-            let onUnsuccessfulStatus = { (resp: URLResponse?) -> Void in self.alertUnsuccessful("Please paste or enter ingredients manually.")
+            let onUnsuccessfulStatus = { (resp: URLResponse?) -> Void in self.alertUnsuccessful("Please enter ingredients manually.")
             }
             self.withCompletion(data: data, resp: resp, error: error, completion: completion, onUnsuccessfulStatus: onUnsuccessfulStatus, onError: self.defaultOnError)
         })
