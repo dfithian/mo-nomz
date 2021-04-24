@@ -3,8 +3,8 @@ module Servant where
 import ClassyPrelude
 import Data.Proxy (Proxy(..))
 import Servant.API
-  ( (:<|>), (:>), Capture, DeleteNoContent, Get, JSON, Post, PostNoContent, Raw, ReqBody
-  , Headers, Header, OctetStream, Verb, StdMethod(GET)
+  ( StdMethod(GET), (:<|>), (:>), Capture, DeleteNoContent, Get, Header, Headers, JSON, OctetStream
+  , Post, PostNoContent, Raw, ReqBody, Verb
   )
 
 import API.Types

@@ -13,13 +13,13 @@ import Database.PostgreSQL.Simple.Migration
   )
 import Network.Wai.Handler.Warp (Settings, defaultSettings, runSettings, setPort)
 import Network.Wai.Middleware.RequestLogger (mkRequestLogger)
-import Servant.API ((:<|>)(..), addHeader, Headers, Header)
+import Servant.API ((:<|>)(..), Header, Headers, addHeader)
 import Servant.Server (ServerT, hoistServer, serve)
 import Servant.Server.StaticFiles (serveDirectoryWith)
 import WaiAppStatic.Storage.Filesystem (defaultFileServerSettings)
 import WaiAppStatic.Types (ssListing)
 
-import Foundation (App(..), NomzServer, runNomzServer, withDbConn, AppM)
+import Foundation (App(..), AppM, NomzServer, runNomzServer, withDbConn)
 import Servant (NomzApi, nomzApi, wholeApi)
 import Server
   ( deleteGroceryItem, deleteRecipes, getGroceryItems, getHealth, getRecipes, postClearGroceryItems
