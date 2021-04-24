@@ -5,6 +5,7 @@
 //  Created by Dan Fithian on 4/9/21.
 //
 
+import GoogleMobileAds
 import UIKit
 
 class GroceryController: UIViewController {

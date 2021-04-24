@@ -5,6 +5,7 @@
 //  Created by Dan Fithian on 4/9/21.
 //
 
+import GoogleMobileAds
 import UIKit
 
 @main
@@ -17,6 +18,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             Persistence.clearState()
             UserDefaults.shared.setValue("true", forKey: "firstRun")
         }
+        GADMobileAds.sharedInstance().start(completionHandler: nil)
         return true
     }
 

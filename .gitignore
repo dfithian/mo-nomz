@@ -3,3 +3,5 @@ tmp
 *.cabal
 *.log
 project.xcworkspace/
+Pods/
+Podfile.lock
