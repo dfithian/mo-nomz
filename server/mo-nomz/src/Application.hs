@@ -13,13 +13,13 @@ import Database.PostgreSQL.Simple.Migration
   )
 import Network.Wai.Handler.Warp (Settings, defaultSettings, runSettings, setPort)
 import Network.Wai.Middleware.RequestLogger (mkRequestLogger)
-import Servant.API ((:<|>)(..))
+import Servant.API ((:<|>)(..), addHeader, Headers, Header)
 import Servant.Server (ServerT, hoistServer, serve)
 import Servant.Server.StaticFiles (serveDirectoryWith)
 import WaiAppStatic.Storage.Filesystem (defaultFileServerSettings)
 import WaiAppStatic.Types (ssListing)
 
-import Foundation (App(..), NomzServer, runNomzServer, withDbConn)
+import Foundation (App(..), NomzServer, runNomzServer, withDbConn, AppM)
 import Servant (NomzApi, nomzApi, wholeApi)
 import Server
   ( deleteGroceryItem, deleteRecipes, getGroceryItems, getHealth, getRecipes, postClearGroceryItems
@@ -28,9 +28,14 @@ import Server
   )
 import Settings (AppSettings(..), DatabaseSettings(..), staticSettings)
 
+getStaticAsset :: AppM m => m (Headers '[Header "Location" String] ByteString)
+getStaticAsset = pure $ addHeader "https://monomzsupport.wordpress.com" ""
+
 nomzServer :: ServerT NomzApi NomzServer
 nomzServer =
-  getHealth
+  getStaticAsset
+    :<|> getStaticAsset
+    :<|> getHealth
     :<|> postCreateUser
     :<|> getGroceryItems
     :<|> postMergeGroceryItem

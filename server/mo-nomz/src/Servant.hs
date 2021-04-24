@@ -1,8 +1,10 @@
 module Servant where
 
+import ClassyPrelude
 import Data.Proxy (Proxy(..))
 import Servant.API
   ( (:<|>), (:>), Capture, DeleteNoContent, Get, JSON, Post, PostNoContent, Raw, ReqBody
+  , Headers, Header, OctetStream, Verb, StdMethod(GET)
   )
 
 import API.Types
@@ -20,7 +22,9 @@ nomzApi :: Proxy NomzApi
 nomzApi = Proxy
 
 type NomzApi =
-  "health" :> Get '[JSON] GetHealthResponse
+  Verb 'GET 307 '[OctetStream] (Headers '[Header "Location" String] ByteString)
+    :<|> "index.html" :> Verb 'GET 307 '[OctetStream] (Headers '[Header "Location" String] ByteString)
+    :<|> "health" :> Get '[JSON] GetHealthResponse
     :<|> "api" :> "v1" :> "user" :> Post '[JSON] UserCreateResponse
     :<|> Authorized :> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "grocery" :> Get '[JSON] ListGroceryItemResponse
     :<|> Authorized :> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "grocery" :> ReqBody '[JSON] MergeGroceryItemRequest :> PostNoContent
