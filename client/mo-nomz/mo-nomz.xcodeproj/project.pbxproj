@@ -113,6 +113,8 @@
 		37E1DC022631B00300330C5B /* mo-nomzDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "mo-nomzDebug.entitlements"; sourceTree = "<group>"; };
 		37E1DC052631B02800330C5B /* sharingDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = sharingDebug.entitlements; sourceTree = "<group>"; };
 		37E1DC1C2631B7C000330C5B /* UserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaults.swift; sourceTree = "<group>"; };
+		37EAACF726339C14006D9184 /* mo-nomzRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "mo-nomzRelease.entitlements"; sourceTree = "<group>"; };
+		37EAACF826339C2E006D9184 /* sharingRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = sharingRelease.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -146,6 +148,7 @@
 		376095BE262125C00015B6F0 /* mo-nomz */ = {
 			isa = PBXGroup;
 			children = (
+				37EAACF726339C14006D9184 /* mo-nomzRelease.entitlements */,
 				37E1DC022631B00300330C5B /* mo-nomzDebug.entitlements */,
 				379D479526264B05003DD2C6 /* Recipes */,
 				377444F02624DF3600159097 /* Groceries */,
@@ -217,6 +220,7 @@
 		37E1DBED262FCE3600330C5B /* sharing */ = {
 			isa = PBXGroup;
 			children = (
+				37EAACF826339C2E006D9184 /* sharingRelease.entitlements */,
 				37E1DC052631B02800330C5B /* sharingDebug.entitlements */,
 				37E1DBFE2630BCD700330C5B /* MainInterface.storyboard */,
 				37E1DBEE262FCE3600330C5B /* ShareViewController.swift */,
@@ -524,13 +528,14 @@
 				CODE_SIGN_ENTITLEMENTS = "mo-nomz/mo-nomzDebug.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = 5A6Y383S44;
 				INFOPLIST_FILE = "mo-nomz/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "mo-nomz.mo-nomz";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -545,15 +550,17 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "mo-nomz/mo-nomzRelease.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = 5A6Y383S44;
 				INFOPLIST_FILE = "mo-nomz/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "mo-nomz.mo-nomz";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -568,6 +575,7 @@
 				CODE_SIGN_ENTITLEMENTS = sharing/sharingDebug.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = 5A6Y383S44;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -579,19 +587,22 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
+				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "mo-nomz.mo-nomz.sharing";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
 		37E1DBF9262FCE3600330C5B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = sharing/sharingRelease.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = 5A6Y383S44;
 				INFOPLIST_FILE = sharing/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -599,11 +610,12 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
+				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "mo-nomz.mo-nomz.sharing";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

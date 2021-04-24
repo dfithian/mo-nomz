@@ -20,11 +20,11 @@ class GroceryController: UIViewController {
     }
     
     @IBAction func clear(_ sender: Any?) {
-        let handler = { [weak self] (action: UIAlertAction) -> Void in self?.clearGroceryItems(completion: self?.loadGroceryItems) }
+        let handler = { [weak self] (action: UIAlertAction) -> Void in self?.clearGroceryItems(completion: self?.loadData) }
         promptForConfirmation(title: "Clear", message: "Are you sure you want to clear your grocery list?", handler: handler)
     }
     
-    private func loadGroceryItems() {
+    @objc func loadData() {
         let completion = { [weak self] (resp: ListGroceryItemResponse) -> Void in
             let items = resp.items
             self?.groceryVc?.toBuy = items.filter({ $0.item.active })
@@ -39,30 +39,34 @@ class GroceryController: UIViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let vc = segue.destination as? RecipeAddController, segue.identifier == "addLink" {
             vc.onChange = { () -> Void in
-                self.loadGroceryItems()
+                self.loadData()
             }
         }
         if let vc = segue.destination as? GroceryAddBlobController, segue.identifier == "addBlob" {
             vc.onChange = { () -> Void in
-                self.loadGroceryItems()
+                self.loadData()
             }
         }
         if let vc = segue.destination as? GroceryAddController, segue.identifier == "addGroceries" {
             vc.onChange = { () -> Void in
-                self.loadGroceryItems()
+                self.loadData()
             }
         }
         if let vc = segue.destination as? GroceryListController, segue.identifier == "embedGroceryItems" {
             groceryVc = vc
-            loadGroceryItems()
+            loadData()
             vc.onChange = { () -> Void in
-                self.loadGroceryItems()
+                self.loadData()
             }
         }
     }
     
+    override func viewDidLoad() {
+        NotificationCenter.default.addObserver(self, selector: #selector(loadData), name: UIApplication.willEnterForegroundNotification, object: nil)
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        loadGroceryItems()
+        loadData()
     }
 }

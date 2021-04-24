@@ -10,7 +10,7 @@ import UIKit
 class RecipeController: UIViewController {
     var recipeVc: RecipeListController? = nil
 
-    private func loadRecipes() {
+    @objc func loadData() {
         let completion = { [weak self] (resp: ListRecipeResponse) -> Void in
             let recipes = resp.recipes.map({
                 RecipeWithId(recipe: $0.value, id: $0.key)
@@ -27,30 +27,34 @@ class RecipeController: UIViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let vc = segue.destination as? RecipeAddController, segue.identifier == "addLink" {
             vc.onChange = { () -> Void in
-                self.loadRecipes()
+                self.loadData()
             }
         }
         if let vc = segue.destination as? GroceryAddBlobController, segue.identifier == "addBlob" {
             vc.onChange = { () -> Void in
-                self.loadRecipes()
+                self.loadData()
             }
         }
         if let vc = segue.destination as? GroceryAddController, segue.identifier == "addGroceries" {
             vc.onChange = { () -> Void in
-                self.loadRecipes()
+                self.loadData()
             }
         }
         if let vc = segue.destination as? RecipeListController, segue.identifier == "embedRecipes" {
             recipeVc = vc
-            loadRecipes()
+            loadData()
             vc.onChange = { () -> Void in
-                self.loadRecipes()
+                self.loadData()
             }
         }
     }
     
+    override func viewDidLoad() {
+        NotificationCenter.default.addObserver(self, selector: #selector(loadData), name: UIApplication.willEnterForegroundNotification, object: nil)
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        loadRecipes()
+        loadData()
     }
 }
