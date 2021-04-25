@@ -47,8 +47,8 @@ instance ToJSON AppSettings where
     , "bcrypt-cost" .= appBcryptCost
     ]
 
-staticSettings :: Value
-staticSettings = toJSON $ AppSettings
+staticSettings :: AppSettings
+staticSettings = AppSettings
   { appPort = 8080
   , appDatabase = DatabaseSettings
     { databaseSettingsConnStr = "postgres://postgres:postgres@localhost:5432/postgres"
@@ -58,3 +58,6 @@ staticSettings = toJSON $ AppSettings
   , appStaticDir = "server/mo-nomz/assets"
   , appBcryptCost = 4
   }
+
+staticSettingsValue :: Value
+staticSettingsValue = toJSON staticSettings

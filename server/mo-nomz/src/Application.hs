@@ -26,7 +26,7 @@ import Server
   , postCreateUser, postGroceryImportBlob, postGroceryImportList, postMergeGroceryItem
   , postRecipeImportLink, postUpdateRecipe
   )
-import Settings (AppSettings(..), DatabaseSettings(..), staticSettings)
+import Settings (AppSettings(..), DatabaseSettings(..), staticSettingsValue)
 
 getStaticAsset :: AppM m => m (Headers '[Header "Location" String] ByteString)
 getStaticAsset = pure $ addHeader "https://monomzsupport.wordpress.com" ""
@@ -73,7 +73,7 @@ warpSettings app =
 
 appMain :: IO ()
 appMain = do
-  settings <- loadYamlSettingsArgs [staticSettings] useEnv
+  settings <- loadYamlSettingsArgs [staticSettingsValue] useEnv
   app <- makeFoundation settings
   migrateDatabase app
   let staticFileSettings = (defaultFileServerSettings $ appStaticDir $ appSettings app)

@@ -30,11 +30,17 @@ class HasDatabase a where
 instance HasDatabase App where
   connectionPool = appConnectionPool
 
+instance HasDatabase (Pool Connection) where
+  connectionPool = id
+
 class HasSettings a where
   settings :: a -> AppSettings
 
 instance HasSettings App where
   settings = appSettings
+
+instance HasSettings AppSettings where
+  settings = id
 
 withDbConn :: (HasDatabase r, MonadIO m, MonadLoggerIO m, MonadReader r m) => (Connection -> IO a) -> m (Either SomeException a)
 withDbConn f = do

@@ -46,6 +46,7 @@ runExceptT $ scrapeUrl =<< maybe (fail "missing") pure (parseURI x)
     - [ ] Platform detection instead of guessing
     - [ ] Smarter scraper - use AST
 
+- https://cooking.nytimes.com/
 - https://greenkitchenstories.com/
 - http://www.mymoroccanfood.com/
 - http://annajones.co.uk/

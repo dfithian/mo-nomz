@@ -54,6 +54,9 @@ data Unit
 newtype GroceryItemId = GroceryItemId { unGroceryItemId :: Int }
   deriving (Eq, Ord, Show, FromJSON, FromJSONKey, ToJSON, ToJSONKey, FromField, ToField, FromHttpApiData, ToHttpApiData)
 
+newtype IngredientId = IngredientId { unIngredientId :: Int }
+  deriving (Eq, Ord, Show, FromJSON, FromJSONKey, ToJSON, ToJSONKey, FromField, ToField, FromHttpApiData, ToHttpApiData)
+
 newtype RecipeId = RecipeId { unRecipeId :: Int }
   deriving (Eq, Ord, Show, FromJSON, FromJSONKey, ToJSON, ToJSONKey, FromField, ToField, FromHttpApiData, ToHttpApiData)
 
@@ -123,6 +126,9 @@ deriveJSON (jsonOptions "readableQuantity") ''ReadableQuantity
 uncurry3 :: (a -> b -> c -> d) -> (a, b, c) -> d
 uncurry3 f (x, y, z) = f x y z
 
+uncurry4 :: (a -> b -> c -> d -> e) -> (a, b, c, d) -> e
+uncurry4 f (x, y, z, w) = f x y z w
+
 mapError :: (MonadError e2 m) => (e1 -> e2) -> ExceptT e1 m a -> m a
 mapError f = either (throwError . f) pure <=< runExceptT
 
@@ -139,11 +145,14 @@ sprinkle = Unit "sprinkle"
 whole = Unit "whole"
 
 ingredientToGroceryItem :: Ingredient -> GroceryItem
-ingredientToGroceryItem Ingredient {..} = GroceryItem
+ingredientToGroceryItem = ingredientToGroceryItem' True
+
+ingredientToGroceryItem' :: Bool -> Ingredient -> GroceryItem
+ingredientToGroceryItem' active Ingredient {..} = GroceryItem
   { groceryItemName = ingredientName
   , groceryItemQuantity = ingredientQuantity
   , groceryItemUnit = ingredientUnit
-  , groceryItemActive = True
+  , groceryItemActive = active
   }
 
 groceryItemToIngredient :: GroceryItem -> Ingredient
