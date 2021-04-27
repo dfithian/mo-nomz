@@ -30,11 +30,6 @@ class RecipeController: UIViewController {
                 self.loadData()
             }
         }
-        if let vc = segue.destination as? GroceryAddBlobController, segue.identifier == "addBlob" {
-            vc.onChange = { () -> Void in
-                self.loadData()
-            }
-        }
         if let vc = segue.destination as? GroceryAddController, segue.identifier == "addGroceries" {
             vc.onChange = { () -> Void in
                 self.loadData()

@@ -89,8 +89,7 @@ class RecipeListController: UITableViewController, UITableViewDragDelegate, UITa
     }
     
     func deleteRow(_ id: Int) {
-        let handler = { [weak self] (action: UIAlertAction) -> Void in self?.deleteRecipes(recipeIds: [id], completion: self?.onChange) }
-        promptForConfirmation(title: "Delete", message: "Are you sure you want to delete this recipe?", handler: handler)
+        deleteRecipes(recipeIds: [id], completion: onChange)
     }
     
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {

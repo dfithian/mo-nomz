@@ -7,6 +7,10 @@
 
 import Foundation
 
+struct Preferences {
+    let dismissedMergeWarning: Bool
+}
+
 struct State {
     let userId: Int
     let apiToken: String
@@ -48,5 +52,12 @@ class Persistence {
         ] as CFDictionary
         var ref: AnyObject?
         SecItemAdd(query, &ref)
+    }
+    static func loadPreferencess() -> Preferences {
+        let dismissedMergeWarning = UserDefaults.shared.bool(forKey: "dismissedMergeWarning")
+        return Preferences(dismissedMergeWarning: dismissedMergeWarning)
+    }
+    static func setPreferences(_ preferences: Preferences) {
+        UserDefaults.shared.set(preferences.dismissedMergeWarning, forKey: "dismissedMergeWarning")
     }
 }

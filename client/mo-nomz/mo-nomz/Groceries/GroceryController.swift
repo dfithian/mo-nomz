@@ -13,11 +13,14 @@ class GroceryController: UIViewController {
     
     @IBAction func export(_ sender: Any?) {
         let items: [ReadableGroceryItemAggregate] = groceryVc?.toBuy ?? []
-        let exportText: String = items.map({ (x: ReadableGroceryItemAggregate) -> String in
-            return x.item.render()
-        }).joined(separator: "\n")
-        let vc = UIActivityViewController(activityItems: [exportText], applicationActivities: nil)
-        present(vc, animated: true, completion: nil)
+        if !items.isEmpty {
+            let itemsText: String = items.map({ (x: ReadableGroceryItemAggregate) -> String in
+                return x.item.render()
+            }).joined(separator: "\n")
+            let exportText: String = "Grocery List\n\(itemsText)"
+            let vc = UIActivityViewController(activityItems: [exportText], applicationActivities: nil)
+            present(vc, animated: true, completion: nil)
+        }
     }
     
     @IBAction func clear(_ sender: Any?) {
@@ -39,11 +42,6 @@ class GroceryController: UIViewController {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let vc = segue.destination as? RecipeAddController, segue.identifier == "addLink" {
-            vc.onChange = { () -> Void in
-                self.loadData()
-            }
-        }
-        if let vc = segue.destination as? GroceryAddBlobController, segue.identifier == "addBlob" {
             vc.onChange = { () -> Void in
                 self.loadData()
             }

@@ -94,8 +94,7 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
     }
     
     func deleteRow(_ ids: [Int]) {
-        let handler = { [weak self] (action: UIAlertAction) -> Void in self?.deleteGroceryItems(groceryItemIds: ids, completion: self?.onChange) }
-        promptForConfirmation(title: "Delete", message: "Are you sure you want to delete this item?", handler: handler)
+        deleteGroceryItems(groceryItemIds: ids, completion: onChange)
     }
     
     func editRow(item: ReadableGroceryItemAggregate) {
@@ -236,9 +235,28 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
             guard let strings = items as? [String] else { return }
             for string in strings {
                 do {
+                    let prefs = Persistence.loadPreferencess()
                     let new = try JSONDecoder().decode(ReadableGroceryItemAggregate.self, from: string.data(using: .utf8)!)
-                    self.mergeItems = (existing.item, new.item, existing.ids + new.ids)
-                    self.performSegue(withIdentifier: "mergeItems", sender: nil)
+                    let run = { () -> Void in
+                        self.mergeItems = (existing.item, new.item, existing.ids + new.ids)
+                        self.performSegue(withIdentifier: "mergeItems", sender: nil)
+                    }
+                    let runAndIgnore = { () -> Void in
+                        Persistence.setPreferences(Preferences(dismissedMergeWarning: true))
+                        run()
+                    }
+                    if !prefs.dismissedMergeWarning {
+                        self.promptForConfirmationThree(
+                            title: "Warning",
+                            message: "Merging items may result in unexpected behavior when deleting recipes. If you need to delete recipes, do that first.",
+                            option1Button: "OK",
+                            option1Handler: { _ in run() },
+                            option2Button: "Ignore future warnings",
+                            option2Handler: { _ in runAndIgnore() }
+                        )
+                    } else {
+                        run()
+                    }
                 } catch {
                     print("Failed completing drag and drop \(error)")
                 }

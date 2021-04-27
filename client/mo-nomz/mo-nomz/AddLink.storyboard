@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Ms8-y4-OJq">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Recipe Add Controller-->
+        <scene sceneID="1aR-Du-ywv">
+            <objects>
+                <viewController id="Ms8-y4-OJq" customClass="RecipeAddController" customModule="mo_nomz" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="74V-BG-6kF">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Add a recipe link or search" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5cf-nz-bWX">
+                                <rect key="frame" x="20" y="104" width="346" height="24"/>
+                                <fontDescription key="fontDescription" type="italicSystem" pointSize="20"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="MEe-TH-D0D">
+                                <rect key="frame" x="0.0" y="813" width="414" height="49"/>
+                                <items>
+                                    <barButtonItem title="Cancel" id="ZTP-cd-UPg">
+                                        <color key="tintColor" systemColor="systemRedColor"/>
+                                        <connections>
+                                            <action selector="didTapCancel:" destination="Ms8-y4-OJq" id="M4T-AV-RhK"/>
+                                        </connections>
+                                    </barButtonItem>
+                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="9nF-FY-4DW"/>
+                                    <barButtonItem title="Add to list" id="9Pj-Cq-8zq">
+                                        <connections>
+                                            <action selector="didTapSave:" destination="Ms8-y4-OJq" id="fZq-eM-XRV"/>
+                                        </connections>
+                                    </barButtonItem>
+                                </items>
+                            </toolbar>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Add groceries" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="b7o-a3-ELH">
+                                <rect key="frame" x="129" y="64" width="156" height="32"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="26"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="m8F-Jv-mQa">
+                                <rect key="frame" x="374" y="106" width="20" height="22"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="22" id="amc-Zk-Q7A"/>
+                                    <constraint firstAttribute="width" constant="20" id="bKh-9D-DVS"/>
+                                </constraints>
+                                <state key="normal" image="magnifyingglass" catalog="system"/>
+                                <connections>
+                                    <action selector="didTapSearch:" destination="Ms8-y4-OJq" eventType="touchUpInside" id="FtU-Bi-qre"/>
+                                </connections>
+                            </button>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Link or search" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="pQ7-wk-6oi">
+                                <rect key="frame" x="20" y="136" width="374" height="34"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="Q7p-DJ-Ogd"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="MEe-TH-D0D" firstAttribute="leading" secondItem="Q7p-DJ-Ogd" secondAttribute="leading" id="5wZ-YY-kJj"/>
+                            <constraint firstItem="b7o-a3-ELH" firstAttribute="top" secondItem="Q7p-DJ-Ogd" secondAttribute="top" constant="20" id="Nbh-be-Tmf"/>
+                            <constraint firstItem="pQ7-wk-6oi" firstAttribute="leading" secondItem="Q7p-DJ-Ogd" secondAttribute="leading" constant="20" id="OtG-k2-gxA"/>
+                            <constraint firstItem="b7o-a3-ELH" firstAttribute="centerX" secondItem="74V-BG-6kF" secondAttribute="centerX" id="QKU-vf-z5J"/>
+                            <constraint firstItem="Q7p-DJ-Ogd" firstAttribute="trailing" secondItem="m8F-Jv-mQa" secondAttribute="trailing" constant="20" id="cJw-D2-HaM"/>
+                            <constraint firstItem="5cf-nz-bWX" firstAttribute="leading" secondItem="Q7p-DJ-Ogd" secondAttribute="leading" constant="20" id="fba-2L-c7s"/>
+                            <constraint firstItem="5cf-nz-bWX" firstAttribute="top" secondItem="b7o-a3-ELH" secondAttribute="bottom" constant="8" symbolic="YES" id="gX2-M0-Rag"/>
+                            <constraint firstItem="MEe-TH-D0D" firstAttribute="bottom" secondItem="Q7p-DJ-Ogd" secondAttribute="bottom" id="mug-3c-7JG"/>
+                            <constraint firstItem="Q7p-DJ-Ogd" firstAttribute="trailing" secondItem="pQ7-wk-6oi" secondAttribute="trailing" constant="20" id="oSG-NX-N7r"/>
+                            <constraint firstItem="pQ7-wk-6oi" firstAttribute="top" secondItem="5cf-nz-bWX" secondAttribute="bottom" constant="8" symbolic="YES" id="pPm-EX-T10"/>
+                            <constraint firstItem="MEe-TH-D0D" firstAttribute="trailing" secondItem="Q7p-DJ-Ogd" secondAttribute="trailing" id="sNW-hc-X4X"/>
+                            <constraint firstItem="m8F-Jv-mQa" firstAttribute="leading" secondItem="5cf-nz-bWX" secondAttribute="trailing" constant="8" symbolic="YES" id="ygY-TL-el3"/>
+                            <constraint firstItem="pQ7-wk-6oi" firstAttribute="top" secondItem="m8F-Jv-mQa" secondAttribute="bottom" constant="8" symbolic="YES" id="zXy-eW-fn2"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="Bhx-HZ-KWk"/>
+                    <connections>
+                        <outlet property="link" destination="pQ7-wk-6oi" id="cxF-ac-Ct1"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="hN6-5H-i07" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1834.7826086956522" y="-971.65178571428567"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="magnifyingglass" catalog="system" width="128" height="115"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemRedColor">
+            <color red="1" green="0.23137254901960785" blue="0.18823529411764706" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+    </resources>
+</document>

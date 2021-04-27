@@ -53,7 +53,7 @@ class Configuration {
         #if DEBUG
         return "ca-app-pub-3940256099942544/2934735716"
         #else
-        return "ca-app-pub-3940256099942544/2934735716" // "ca-app-pub-1682263410056980/9786643840"
+        return "ca-app-pub-1682263410056980/9786643840" // "ca-app-pub-3940256099942544/2934735716"
         #endif
     }
 }

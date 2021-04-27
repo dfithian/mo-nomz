@@ -8,27 +8,19 @@
 import UIKit
 
 class GroceryAddBlobController: UIViewController {
-    var onChange: (() -> Void)? = nil
-
     @IBOutlet weak var blob: UITextView!
     
-    @IBAction func didTapCancel(_ sender: Any?) {
-        DispatchQueue.main.async {
-            self.dismiss(animated: true, completion: nil)
-        }
-    }
-    
-    @IBAction func didTapSave(_ sender: Any?) {
+    func save(_ onChange: (() -> Void)?, onCancel: (() -> Void)?) {
         if let content = blob.text, !content.isEmpty {
             let completion = {
                 DispatchQueue.main.async {
                     self.dismiss(animated: true, completion: nil)
                 }
-                self.onChange?()
+                onChange?()
             }
             addGroceryBlob(content: content, completion: completion)
         } else {
-            didTapCancel(sender)
+            onCancel?()
         }
     }
     

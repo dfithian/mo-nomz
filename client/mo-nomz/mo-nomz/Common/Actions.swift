@@ -152,7 +152,7 @@ extension UIViewController {
         req.httpBody = try? JSONEncoder().encode(ImportRecipeLinkRequest(link: link))
         let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
             self.stopLoading(spinner)
-            let onUnsuccessfulStatus = { (resp: URLResponse?) -> Void in self.alertUnsuccessful("Please enter ingredients manually.")
+            let onUnsuccessfulStatus = { (resp: URLResponse?) -> Void in self.alertUnsuccessful("Please enter items manually.")
             }
             self.withCompletion(data: data, resp: resp, error: error, completion: completion, onUnsuccessfulStatus: onUnsuccessfulStatus, onError: self.defaultOnError)
         })

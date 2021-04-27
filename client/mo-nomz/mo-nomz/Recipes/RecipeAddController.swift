@@ -11,16 +11,26 @@ import SafariServices
 class RecipeAddController: UIViewController {
     @IBOutlet weak var link: UITextField!
     var onChange: (() -> Void)?
+    var existingLinks: [String] = []
     
     @IBAction func didTapSearch(_ sender: Any) {
-        let url: URL?
-        if let linkText = link.text, let escaped = linkText.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) {
-            link.text = ""
-            url = URL(string: "https://google.com/search?q=\(escaped)")
+        var clearSearch: Bool = false
+        var url: URL? = nil
+        if let linkText = link.text {
+            if let linkUrl = URL(string: linkText) {
+                url = linkUrl
+            } else if let escaped = linkText.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) {
+                clearSearch = true
+                url = URL(string: "https://google.com/search?q=\(escaped)")
+            }
         } else {
-            url = URL(string: "https://google.com")!
+            clearSearch = true
+            url = URL(string: "https://google.com")
         }
         if let u = url {
+            if clearSearch {
+                link.text = ""
+            }
             present(SFSafariViewController(url: u), animated: true, completion: nil)
         }
     }
@@ -33,7 +43,7 @@ class RecipeAddController: UIViewController {
             self.onChange?()
         }
         if let newLink = link.text, !newLink.isEmpty {
-            addRecipeLink(link: link.text!, completion: completion)
+            addRecipeLink(link: newLink, completion: completion)
         } else {
             didTapCancel(sender)
         }
