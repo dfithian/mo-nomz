@@ -10,6 +10,7 @@ import qualified Data.Map as Map
 import Auth (BcryptedAuthorization)
 import Types
   ( GroceryItem(..), Ingredient(..), Recipe(..), GroceryItemId, IngredientId, RecipeId, UserId
+  , RecipeLink
   , ingredientToGroceryItem, groceryItemToIngredient, ingredientToGroceryItem'
   )
 import Conversion (combineIngredients)
@@ -141,11 +142,16 @@ selectRecipes :: Connection -> UserId -> [RecipeId] -> IO (Map RecipeId Recipe)
 selectRecipes conn userId recipeIds = do
   case null recipeIds of
     True -> do
-      recipes <- query conn "select r.id, r.name, r.link, r.active from nomz.recipe r where r.user_id = ?" (Only userId)
+      recipes <- query conn "select id, name, link, active from nomz.recipe where user_id = ?" (Only userId)
       pure . mapFromList . map (\(recipeId, name, link, active) -> (recipeId, Recipe name link active)) $ recipes
     False -> do
-      recipes <- query conn "select r.id, r.name, r.link, r.active from nomz.recipe r where r.user_id = ? and r.id in ?" (userId, In recipeIds)
+      recipes <- query conn "select id, name, link, active from nomz.recipe where user_id = ? and id in ?" (userId, In recipeIds)
       pure . mapFromList . map (\(recipeId, name, link, active) -> (recipeId, Recipe name link active)) $ recipes
+
+selectRecipesByLink :: Connection -> UserId -> RecipeLink -> IO (Map RecipeId Recipe)
+selectRecipesByLink conn userId recipeLink = do
+  recipes <- query conn "select id, name, link, active from nomz.recipe where user_id = ? and link = ?" (userId, recipeLink)
+  pure . mapFromList . map (\(recipeId, name, link, active) -> (recipeId, Recipe name link active)) $ recipes
 
 insertRecipe :: Connection -> UserId -> Recipe -> [(GroceryItemId, Ingredient)] -> IO RecipeId
 insertRecipe conn userId Recipe {..} ingredients = do
@@ -157,13 +163,16 @@ insertRecipe conn userId Recipe {..} ingredients = do
 deactivateRecipe :: Connection -> UserId -> RecipeId -> IO ()
 deactivateRecipe conn userId recipeId = do
   ingredientIds <- selectRecipeIngredientIds conn userId [recipeId]
+  unmergeGroceryItems conn userId ingredientIds
   unless (null ingredientIds) $ do
     void $ execute conn "update nomz.ingredient set grocery_id = null where user_id = ? and id in ?" (userId, In ingredientIds)
   void $ execute conn "update nomz.recipe set active = false where user_id = ? and id = ?" (userId, recipeId)
 
-activateRecipe :: Connection -> UserId -> RecipeId -> [(GroceryItemId, IngredientId)] -> IO ()
-activateRecipe conn userId recipeId groceryAndIngredientIds = do
-  for_ groceryAndIngredientIds $ \(groceryItemId, ingredientId) ->
+activateRecipe :: Connection -> UserId -> RecipeId -> IO ()
+activateRecipe conn userId recipeId = do
+  (ingredientIds, ingredients) <- unzip <$> selectIngredientsByRecipeId conn userId recipeId
+  groceryItemIds <- insertGroceryItems conn userId (ingredientToGroceryItem <$> ingredients)
+  for_ (zip groceryItemIds ingredientIds) $ \(groceryItemId, ingredientId) ->
     void $ execute conn "update nomz.ingredient set grocery_id = ? where user_id = ? and id = ?" (groceryItemId, userId, ingredientId)
   void $ execute conn "update nomz.recipe set active = true where user_id = ? and id = ?" (userId, recipeId)
 

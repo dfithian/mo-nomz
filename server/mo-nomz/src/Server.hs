@@ -105,18 +105,25 @@ postClearGroceryItems token userId = do
 postRecipeImportLink :: AppM m => Authorization -> UserId -> RecipeImportLinkRequest -> m NoContent
 postRecipeImportLink token userId RecipeImportLinkRequest {..} = do
   validateUserToken token userId
-  uri <- maybe (throwError err400 { errReasonPhrase = "Invalid link" }) pure $ parseURI (unpack $ unRecipeLink recipeImportLinkRequestLink)
-  ScrapedRecipe {..} <- mapError (\e -> err500 { errReasonPhrase = unpack e }) $ scrapeUrl uri
-  when (null scrapedRecipeIngredients) $ throwError err400 { errReasonPhrase = "Failed to parse ingredients" }
-  let recipe = Recipe
-        { recipeName = scrapedRecipeName
-        , recipeLink = (Just recipeImportLinkRequestLink)
-        , recipeActive = True
-        }
-  unwrapDb $ withDbConn $ \c -> do
-    groceryItemIds <- Database.insertGroceryItems c userId (ingredientToGroceryItem <$> scrapedRecipeIngredients)
-    void $ Database.insertRecipe c userId recipe $ zip groceryItemIds scrapedRecipeIngredients
-    Database.automergeGroceryItems c userId
+  existingRecipes <- unwrapDb $ withDbConn $ \c -> Database.selectRecipesByLink c userId recipeImportLinkRequestLink
+  case headMay (mapToList existingRecipes) of
+    Just (recipeId, Recipe {..}) ->
+      unless recipeActive $
+        unwrapDb $ withDbConn $ \c ->
+          Database.activateRecipe c userId recipeId
+    Nothing -> do
+      uri <- maybe (throwError err400 { errReasonPhrase = "Invalid link" }) pure $ parseURI (unpack $ unRecipeLink recipeImportLinkRequestLink)
+      ScrapedRecipe {..} <- mapError (\e -> err500 { errReasonPhrase = unpack e }) $ scrapeUrl uri
+      when (null scrapedRecipeIngredients) $ throwError err400 { errReasonPhrase = "Failed to parse ingredients" }
+      let recipe = Recipe
+            { recipeName = scrapedRecipeName
+            , recipeLink = (Just recipeImportLinkRequestLink)
+            , recipeActive = True
+            }
+      unwrapDb $ withDbConn $ \c -> do
+        groceryItemIds <- Database.insertGroceryItems c userId (ingredientToGroceryItem <$> scrapedRecipeIngredients)
+        void $ Database.insertRecipe c userId recipe $ zip groceryItemIds scrapedRecipeIngredients
+        Database.automergeGroceryItems c userId
   pure NoContent
 
 postGroceryImportList :: AppM m => Authorization -> UserId -> GroceryImportListRequest -> m NoContent
@@ -149,14 +156,8 @@ postUpdateRecipe token userId UpdateRecipeRequest {..} = do
   unwrapDb $ withDbConn $ \c -> do
     void $ maybe (throwIO err404) pure . headMay =<< Database.selectRecipes c userId [updateRecipeRequestId]
     case updateRecipeRequestActive of
-      True -> do
-        (ingredientIds, ingredients) <- unzip <$> Database.selectIngredientsByRecipeId c userId updateRecipeRequestId
-        groceryItemIds <- Database.insertGroceryItems c userId (ingredientToGroceryItem <$> ingredients)
-        Database.activateRecipe c userId updateRecipeRequestId $ zip groceryItemIds ingredientIds
-      False -> do
-        ingredientIds <- Database.selectRecipeIngredientIds c userId [updateRecipeRequestId]
-        Database.unmergeGroceryItems c userId ingredientIds
-        Database.deactivateRecipe c userId updateRecipeRequestId
+      True -> Database.activateRecipe c userId updateRecipeRequestId
+      False -> Database.deactivateRecipe c userId updateRecipeRequestId
   pure NoContent
 
 getRecipes :: AppM m => Authorization -> UserId -> m ListRecipeResponse

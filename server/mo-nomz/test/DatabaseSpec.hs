@@ -88,8 +88,7 @@ spec env@Env {..} = describe "Database" $ do
       groceryItemIds <- insertGroceryItems c envUser items
       recipeId <- insertRecipe c envUser recipe (zip groceryItemIds ingredients)
       deactivateRecipe c envUser recipeId
-      ingredientIds <- selectRecipeIngredientIds c envUser [recipeId]
-      activateRecipe c envUser recipeId (zip groceryItemIds ingredientIds)
+      activateRecipe c envUser recipeId
 
   it "insertRecipe then deleteRecipes" $ do
     recipe <- generate arbitraryRecipe
