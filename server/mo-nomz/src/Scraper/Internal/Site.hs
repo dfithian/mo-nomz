@@ -9,7 +9,7 @@ import qualified Text.HTML.Scalpel as Scalpel
 
 import Scraper.Internal.Types
   ( SiteName(..), SiteScraper(..), UnparsedIngredient(..), UnparsedQuantity(..)
-  , UnparsedQuantityUnit(..)
+  , UnparsedQuantityUnit(..), UnparsedUnit(..)
   )
 
 siteScrapers :: HashMap SiteName SiteScraper
@@ -22,8 +22,7 @@ siteScrapers = mapFromList
   , ("geniuskitchen.com", geniusKitchen1)
   , ("tasteofhome.com", geniusKitchen2)
 
-  , ("pillsbury.com", generalMills)
-  , ("bettycrocker.com", generalMills)
+  , ("bettycrocker.com", bettyCrocker)
 
   , ("rachlmansfield.com", tasty1)
   , ("cookieandkate.com", tasty1)
@@ -75,10 +74,11 @@ siteScrapers = mapFromList
 
   , ("yummly.com", yummly)
 
+  , ("pillsbury.com", ingredientLi1)
   , ("epicurious.com", ingredientLi1)
   , ("tasty.co", ingredientLi1)
   , ("lazycatkitchen.com", ingredientLi2)
-  , ("deliciousyella.com", ingredientLi3)
+  , ("deliciouslyella.com", ingredientLi3)
   , ("cookingandcooking.com", ingredientLi5)
   , ("damndelicious.net", ingredientLi6)
   , ("hemsleyandhemsley.com", ingredientLi6)
@@ -125,6 +125,19 @@ quantityUnitScraper sName select quantityUnit name = SiteScraper sName scrape
         <*> Scalpel.text name
       )
 
+quantityAndUnitScraper :: Text -> Selector -> Selector -> Selector -> Selector -> SiteScraper
+quantityAndUnitScraper sName select quantity unit name = SiteScraper sName scrape
+  where
+    scrape = Scalpel.chroots select (
+      UnparsedIngredientStructured2
+        <$> (UnparsedQuantity <$> Scalpel.text quantity)
+        <*> (UnparsedUnit <$> Scalpel.text unit)
+        <*> Scalpel.text name
+      )
+
+debug :: SiteScraper
+debug = simpleScraper "debug" "div"
+
 allrecipes :: SiteScraper
 allrecipes = simpleScraper "allrecipes" ("span" @: [Scalpel.hasClass "ingredients-item-name"])
 
@@ -140,11 +153,8 @@ geniusKitchen1 = quantityScraper "geniusKitchen1"
 geniusKitchen2 :: SiteScraper
 geniusKitchen2 = simpleScraper "geniusKitchen2" ("div" @: [Scalpel.hasClass "recipe-ingredients"] // "li")
 
-generalMills :: SiteScraper
-generalMills = quantityScraper "generalMills"
-  ("div" @: [Scalpel.hasClass "recipePartIngredient"])
-  ("div" @: [Scalpel.hasClass "quantity"])
-  ("div" @: [Scalpel.hasClass "description"])
+bettyCrocker :: SiteScraper
+bettyCrocker = simpleScraper "bettyCrocker" ("div" @: [Scalpel.hasClass "recipePartIngredient"])
 
 tasty1 :: SiteScraper
 tasty1 = simpleScraper "tasty1" ("div" @: [Scalpel.hasClass "tasty-recipe-ingredients"] // "li")

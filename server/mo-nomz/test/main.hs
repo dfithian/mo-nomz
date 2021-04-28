@@ -17,4 +17,4 @@ main = do
     DatabaseSpec.spec env
     ConversionSpec.spec
     ParserSpec.spec
-    ScrapeSpec.spec
+    ScrapeSpec.spec env

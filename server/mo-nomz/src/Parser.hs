@@ -158,7 +158,7 @@ runParser :: Atto.Parser a -> Text -> Either String a
 runParser parser x = Atto.parseOnly parser (strip (sanitize x))
 
 parseIngredients :: [UnparsedIngredient] -> Either Text [Ingredient]
-parseIngredients xs = left (const "Failed to parse ingredients") . map (map scrubIngredient . catMaybes) . for xs $ \case
+parseIngredients xs = left (const "Failed to parse ingredients") . map (ordNub . map scrubIngredient . catMaybes) . for xs $ \case
   UnparsedIngredientRaw raw | null raw -> pure Nothing
   UnparsedIngredientRaw raw -> Just <$> runParser ingredientP raw
   UnparsedIngredientStructured1 quantityRaw nameAndUnitRaw -> do

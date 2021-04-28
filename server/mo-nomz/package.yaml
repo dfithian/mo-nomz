@@ -54,6 +54,9 @@ dependencies:
   - containers
   - cryptonite
   - data-default
+  - http-client
+  - http-client-tls
+  - http-types
   - memory
   - monad-logger
   - mtl

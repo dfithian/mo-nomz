@@ -44,7 +44,6 @@ runExceptT $ scrapeUrl =<< maybe (fail "missing") pure (parseURI x)
     - [ ] Paste
     - [ ] Link -> export -> paste?
     - [ ] Platform detection instead of guessing
-    - [ ] Smarter scraper - use AST
 
 - https://cooking.nytimes.com/
 - https://greenkitchenstories.com/
