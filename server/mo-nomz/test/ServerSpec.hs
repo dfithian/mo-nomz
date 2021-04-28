@@ -2,14 +2,17 @@ module ServerSpec where
 
 import ClassyPrelude
 
-import Test.Hspec (Spec, describe, it, shouldMatchList, before)
+import Test.Hspec (Spec, before, describe, it, shouldMatchList)
 import Test.QuickCheck (generate)
 
-import API.Types (DeleteRecipeRequest(..), MergeGroceryItemRequest(..), DeleteGroceryItemRequest(..), UpdateRecipeRequest(..), ListGroceryItemResponse(..), ReadableGroceryItemAggregate(..))
-import Conversion (mkReadableQuantity, mkReadableUnit, mkReadableGroceryItem)
+import API.Types
+  ( DeleteGroceryItemRequest(..), DeleteRecipeRequest(..), ListGroceryItemResponse(..)
+  , MergeGroceryItemRequest(..), ReadableGroceryItemAggregate(..), UpdateRecipeRequest(..)
+  )
+import Conversion (mkReadableGroceryItem, mkReadableQuantity, mkReadableUnit)
 import Gen (arbitraryIngredient, arbitraryRecipe)
 import TestEnv (Env(..), runEnv, runServer)
-import Types (ingredientToGroceryItem, Ingredient(..), Quantity(..))
+import Types (Ingredient(..), Quantity(..), ingredientToGroceryItem)
 import qualified Database
 
 import Server

@@ -8,11 +8,11 @@ import Database.PostgreSQL.Simple
 import qualified Data.Map as Map
 
 import Auth (BcryptedAuthorization)
+import Conversion (combineIngredients)
 import Types
   ( GroceryItem(..), Ingredient(..), Recipe(..), GroceryItemId, IngredientId, RecipeId, UserId
-  , ingredientToGroceryItem, groceryItemToIngredient, ingredientToGroceryItem'
+  , groceryItemToIngredient, ingredientToGroceryItem, ingredientToGroceryItem'
   )
-import Conversion (combineIngredients)
 
 data DatabaseException = DatabaseException Text
   deriving (Eq, Show)

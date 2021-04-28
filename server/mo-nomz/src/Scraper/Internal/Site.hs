@@ -7,7 +7,7 @@ import Text.HTML.Scalpel ((//), (@:), (@=), Scraper, Selector)
 import qualified Data.HashMap.Strict as HashMap
 import qualified Text.HTML.Scalpel as Scalpel
 
-import Scraper.Internal.Types (SiteName(..), SiteScraper(..))
+import Scraper.Internal.Types (SiteName(..), SiteScraper(..), UnparsedIngredient(..))
 
 siteScrapers :: HashMap SiteName SiteScraper
 siteScrapers = mapFromList
@@ -84,10 +84,10 @@ siteScrapers = mapFromList
   ]
 
 -- |Take the top 10 most popular site scrapers as the defaults.
-defaultScrapers :: [Scraper Text Text]
+defaultScrapers :: [Scraper Text [UnparsedIngredient]]
 defaultScrapers = map siteScraperRun . take 10 . map unsafeHead . reverse . sortOn length  . groupBy ((==) `on` siteScraperName) . sortOn siteScraperName . HashMap.elems $ siteScrapers
 
-getSiteScrapers :: URI -> Either [Scraper Text Text] (Scraper Text Text)
+getSiteScrapers :: URI -> Either [Scraper Text [UnparsedIngredient]] (Scraper Text [UnparsedIngredient])
 getSiteScrapers uri =
   let domainMay = SiteName . replace "www." "" . pack . uriRegName <$> uriAuthority uri
   in case flip lookup siteScrapers =<< domainMay of
@@ -95,7 +95,7 @@ getSiteScrapers uri =
     Just scraper -> Right $ siteScraperRun scraper
 
 simpleScraper :: Text -> Selector -> SiteScraper
-simpleScraper name select = SiteScraper name (unlines <$> Scalpel.chroots select (Scalpel.text Scalpel.anySelector))
+simpleScraper name select = SiteScraper name (map UnparsedIngredientRaw <$> Scalpel.chroots select (Scalpel.text Scalpel.anySelector))
 
 allrecipes :: SiteScraper
 allrecipes = simpleScraper "allrecipes" ("span" @: [Scalpel.hasClass "ingredients-item-name"])
@@ -116,7 +116,7 @@ tasty3 :: SiteScraper
 tasty3 = simpleScraper "tasty3" ("div" @: [Scalpel.hasClass "tasty-recipes-ingredients"] // "p")
 
 foodNetwork :: SiteScraper
-foodNetwork = SiteScraper "foodNetwork" (unlines . filter (not . (==) "Deselect All") <$> Scalpel.chroots ("div" @: [Scalpel.hasClass "o-Ingredients__m-Body"] // "span") (Scalpel.text Scalpel.anySelector))
+foodNetwork = SiteScraper "foodNetwork" (map UnparsedIngredientRaw . filter (not . (==) "Deselect All") <$> Scalpel.chroots ("div" @: [Scalpel.hasClass "o-Ingredients__m-Body"] // "span") (Scalpel.text Scalpel.anySelector))
 
 wprm :: SiteScraper
 wprm = simpleScraper "wprm" ("li" @: [Scalpel.hasClass "wprm-recipe-ingredient"])

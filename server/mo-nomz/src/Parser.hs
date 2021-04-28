@@ -1,20 +1,21 @@
-module Scraper.Internal.Parser where
+module Parser where
 
 import ClassyPrelude
 
+import Control.Arrow (left)
 import Control.Monad (fail)
 import Data.CaseInsensitive (CI)
 import Data.Char (isAlpha, isDigit, isSpace)
 import Data.Text (replace, split, strip)
 import qualified Data.Attoparsec.Text as Atto
 import qualified Data.CaseInsensitive as CI
-import qualified Data.Map as Map
 
 import Types
   ( Ingredient(..), IngredientName(..), Quantity(..), RawIngredient(..), RawQuantity(..)
   , RawUnit(..), Unit(..), Ingredient, box, cup, ounce, pinch, pound, splash, sprinkle, tablespoon
   , teaspoon, whole
   )
+import Scraper.Internal.Types (UnparsedIngredient(..), UnparsedQuantity(..), UnparsedUnit(..))
 
 unitAliasTable :: Map (CI Text) Unit
 unitAliasTable = mapFromList
@@ -139,20 +140,36 @@ unitP = unitWord <|> pure RawUnitMissing
         False -> fail "No unit found"
 
 nameP :: Atto.Parser IngredientName
-nameP = IngredientName . CI.mk . strip . unwords . filter (not . null) . map strip . words <$> spaced (Atto.takeWhile1 (not . (==) '\n'))
+nameP = IngredientName . CI.mk . strip . unwords . filter (not . null) . map strip . words <$> Atto.takeText
 
 ingredientP :: Atto.Parser RawIngredient
 ingredientP = mk <$> ((,,) <$> quantityP <*> unitP <*> nameP)
   where
     mk (q, u, n) = RawIngredient n q u
 
-ingredientsP :: Atto.Parser [RawIngredient]
-ingredientsP = Atto.many' ingredientP
-
-deduplicateIngredients :: [RawIngredient] -> [RawIngredient]
-deduplicateIngredients = catMaybes . Map.elems . map (headMay . sort) . foldr (\raw@RawIngredient {..} -> insertWith (<>) rawIngredientName [raw]) mempty
-
 sanitize :: Text -> Text
 sanitize = filter (not . isIgnoredC)
   where
     isIgnoredC c = elem c ['▢']
+
+runParser :: Atto.Parser a -> Text -> Either String a
+runParser parser x = Atto.parseOnly parser (strip (sanitize x))
+
+parseIngredients :: [UnparsedIngredient] -> Either Text [Ingredient]
+parseIngredients xs = left (const "Failed to parse ingredients") . map (map scrubIngredient . catMaybes) . for xs $ \case
+  UnparsedIngredientRaw raw | null raw -> pure Nothing
+  UnparsedIngredientRaw raw -> Just <$> runParser ingredientP raw
+  UnparsedIngredientStructured1 nameAndUnitRaw quantityRaw -> do
+    (unit, name) <- flip runParser nameAndUnitRaw $ (,) <$> unitP <*> nameP
+    quantity <- maybe (pure RawQuantityMissing) (runParser quantityP . unUnparsedQuantity) quantityRaw
+    pure $ Just $ RawIngredient name quantity unit
+  UnparsedIngredientStructured2 nameRaw quantityRaw unitRaw -> do
+    name <- runParser nameP nameRaw
+    quantity <- maybe (pure RawQuantityMissing) (runParser quantityP . unUnparsedQuantity) quantityRaw
+    unit <- maybe (pure RawUnitMissing) (runParser unitP . unUnparsedUnit) unitRaw
+    pure $ Just $ RawIngredient name quantity unit
+
+parseRawIngredients :: Text -> Either Text [Ingredient]
+parseRawIngredients content = do
+  either (const $ Left "Failed to parse ingredients") (pure . map scrubIngredient) $
+    traverse (runParser ingredientP) $ filter (not . null) $ lines content

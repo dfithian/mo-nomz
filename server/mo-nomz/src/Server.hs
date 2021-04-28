@@ -18,11 +18,12 @@ import API.Types
 import Auth (Authorization, generateToken, validateToken)
 import Conversion (mkQuantity, mkReadableGroceryItem, mkReadableRecipe, mkUnit)
 import Foundation (AppM, settings, withDbConn)
-import Scrape (ScrapedRecipe(..), parseIngredients, scrapeUrl)
+import Parser (parseRawIngredients)
+import Scrape (ScrapedRecipe(..), scrapeUrl)
 import Settings (AppSettings(..))
 import Types
-  ( GroceryItem(..), Ingredient(..), Recipe(..), RecipeLink(..), UserId
-  , ingredientToGroceryItem, mapError
+  ( GroceryItem(..), Ingredient(..), Recipe(..), RecipeLink(..), UserId, ingredientToGroceryItem
+  , mapError
   )
 import qualified Database
 
@@ -136,7 +137,7 @@ postGroceryImportList token userId GroceryImportListRequest {..} = do
 postGroceryImportBlob :: AppM m => Authorization -> UserId -> GroceryImportBlobRequest -> m NoContent
 postGroceryImportBlob token userId GroceryImportBlobRequest {..} = do
   validateUserToken token userId
-  ingredients <- mapError (\e -> err500 { errReasonPhrase = unpack e }) $ parseIngredients groceryImportBlobRequestContent
+  ingredients <- either (\e -> throwError err500 { errReasonPhrase = unpack e }) pure $ parseRawIngredients groceryImportBlobRequestContent
   unwrapDb $ withDbConn $ \c -> do
     groceryItemIds <- Database.insertGroceryItems c userId (ingredientToGroceryItem <$> ingredients)
     void $ Database.insertGroceryItemIngredients c userId $ zip groceryItemIds ingredients
