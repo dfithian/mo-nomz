@@ -10,12 +10,14 @@ import Data.Text (replace, split, strip)
 import qualified Data.Attoparsec.Text as Atto
 import qualified Data.CaseInsensitive as CI
 
+import Scraper.Internal.Types
+  ( UnparsedIngredient(..), UnparsedQuantity(..), UnparsedQuantityUnit(..), UnparsedUnit(..)
+  )
 import Types
   ( Ingredient(..), IngredientName(..), Quantity(..), RawIngredient(..), RawQuantity(..)
   , RawUnit(..), Unit(..), Ingredient, box, cup, ounce, pinch, pound, splash, sprinkle, tablespoon
   , teaspoon, whole
   )
-import Scraper.Internal.Types (UnparsedIngredient(..), UnparsedQuantity(..), UnparsedUnit(..))
 
 unitAliasTable :: Map (CI Text) Unit
 unitAliasTable = mapFromList
@@ -159,14 +161,18 @@ parseIngredients :: [UnparsedIngredient] -> Either Text [Ingredient]
 parseIngredients xs = left (const "Failed to parse ingredients") . map (map scrubIngredient . catMaybes) . for xs $ \case
   UnparsedIngredientRaw raw | null raw -> pure Nothing
   UnparsedIngredientRaw raw -> Just <$> runParser ingredientP raw
-  UnparsedIngredientStructured1 nameAndUnitRaw quantityRaw -> do
-    (unit, name) <- flip runParser nameAndUnitRaw $ (,) <$> unitP <*> nameP
-    quantity <- maybe (pure RawQuantityMissing) (runParser quantityP . unUnparsedQuantity) quantityRaw
+  UnparsedIngredientStructured1 quantityRaw nameAndUnitRaw -> do
+    (unit, name) <- runParser ((,) <$> unitP <*> nameP) nameAndUnitRaw
+    quantity <- runParser quantityP $ unUnparsedQuantity quantityRaw
     pure $ Just $ RawIngredient name quantity unit
-  UnparsedIngredientStructured2 nameRaw quantityRaw unitRaw -> do
+  UnparsedIngredientStructured2 quantityRaw unitRaw nameRaw -> do
     name <- runParser nameP nameRaw
-    quantity <- maybe (pure RawQuantityMissing) (runParser quantityP . unUnparsedQuantity) quantityRaw
-    unit <- maybe (pure RawUnitMissing) (runParser unitP . unUnparsedUnit) unitRaw
+    quantity <- runParser quantityP $ unUnparsedQuantity quantityRaw
+    unit <- runParser unitP $ unUnparsedUnit unitRaw
+    pure $ Just $ RawIngredient name quantity unit
+  UnparsedIngredientStructured3 quantityUnitRaw nameRaw -> do
+    name <- runParser nameP nameRaw
+    (quantity, unit) <- runParser ((,) <$> quantityP <*> unitP) $ unUnparsedQuantityUnit quantityUnitRaw
     pure $ Just $ RawIngredient name quantity unit
 
 parseRawIngredients :: Text -> Either Text [Ingredient]

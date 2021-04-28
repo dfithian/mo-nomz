@@ -62,7 +62,7 @@ scrapeAndParseConfig TestCfg {..} url = do
 
 spec :: Spec
 spec = describe "Scrape" $ do
-  describe "Scrape" $ do
+  describe "Examples" $ do
     it "can parse allrecipes" $
       scrapeAndParse
         "https://www.allrecipes.com/recipe/26317/chicken-pot-pie-ix/"
@@ -123,7 +123,9 @@ spec = describe "Scrape" $ do
         "Baked Spinach & Feta Pasta Recipe | EatingWell"
         eatingWellIngredients
 
+  describe "Smoke Test" $ do
     -- START HERE
+    it "handles nytimes" $ scrapeAndParseBasic "https://cooking.nytimes.com/recipes/1017256-french-onion-soup"
     it "handles yummly" $ scrapeAndParseBasic "https://www.yummly.com/recipe/Barbecue-Baked-Chicken-Legs-9073054"
     it "handles epicurious" $ scrapeAndParseBasic "https://www.epicurious.com/recipes/food/views/cashew-chicken"
     it "handles tasty" $ scrapeAndParseBasic "https://tasty.co/recipe/cilantro-lime-chicken-veggie-rice-meal-prep"

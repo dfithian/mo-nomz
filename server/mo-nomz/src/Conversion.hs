@@ -74,7 +74,7 @@ combineIngredients =
     . map (\Ingredient {..} -> asMap $ singletonMap ingredientName [(ingredientUnit, ingredientQuantity)])
 
 readableQuantityPrecision :: Double
-readableQuantityPrecision = 0.001
+readableQuantityPrecision = 0.01
 
 readableQuantities :: [((Double, Double), (Int, Int))]
 readableQuantities =

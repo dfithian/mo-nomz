@@ -5,20 +5,14 @@ import ClassyPrelude
 import Control.Monad (fail)
 import Data.FileEmbed (embedFile)
 import System.FilePath.TH (fileRelativeToAbsoluteStr)
-import Test.Hspec
-  ( Expectation, Spec, describe, it, shouldBe, shouldMatchList
-  )
+import Test.Hspec (Expectation, Spec, describe, it, shouldBe, shouldMatchList)
 import qualified Data.Attoparsec.Text as Atto
 
 import ParsedIngredients
-  ( allRecipesIngredients
-  , foodNetworkIngredients, pillsburyIngredients, rachelMansfieldIngredients
+  ( allRecipesIngredients, foodNetworkIngredients, pillsburyIngredients, rachelMansfieldIngredients
   , tasteOfHomeIngredients
   )
-import Types
-  ( IngredientName(..), RawIngredient(..), RawQuantity(..)
-  , RawUnit(..)
-  )
+import Types (IngredientName(..), RawIngredient(..), RawQuantity(..), RawUnit(..))
 
 import Parser
 

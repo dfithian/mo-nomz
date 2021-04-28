@@ -26,10 +26,14 @@ newtype UnparsedQuantity = UnparsedQuantity { unUnparsedQuantity :: Text }
 newtype UnparsedUnit = UnparsedUnit { unUnparsedUnit :: Text }
   deriving (Eq, Ord, Show)
 
+newtype UnparsedQuantityUnit = UnparsedQuantityUnit { unUnparsedQuantityUnit :: Text }
+  deriving (Eq, Ord, Show)
+
 data UnparsedIngredient
   = UnparsedIngredientRaw Text
-  | UnparsedIngredientStructured1 Text (Maybe UnparsedQuantity)
-  | UnparsedIngredientStructured2 Text (Maybe UnparsedQuantity) (Maybe UnparsedUnit)
+  | UnparsedIngredientStructured1 UnparsedQuantity Text
+  | UnparsedIngredientStructured2 UnparsedQuantity UnparsedUnit Text
+  | UnparsedIngredientStructured3 UnparsedQuantityUnit Text
   deriving (Eq, Ord, Show)
 
 title :: Scraper Text RecipeName
