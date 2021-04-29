@@ -5,3 +5,4 @@ tmp
 project.xcworkspace/
 Pods/
 Podfile.lock
+xcuserdata/
