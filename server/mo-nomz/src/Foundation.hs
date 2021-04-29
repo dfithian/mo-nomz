@@ -8,6 +8,9 @@ import Control.Monad.Logger
   )
 import Data.Pool (Pool, withResource)
 import Database.PostgreSQL.Simple (Connection, withTransaction)
+import Network.HTTP.Client (Manager, managerModifyRequest, requestHeaders)
+import Network.HTTP.Client.TLS (newTlsManagerWith, tlsManagerSettings)
+import Network.HTTP.Types (hUserAgent)
 import Servant.Server (Handler(Handler), ServerError)
 
 import Settings (AppSettings)
@@ -22,6 +25,7 @@ data App = App
   { appSettings       :: AppSettings -- ^ The settings for the app.
   , appConnectionPool :: Pool Connection -- ^ The database connection pool.
   , appLogFunc        :: LogFunc -- ^ The logging function.
+  , appManager        :: Manager -- ^ The manager for our scrape client.
   }
 
 class HasDatabase a where
@@ -32,6 +36,15 @@ instance HasDatabase App where
 
 instance HasDatabase (Pool Connection) where
   connectionPool = id
+
+class HasManager a where
+  manager :: a -> Manager
+
+instance HasManager App where
+  manager = appManager
+
+instance HasManager Manager where
+  manager = id
 
 class HasSettings a where
   settings :: a -> AppSettings
@@ -52,3 +65,15 @@ withDbConn f = do
 
 runNomzServer :: App -> NomzServer a -> Handler a
 runNomzServer app ma = Handler (mapExceptT (\ma' -> runLoggingT (runReaderT ma' app) (appLogFunc app)) ma)
+
+userAgent :: ByteString
+userAgent = "Simulated"
+
+createManager :: IO Manager
+createManager =
+  newTlsManagerWith tlsManagerSettings
+    { managerModifyRequest = \req -> do
+        pure req
+          { requestHeaders = [(hUserAgent, userAgent)] <> requestHeaders req
+          }
+    }

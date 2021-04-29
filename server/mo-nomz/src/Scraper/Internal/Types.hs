@@ -14,11 +14,27 @@ data ScrapedRecipe = ScrapedRecipe
 
 data SiteScraper = SiteScraper
   { siteScraperName :: Text
-  , siteScraperRun  :: Scraper Text Text
+  , siteScraperRun  :: Scraper Text [UnparsedIngredient]
   }
 
 newtype SiteName = SiteName { unSiteName :: Text }
   deriving (Eq, Ord, Show, IsString, Hashable)
+
+newtype UnparsedQuantity = UnparsedQuantity { unUnparsedQuantity :: Text }
+  deriving (Eq, Ord, Show)
+
+newtype UnparsedUnit = UnparsedUnit { unUnparsedUnit :: Text }
+  deriving (Eq, Ord, Show)
+
+newtype UnparsedQuantityUnit = UnparsedQuantityUnit { unUnparsedQuantityUnit :: Text }
+  deriving (Eq, Ord, Show)
+
+data UnparsedIngredient
+  = UnparsedIngredientRaw Text
+  | UnparsedIngredientStructured1 UnparsedQuantity Text
+  | UnparsedIngredientStructured2 UnparsedQuantity UnparsedUnit Text
+  | UnparsedIngredientStructured3 UnparsedQuantityUnit Text
+  deriving (Eq, Ord, Show)
 
 title :: Scraper Text RecipeName
 title = RecipeName . strip <$> Scalpel.text "title"

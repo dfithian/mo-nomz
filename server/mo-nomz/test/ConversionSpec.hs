@@ -39,9 +39,9 @@ spec = describe "Conversion" $ do
             -- combined
               pureIngredient 2.75 "cup" "sliced carrots"
             , pureIngredient (4 / 3) "cup" "chopped onion"
-            , pureIngredient (5 / 3) "cup" "all-purpose flour"
+            , pureIngredient ((1 / 3) + (1 / 3) + 1) "cup" "all-purpose flour"
             , pureIngredient 2.75 "tsp" "salt"
-            , pureIngredient 1 "cup" "milk"
+            , pureIngredient ((2 / 3) + (1 / 2)) "cup" "milk"
             , pureIngredient 1 "tsp" "pepper"
             , pureIngredient 4.75 "cup" "chicken broth"
 

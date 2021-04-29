@@ -19,7 +19,7 @@ import Servant.Server.StaticFiles (serveDirectoryWith)
 import WaiAppStatic.Storage.Filesystem (defaultFileServerSettings)
 import WaiAppStatic.Types (ssListing)
 
-import Foundation (App(..), AppM, NomzServer, runNomzServer, withDbConn)
+import Foundation (App(..), AppM, NomzServer, createManager, runNomzServer, withDbConn)
 import Servant (NomzApi, nomzApi, wholeApi)
 import Server
   ( deleteGroceryItem, deleteRecipes, getGroceryItems, getHealth, getRecipes, postClearGroceryItems
@@ -62,8 +62,9 @@ migrateDatabase app = do
 makeFoundation :: AppSettings -> IO App
 makeFoundation appSettings@AppSettings {..} = do
   let DatabaseSettings {..} = appDatabase
+      appLogFunc = defaultOutput stdout
   appConnectionPool <- createPool (connectPostgreSQL $ encodeUtf8 databaseSettingsConnStr) close databaseSettingsPoolsize 15 1
-  let appLogFunc = defaultOutput stdout
+  appManager <- createManager
   pure App {..}
 
 warpSettings :: App -> Settings

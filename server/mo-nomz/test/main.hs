@@ -5,6 +5,7 @@ import TestEnv (loadEnv, wipeDb)
 
 import qualified ConversionSpec
 import qualified DatabaseSpec
+import qualified ParserSpec
 import qualified ScrapeSpec
 import qualified ServerSpec
 
@@ -15,4 +16,5 @@ main = do
     ServerSpec.spec env
     DatabaseSpec.spec env
     ConversionSpec.spec
-    ScrapeSpec.spec
+    ParserSpec.spec
+    ScrapeSpec.spec env
