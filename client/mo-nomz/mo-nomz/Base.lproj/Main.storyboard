@@ -331,7 +331,7 @@
                             <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rma-TU-TU9">
                                 <rect key="frame" x="0.0" y="764" width="414" height="49"/>
                                 <items>
-                                    <barButtonItem title="Archive" image="archivebox" catalog="system" id="MB6-yn-IDp">
+                                    <barButtonItem title="Archive" image="trash" catalog="system" id="MB6-yn-IDp">
                                         <connections>
                                             <action selector="clear:" destination="6IF-YC-SCE" id="kTB-Oc-hvI"/>
                                         </connections>
@@ -797,14 +797,14 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="recipeListItem" id="Kja-MK-x0h" customClass="RecipeListItem" customModule="mo_nomz" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="28" width="374" height="43"/>
+                                <rect key="frame" x="0.0" y="28" width="374" height="43.5"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Kja-MK-x0h" id="cdn-wi-hLp">
-                                    <rect key="frame" x="0.0" y="0.0" width="374" height="43"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="374" height="43.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mBi-Xo-PE2">
-                                            <rect key="frame" x="20" y="11" width="334" height="21"/>
+                                            <rect key="frame" x="20" y="11" width="334" height="21.5"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
@@ -823,7 +823,7 @@
                                 </connections>
                             </tableViewCell>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="sectionHeader" rowHeight="28" id="fFH-IK-RyN" customClass="SectionHeader" customModule="mo_nomz" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="71" width="374" height="28"/>
+                                <rect key="frame" x="0.0" y="71.5" width="374" height="28"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="fFH-IK-RyN" id="aH5-sR-qzF">
                                     <rect key="frame" x="0.0" y="0.0" width="374" height="28"/>
@@ -861,7 +861,7 @@
                                 </connections>
                             </tableViewCell>
                             <tableViewCell clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="emptyItem" id="ab9-om-0ev">
-                                <rect key="frame" x="0.0" y="99" width="374" height="43.5"/>
+                                <rect key="frame" x="0.0" y="99.5" width="374" height="43.5"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="ab9-om-0ev" id="jdj-0c-3Nv">
                                     <rect key="frame" x="0.0" y="0.0" width="374" height="43.5"/>
@@ -908,6 +908,7 @@
                     <view key="view" contentMode="scaleToFill" id="ijt-38-kTN">
                         <rect key="frame" x="0.0" y="0.0" width="374" height="50"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="4pM-u4-58l"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
                 </viewController>
@@ -922,6 +923,7 @@
                     <view key="view" contentMode="scaleToFill" id="7m0-pZ-Oam">
                         <rect key="frame" x="0.0" y="0.0" width="374" height="50"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="Uvy-CD-UBk"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
                 </viewController>
@@ -936,6 +938,7 @@
                     <view key="view" contentMode="scaleToFill" id="bIg-RE-y9h">
                         <rect key="frame" x="0.0" y="0.0" width="374" height="50"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="XGu-RF-0IH"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
                 </viewController>
@@ -945,7 +948,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="archivebox" catalog="system" width="128" height="106"/>
         <image name="cart" catalog="system" width="128" height="102"/>
         <image name="chevron.forward.circle.fill" catalog="system" width="128" height="121"/>
         <image name="circle" catalog="system" width="128" height="121"/>
@@ -955,6 +957,7 @@
         <image name="plus" catalog="system" width="128" height="113"/>
         <image name="square.and.arrow.up" catalog="system" width="115" height="128"/>
         <image name="square.and.pencil" catalog="system" width="128" height="115"/>
+        <image name="trash" catalog="system" width="121" height="128"/>
         <systemColor name="labelColor">
             <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
