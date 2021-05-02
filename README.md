@@ -39,64 +39,19 @@ runExceptT $ scrapeUrl =<< maybe (fail "missing") pure (parseURI x)
 
 ## Notes
 
-- [ ] Better parsing
-    - [ ] Add a bunch of links
-    - [ ] Paste
-    - [ ] Link -> export -> paste?
-    - [ ] Platform detection instead of guessing
-
-- https://cooking.nytimes.com/
+Non food related tags:
 - https://greenkitchenstories.com/
 - http://www.mymoroccanfood.com/
 - http://annajones.co.uk/
 - https://eatlikeagirl.com/
 - https://the-fit-foodie.com/
 - https://www.allasyummyfood.com/
-
-- https://www.seriouseats.com
-- https://food52.com/
-- https://www.thekitchn.com/
-- http://www.simplyrecipes.com/
-- https://minimalistbaker.com/
-- https://www.davidlebovitz.com/
-- http://thepioneerwoman.com/
-- https://www.skinnytaste.com/
-- https://www.twopeasandtheirpod.com/
-- https://downshiftology.com/
-- http://altonbrown.com/
-- http://www.spoonforkbacon.com/
-- https://dinnerthendessert.com/
-- https://www.acouplecooks.com/
-- https://www.loveandoliveoil.com/
-- http://www.bakerella.com/
-- http://www.howsweeteats.com/
-- https://www.browneyedbaker.com/
-- https://steamykitchen.com/
-- https://www.mybakingaddiction.com/
 - https://www.mynewroots.org/site/
-- http://ohsheglows.com/
-- https://cnz.to/
-- https://www.sweetashoney.co/
-- https://thestayathomechef.com/blog/
-- https://sweetandsavorymeals.com/
-- http://joythebaker.com/
 - https://givemesomespice.com/
-- https://cookilicious.com/
-- https://www.chefspencil.com/
 - http://eatmeerecipes.co.za/
 - http://mynameisyeh.com/
-- https://ohmyveggies.com/
-- https://ourbestbites.com/
-- http://www.thevanillabeanblog.com/
 - https://greenkitchenstories.com/recipe-index/
-- https://www.slenderkitchen.com/
-- https://sugarfreelondoner.com/
-- http://foodgawker.com/
-- http://sortedfood.com/#!/
 - http://www.sproutedkitchen.com/
-- http://notwithoutsalt.com/
-- http://www.annies-eats.com/
-- http://www.bhg.com/recipes/
 
 ## Test plan
 

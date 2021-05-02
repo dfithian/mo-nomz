@@ -10,9 +10,7 @@ import Data.Text (replace, split, strip)
 import qualified Data.Attoparsec.Text as Atto
 import qualified Data.CaseInsensitive as CI
 
-import Scraper.Internal.Types
-  ( UnparsedIngredient(..), UnparsedQuantity(..), UnparsedQuantityUnit(..), UnparsedUnit(..)
-  )
+import Scraper.Internal.Types (UnparsedIngredient(..))
 import Types
   ( Ingredient(..), IngredientName(..), Quantity(..), RawIngredient(..), RawQuantity(..)
   , RawUnit(..), Unit(..), Ingredient, box, cup, ounce, pinch, pound, splash, sprinkle, tablespoon
@@ -150,7 +148,7 @@ ingredientP = mk <$> ((,,) <$> quantityP <*> unitP <*> nameP)
     mk (q, u, n) = RawIngredient n q u
 
 sanitize :: Text -> Text
-sanitize = filter (not . isIgnoredC)
+sanitize = replace "\194" " " . filter (not . isIgnoredC)
   where
     isIgnoredC c = elem c ['▢']
 
@@ -161,19 +159,6 @@ parseIngredients :: [UnparsedIngredient] -> Either Text [Ingredient]
 parseIngredients xs = left (const "Failed to parse ingredients") . map (ordNub . map scrubIngredient . catMaybes) . for xs $ \case
   UnparsedIngredientRaw raw | null raw -> pure Nothing
   UnparsedIngredientRaw raw -> Just <$> runParser ingredientP raw
-  UnparsedIngredientStructured1 quantityRaw nameAndUnitRaw -> do
-    (unit, name) <- runParser ((,) <$> unitP <*> nameP) nameAndUnitRaw
-    quantity <- runParser quantityP $ unUnparsedQuantity quantityRaw
-    pure $ Just $ RawIngredient name quantity unit
-  UnparsedIngredientStructured2 quantityRaw unitRaw nameRaw -> do
-    name <- runParser nameP nameRaw
-    quantity <- runParser quantityP $ unUnparsedQuantity quantityRaw
-    unit <- runParser unitP $ unUnparsedUnit unitRaw
-    pure $ Just $ RawIngredient name quantity unit
-  UnparsedIngredientStructured3 quantityUnitRaw nameRaw -> do
-    name <- runParser nameP nameRaw
-    (quantity, unit) <- runParser ((,) <$> quantityP <*> unitP) $ unUnparsedQuantityUnit quantityUnitRaw
-    pure $ Just $ RawIngredient name quantity unit
 
 parseRawIngredients :: Text -> Either Text [Ingredient]
 parseRawIngredients content = do
