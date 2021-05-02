@@ -22,12 +22,16 @@ import Scrape
 
 data TestCfg = TestCfg
   { requireUnit :: Bool
+  , allowedDuplicates :: Int
+  , requiredIngredients :: Int
   , env :: Env
   }
 
 defaultTestCfg :: Env -> TestCfg
 defaultTestCfg env = TestCfg
   { requireUnit = True
+  , allowedDuplicates = 3
+  , requiredIngredients = 5
   , env = env
   }
 
@@ -44,13 +48,13 @@ scrapeAndParseConfig TestCfg {..} url = do
   uri <- maybe (fail "Invalid URL") pure $ parseURI url
   ScrapedRecipe {..} <- either (fail . unpack) pure =<< runReaderT (runExceptT (scrapeUrl uri)) envManager
   unRecipeName scrapedRecipeName `shouldSatisfy` not . null
-  scrapedRecipeIngredients `shouldSatisfy` (\xs -> length xs >= 5)
+  scrapedRecipeIngredients `shouldSatisfy` (\xs -> length xs >= requiredIngredients)
   scrapedRecipeIngredients `shouldSatisfy` any hasQuantityAndUnit
-  scrapedRecipeIngredients `shouldSatisfy` lessThanThreeDuplicates
+  scrapedRecipeIngredients `shouldSatisfy` duplicates
   lessThanThreePrefixes scrapedRecipeIngredients
   where
     hasQuantityAndUnit Ingredient {..} = ingredientQuantity /= QuantityMissing && (if requireUnit then ingredientUnit /= UnitMissing else True)
-    lessThanThreeDuplicates = (< 3) . length . filter ((> 1) . length . snd) . mapToList . foldr (\x@Ingredient {..} -> asMap . insertWith (<>) ingredientName [x]) mempty
+    duplicates = (< allowedDuplicates) . length . filter ((> 1) . length . snd) . mapToList . foldr (\x@Ingredient {..} -> asMap . insertWith (<>) ingredientName [x]) mempty
     lessThanThreePrefixes xs = do
       let names = ingredientName <$> xs
           toStr = toLower . CI.original . unIngredientName
@@ -66,6 +70,7 @@ scrapeAndParseConfig TestCfg {..} url = do
 
 spec :: Env -> Spec
 spec env = describe "Scrape" $ do
+  let defCfg = defaultTestCfg env
   describe "Examples" $ do
     it "can parse allrecipes" $
       scrapeAndParse
@@ -138,7 +143,6 @@ spec env = describe "Scrape" $ do
         eatingWellIngredients
 
   describe "Smoke Test" $ do
-    let defCfg = defaultTestCfg env
     it "handles nytimes" $ scrapeAndParseConfig defCfg "https://cooking.nytimes.com/recipes/1017256-french-onion-soup"
     it "handles yummly" $ scrapeAndParseConfig defCfg "https://www.yummly.com/recipe/Barbecue-Baked-Chicken-Legs-9073054"
     it "handles epicurious" $ scrapeAndParseConfig defCfg "https://www.epicurious.com/recipes/food/views/cashew-chicken"
@@ -186,3 +190,47 @@ spec env = describe "Scrape" $ do
     it "handles onceuponafoodblog" $ scrapeAndParseConfig defCfg "https://onceuponafoodblog.com/cheesy-bacon-spring-greens/"
     it "handles anotherfoodblogger" $ scrapeAndParseConfig defCfg "https://www.anotherfoodblogger.com/recipes/meatball-marinara/#wprm-recipe-container-6560"
     it "handles brownedbutterblondie" $ scrapeAndParseConfig defCfg "https://brownedbutterblondie.com/the-best-blueberry-streusel-muffins/#tasty-recipes-7789"
+    it "handles seriouseats" $ scrapeAndParseConfig defCfg "https://www.seriouseats.com/recipes/2014/03/the-best-black-bean-burger-recipe.html"
+    it "handles food52" $ scrapeAndParseConfig defCfg "https://food52.com/recipes/21960-grilled-corn-with-basil-butter"
+    it "handles thekitchn" $ scrapeAndParseConfig (defCfg { requiredIngredients = 3 }) "https://www.thekitchn.com/mint-julep-mocktail-recipe-23015618"
+    it "handles simplyrecipes" $ scrapeAndParseConfig defCfg "https://www.simplyrecipes.com/recipes/cauliflower_steak_sandwiches_with_red_pepper_aioli/"
+    it "handles minimalistbaker" $ scrapeAndParseConfig defCfg "https://minimalistbaker.com/creamy-roasted-cauliflower-soup/"
+    it "handles davidlebovitz" $ scrapeAndParseConfig defCfg "https://www.davidlebovitz.com/kofta-kefta-meat-beef-lamb-plant-based-sausage-persian-recipe-spiced/"
+    it "handles thepioneerwoman" $ scrapeAndParseConfig defCfg "https://www.thepioneerwoman.com/food-cooking/recipes/a35880840/fried-pickles-recipe/"
+    it "handles skinnytaste" $ scrapeAndParseConfig defCfg "https://www.skinnytaste.com/strawberries-and-cream/"
+    it "handles twopeasandtheirpod" $ scrapeAndParseConfig defCfg "https://www.twopeasandtheirpod.com/shaved-brussels-sprouts-salad/"
+    it "handles slenderkitchen" $ scrapeAndParseConfig defCfg "https://www.slenderkitchen.com/recipe/sunday-slow-cooker-saag-paneer"
+    it "handles everydayannie" $ scrapeAndParseConfig defCfg "https://everydayannie.com/2020/12/28/raspberry-cheesecake-streusel-bars/"
+    it "handles notwithoutsalt" $ scrapeAndParseConfig defCfg "http://notwithoutsalt.com/brussels-sprout-green-apple-slaw-pickled-cranberries/"
+    it "handles chefspencil" $ scrapeAndParseConfig defCfg "https://www.chefspencil.com/recipe/carrot-tarte-tatin/"
+    it "handles sweetandsavorymeals" $ scrapeAndParseConfig defCfg "https://sweetandsavorymeals.com/air-fryer-eggplant/"
+
+  describe "Implicit" $ do
+    describe "WPRM" $ do
+      it "handles downshiftology" $ scrapeAndParseConfig defCfg "https://downshiftology.com/recipes/chicken-salad/"
+      it "handles altonbrown" $ scrapeAndParseConfig (defCfg { requiredIngredients = 4 }) "https://altonbrown.com/recipes/2-note-mousse/"
+      it "handles spoonforkbacon" $ scrapeAndParseConfig (defCfg { allowedDuplicates = 4 }) "https://www.spoonforkbacon.com/chicken-and-dumplings/#wprm-recipe-container-40527"
+      it "handles dinnerthendessert" $ scrapeAndParseConfig defCfg "https://dinnerthendessert.com/ultimate-slow-cooker-pot-roast/"
+      it "handles howsweeteats" $ scrapeAndParseConfig defCfg "https://www.howsweeteats.com/2021/04/pimento-cheese-poppers/"
+      it "handles browneyedbaker" $ scrapeAndParseConfig defCfg "https://www.browneyedbaker.com/cannoli/"
+      it "handles steamykitchen" $ scrapeAndParseConfig defCfg "https://steamykitchen.com/59396-shrimp-chow-mein.html"
+      it "handles sweetashoney" $ scrapeAndParseConfig defCfg "https://www.sweetashoney.co/keto-french-baguette-recipe/"
+      it "handles thestayathomechef" $ scrapeAndParseConfig defCfg "https://thestayathomechef.com/taco-casserole/"
+      it "handles cookilicious" $ scrapeAndParseConfig defCfg "https://cookilicious.com/condiments/andhra-style-peanut-tomato-chutney-recipe-for-idli-dosa/"
+      it "handles ohmyveggies" $ scrapeAndParseConfig defCfg "https://ohmyveggies.com/vegan-snickerdoodles/"
+      it "handles thevanillabeanblog" $ scrapeAndParseConfig defCfg "https://www.thevanillabeanblog.com/2021/03/devils-food-cake-buttercream-chocolate-ganache.html"
+      it "handles sugarfreelondoner" $ scrapeAndParseConfig defCfg "https://sugarfreelondoner.com/keto-breakfast-cookies/#wprm-recipe-container-20704"
+    describe "Ingredient List 1" $ do
+      it "handles loveandoliveoil" $ scrapeAndParseConfig defCfg "https://www.loveandoliveoil.com/2021/04/stuffed-cherry-amaretti-cookies.html"
+      it "handles ohsheglows" $ scrapeAndParseConfig defCfg "https://ohsheglows.com/2020/09/20/perfect-little-pumpkin-cookies-with-spiced-buttercream/"
+    describe "MV" $ do
+      it "handles bakerella" $ scrapeAndParseConfig defCfg "https://www.bakerella.com/secret-ingredient-chocolate-chip-cookies/"
+      it "handles mybakingaddiction" $ scrapeAndParseConfig defCfg "https://www.mybakingaddiction.com/flank-steak-tacos/"
+    describe "ZL" $ do
+      it "handles cnz" $ scrapeAndParseConfig defCfg "https://cnz.to/recipes/meat-charcuterie/instant-pot-ramen-style-pork-belly-recipe/"
+    describe "Tasty 2" $ do
+      it "handles joythebaker" $ scrapeAndParseConfig defCfg "https://joythebaker.com/2019/03/chili-and-cheese-buttery-biscuits/"
+    describe "Tasty 3" $ do
+      it "handles ourbestbites" $ scrapeAndParseConfig (defCfg { requiredIngredients = 1 }) "https://ourbestbites.com/greek-pasta-salad/#tasty-recipes-45657"
+    describe "Eating Well" $ do
+      it "handles bhg" $ scrapeAndParseConfig defCfg "https://www.bhg.com/recipe/air-fried-ginger-glazed-pork-ribs/"
