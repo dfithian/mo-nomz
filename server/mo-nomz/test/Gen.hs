@@ -50,6 +50,11 @@ arbitraryGroceryItem = GroceryItem
   <*> arbitraryUnit
   <*> arbitrary
 
+arbitraryOrderedGroceryItem :: Gen OrderedGroceryItem
+arbitraryOrderedGroceryItem = OrderedGroceryItem
+  <$> arbitraryGroceryItem
+  <*> arbitrary
+
 arbitraryIngredient :: Gen Ingredient
 arbitraryIngredient = Ingredient
   <$> arbitraryIngredientName

@@ -12,8 +12,8 @@ import API.Types
   ( DeleteGroceryItemRequest(..), DeleteRecipeRequest(..), GetHealthResponse(..)
   , GroceryImportBlobRequest(..), GroceryImportListRequest(..), GroceryImportSingle(..)
   , ListGroceryItemResponse(..), ListRecipeResponse(..), MergeGroceryItemRequest(..)
-  , ReadableGroceryItem(..), ReadableGroceryItemAggregate(..), RecipeImportLinkRequest(..)
-  , UpdateRecipeRequest(..), UserCreateResponse(..)
+  , RecipeImportLinkRequest(..), UpdateGroceryItemRequest(..), UpdateRecipeRequest(..)
+  , UserCreateResponse(..)
   )
 import Auth (Authorization, generateToken, validateToken)
 import Conversion (mkQuantity, mkReadableGroceryItem, mkReadableRecipe, mkUnit)
@@ -22,8 +22,8 @@ import Parser (parseRawIngredients)
 import Scrape (ScrapedRecipe(..), scrapeUrl)
 import Settings (AppSettings(..))
 import Types
-  ( GroceryItem(..), Ingredient(..), Recipe(..), RecipeLink(..), UserId, ingredientToGroceryItem
-  , mapError
+  ( GroceryItem(..), Ingredient(..), OrderedGroceryItem(..), Recipe(..), RecipeLink(..), UserId
+  , ingredientToGroceryItem, mapError
   )
 import qualified Database
 
@@ -64,13 +64,25 @@ getGroceryItems :: AppM m => Authorization -> UserId -> m ListGroceryItemRespons
 getGroceryItems token userId = do
   validateUserToken token userId
   groceryItems <- unwrapDb $ withDbConn $ \c -> Database.selectGroceryItems c userId []
-  let readableGroceryItems = sortOn (readableGroceryItemName . readableGroceryItemAggregateItem)
-        . map (uncurry ReadableGroceryItemAggregate . first singleton)
-        . mapToList . map mkReadableGroceryItem
-        $ groceryItems
   pure ListGroceryItemResponse
-    { listGroceryItemResponseItems = readableGroceryItems
+    { listGroceryItemResponseItems = mkReadableGroceryItem <$> groceryItems
     }
+
+postUpdateGroceryItem :: AppM m => Authorization -> UserId -> UpdateGroceryItemRequest -> m NoContent
+postUpdateGroceryItem token userId UpdateGroceryItemRequest {..} = do
+  validateUserToken token userId
+  unwrapDb $ withDbConn $ \c -> do
+    let newGroceryItem = OrderedGroceryItem
+          { orderedGroceryItemItem = GroceryItem
+              { groceryItemName = updateGroceryItemRequestName
+              , groceryItemQuantity = mkQuantity updateGroceryItemRequestQuantity
+              , groceryItemUnit = mkUnit updateGroceryItemRequestUnit
+              , groceryItemActive = updateGroceryItemRequestActive
+              }
+          , orderedGroceryItemOrder = updateGroceryItemRequestOrder
+          }
+    Database.updateOrderedGroceryItem c userId updateGroceryItemRequestId newGroceryItem
+  pure NoContent
 
 postMergeGroceryItem :: AppM m => Authorization -> UserId -> MergeGroceryItemRequest -> m NoContent
 postMergeGroceryItem token userId MergeGroceryItemRequest {..} = do
@@ -78,11 +90,14 @@ postMergeGroceryItem token userId MergeGroceryItemRequest {..} = do
   unwrapDb $ withDbConn $ \c -> do
     existingIds <- asSet . setFromList . keys <$> Database.selectGroceryItems c userId (setToList mergeGroceryItemRequestIds)
     unless (null $ difference mergeGroceryItemRequestIds existingIds) $ throwIO err400
-    let newGroceryItem = GroceryItem
-          { groceryItemName = mergeGroceryItemRequestName
-          , groceryItemQuantity = mkQuantity mergeGroceryItemRequestQuantity
-          , groceryItemUnit = mkUnit mergeGroceryItemRequestUnit
-          , groceryItemActive = mergeGroceryItemRequestActive
+    let newGroceryItem = OrderedGroceryItem
+          { orderedGroceryItemItem = GroceryItem
+            { groceryItemName = mergeGroceryItemRequestName
+            , groceryItemQuantity = mkQuantity mergeGroceryItemRequestQuantity
+            , groceryItemUnit = mkUnit mergeGroceryItemRequestUnit
+            , groceryItemActive = mergeGroceryItemRequestActive
+            }
+          , orderedGroceryItemOrder = mergeGroceryItemRequestOrder
           }
     void $ Database.mergeGroceryItems c userId (setToList mergeGroceryItemRequestIds) newGroceryItem
   pure NoContent

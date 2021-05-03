@@ -2,9 +2,11 @@ module ConversionSpec where
 
 import ClassyPrelude
 
+import Data.Monoid (Sum(..))
 import Test.Hspec (Spec, describe, it, shouldBe, shouldMatchList)
 import Test.QuickCheck (forAll, shuffle)
 
+import Combinable (Constant(..))
 import ParsedIngredients
   ( allParsedIngredients, pureIngredient, pureIngredientName, pureIngredientNoQuantity
   , pureIngredientNoUnit
@@ -16,6 +18,9 @@ import Conversion
 allUnits :: [Unit]
 allUnits = [ounce, cup, tablespoon, teaspoon, pinch, Unit "none", whole]
 
+mkC :: Int -> Constant Int
+mkC = Constant
+
 spec :: Spec
 spec = describe "Conversion" $ do
   describe "Units" $ do
@@ -24,13 +29,13 @@ spec = describe "Conversion" $ do
     it "orders correctly" $ forAll (shuffle allUnits) $ \xs ->
       sortBy unitOrdering xs `shouldBe` allUnits
     it "combines quantities - cup equivalent to ounce" $
-      combineQuantities (mapFromList [(cup, 8), (ounce, 1)]) `shouldBe` mapFromList [(ounce, 2)]
+      combineQuantities (mapFromList [(cup, (Sum 8, mkC 1)), (ounce, (Sum 1, mkC 2))]) `shouldBe` mapFromList [(ounce, (Sum 2, mkC 1))]
     it "combines quantities - cup less than ounce" $
-      combineQuantities (mapFromList [(cup, 4), (ounce, 1)]) `shouldBe` mapFromList [(ounce, 1.5)]
+      combineQuantities (mapFromList [(cup, (Sum 4, mkC 1)), (ounce, (Sum 1, mkC 2))]) `shouldBe` mapFromList [(ounce, (Sum 1.5, mkC 1))]
     it "combines quantities - teaspoons to tablespoons to cups" $
-      combineQuantities (mapFromList [(teaspoon, 2), (tablespoon, 2), (cup, 4)]) `shouldBe` mapFromList [(cup, 4.25)]
+      combineQuantities (mapFromList [(teaspoon, (Sum 2, mkC 1)), (tablespoon, (Sum 2, mkC 2)), (cup, (Sum 4, mkC 3))]) `shouldBe` mapFromList [(cup, (Sum 4.25, mkC 1))]
     it "retains quantities not in known conversions" $
-      combineQuantities (mapFromList [(ounce, 1), (whole, 1)]) `shouldBe` mapFromList [(ounce, 1), (whole, 1)]
+      combineQuantities (mapFromList [(ounce, (Sum 1, mkC 1)), (whole, (Sum 1, mkC 2))]) `shouldBe` mapFromList [(ounce, (Sum 1, mkC 1)), (whole, (Sum 1, mkC 2))]
 
   describe "Ingredients" $ do
     it "combines ingredients" $
@@ -116,4 +121,4 @@ spec = describe "Conversion" $ do
             , pureIngredientNoUnit 1 "bulb of fennel, tops removed, and cut into wedges"
             , pureIngredientName "olive oil"
             ]
-      in combineIngredients (mconcat allParsedIngredients) `shouldMatchList` expected
+      in combineItems (mconcat allParsedIngredients) `shouldMatchList` expected

@@ -7,9 +7,9 @@ import Test.QuickCheck (generate, listOf1)
 import qualified Data.Map as Map
 
 import Auth (BcryptedAuthorization(..))
-import Gen (arbitraryGroceryItem, arbitraryIngredient, arbitraryRecipe)
+import Gen (arbitraryGroceryItem, arbitraryIngredient, arbitraryOrderedGroceryItem, arbitraryRecipe)
 import TestEnv (Env(..), runEnv)
-import Types (ingredientToGroceryItem)
+import Types (OrderedGroceryItem(..), ingredientToGroceryItem)
 
 import Database
 
@@ -29,13 +29,30 @@ spec env@Env {..} = describe "Database" $ do
     actual <- runEnv env $ \c -> do
       groceryItemIds <- insertGroceryItems c envUser [item]
       Map.elems <$> selectGroceryItems c envUser groceryItemIds
+    orderedGroceryItemItem <$> actual `shouldMatchList` [item]
+
+  it "insertOrderedGroceryItems then selectGroceryItems" $ do
+    item <- liftIO $ generate arbitraryOrderedGroceryItem
+    actual <- runEnv env $ \c -> do
+      groceryItemIds <- insertOrderedGroceryItems c envUser [item]
+      Map.elems <$> selectGroceryItems c envUser groceryItemIds
     actual `shouldMatchList` [item]
 
-  it "mergeGroceryItems" $ do
+  it "updateGroceryItem" $ do
     item <- liftIO $ generate arbitraryGroceryItem
+    before <- liftIO $ generate arbitraryGroceryItem
+    after <- liftIO $ generate arbitraryGroceryItem
+    actual <- runEnv env $ \c -> do
+      groceryItemIds@([_, _, groceryItemId]) <- insertOrderedGroceryItems c envUser (uncurry OrderedGroceryItem <$> [(before, 1), (after, 2), (item, 3)])
+      updateOrderedGroceryItem c envUser groceryItemId (OrderedGroceryItem item 2)
+      Map.elems <$> selectGroceryItems c envUser groceryItemIds
+    actual `shouldMatchList` uncurry OrderedGroceryItem <$> [(before, 1), (item, 2), (after, 3)]
+
+  it "mergeGroceryItems" $ do
+    item <- liftIO $ generate arbitraryOrderedGroceryItem
     items <- liftIO $ generate $ listOf1 arbitraryGroceryItem
     actual <- runEnv env $ \c -> do
-      groceryItemIds <- insertGroceryItems c envUser (item:items)
+      groceryItemIds <- insertGroceryItems c envUser items
       void $ mergeGroceryItems c envUser groceryItemIds item
       Map.elems <$> selectGroceryItems c envUser []
     actual `shouldMatchList` [item]
@@ -47,7 +64,7 @@ spec env@Env {..} = describe "Database" $ do
       groceryItemId:_ <- insertGroceryItems c envUser [item, item2]
       deleteGroceryItems c envUser [groceryItemId]
       Map.elems <$> selectGroceryItems c envUser []
-    actual `shouldMatchList` [item2]
+    orderedGroceryItemItem <$> actual `shouldMatchList` [item2]
 
   it "unmergeGroceryItems" $ do
     ingredient <- generate arbitraryIngredient

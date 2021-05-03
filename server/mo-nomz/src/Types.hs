@@ -83,6 +83,12 @@ data GroceryItem = GroceryItem
   }
   deriving (Eq, Ord, Show)
 
+data OrderedGroceryItem = OrderedGroceryItem
+  { orderedGroceryItemItem  :: GroceryItem
+  , orderedGroceryItemOrder :: Int
+  }
+  deriving (Eq, Ord, Show)
+
 data Ingredient = Ingredient
   { ingredientName     :: IngredientName
   , ingredientQuantity :: Quantity

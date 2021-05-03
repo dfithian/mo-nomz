@@ -22,12 +22,23 @@ data UserCreateResponse = UserCreateResponse
   }
   deriving (Eq, Ord, Show)
 
+data UpdateGroceryItemRequest = UpdateGroceryItemRequest
+  { updateGroceryItemRequestId       :: GroceryItemId
+  , updateGroceryItemRequestName     :: IngredientName
+  , updateGroceryItemRequestQuantity :: ReadableQuantity
+  , updateGroceryItemRequestUnit     :: Maybe ReadableUnit
+  , updateGroceryItemRequestActive   :: Bool
+  , updateGroceryItemRequestOrder    :: Int
+  }
+  deriving (Eq, Ord, Show)
+
 data MergeGroceryItemRequest = MergeGroceryItemRequest
   { mergeGroceryItemRequestIds      :: Set GroceryItemId
   , mergeGroceryItemRequestName     :: IngredientName
   , mergeGroceryItemRequestQuantity :: ReadableQuantity
   , mergeGroceryItemRequestUnit     :: Maybe ReadableUnit
   , mergeGroceryItemRequestActive   :: Bool
+  , mergeGroceryItemRequestOrder    :: Int
   }
   deriving (Eq, Ord, Show)
 
@@ -41,17 +52,12 @@ data ReadableGroceryItem = ReadableGroceryItem
   , readableGroceryItemQuantity :: ReadableQuantity
   , readableGroceryItemUnit     :: Maybe ReadableUnit
   , readableGroceryItemActive   :: Bool
-  }
-  deriving (Eq, Ord, Show)
-
-data ReadableGroceryItemAggregate = ReadableGroceryItemAggregate
-  { readableGroceryItemAggregateIds  :: Set GroceryItemId
-  , readableGroceryItemAggregateItem :: ReadableGroceryItem
+  , readableGroceryItemOrder    :: Int
   }
   deriving (Eq, Ord, Show)
 
 data ListGroceryItemResponse = ListGroceryItemResponse
-  { listGroceryItemResponseItems :: [ReadableGroceryItemAggregate]
+  { listGroceryItemResponseItems :: Map GroceryItemId ReadableGroceryItem
   }
   deriving (Eq, Ord, Show)
 
@@ -102,10 +108,10 @@ data ListRecipeResponse = ListRecipeResponse
 
 deriveJSON (jsonOptions "getHealthResponse") ''GetHealthResponse
 deriveJSON (jsonOptions "userCreateResponse") ''UserCreateResponse
+deriveJSON (jsonOptions "updateGroceryItemRequest") ''UpdateGroceryItemRequest
 deriveJSON (jsonOptions "mergeGroceryItemRequest") ''MergeGroceryItemRequest
 deriveJSON (jsonOptions "deleteGroceryItemRequest") ''DeleteGroceryItemRequest
 deriveJSON (jsonOptions "readableGroceryItem") ''ReadableGroceryItem
-deriveJSON (jsonOptions "readableGroceryItemAggregate") ''ReadableGroceryItemAggregate
 deriveJSON (jsonOptions "listGroceryItemResponse") ''ListGroceryItemResponse
 deriveJSON (jsonOptions "recipeImportLinkRequest") ''RecipeImportLinkRequest
 deriveJSON (jsonOptions "groceryImportSingle") ''GroceryImportSingle

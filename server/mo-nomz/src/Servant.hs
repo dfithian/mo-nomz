@@ -10,7 +10,7 @@ import Servant.API
 import API.Types
   ( DeleteGroceryItemRequest, DeleteRecipeRequest, GetHealthResponse, GroceryImportBlobRequest
   , GroceryImportListRequest, ListGroceryItemResponse, ListRecipeResponse, MergeGroceryItemRequest
-  , RecipeImportLinkRequest, UpdateRecipeRequest, UserCreateResponse
+  , RecipeImportLinkRequest, UpdateGroceryItemRequest, UpdateRecipeRequest, UserCreateResponse
   )
 import Auth (Authorized)
 import Types (UserId)
@@ -27,7 +27,8 @@ type NomzApi =
     :<|> "health" :> Get '[JSON] GetHealthResponse
     :<|> "api" :> "v1" :> "user" :> Post '[JSON] UserCreateResponse
     :<|> Authorized :> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "grocery" :> Get '[JSON] ListGroceryItemResponse
-    :<|> Authorized :> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "grocery" :> ReqBody '[JSON] MergeGroceryItemRequest :> PostNoContent
+    :<|> Authorized :> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "grocery" :> ReqBody '[JSON] UpdateGroceryItemRequest :> PostNoContent
+    :<|> Authorized :> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "grocery" :> "merge" :> ReqBody '[JSON] MergeGroceryItemRequest :> PostNoContent
     :<|> Authorized :> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "grocery" :> ReqBody '[JSON] DeleteGroceryItemRequest :> DeleteNoContent
     :<|> Authorized :> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "grocery" :> "clear" :> PostNoContent
     :<|> Authorized :> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "grocery" :> "list" :> ReqBody '[JSON] GroceryImportListRequest :> PostNoContent

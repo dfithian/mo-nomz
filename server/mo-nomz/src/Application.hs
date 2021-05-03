@@ -24,7 +24,7 @@ import Servant (NomzApi, nomzApi, wholeApi)
 import Server
   ( deleteGroceryItem, deleteRecipes, getGroceryItems, getHealth, getRecipes, postClearGroceryItems
   , postCreateUser, postGroceryImportBlob, postGroceryImportList, postMergeGroceryItem
-  , postRecipeImportLink, postUpdateRecipe
+  , postRecipeImportLink, postUpdateGroceryItem, postUpdateRecipe
   )
 import Settings (AppSettings(..), DatabaseSettings(..), staticSettingsValue)
 
@@ -38,6 +38,7 @@ nomzServer =
     :<|> getHealth
     :<|> postCreateUser
     :<|> getGroceryItems
+    :<|> postUpdateGroceryItem
     :<|> postMergeGroceryItem
     :<|> deleteGroceryItem
     :<|> postClearGroceryItems
