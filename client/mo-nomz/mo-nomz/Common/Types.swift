@@ -77,6 +77,7 @@ struct ReadableGroceryItem: Codable {
     let quantity: ReadableQuantity
     let unit: String?
     let active: Bool
+    let order: Int
     
     func render() -> String {
         switch (quantity.render(), unit) {
@@ -88,13 +89,22 @@ struct ReadableGroceryItem: Codable {
     }
 }
 
-struct ReadableGroceryItemAggregate: Codable {
-    let ids: [Int]
+struct ReadableGroceryItemWithId: Codable {
     let item: ReadableGroceryItem
+    let id: Int
 }
 
 struct ListGroceryItemResponse: Codable {
-    let items: [ReadableGroceryItemAggregate]
+    let items: Dictionary<Int, ReadableGroceryItem>
+}
+
+struct UpdateGroceryItemRequest: Codable {
+    let id: Int
+    let name: String
+    let quantity: ReadableQuantity
+    let unit: String?
+    let active: Bool
+    let order: Int
 }
 
 struct MergeGroceryItemRequest: Codable {
@@ -103,6 +113,7 @@ struct MergeGroceryItemRequest: Codable {
     let quantity: ReadableQuantity
     let unit: String?
     let active: Bool
+    let order: Int
 }
 
 struct DeleteGroceryItemRequest: Codable {

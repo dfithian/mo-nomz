@@ -183,12 +183,12 @@
 				3774A5CF2624B5260029E35D /* Common */,
 				3774A59F2623EE430029E35D /* LaunchScreen.storyboard */,
 				3728B0CC2635BCF00055D2E1 /* AddItems.storyboard */,
+				3728B0D82635CD4A0055D2E1 /* AddLink.storyboard */,
 				376095C5262125C10015B6F0 /* Main.storyboard */,
 				376095BF262125C10015B6F0 /* AppDelegate.swift */,
 				376095C1262125C10015B6F0 /* SceneDelegate.swift */,
 				376095C8262125C10015B6F0 /* Assets.xcassets */,
 				376095CD262125C10015B6F0 /* Info.plist */,
-				3728B0D82635CD4A0055D2E1 /* AddLink.storyboard */,
 			);
 			path = "mo-nomz";
 			sourceTree = "<group>";
