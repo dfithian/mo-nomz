@@ -13,8 +13,8 @@ import qualified Data.CaseInsensitive as CI
 import Scraper.Internal.Types (UnparsedIngredient(..))
 import Types
   ( Ingredient(..), IngredientName(..), Quantity(..), RawIngredient(..), RawQuantity(..)
-  , RawUnit(..), Unit(..), Ingredient, box, cup, ounce, pinch, pound, splash, sprinkle, tablespoon
-  , teaspoon, whole
+  , RawUnit(..), Unit(..), Ingredient, box, cup, gram, liter, milligram, milliliter, ounce, pinch
+  , pound, splash, sprinkle, tablespoon, teaspoon, whole
   )
 
 unitAliasTable :: Map (CI Text) Unit
@@ -22,6 +22,7 @@ unitAliasTable = mapFromList
   [ ("ounce", ounce)
   , ("ounces", ounce)
   , ("oz", ounce)
+  , ("c", cup)
   , ("cup", cup)
   , ("cups", cup)
   , ("tablespoon", tablespoon)
@@ -41,6 +42,17 @@ unitAliasTable = mapFromList
   , ("sprinkle", sprinkle)
   , ("sprinkles", sprinkle)
   , ("whole", whole)
+
+  , ("milliliter", milliliter)
+  , ("millilitre", milliliter)
+  , ("ml", milliliter)
+  , ("liter", liter)
+  , ("litre", liter)
+  , ("l", liter)
+  , ("milligram", milligram)
+  , ("mg", milligram)
+  , ("gram", gram)
+  , ("g", gram)
   ]
 
 quantityAliasTable :: Map (CI Text) Quantity

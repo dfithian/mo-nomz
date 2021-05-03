@@ -8,8 +8,8 @@ import API.Types (ReadableGroceryItem(..), ReadableRecipe(..))
 import Combinable (Constant(..), Combinable)
 import Types
   ( GroceryItem(..), OrderedGroceryItem(..), Quantity(..), ReadableFraction(..)
-  , ReadableQuantity(..), ReadableUnit(..), Recipe(..), Unit(..), cup, ounce, pinch, tablespoon
-  , teaspoon
+  , ReadableQuantity(..), ReadableUnit(..), Recipe(..), Unit(..), cup, gram, liter, milligram
+  , milliliter, ounce, pinch, tablespoon, teaspoon
   )
 import qualified Combinable as C
 
@@ -25,6 +25,9 @@ conversionTable = mapFromList
   , (tablespoon, UnitHierarchyMid (teaspoon, 3) (cup, 0.0625))
   , (teaspoon, UnitHierarchyMid (pinch, 4) (tablespoon, Quantity $ 1 / 3))
   , (pinch, UnitHierarchyEnd (tablespoon, 0.25))
+
+  , (liter, UnitHierarchyEnd (milliliter, 1000))
+  , (gram, UnitHierarchyEnd (milligram, 1000))
   ]
 
 getAllConversions :: Unit -> Map Unit Quantity
