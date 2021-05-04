@@ -9,8 +9,8 @@ import UIKit
 
 class GroceryMergeController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate {
     var ids: [Int] = []
-    var existing: ReadableGroceryItem = ReadableGroceryItem(name: "", quantity: ReadableQuantity(whole: nil, fraction: nil), unit: "", active: true)
-    var new: ReadableGroceryItem = ReadableGroceryItem(name: "", quantity: ReadableQuantity(whole: nil, fraction: nil), unit: "", active: true)
+    var existing: ReadableGroceryItem = ReadableGroceryItem(name: "", quantity: ReadableQuantity(whole: nil, fraction: nil), unit: "", active: true, order: 0)
+    var new: ReadableGroceryItem = ReadableGroceryItem(name: "", quantity: ReadableQuantity(whole: nil, fraction: nil), unit: "", active: true, order: 0)
     var onChange: (() -> Void)? = nil
     var currentWholeQuantity: Int? = nil
     var currentFractionQuantity: ReadableFraction? = nil
@@ -28,7 +28,7 @@ class GroceryMergeController: UIViewController, UIPickerViewDataSource, UIPicker
     }
     
     @IBAction func didTapSave(_ sender: Any?) {
-        let item = ReadableGroceryItem(name: name.text!, quantity: ReadableQuantity(whole: currentWholeQuantity, fraction: currentFractionQuantity), unit: unit.text, active: existing.active)
+        let item = ReadableGroceryItem(name: name.text!, quantity: ReadableQuantity(whole: currentWholeQuantity, fraction: currentFractionQuantity), unit: unit.text, active: existing.active, order: existing.order)
         let completion = {
             DispatchQueue.main.async {
                 self.dismiss(animated: true, completion: nil)
@@ -67,6 +67,10 @@ class GroceryMergeController: UIViewController, UIPickerViewDataSource, UIPicker
         }
     }
     
+    @objc func keyboardWillShow(notification: NSNotification) {
+        keyboardWillShowInternal(view: name, notification: notification)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         existingInfo.text = existing.render()
@@ -80,5 +84,7 @@ class GroceryMergeController: UIViewController, UIPickerViewDataSource, UIPicker
         quantity.selectRow(q.fraction?.toInt() ?? 0, inComponent: 1, animated: true)
         name.addDoneButtonOnKeyboard()
         unit.addDoneButtonOnKeyboard()
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardDidShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
 }

@@ -2,13 +2,16 @@ module Conversion where
 
 import ClassyPrelude
 
-import Data.Monoid (Sum(Sum), getSum)
+import Data.Monoid (Sum(..))
 
 import API.Types (ReadableGroceryItem(..), ReadableRecipe(..))
+import Combinable (Constant(..), Combinable)
 import Types
-  ( GroceryItem(..), Ingredient(..), Quantity(..), ReadableFraction(..), ReadableQuantity(..)
-  , ReadableUnit(..), Recipe(..), Unit(..), cup, ounce, pinch, tablespoon, teaspoon
+  ( GroceryItem(..), OrderedGroceryItem(..), Quantity(..), ReadableFraction(..)
+  , ReadableQuantity(..), ReadableUnit(..), Recipe(..), Unit(..), cup, gram, liter, milligram
+  , milliliter, ounce, pinch, tablespoon, teaspoon
   )
+import qualified Combinable as C
 
 data UnitHierarchy
   = UnitHierarchyEnd (Unit, Quantity)
@@ -22,6 +25,9 @@ conversionTable = mapFromList
   , (tablespoon, UnitHierarchyMid (teaspoon, 3) (cup, 0.0625))
   , (teaspoon, UnitHierarchyMid (pinch, 4) (tablespoon, Quantity $ 1 / 3))
   , (pinch, UnitHierarchyEnd (tablespoon, 0.25))
+
+  , (liter, UnitHierarchyEnd (milliliter, 1000))
+  , (gram, UnitHierarchyEnd (milligram, 1000))
   ]
 
 getAllConversions :: Unit -> Map Unit Quantity
@@ -50,28 +56,37 @@ unitOrdering x y = case (lookup x knownUnitOrdering, lookup y knownUnitOrdering)
   (Nothing, Just _) -> GT
   (Nothing, Nothing) -> compare x y
 
-combineQuantities :: Map Unit Quantity -> Map Unit Quantity
-combineQuantities = map getSum . foldr go mempty . reverse . sortBy (\(x, _) (y, _) -> unitOrdering x y) . mapToList
+wrapSidecar :: (Quantity, a) -> (Sum Quantity, Constant a)
+wrapSidecar (x, y) = (Sum x, Constant y)
+
+unwrapSidecar :: (Sum Quantity, Constant a) -> (Quantity, a)
+unwrapSidecar (Sum x, Constant y) = (x, y)
+
+combineQuantities :: Map Unit (Sum Quantity, Constant a) -> Map Unit (Sum Quantity, Constant a)
+combineQuantities = foldr go mempty . reverse . sortBy (\(x, _) (y, _) -> unitOrdering x y) . mapToList
   where
-    go (nextUnit, nextQuantity) acc = case lookup nextUnit acc of
-      Just existingQuantity -> asMap $ insertMap nextUnit (Sum nextQuantity <> existingQuantity) acc
+    go (nextUnit, (nextQuantity, nextSidecar)) acc = case lookup nextUnit acc of
+      Just (existingQuantity, existingSidecar) -> asMap $ insertMap nextUnit (nextQuantity <> existingQuantity, nextSidecar <> existingSidecar) acc
       Nothing ->
         let allConversions = getAllConversions nextUnit
             allConversionsKeys = asSet . setFromList . keys $ allConversions
             existingKeys = asSet . setFromList . keys $ acc
             overlappingKeys = headMay . sortBy unitOrdering . setToList . intersect allConversionsKeys $ existingKeys
         in case overlappingKeys of
-          Nothing -> insertMap nextUnit (Sum nextQuantity) acc
-          Just existingKey -> insertWith (<>) existingKey (Sum (nextQuantity * findWithDefault 1 existingKey allConversions)) acc
+          Nothing -> insertMap nextUnit (nextQuantity, nextSidecar) acc
+          Just existingKey -> insertWith (<>) existingKey (Sum $ getSum nextQuantity * findWithDefault 1 existingKey allConversions, nextSidecar) acc
 
-combineIngredients :: [Ingredient] -> [Ingredient]
-combineIngredients =
+combineItems :: Combinable a => [a] -> [a]
+combineItems =
   mconcat
-    . map (\(name, unitsWithQuantities) -> uncurry (flip (Ingredient name)) <$> mapToList unitsWithQuantities)
+    . map (\(name, everythingElse) -> map (\(unit, (quantity, sidecar)) -> C.orig (name, quantity, unit, sidecar)) $ mapToList everythingElse)
     . mapToList
-    . map (combineQuantities . foldr (uncurry (insertWith (+))) mempty)
+    . map (map unwrapSidecar . combineQuantities . foldr (uncurry (insertWith (<>))) mempty . map (second wrapSidecar))
     . unionsWith (<>)
-    . map (\Ingredient {..} -> asMap $ singletonMap ingredientName [(ingredientUnit, ingredientQuantity)])
+    . map ( \x ->
+        let (name, quantity, unit, sidecar) = C.mk x
+        in asMap $ singletonMap name [(unit, (quantity, sidecar))]
+      )
 
 readableQuantityPrecision :: Double
 readableQuantityPrecision = 0.01
@@ -127,13 +142,16 @@ mkUnit = \case
   Just (ReadableUnit x) | x /= "" -> Unit x
   _ -> UnitMissing
 
-mkReadableGroceryItem :: GroceryItem -> ReadableGroceryItem
-mkReadableGroceryItem GroceryItem {..} = ReadableGroceryItem
-  { readableGroceryItemName = groceryItemName
-  , readableGroceryItemQuantity = mkReadableQuantity groceryItemQuantity
-  , readableGroceryItemUnit = mkReadableUnit groceryItemUnit
-  , readableGroceryItemActive = groceryItemActive
-  }
+mkReadableGroceryItem :: OrderedGroceryItem -> ReadableGroceryItem
+mkReadableGroceryItem OrderedGroceryItem {..} =
+  let GroceryItem {..} = orderedGroceryItemItem
+  in ReadableGroceryItem
+    { readableGroceryItemName = groceryItemName
+    , readableGroceryItemQuantity = mkReadableQuantity groceryItemQuantity
+    , readableGroceryItemUnit = mkReadableUnit groceryItemUnit
+    , readableGroceryItemActive = groceryItemActive
+    , readableGroceryItemOrder = orderedGroceryItemOrder
+    }
 
 mkGroceryItem :: ReadableGroceryItem -> GroceryItem
 mkGroceryItem ReadableGroceryItem {..} = GroceryItem

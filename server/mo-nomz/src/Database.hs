@@ -8,10 +8,10 @@ import Database.PostgreSQL.Simple
 import qualified Data.Map as Map
 
 import Auth (BcryptedAuthorization)
-import Conversion (combineIngredients)
+import Conversion (combineItems)
 import Types
-  ( GroceryItem(..), Ingredient(..), Recipe(..), GroceryItemId, IngredientId, RecipeId, RecipeLink
-  , UserId, groceryItemToIngredient, ingredientToGroceryItem, ingredientToGroceryItem'
+  ( GroceryItem(..), Ingredient(..), OrderedGroceryItem(..), Recipe(..), GroceryItemId, IngredientId
+  , RecipeId, RecipeLink, UserId, ingredientToGroceryItem
   )
 
 data DatabaseException = DatabaseException Text
@@ -35,44 +35,72 @@ fetchToken conn userId = do
     [(Only token)] -> pure token
     _ -> pure Nothing
 
-selectGroceryItems :: Connection -> UserId -> [GroceryItemId] -> IO (Map GroceryItemId GroceryItem)
+selectGroceryItems :: Connection -> UserId -> [GroceryItemId] -> IO (Map GroceryItemId OrderedGroceryItem)
 selectGroceryItems conn userId groceryItemIds = do
   groceryItems <- case null groceryItemIds of
-    True -> query conn "select id, name, quantity, unit, active from nomz.grocery_item where user_id = ?" (Only userId)
-    False -> query conn "select id, name, quantity, unit, active from nomz.grocery_item where user_id = ? and id in ?" (userId, In groceryItemIds)
-  pure $ foldr (\(groceryItemId, name, quantity, unit, active) acc -> insertMap groceryItemId (GroceryItem name quantity unit active) acc) mempty groceryItems
+    True -> query conn "select id, name, quantity, unit, active, ordering from nomz.grocery_item where user_id = ? order by ordering, name" (Only userId)
+    False -> query conn "select id, name, quantity, unit, active, ordering from nomz.grocery_item where user_id = ? and id in ? order by ordering, name" (userId, In groceryItemIds)
+  pure $ foldr (\(groceryItemId, name, quantity, unit, active, order) acc -> insertMap groceryItemId (OrderedGroceryItem (GroceryItem name quantity unit active) order) acc) mempty groceryItems
+
+selectMaxOrder :: Connection -> UserId -> IO Int
+selectMaxOrder conn userId =
+  query conn "select max(ordering) from nomz.grocery_item where user_id = ?" (Only userId) >>= \case
+    (Just (Only x)):_ -> pure x
+    _ -> pure 0
 
 insertGroceryItems :: Connection -> UserId -> [GroceryItem] -> IO [GroceryItemId]
-insertGroceryItems conn userId groceryItems =
+insertGroceryItems conn userId groceryItems = do
+  maxOrder <- selectMaxOrder conn userId
+  insertOrderedGroceryItems conn userId $ zipWith OrderedGroceryItem groceryItems [(maxOrder + 1)..]
+
+insertOrderedGroceryItems :: Connection -> UserId -> [OrderedGroceryItem] -> IO [GroceryItemId]
+insertOrderedGroceryItems conn userId groceryItems = do
   map (map fromOnly)
-    . returning conn "insert into nomz.grocery_item (user_id, name, quantity, unit, active) values (?, ?, ?, ?, ?) returning id"
-    . map (\GroceryItem {..} -> (userId, groceryItemName, groceryItemQuantity, groceryItemUnit, groceryItemActive))
+    . returning conn "insert into nomz.grocery_item (user_id, name, quantity, unit, active, ordering) values (?, ?, ?, ?, ?, ?) returning id"
+    . map ( \(OrderedGroceryItem {..}) ->
+        let GroceryItem {..} = orderedGroceryItemItem
+        in (userId, groceryItemName, groceryItemQuantity, groceryItemUnit, groceryItemActive, orderedGroceryItemOrder)
+      )
     $ groceryItems
 
-mergeGroceryItems :: Connection -> UserId -> [GroceryItemId] -> GroceryItem -> IO GroceryItemId
+updateOrderedGroceryItem :: Connection -> UserId -> GroceryItemId -> OrderedGroceryItem -> IO ()
+updateOrderedGroceryItem conn userId groceryItemId OrderedGroceryItem {..} = do
+  let GroceryItem {..} = orderedGroceryItemItem
+  void $ execute conn
+    "update nomz.grocery_item set name = ?, quantity = ?, unit = ?, active = ?, ordering = ? where user_id = ? and id = ?"
+    (groceryItemName, groceryItemQuantity, groceryItemUnit, groceryItemActive, orderedGroceryItemOrder, userId, groceryItemId)
+  void $ execute conn
+    "update nomz.grocery_item set ordering = 1 + ordering where user_id = ? and ordering >= ? and id <> ?"
+    (userId, orderedGroceryItemOrder, groceryItemId)
+
+mergeGroceryItems :: Connection -> UserId -> [GroceryItemId] -> OrderedGroceryItem -> IO GroceryItemId
 mergeGroceryItems conn userId oldGroceryItemIds newGroceryItem = do
-  [newGroceryItemId] <- insertGroceryItems conn userId [newGroceryItem]
+  [newGroceryItemId] <- insertOrderedGroceryItems conn userId [newGroceryItem]
   mergeIngredientGroceryItemIds conn userId oldGroceryItemIds newGroceryItemId
   deleteGroceryItems conn userId oldGroceryItemIds
   pure newGroceryItemId
 
 automergeGroceryItems :: Connection -> UserId -> IO ()
 automergeGroceryItems c userId = do
-  (activeGroceryItems, inactiveGroceryItems) <- Map.partition groceryItemActive <$> selectGroceryItems c userId []
-  let remap (groceryItemId, GroceryItem {..}) = insertWith (<>) (groceryItemName, groceryItemUnit) (asSet $ singletonSet groceryItemId)
+  (activeGroceryItems, inactiveGroceryItems) <- Map.partition (groceryItemActive . orderedGroceryItemItem) <$> selectGroceryItems c userId []
+  let remap (groceryItemId, OrderedGroceryItem {..}) =
+        let GroceryItem {..} = orderedGroceryItemItem
+        in insertWith (<>) (groceryItemName, groceryItemUnit) (asSet $ singletonSet groceryItemId)
       activeGroceryItemIdsByNameAndUnit = asMap . foldr remap mempty . mapToList $ activeGroceryItems
       inactiveGroceryItemIdsByNameAndUnit = asMap . foldr remap mempty . mapToList $ inactiveGroceryItems
-      combinedActiveGroceryItems = map ingredientToGroceryItem . combineIngredients . map groceryItemToIngredient . Map.elems $ activeGroceryItems
-      combinedInactiveGroceryItems = map (ingredientToGroceryItem' False) . combineIngredients . map groceryItemToIngredient . Map.elems $ inactiveGroceryItems
-      (newActiveGroceryItems, oldActiveGroceryItemIds) = unzip $ flip mapMaybe combinedActiveGroceryItems $ \x@GroceryItem {..} ->
-        case lookup (groceryItemName, groceryItemUnit) activeGroceryItemIdsByNameAndUnit of
+      combinedActiveGroceryItems = combineItems $ Map.elems activeGroceryItems
+      combinedInactiveGroceryItems = combineItems $ Map.elems inactiveGroceryItems
+      (newActiveGroceryItems, oldActiveGroceryItemIds) = unzip $ flip mapMaybe combinedActiveGroceryItems $ \x@OrderedGroceryItem {..} ->
+        let GroceryItem {..} = orderedGroceryItemItem
+        in case lookup (groceryItemName, groceryItemUnit) activeGroceryItemIdsByNameAndUnit of
           Just xs | length xs >= 2 -> Just (x, setToList xs)
           _ -> Nothing
-      (newInactiveGroceryItems, oldInactiveGroceryItemIds) = unzip $ flip mapMaybe combinedInactiveGroceryItems $ \x@GroceryItem {..} ->
-        case lookup (groceryItemName, groceryItemUnit) inactiveGroceryItemIdsByNameAndUnit of
+      (newInactiveGroceryItems, oldInactiveGroceryItemIds) = unzip $ flip mapMaybe combinedInactiveGroceryItems $ \x@OrderedGroceryItem {..} ->
+        let GroceryItem {..} = orderedGroceryItemItem
+        in case lookup (groceryItemName, groceryItemUnit) inactiveGroceryItemIdsByNameAndUnit of
           Just xs | length xs >= 2 -> Just (x, setToList xs)
           _ -> Nothing
-  newGroceryItemIds <- insertGroceryItems c userId (newActiveGroceryItems <> newInactiveGroceryItems)
+  newGroceryItemIds <- insertOrderedGroceryItems c userId (newActiveGroceryItems <> newInactiveGroceryItems)
   for_ (zip newGroceryItemIds (oldActiveGroceryItemIds <> oldInactiveGroceryItemIds)) $ \(newGroceryItemId, oldGroceryItemIds) ->
     mergeIngredientGroceryItemIds c userId oldGroceryItemIds newGroceryItemId
   deleteGroceryItems c userId (mconcat oldActiveGroceryItemIds <> mconcat oldInactiveGroceryItemIds)
@@ -85,10 +113,10 @@ unmergeGroceryItems conn userId oldIngredientIds =
       oldGroceryItemIds <- map fromOnly
         <$> query conn "select distinct(grocery_id) from nomz.ingredient where user_id = ? and id in ? and grocery_id is not null" (userId, In oldIngredientIds)
       void $ execute conn "update nomz.ingredient set grocery_id = null where user_id = ? and id in ?" (userId, In oldIngredientIds)
-      (unmergedIngredientIds, newGroceryItems) <- unzip . map (\(ingredientId, name, quantity, unit, active) -> (ingredientId, GroceryItem name quantity unit active))
-        <$> query conn "select i.id, g.name, i.quantity, i.unit, g.active from nomz.ingredient i join nomz.grocery_item g on g.id = i.grocery_id where i.user_id = ? and i.grocery_id in ?" (userId, In oldGroceryItemIds)
+      (unmergedIngredientIds, newGroceryItems) <- unzip . map (\(ingredientId, name, quantity, unit, active, order) -> (ingredientId, OrderedGroceryItem (GroceryItem name quantity unit active) order))
+        <$> query conn "select i.id, g.name, i.quantity, i.unit, g.active, g.ordering from nomz.ingredient i join nomz.grocery_item g on g.id = i.grocery_id where i.user_id = ? and i.grocery_id in ?" (userId, In oldGroceryItemIds)
 
-      newGroceryItemIds <- insertGroceryItems conn userId newGroceryItems
+      newGroceryItemIds <- insertOrderedGroceryItems conn userId newGroceryItems
       for_ (zip newGroceryItemIds unmergedIngredientIds) $ \(newGroceryItemId, unmergedIngredientId) ->
         unmergeIngredientGroceryItemIds conn userId unmergedIngredientId newGroceryItemId
       deleteGroceryItems conn userId oldGroceryItemIds

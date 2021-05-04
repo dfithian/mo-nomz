@@ -9,6 +9,7 @@ import UIKit
 import SafariServices
 
 class RecipeAddController: UIViewController {
+    @IBOutlet weak var label: UILabel!
     @IBOutlet weak var link: UITextField!
     var onChange: (() -> Void)?
     var existingLinks: [String] = []
@@ -55,9 +56,14 @@ class RecipeAddController: UIViewController {
         }
     }
     
+    @objc func keyboardWillShow(notification: NSNotification) {
+        keyboardWillShowInternal(view: label, notification: notification)
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        link.becomeFirstResponder()
         link.addDoneButtonOnKeyboard()
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardDidShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
 }
