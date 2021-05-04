@@ -34,12 +34,10 @@ class GroceryAddController: UIViewController {
         case 0:
             self.individualView.alpha = 1
             self.bulkView.alpha = 0
-            self.individualVc?.name.becomeFirstResponder()
             break
         default:
             self.individualView.alpha = 0
             self.bulkView.alpha = 1
-            self.bulkVc?.blob.becomeFirstResponder()
             break
         }
     }
@@ -59,9 +57,19 @@ class GroceryAddController: UIViewController {
         }
     }
     
+    @objc func keyboardWillShow(notification: NSNotification) {
+        if individualView.alpha == 1 {
+            keyboardWillShowInternal(view: individualVc!.name, notification: notification)
+        } else {
+            keyboardWillShowInternal(view: bulkVc!.blob, notification: notification)
+        }
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         individualView.alpha = 1
         bulkView.alpha = 0
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardDidShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
 }

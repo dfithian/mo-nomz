@@ -16,12 +16,6 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Add a recipe link or search" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5cf-nz-bWX">
-                                <rect key="frame" x="20" y="104" width="346" height="20.5"/>
-                                <fontDescription key="fontDescription" type="italicSystem" pointSize="17"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                             <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="MEe-TH-D0D">
                                 <rect key="frame" x="0.0" y="813" width="414" height="49"/>
                                 <items>
@@ -61,17 +55,23 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Add a recipe link or search" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5cf-nz-bWX">
+                                <rect key="frame" x="20" y="104" width="346" height="20.5"/>
+                                <fontDescription key="fontDescription" type="italicSystem" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="Q7p-DJ-Ogd"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="MEe-TH-D0D" firstAttribute="leading" secondItem="Q7p-DJ-Ogd" secondAttribute="leading" id="5wZ-YY-kJj"/>
+                            <constraint firstItem="5cf-nz-bWX" firstAttribute="top" secondItem="b7o-a3-ELH" secondAttribute="bottom" constant="8" symbolic="YES" id="Lwu-e1-p8A"/>
                             <constraint firstItem="b7o-a3-ELH" firstAttribute="top" secondItem="Q7p-DJ-Ogd" secondAttribute="top" constant="20" id="Nbh-be-Tmf"/>
                             <constraint firstItem="pQ7-wk-6oi" firstAttribute="leading" secondItem="Q7p-DJ-Ogd" secondAttribute="leading" constant="20" id="OtG-k2-gxA"/>
                             <constraint firstItem="b7o-a3-ELH" firstAttribute="centerX" secondItem="74V-BG-6kF" secondAttribute="centerX" id="QKU-vf-z5J"/>
                             <constraint firstItem="Q7p-DJ-Ogd" firstAttribute="trailing" secondItem="m8F-Jv-mQa" secondAttribute="trailing" constant="20" id="cJw-D2-HaM"/>
                             <constraint firstItem="5cf-nz-bWX" firstAttribute="leading" secondItem="Q7p-DJ-Ogd" secondAttribute="leading" constant="20" id="fba-2L-c7s"/>
-                            <constraint firstItem="5cf-nz-bWX" firstAttribute="top" secondItem="b7o-a3-ELH" secondAttribute="bottom" constant="8" symbolic="YES" id="gX2-M0-Rag"/>
                             <constraint firstItem="MEe-TH-D0D" firstAttribute="bottom" secondItem="Q7p-DJ-Ogd" secondAttribute="bottom" id="mug-3c-7JG"/>
                             <constraint firstItem="Q7p-DJ-Ogd" firstAttribute="trailing" secondItem="pQ7-wk-6oi" secondAttribute="trailing" constant="20" id="oSG-NX-N7r"/>
                             <constraint firstItem="pQ7-wk-6oi" firstAttribute="top" secondItem="5cf-nz-bWX" secondAttribute="bottom" constant="8" symbolic="YES" id="pPm-EX-T10"/>
@@ -82,6 +82,7 @@
                     </view>
                     <navigationItem key="navigationItem" id="Bhx-HZ-KWk"/>
                     <connections>
+                        <outlet property="label" destination="5cf-nz-bWX" id="SV8-VE-KXm"/>
                         <outlet property="link" destination="pQ7-wk-6oi" id="cxF-ac-Ct1"/>
                     </connections>
                 </viewController>

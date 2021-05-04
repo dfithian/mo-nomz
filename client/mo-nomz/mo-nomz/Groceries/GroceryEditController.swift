@@ -64,6 +64,10 @@ class GroceryEditController: UIViewController, UIPickerViewDataSource, UIPickerV
         }
     }
     
+    @objc func keyboardWillShow(notification: NSNotification) {
+        keyboardWillShowInternal(view: name, notification: notification)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         existingInfo.text = existing.item.render()
@@ -75,5 +79,7 @@ class GroceryEditController: UIViewController, UIPickerViewDataSource, UIPickerV
         quantity.selectRow(existing.item.quantity.fraction?.toInt() ?? 0, inComponent: 1, animated: true)
         unit.addDoneButtonOnKeyboard()
         name.addDoneButtonOnKeyboard()
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardDidShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
 }

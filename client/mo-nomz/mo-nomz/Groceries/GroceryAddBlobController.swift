@@ -25,7 +25,6 @@ class GroceryAddBlobController: UIViewController {
     }
     
     override func viewDidLoad() {
-        blob.becomeFirstResponder()
         blob.addDoneButtonOnKeyboard()
     }
 }

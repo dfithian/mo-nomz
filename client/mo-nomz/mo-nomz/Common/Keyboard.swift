@@ -62,3 +62,17 @@ extension UITextView {
         self.resignFirstResponder()
     }
 }
+
+extension UIViewController {
+    func keyboardWillShowInternal(view: UIView, notification: NSNotification) {
+        if self.view.frame.origin.y == 0 {
+            self.view.frame.origin.y = -view.frame.origin.y
+        }
+    }
+    
+    @objc func keyboardWillHide(notification: NSNotification) {
+        if self.view.frame.origin.y != 0 {
+            self.view.frame.origin.y = 0
+        }
+    }
+}

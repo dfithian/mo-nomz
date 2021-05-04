@@ -89,7 +89,6 @@ class GroceryAddItemController: UIViewController, UIPickerViewDataSource, UIPick
         unit.addDoneButtonOnKeyboard()
         name.text = nil
         name.addDoneButtonOnKeyboard()
-        name.becomeFirstResponder()
         newWholeQuantity = 1
         newFractionQuantity = nil
         quantity.selectRow(1, inComponent: 0, animated: true)
