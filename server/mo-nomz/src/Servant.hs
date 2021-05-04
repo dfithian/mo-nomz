@@ -35,7 +35,7 @@ instance MimeRender HTML Markup where
 type NomzApi =
   Verb 'GET 307 '[OctetStream] (Headers '[Header "Location" String] ByteString)
     :<|> "index.html" :> Verb 'GET 307 '[OctetStream] (Headers '[Header "Location" String] ByteString)
-    :<|> "metrics" :> Get '[HTML] Markup
+    :<|> "status" :> Get '[HTML] Markup
     :<|> "health" :> Get '[JSON] GetHealthResponse
     :<|> "api" :> "v1" :> "user" :> Post '[JSON] UserCreateResponse
     :<|> Authorized :> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "grocery" :> Get '[JSON] ListGroceryItemResponse

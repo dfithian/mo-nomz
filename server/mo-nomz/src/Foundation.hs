@@ -30,6 +30,7 @@ data App = App
   , appLogFunc        :: LogFunc -- ^ The logging function.
   , appManager        :: Manager -- ^ The manager for our scrape client.
   , appMetrics        :: AppMetrics -- ^ The metrics for the app.
+  , appStarted        :: UTCTime -- ^ The time the app was started.
   }
 
 data AppMetrics = AppMetrics

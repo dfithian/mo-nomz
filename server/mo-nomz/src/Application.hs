@@ -53,18 +53,19 @@ getMetrics = do
               Label x -> x
               Distribution x -> tshow $ Distribution.mean x
         in Html.div (Html.span (Html.toHtml (unwords [key, valueStr])))
-  AppMetrics {..} <- asks appMetrics
+  App {..} <- ask
   now <- liftIO getCurrentTime
-  current <- liftIO $ sampleAll appMetricsStore
+  current <- liftIO $ sampleAll (appMetricsStore appMetrics)
   healthHtml <- Html.div (Html.span (Html.text "Health OK")) <$ getHealth
-  let timeHtml = Html.div (Html.span (Html.text $ "Last refreshed at " <> pack (formatTime defaultTimeLocale (iso8601DateFormat $ Just "%H:%M:%S") now <> " UTC")))
+  let uptimeHtml = Html.div (Html.span (Html.text $ "Started at " <> pack (formatTime defaultTimeLocale (iso8601DateFormat $ Just "%H:%M:%S") appStarted <> " UTC")))
+      refreshHtml = Html.div (Html.span (Html.text $ "Last refreshed at " <> pack (formatTime defaultTimeLocale (iso8601DateFormat $ Just "%H:%M:%S") now <> " UTC")))
       versionHtml = Html.div (Html.span (Html.text $ "Version " <> pack (showVersion version)))
       metricsHtml = mconcat . map renderMetric . sortOn fst . mapToList $ current
   pure $ Html.html $ do
     Html.head $ do
       Html.meta ! HtmlAttr.httpEquiv "Refresh" ! HtmlAttr.content "300"
       Html.style $ Html.text "span { font-family: Courier New; font-size: 14px; }"
-    Html.body $ timeHtml <> versionHtml <> healthHtml <> metricsHtml
+    Html.body $ mconcat [uptimeHtml, refreshHtml, versionHtml, healthHtml, metricsHtml]
 
 nomzServer :: ServerT NomzApi NomzServer
 nomzServer =
@@ -106,6 +107,7 @@ makeFoundation appSettings@AppSettings {..} = do
   appMetrics <- AppMetrics store
     <$> createCounter "total_requests" store
     <*> createDistribution "response_timing" store
+  appStarted <- getCurrentTime
   pure App {..}
 
 warpSettings :: App -> Settings
