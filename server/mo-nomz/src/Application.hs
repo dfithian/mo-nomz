@@ -123,7 +123,7 @@ ekgMiddleware App {..} appl req respond = do
       start <- getCurrentTime
       received <- appl req respond
       end <- getCurrentTime
-      Distribution.add appMetricsResponseTiming (fromInteger $ round $ diffUTCTime end start)
+      Distribution.add appMetricsResponseTiming (fromInteger $ round $ (* 1000) $ diffUTCTime end start)
       pure received
 
 appMain :: IO ()
