@@ -122,11 +122,11 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nuT-dj-WFL">
-                                                    <rect key="frame" x="154" y="4" width="106" height="36"/>
+                                                    <rect key="frame" x="144.5" y="4" width="125" height="36"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="36" id="BVe-BA-lxG"/>
                                                     </constraints>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <state key="normal" title="Contact support"/>
                                                     <connections>
                                                         <action selector="didTapContactSupport:" destination="Em2-cS-aPW" eventType="touchUpInside" id="1q9-ec-Hc6"/>

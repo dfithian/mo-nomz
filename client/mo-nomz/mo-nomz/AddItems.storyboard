@@ -101,7 +101,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="4No-26-owQ">
-                                <rect key="frame" x="0.0" y="252.5" width="414" height="417.5"/>
+                                <rect key="frame" x="0.0" y="249.5" width="414" height="420.5"/>
                                 <connections>
                                     <segue destination="OV8-Oa-mBY" kind="embed" identifier="embedAddItems" id="1ww-o5-RVK"/>
                                 </connections>
@@ -127,8 +127,8 @@
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="quz-qT-HGf">
-                                <rect key="frame" x="153" y="208.5" width="108" height="36"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                <rect key="frame" x="160" y="208.5" width="94" height="33"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <state key="normal" title="Add another"/>
                                 <connections>
                                     <action selector="didTapAdd:" destination="3Ct-zH-W4D" eventType="touchUpInside" id="qRH-Ge-vX2"/>
@@ -175,7 +175,7 @@
             <objects>
                 <tableViewController id="OV8-Oa-mBY" customClass="GroceryAddedItemsController" customModule="mo_nomz" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="xfT-sl-D7c">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="417"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="420.5"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <prototypes>
