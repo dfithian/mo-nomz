@@ -48,14 +48,19 @@ dependencies:
   - aeson
   - attoparsec
   - base
+  - blaze-html
+  - blaze-markup
   - bytestring
   - case-insensitive
   - classy-prelude
   - containers
   - cryptonite
   - data-default
+  - ekg
+  - ekg-core
   - http-client
   - http-client-tls
+  - http-media
   - http-types
   - memory
   - monad-logger
@@ -70,6 +75,7 @@ dependencies:
   - servant
   - servant-server
   - text
+  - time
   - unordered-containers
   - wai
   - wai-app-static
