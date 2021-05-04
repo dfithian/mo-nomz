@@ -184,8 +184,10 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
             cell.select.addTarget(self, action: #selector(didTapToBuy), for: .touchUpInside)
             cell.moveUp.tag = indexPath.row
             cell.moveUp.addTarget(self, action: #selector(didTapToBuyMoveUp), for: .touchUpInside)
+            if indexPath.row == 0 { cell.moveUp.isEnabled = false }
             cell.moveDown.tag = indexPath.row
             cell.moveDown.addTarget(self, action: #selector(didTapToBuyMoveDown), for: .touchUpInside)
+            if indexPath.row == toBuy.count - 1 { cell.moveDown.isEnabled = false }
             return cell
         case 3:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SectionHeader
@@ -201,8 +203,10 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
             cell.select.addTarget(self, action: #selector(didTapBought), for: .touchUpInside)
             cell.moveUp.tag = indexPath.row
             cell.moveUp.addTarget(self, action: #selector(didTapBoughtMoveUp), for: .touchUpInside)
+            if indexPath.row == 0 { cell.moveUp.isEnabled = false }
             cell.moveDown.tag = indexPath.row
             cell.moveDown.addTarget(self, action: #selector(didTapBoughtMoveDown), for: .touchUpInside)
+            if indexPath.row == bought.count - 1 { cell.moveDown.isEnabled = false }
             return cell
         default:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SectionHeader
