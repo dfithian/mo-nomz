@@ -18,11 +18,14 @@ class RecipeAddController: UIViewController {
         var clearSearch: Bool = false
         var url: URL? = nil
         if let linkText = link.text {
-            if let linkUrl = URL(string: linkText) {
+            if let linkUrl = URL(string: linkText), ["http", "https"].contains(linkUrl.scheme) {
                 url = linkUrl
             } else if let escaped = linkText.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) {
                 clearSearch = true
                 url = URL(string: "https://google.com/search?q=\(escaped)")
+            } else {
+                clearSearch = true
+                url = URL(string: "https://google.com")
             }
         } else {
             clearSearch = true

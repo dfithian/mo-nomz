@@ -9,4 +9,5 @@ import UIKit
 
 class RecipeListItem: UITableViewCell {
     @IBOutlet weak var name: UILabel!
+    @IBOutlet weak var select: UIButton!
 }

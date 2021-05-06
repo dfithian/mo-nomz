@@ -13,7 +13,7 @@ struct RecipeWithId: Codable {
     let id: Int
 }
 
-class RecipeListController: UITableViewController, UITableViewDragDelegate, UITableViewDropDelegate {
+class RecipeListController: UITableViewController {
     var active: [RecipeWithId] = []
     var saved: [RecipeWithId] = []
     var onChange: (() -> Void)?
@@ -59,6 +59,16 @@ class RecipeListController: UITableViewController, UITableViewDragDelegate, UITa
         }
     }
     
+    @objc func didTapActive(_ sender: Any?) {
+        let b = sender as! UIButton
+        self.updateRecipe(id: active[b.tag].id, active: false, completion: onChange)
+    }
+    
+    @objc func didTapSavedForLater(_ sender: Any?) {
+        let b = sender as! UIButton
+        self.updateRecipe(id: saved[b.tag].id, active: true, completion: onChange)
+    }
+    
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.section {
         case 1:
@@ -79,7 +89,7 @@ class RecipeListController: UITableViewController, UITableViewDragDelegate, UITa
             }
             break
         case 4:
-            if let link = active[indexPath.row].recipe.link {
+            if let link = saved[indexPath.row].recipe.link {
                 openLink(link)
             }
             break
@@ -135,6 +145,8 @@ class RecipeListController: UITableViewController, UITableViewDragDelegate, UITa
             let cell = tableView.dequeueReusableCell(withIdentifier: "recipeListItem") as! RecipeListItem
             let name = active[indexPath.row].recipe.name
             cell.name.text = name
+            cell.select.tag = indexPath.row
+            cell.select.addTarget(self, action: #selector(didTapActive), for: .touchUpInside)
             return cell
         case 3:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SectionHeader
@@ -143,9 +155,11 @@ class RecipeListController: UITableViewController, UITableViewDragDelegate, UITa
             cell.label.text = "Saved for later (\(saved.count))"
             return cell
         case 4:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "recipeListItem") as! RecipeListItem
+            let cell = tableView.dequeueReusableCell(withIdentifier: "savedListItem") as! RecipeListItem
             let name = saved[indexPath.row].recipe.name
             cell.name.text = name
+            cell.select.tag = indexPath.row
+            cell.select.addTarget(self, action: #selector(didTapSavedForLater), for: .touchUpInside)
             return cell
         default:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SectionHeader
@@ -153,69 +167,8 @@ class RecipeListController: UITableViewController, UITableViewDragDelegate, UITa
         }
     }
     
-    func tableView(_ tableView: UITableView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
-        var recipe: RecipeWithId? = nil
-        switch indexPath.section {
-        case 2:
-            recipe = active[indexPath.row]
-            break
-        case 4:
-            recipe = saved[indexPath.row]
-            break
-        default:
-            break
-        }
-        do {
-            if let r = recipe {
-                let data = try JSONEncoder().encode(r)
-                return [UIDragItem(itemProvider: NSItemProvider(item: data as NSData, typeIdentifier: kUTTypePlainText as String))]
-            }
-        } catch {
-            print("Failed to initiate drag and drop \(error)")
-        }
-        return []
-    }
-    
-    func tableView(_ tableView: UITableView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UITableViewDropProposal {
-        var proposal = UITableViewDropProposal(operation: .cancel)
-        guard destinationIndexPath != nil else { return proposal }
-        guard session.items.count == 1 else { return proposal }
-        if tableView.hasActiveDrag {
-            proposal = UITableViewDropProposal(operation: .move, intent: .insertAtDestinationIndexPath)
-        }
-        return proposal
-    }
-    
-    func tableView(_ tableView: UITableView, performDropWith coordinator: UITableViewDropCoordinator) {
-        guard var indexPath = coordinator.destinationIndexPath else { return }
-        if indexPath.section == 0 { return }
-        if indexPath.section == 1 {
-            indexPath.section = 2
-        }
-        if indexPath.section == 3 {
-            indexPath.section = 4
-        }
-        let willBeActive = [1, 2].contains(indexPath.section)
-        coordinator.session.loadObjects(ofClass: NSString.self, completion: { items in
-            guard let strings = items as? [String] else { return }
-            for string in strings {
-                do {
-                    let new = try JSONDecoder().decode(RecipeWithId.self, from: string.data(using: .utf8)!)
-                    if new.recipe.active != willBeActive {
-                        self.updateRecipe(id: new.id, active: willBeActive, completion: self.onChange)
-                    }
-                } catch {
-                    print("Failed completing drag and drop \(error)")
-                }
-            }
-        })
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        tableView.dragDelegate = self
-        tableView.dropDelegate = self
-        tableView.dragInteractionEnabled = true
         tableView.layer.cornerRadius = 5
     }
 }
