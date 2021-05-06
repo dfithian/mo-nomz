@@ -133,6 +133,7 @@ struct ReadableRecipe: Codable {
 
 struct ImportRecipeLinkRequest: Codable {
     let link: String
+    let active: Bool
 }
 
 struct ImportGrocerySingle: Codable {

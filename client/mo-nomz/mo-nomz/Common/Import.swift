@@ -17,7 +17,7 @@ extension UIViewController {
         }
     }
     func importUrl(_ url: URL) {
-        addRecipeLink(link: url.absoluteString, completion: nil)
+        addRecipeLink(link: url.absoluteString, active: true, completion: nil)
     }
     func importData(_ text: String) {
         addGroceryBlob(content: text, completion: nil)

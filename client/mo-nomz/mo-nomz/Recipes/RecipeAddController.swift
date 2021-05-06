@@ -11,8 +11,11 @@ import SafariServices
 class RecipeAddController: UIViewController {
     @IBOutlet weak var label: UILabel!
     @IBOutlet weak var link: UITextField!
+    @IBOutlet weak var inactive: UISwitch!
+    @IBOutlet weak var indicator: UILabel!
     var onChange: (() -> Void)?
     var existingLinks: [String] = []
+    var active: Bool = true
     
     @IBAction func didTapSearch(_ sender: Any) {
         var clearSearch: Bool = false
@@ -47,7 +50,7 @@ class RecipeAddController: UIViewController {
             self.onChange?()
         }
         if let newLink = link.text, !newLink.isEmpty {
-            addRecipeLink(link: newLink, completion: completion)
+            addRecipeLink(link: newLink, active: active, completion: completion)
         } else {
             didTapCancel(sender)
         }
@@ -59,6 +62,22 @@ class RecipeAddController: UIViewController {
         }
     }
     
+    private func updateActive(_ val: Bool) {
+        if val {
+            active = true
+            indicator.text = "Active"
+        } else {
+            active = false
+            indicator.text = "Saved for later"
+        }
+    }
+    
+    @objc func didTapSwitch(_ sender: Any) {
+        if let s = sender as? UISwitch {
+            updateActive(!s.isOn)
+        }
+    }
+    
     @objc func keyboardWillShow(notification: NSNotification) {
         keyboardWillShowInternal(view: label, notification: notification)
     }
@@ -66,6 +85,9 @@ class RecipeAddController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         link.addDoneButtonOnKeyboard()
+        updateActive(true)
+        inactive.isOn = false
+        inactive.addTarget(self, action: #selector(didTapSwitch), for: .valueChanged)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardDidShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }

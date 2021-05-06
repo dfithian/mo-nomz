@@ -62,7 +62,8 @@ data ListGroceryItemResponse = ListGroceryItemResponse
   deriving (Eq, Ord, Show)
 
 data RecipeImportLinkRequest = RecipeImportLinkRequest
-  { recipeImportLinkRequestLink :: RecipeLink
+  { recipeImportLinkRequestLink   :: RecipeLink
+  , recipeImportLinkRequestActive :: Bool
   }
   deriving (Eq, Ord, Show)
 

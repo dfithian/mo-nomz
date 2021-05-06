@@ -124,9 +124,11 @@ postRecipeImportLink token userId RecipeImportLinkRequest {..} = do
   existingRecipes <- unwrapDb $ withDbConn $ \c -> Database.selectRecipesByLink c userId recipeImportLinkRequestLink
   case headMay (mapToList existingRecipes) of
     Just (recipeId, Recipe {..}) ->
-      unless recipeActive $
-        unwrapDb $ withDbConn $ \c ->
-          Database.activateRecipe c userId recipeId
+      case (recipeImportLinkRequestActive, recipeActive) of
+        (True, True) -> pure ()
+        (False, True) -> unwrapDb $ withDbConn $ \c -> Database.deactivateRecipe c userId recipeId
+        (True, False) -> unwrapDb $ withDbConn $ \c -> Database.activateRecipe c userId recipeId
+        (False, False) -> pure ()
     Nothing -> do
       uri <- maybe (throwError err400 { errReasonPhrase = "Invalid link" }) pure $ parseURI (unpack $ unRecipeLink recipeImportLinkRequestLink)
       ScrapedRecipe {..} <- mapError (\e -> err500 { errReasonPhrase = unpack e }) $ scrapeUrl uri
@@ -134,7 +136,7 @@ postRecipeImportLink token userId RecipeImportLinkRequest {..} = do
       let recipe = Recipe
             { recipeName = scrapedRecipeName
             , recipeLink = (Just recipeImportLinkRequestLink)
-            , recipeActive = True
+            , recipeActive = recipeImportLinkRequestActive
             }
       unwrapDb $ withDbConn $ \c -> do
         groceryItemIds <- Database.insertGroceryItems c userId (ingredientToGroceryItem <$> scrapedRecipeIngredients)
