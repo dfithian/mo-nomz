@@ -37,6 +37,11 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
         selectRow(b.tag)
     }
     
+    @objc func didTapBought(_ sender: Any?) {
+        let b = sender as! UIButton
+        deselectRow(b.tag)
+    }
+    
     private func move(row: Int, up: Bool, active: Bool) {
         let order: Int
         let items = active ? toBuy : bought
@@ -70,11 +75,6 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
     @objc func didTapBoughtMoveDown(_ sender: Any?) {
         let b = sender as! UIButton
         move(row: b.tag, up: false, active: false)
-    }
-    
-    @objc func didTapBought(_ sender: Any?) {
-        let b = sender as! UIButton
-        deselectRow(b.tag)
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -184,10 +184,8 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
             cell.select.addTarget(self, action: #selector(didTapToBuy), for: .touchUpInside)
             cell.moveUp.tag = indexPath.row
             cell.moveUp.addTarget(self, action: #selector(didTapToBuyMoveUp), for: .touchUpInside)
-            if indexPath.row == 0 { cell.moveUp.isEnabled = false }
             cell.moveDown.tag = indexPath.row
             cell.moveDown.addTarget(self, action: #selector(didTapToBuyMoveDown), for: .touchUpInside)
-            if indexPath.row == toBuy.count - 1 { cell.moveDown.isEnabled = false }
             return cell
         case 3:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SectionHeader
@@ -203,10 +201,8 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
             cell.select.addTarget(self, action: #selector(didTapBought), for: .touchUpInside)
             cell.moveUp.tag = indexPath.row
             cell.moveUp.addTarget(self, action: #selector(didTapBoughtMoveUp), for: .touchUpInside)
-            if indexPath.row == 0 { cell.moveUp.isEnabled = false }
             cell.moveDown.tag = indexPath.row
             cell.moveDown.addTarget(self, action: #selector(didTapBoughtMoveDown), for: .touchUpInside)
-            if indexPath.row == bought.count - 1 { cell.moveDown.isEnabled = false }
             return cell
         default:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SectionHeader
@@ -285,7 +281,7 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
                     let prefs = Persistence.loadPreferencess()
                     let new = try JSONDecoder().decode(ReadableGroceryItemWithId.self, from: string.data(using: .utf8)!)
                     let run = { () -> Void in
-                        self.mergeItems = (existing.item, new.item, [existing.id + new.id])
+                        self.mergeItems = (existing.item, new.item, [existing.id, new.id])
                         self.performSegue(withIdentifier: "mergeItems", sender: nil)
                     }
                     let runAndIgnore = { () -> Void in
