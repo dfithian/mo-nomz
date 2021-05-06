@@ -169,10 +169,10 @@ selectRecipes :: Connection -> UserId -> [RecipeId] -> IO (Map RecipeId Recipe)
 selectRecipes conn userId recipeIds = do
   case null recipeIds of
     True -> do
-      recipes <- query conn "select id, name, link, active from nomz.recipe where user_id = ?" (Only userId)
+      recipes <- query conn "select id, name, link, active from nomz.recipe where user_id = ? order by id" (Only userId)
       pure . mapFromList . map (\(recipeId, name, link, active) -> (recipeId, Recipe name link active)) $ recipes
     False -> do
-      recipes <- query conn "select id, name, link, active from nomz.recipe where user_id = ? and id in ?" (userId, In recipeIds)
+      recipes <- query conn "select id, name, link, active from nomz.recipe where user_id = ? and id in ? order by id" (userId, In recipeIds)
       pure . mapFromList . map (\(recipeId, name, link, active) -> (recipeId, Recipe name link active)) $ recipes
 
 selectRecipesByLink :: Connection -> UserId -> RecipeLink -> IO (Map RecipeId Recipe)
