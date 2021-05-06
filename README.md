@@ -64,18 +64,16 @@ Non food related tags:
         * To buy only
     * Add
         * Link
+        * Structured
         * Pasted
-        * Both
     * Move to bought
     * Move to to buy
     * Edit
     * Merge
     * Delete
+    * Clear
+    * Reorder
 * Recipe list
-    * Add
-        * Link
-        * Pasted
-        * Both
     * Move to saved
     * Move to active
     * Delete
