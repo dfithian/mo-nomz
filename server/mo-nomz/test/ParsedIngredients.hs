@@ -157,7 +157,7 @@ sallysBakingIngredients :: [Ingredient]
 sallysBakingIngredients =
   [ pureIngredient 0.5 "cup" "(115g; 1 stick) unsalted butter"
   , pureIngredient 6.0 "oz" "(170g) high quality semi-sweet chocolate*"
-  , pureIngredient 0.25 "cup" "(31g) all-purpose flour\194 (spoon & leveled)"
+  , pureIngredient 0.25 "cup" "(31g) all-purpose flour (spoon & leveled)"
   , pureIngredient 0.5 "cup" "(60g) confectioners\8217 sugar"
   , pureIngredientNoUnit 2 "large egg yolks*"
   , pureIngredientNoUnit 2 "large eggs"

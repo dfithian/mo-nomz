@@ -97,16 +97,20 @@ migrateDatabase app = do
     Right (MigrationError str) -> fail $ "Failed to run migrations due to " <> str
     Right MigrationSuccess -> pure ()
 
+makeAppMetrics :: IO AppMetrics
+makeAppMetrics = do
+  store <- newStore
+  AppMetrics store
+    <$> createCounter "total_requests" store
+    <*> createDistribution "response_timing" store
+
 makeFoundation :: AppSettings -> IO App
 makeFoundation appSettings@AppSettings {..} = do
   let DatabaseSettings {..} = appDatabase
       appLogFunc = defaultOutput stdout
   appConnectionPool <- createPool (connectPostgreSQL $ encodeUtf8 databaseSettingsConnStr) close databaseSettingsPoolsize 15 1
   appManager <- createManager
-  store <- newStore
-  appMetrics <- AppMetrics store
-    <$> createCounter "total_requests" store
-    <*> createDistribution "response_timing" store
+  appMetrics <- makeAppMetrics
   appStarted <- getCurrentTime
   pure App {..}
 
