@@ -157,6 +157,26 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
         return UISwipeActionsConfiguration(actions: [action])
     }
     
+    override func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let id: Int
+        switch indexPath.section {
+        case 2:
+            id = toBuy[indexPath.row].id
+            break
+        case 4:
+            id = bought[indexPath.row].id
+            break
+        default:
+            return nil
+        }
+        let action = UIContextualAction(style: .destructive, title: "Delete") { [weak self] (action, view, completionHandler) in
+            self?.deleteRow([id])
+            completionHandler(true)
+        }
+        action.backgroundColor = .systemRed
+        return UISwipeActionsConfiguration(actions: [action])
+    }
+    
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         switch indexPath.section {
         case 1: return self.tableView.sectionHeaderHeight
