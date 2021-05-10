@@ -10,6 +10,5 @@ import UIKit
 class GroceryListItem: UITableViewCell {
     @IBOutlet weak var name: UILabel!
     @IBOutlet weak var select: UIButton!
-    @IBOutlet weak var moveUp: UIButton!
-    @IBOutlet weak var moveDown: UIButton!
+    @IBOutlet weak var move: UIButton!
 }

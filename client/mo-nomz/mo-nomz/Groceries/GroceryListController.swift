@@ -8,6 +8,17 @@
 import MobileCoreServices
 import UIKit
 
+enum DragAndDropType {
+    case merge
+    case reorder
+}
+
+struct DragInfo {
+    let type: DragAndDropType
+    let toBuy: Bool
+    let indexPath: IndexPath
+}
+
 class GroceryListController: UITableViewController, UITableViewDragDelegate, UITableViewDropDelegate {
     var toBuy: [ReadableGroceryItemWithId] = []
     var bought: [ReadableGroceryItemWithId] = []
@@ -40,41 +51,6 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
     @objc func didTapBought(_ sender: Any?) {
         let b = sender as! UIButton
         deselectRow(b.tag)
-    }
-    
-    private func move(row: Int, up: Bool, active: Bool) {
-        let order: Int
-        let items = active ? toBuy : bought
-        let existing = items[row]
-        if up {
-            guard row != 0 else { return }
-            order = items[row - 1].item.order
-        } else {
-            guard row < items.count - 1 else { return }
-            order = items[row + 1].item.order + 1
-        }
-        let new = ReadableGroceryItem(name: existing.item.name, quantity: existing.item.quantity, unit: existing.item.unit, active: existing.item.active, order: order)
-        updateGroceryItem(groceryItemId: existing.id, groceryItem: new, completion: onChange)
-    }
-    
-    @objc func didTapToBuyMoveUp(_ sender: Any?) {
-        let b = sender as! UIButton
-        move(row: b.tag, up: true, active: true)
-    }
-    
-    @objc func didTapToBuyMoveDown(_ sender: Any?) {
-        let b = sender as! UIButton
-        move(row: b.tag, up: false, active: true)
-    }
-    
-    @objc func didTapBoughtMoveUp(_ sender: Any?) {
-        let b = sender as! UIButton
-        move(row: b.tag, up: true, active: false)
-    }
-    
-    @objc func didTapBoughtMoveDown(_ sender: Any?) {
-        let b = sender as! UIButton
-        move(row: b.tag, up: false, active: false)
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -199,13 +175,10 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
         case 2:
             let cell = tableView.dequeueReusableCell(withIdentifier: "toBuyListItem") as! GroceryListItem
             let item = toBuy[indexPath.row].item
+            cell.tag = indexPath.row
             cell.name.text = item.render()
             cell.select.tag = indexPath.row
             cell.select.addTarget(self, action: #selector(didTapToBuy), for: .touchUpInside)
-            cell.moveUp.tag = indexPath.row
-            cell.moveUp.addTarget(self, action: #selector(didTapToBuyMoveUp), for: .touchUpInside)
-            cell.moveDown.tag = indexPath.row
-            cell.moveDown.addTarget(self, action: #selector(didTapToBuyMoveDown), for: .touchUpInside)
             return cell
         case 3:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SectionHeader
@@ -216,13 +189,10 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
         case 4:
             let cell = tableView.dequeueReusableCell(withIdentifier: "boughtListItem") as! GroceryListItem
             let item = bought[indexPath.row].item
+            cell.tag = indexPath.row
             cell.name.text = item.render()
             cell.select.tag = indexPath.row
             cell.select.addTarget(self, action: #selector(didTapBought), for: .touchUpInside)
-            cell.moveUp.tag = indexPath.row
-            cell.moveUp.addTarget(self, action: #selector(didTapBoughtMoveUp), for: .touchUpInside)
-            cell.moveDown.tag = indexPath.row
-            cell.moveDown.addTarget(self, action: #selector(didTapBoughtMoveDown), for: .touchUpInside)
             return cell
         default:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SectionHeader
@@ -231,22 +201,31 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
     }
     
     func tableView(_ tableView: UITableView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
-        var item: ReadableGroceryItemWithId? = nil
+        let item: ReadableGroceryItemWithId
+        let isToBuy: Bool
+        var type: DragAndDropType = .merge
         switch indexPath.section {
         case 2:
             item = toBuy[indexPath.row]
+            isToBuy = true
             break
         case 4:
             item = bought[indexPath.row]
+            isToBuy = false
             break
         default:
-            break
+            return []
+        }
+        if let cell = tableView.cellForRow(at: indexPath) as? GroceryListItem {
+            let loc = session.location(in: cell)
+            if loc.x >= cell.move.frame.origin.x && loc.x <= cell.move.frame.origin.x + cell.move.frame.width {
+                type = .reorder
+            }
         }
         do {
-            if let i = item {
-                let data = try JSONEncoder().encode(i)
-                return [UIDragItem(itemProvider: NSItemProvider(item: data as NSData, typeIdentifier: kUTTypePlainText as String))]
-            }
+            session.localContext = DragInfo(type: type, toBuy: isToBuy, indexPath: indexPath)
+            let data = try JSONEncoder().encode(item)
+            return [UIDragItem(itemProvider: NSItemProvider(item: data as NSData, typeIdentifier: kUTTypePlainText as String))]
         } catch {
             print("Failed to initiate drag and drop \(error)")
         }
@@ -254,42 +233,52 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
     }
 
     func tableView(_ tableView: UITableView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UITableViewDropProposal {
-        var proposal = UITableViewDropProposal(operation: .cancel)
-        guard let indexPath = destinationIndexPath else { return proposal }
-        guard indexPath.section == 2 || indexPath.section == 4 else { return proposal }
-        guard session.items.count == 1 else { return proposal }
-        switch indexPath.section {
-        case 2:
+        let cancel = UITableViewDropProposal(operation: .cancel)
+        guard let info = session.localDragSession?.localContext as? DragInfo else { return cancel }
+        guard let indexPath = destinationIndexPath else { return cancel }
+        guard session.items.count == 1 else { return cancel }
+        switch (indexPath.section, info.toBuy) {
+        case (2, true):
             if indexPath.row < toBuy.count {
                 tableView.scrollToRow(at: indexPath, at: .none, animated: true)
             } else {
                 tableView.scrollToRow(at: IndexPath(row: toBuy.count - 1, section: indexPath.section), at: .none, animated: true)
             }
             break
-        case 4:
+        case (4, false):
             if indexPath.row < bought.count {
                 tableView.scrollToRow(at: indexPath, at: .none, animated: true)
             } else {
                 tableView.scrollToRow(at: IndexPath(row: bought.count - 1, section: indexPath.section), at: .none, animated: true)
             }
             break
-        default: break
+        default: return cancel
         }
         if tableView.hasActiveDrag {
-            proposal = UITableViewDropProposal(operation: .move, intent: .insertIntoDestinationIndexPath)
+            switch info.type {
+            case .reorder: return UITableViewDropProposal(operation: .move, intent: .insertAtDestinationIndexPath)
+            case .merge: return UITableViewDropProposal(operation: .move, intent: .insertIntoDestinationIndexPath)
+            }
         }
-        return proposal
+        return cancel
     }
 
     func tableView(_ tableView: UITableView, performDropWith coordinator: UITableViewDropCoordinator) {
         guard let indexPath = coordinator.destinationIndexPath else { return }
+        guard let info = coordinator.session.localDragSession?.localContext as? DragInfo else { return }
         let existing: ReadableGroceryItemWithId
-        switch indexPath.section {
-        case 2:
+        switch (indexPath.section, info.type) {
+        case (2, .merge):
             existing = toBuy[indexPath.row]
             break
-        case 4:
-            existing = bought[indexPath.row]
+        case (2, .reorder):
+            existing = info.indexPath.row < indexPath.row ? toBuy[indexPath.row] : toBuy[indexPath.row - 1]
+            break
+        case (4, .merge):
+            existing = bought[tableView.cellForRow(at: indexPath)!.tag]
+            break
+        case (4, .reorder):
+            existing = info.indexPath.row < indexPath.row ? bought[indexPath.row] : bought[indexPath.row - 1]
             break
         default:
             return
@@ -298,27 +287,34 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
             guard let strings = items as? [String] else { return }
             for string in strings {
                 do {
-                    let prefs = Persistence.loadPreferencess()
                     let new = try JSONDecoder().decode(ReadableGroceryItemWithId.self, from: string.data(using: .utf8)!)
-                    let run = { () -> Void in
-                        self.mergeItems = (existing.item, new.item, [existing.id, new.id])
-                        self.performSegue(withIdentifier: "mergeItems", sender: nil)
-                    }
-                    let runAndIgnore = { () -> Void in
-                        Persistence.setPreferences(Preferences(dismissedMergeWarning: true))
-                        run()
-                    }
-                    if !prefs.dismissedMergeWarning {
-                        self.promptForConfirmationThree(
-                            title: "Warning",
-                            message: "Merging items may result in unexpected behavior when deleting recipes. If you need to delete recipes, do that first.",
-                            option1Button: "OK",
-                            option1Handler: { _ in run() },
-                            option2Button: "Ignore future warnings",
-                            option2Handler: { _ in runAndIgnore() }
-                        )
-                    } else {
-                        run()
+                    switch info.type {
+                    case .reorder:
+                        self.updateGroceryItem(groceryItemId: new.id, groceryItem: ReadableGroceryItem(name: new.item.name, quantity: new.item.quantity, unit: new.item.unit, active: existing.item.active, order: existing.item.order + 1), completion: self.onChange)
+                        break
+                    case .merge:
+                        let prefs = Persistence.loadPreferencess()
+                        let run = { () -> Void in
+                            self.mergeItems = (existing.item, new.item, [existing.id, new.id])
+                            self.performSegue(withIdentifier: "mergeItems", sender: nil)
+                        }
+                        let runAndIgnore = { () -> Void in
+                            Persistence.setPreferences(Preferences(dismissedMergeWarning: true))
+                            run()
+                        }
+                        if !prefs.dismissedMergeWarning {
+                            self.promptForConfirmationThree(
+                                title: "Warning",
+                                message: "Merging items may result in unexpected behavior when deleting recipes. If you need to delete recipes, do that first.",
+                                option1Button: "OK",
+                                option1Handler: { _ in run() },
+                                option2Button: "Ignore future warnings",
+                                option2Handler: { _ in runAndIgnore() }
+                            )
+                        } else {
+                            run()
+                        }
+                        break
                     }
                 } catch {
                     print("Failed completing drag and drop \(error)")
