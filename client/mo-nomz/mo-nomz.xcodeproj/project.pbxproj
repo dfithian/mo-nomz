@@ -53,6 +53,7 @@
 		37E1DC192631B3EB00330C5B /* ErrorHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C6714D2627BFB100B5838C /* ErrorHandler.swift */; };
 		37E1DC1D2631B7C000330C5B /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37E1DC1C2631B7C000330C5B /* UserDefaults.swift */; };
 		37E1DC202631B82600330C5B /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37E1DC1C2631B7C000330C5B /* UserDefaults.swift */; };
+		37FE86EF2648CC7200E0B85F /* InfoController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37FE86EE2648CC7200E0B85F /* InfoController.swift */; };
 		A5AA8FF560BE489F2712D24F /* Pods_mo_nomz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D8E6C91D35B99778B838A8A /* Pods_mo_nomz.framework */; };
 /* End PBXBuildFile section */
 
@@ -126,6 +127,7 @@
 		37E1DC1C2631B7C000330C5B /* UserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaults.swift; sourceTree = "<group>"; };
 		37EAACF726339C14006D9184 /* mo-nomzRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "mo-nomzRelease.entitlements"; sourceTree = "<group>"; };
 		37EAACF826339C2E006D9184 /* sharingRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = sharingRelease.entitlements; sourceTree = "<group>"; };
+		37FE86EE2648CC7200E0B85F /* InfoController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoController.swift; sourceTree = "<group>"; };
 		3D8E6C91D35B99778B838A8A /* Pods_mo_nomz.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_mo_nomz.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8B42BB1752081B70021712E4 /* Pods-mo-nomz.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mo-nomz.debug.xcconfig"; path = "Target Support Files/Pods-mo-nomz/Pods-mo-nomz.debug.xcconfig"; sourceTree = "<group>"; };
 		9EA20680D1BFF2CC6FA28660 /* Pods-mo-nomz.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mo-nomz.release.xcconfig"; path = "Target Support Files/Pods-mo-nomz/Pods-mo-nomz.release.xcconfig"; sourceTree = "<group>"; };
@@ -232,6 +234,7 @@
 		3774A5D02624B53E0029E35D /* Users */ = {
 			isa = PBXGroup;
 			children = (
+				37FE86EE2648CC7200E0B85F /* InfoController.swift */,
 				3774A5B4262489F70029E35D /* ProfileController.swift */,
 			);
 			path = Users;
@@ -445,6 +448,7 @@
 				3728B0A42633B40D0055D2E1 /* BannerController.swift in Sources */,
 				3774A5C92624B3E90029E35D /* RecipeAddController.swift in Sources */,
 				379D478A2625E22A003DD2C6 /* SectionHeader.swift in Sources */,
+				37FE86EF2648CC7200E0B85F /* InfoController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -8,6 +8,8 @@
 import UIKit
 
 class RecipeController: UIViewController {
+    @IBOutlet weak var banner: UIView!
+
     var recipeVc: RecipeListController? = nil
 
     @objc func loadData() {
@@ -41,6 +43,9 @@ class RecipeController: UIViewController {
             vc.onChange = { () -> Void in
                 self.loadData()
             }
+        }
+        if let vc = segue.destination as? BannerController, segue.identifier == "embedBanner" {
+            vc.height = banner.constraints.filter({ $0.identifier == "height" }).first
         }
     }
     

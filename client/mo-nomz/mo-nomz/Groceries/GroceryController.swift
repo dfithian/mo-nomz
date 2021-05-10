@@ -9,6 +9,8 @@ import GoogleMobileAds
 import UIKit
 
 class GroceryController: UIViewController {
+    @IBOutlet weak var banner: UIView!
+
     var groceryVc: GroceryListController? = nil
     
     @IBAction func export(_ sender: Any?) {
@@ -57,6 +59,9 @@ class GroceryController: UIViewController {
             vc.onChange = { () -> Void in
                 self.loadData()
             }
+        }
+        if let vc = segue.destination as? BannerController, segue.identifier == "embedBanner" {
+            vc.height = banner.constraints.filter({ $0.identifier == "height" }).first
         }
     }
     

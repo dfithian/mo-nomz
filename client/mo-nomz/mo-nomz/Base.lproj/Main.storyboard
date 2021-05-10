@@ -11,7 +11,7 @@
         <!--Info-->
         <scene sceneID="tZm-dd-fE0">
             <objects>
-                <viewController id="Em2-cS-aPW" sceneMemberID="viewController">
+                <viewController id="Em2-cS-aPW" customClass="InfoController" customModule="mo_nomz" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="rkk-lA-9eQ">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -31,10 +31,10 @@
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5Uc-gr-MSk">
                                 <rect key="frame" x="0.0" y="84" width="414" height="50"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="50" id="IOM-KB-iBg"/>
+                                    <constraint firstAttribute="height" constant="50" identifier="height" id="IOM-KB-iBg"/>
                                 </constraints>
                                 <connections>
-                                    <segue destination="Kdk-LC-DLP" kind="embed" id="qX2-Za-xQO"/>
+                                    <segue destination="Kdk-LC-DLP" kind="embed" identifier="embedBanner" id="qX2-Za-xQO"/>
                                 </connections>
                             </containerView>
                         </subviews>
@@ -53,6 +53,9 @@
                         </constraints>
                     </view>
                     <tabBarItem key="tabBarItem" title="Info" image="info" catalog="system" id="az5-FS-E4s"/>
+                    <connections>
+                        <outlet property="banner" destination="5Uc-gr-MSk" id="SOc-e0-u3P"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="8hr-f9-eYo" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -304,10 +307,10 @@
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="wq3-Ui-YiB">
                                 <rect key="frame" x="0.0" y="84" width="414" height="50"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="50" id="YKi-Rj-DN5"/>
+                                    <constraint firstAttribute="height" constant="50" identifier="height" id="YKi-Rj-DN5"/>
                                 </constraints>
                                 <connections>
-                                    <segue destination="W8V-Kf-LnW" kind="embed" id="RLt-FV-xLP"/>
+                                    <segue destination="W8V-Kf-LnW" kind="embed" identifier="embedBanner" id="RLt-FV-xLP"/>
                                 </connections>
                             </containerView>
                         </subviews>
@@ -329,6 +332,9 @@
                         </constraints>
                     </view>
                     <tabBarItem key="tabBarItem" title="Recipes" image="list.dash" catalog="system" id="sBs-eL-zOR"/>
+                    <connections>
+                        <outlet property="banner" destination="wq3-Ui-YiB" id="QM2-JT-yqW"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="oNS-8K-ynE" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -383,10 +389,10 @@
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="TVo-0J-usG">
                                 <rect key="frame" x="0.0" y="84" width="414" height="50"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="50" id="NaL-6r-6Cf"/>
+                                    <constraint firstAttribute="height" constant="50" identifier="height" id="NaL-6r-6Cf"/>
                                 </constraints>
                                 <connections>
-                                    <segue destination="BN6-UF-C9x" kind="embed" id="GMd-FF-4H2"/>
+                                    <segue destination="BN6-UF-C9x" kind="embed" identifier="embedBanner" id="GMd-FF-4H2"/>
                                 </connections>
                             </containerView>
                         </subviews>
@@ -409,6 +415,9 @@
                         </constraints>
                     </view>
                     <tabBarItem key="tabBarItem" title="Grocery List" image="cart" catalog="system" id="gkS-fY-qIs"/>
+                    <connections>
+                        <outlet property="banner" destination="TVo-0J-usG" id="ixn-3G-oTr"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="25s-xu-CdQ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
