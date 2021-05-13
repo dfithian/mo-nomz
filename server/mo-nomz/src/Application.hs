@@ -17,7 +17,7 @@ import Database.PostgreSQL.Simple.Migration
 import Network.Wai (Middleware, rawPathInfo)
 import Network.Wai.Handler.Warp (Settings, defaultSettings, runSettings, setPort)
 import Network.Wai.Middleware.RequestLogger (mkRequestLogger)
-import Servant.API ((:<|>)(..), Header, Headers, addHeader)
+import Servant.API ((:<|>)(..))
 import Servant.Server (ServerT, hoistServer, serve)
 import Servant.Server.StaticFiles (serveDirectoryWith)
 import System.Metrics (Value(..), createCounter, createDistribution, newStore, sampleAll)
@@ -40,9 +40,6 @@ import Server
   , postRecipeImportLink, postUpdateGroceryItem, postUpdateRecipe
   )
 import Settings (AppSettings(..), DatabaseSettings(..), staticSettingsValue)
-
-getStaticAsset :: AppM m => m (Headers '[Header "Location" String] ByteString)
-getStaticAsset = pure $ addHeader "https://monomzsupport.wordpress.com" ""
 
 getMetrics :: AppM m => m Markup
 getMetrics = do
@@ -69,9 +66,7 @@ getMetrics = do
 
 nomzServer :: ServerT NomzApi NomzServer
 nomzServer =
-  getStaticAsset
-    :<|> getStaticAsset
-    :<|> getMetrics
+  getMetrics
     :<|> getHealth
     :<|> postCreateUser
     :<|> getGroceryItems

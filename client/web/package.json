@@ -1,0 +1,24 @@
+{
+  "name": "grocer-ez",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Grocer EZ",
+  "author": "Dan Fithian",
+  "keywords": [
+    "gatsby"
+  ],
+  "scripts": {
+    "develop": "gatsby develop",
+    "start": "gatsby develop",
+    "build": "gatsby build",
+    "serve": "gatsby serve",
+    "clean": "gatsby clean"
+  },
+  "dependencies": {
+    "gatsby": "^3.4.1",
+    "gatsby-source-filesystem": "^3.5.0",
+    "gatsby-transformer-remark": "^4.2.0",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1"
+  }
+}
