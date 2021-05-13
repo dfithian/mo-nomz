@@ -33,4 +33,9 @@ class GroceryAddedItemsController: UITableViewController {
         cell.delete.addTarget(self, action: #selector(didTapDelete), for: .touchUpInside)
         return cell
     }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        tableView.separatorStyle = .none
+    }
 }

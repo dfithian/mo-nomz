@@ -189,6 +189,7 @@ class RecipeListController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        tableView.separatorStyle = .none
         tableView.layer.cornerRadius = 5
     }
 }

@@ -338,6 +338,7 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        tableView.separatorStyle = .none
         tableView.dragDelegate = self
         tableView.dropDelegate = self
         tableView.dragInteractionEnabled = true
