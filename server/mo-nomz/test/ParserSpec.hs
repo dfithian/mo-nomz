@@ -26,6 +26,7 @@ spec = describe "Parser" $ do
     it "can parse a fraction" $ parseStrict (RawQuantity $ 1 / 3) quantityP "1/3"
     it "can parse an improper fraction" $ parseStrict (RawQuantity 1.5) quantityP "1-1/2"
     it "can parse an improper fraction with spaces" $ parseStrict (RawQuantity 1.5) quantityP "1 1/2"
+    it "can parse a range" $ parseStrict (RawQuantity 2.5) quantityP "2-3"
     it "can parse a decimal" $ parseStrict (RawQuantity 0.25) quantityP "0.25"
     it "can parse a word" $ parseStrict (RawQuantityWord "half") quantityP "\nhalf\n"
     it "can parse an ingredient name" $ parseStrict (IngredientName "chicken") nameP " chicken"

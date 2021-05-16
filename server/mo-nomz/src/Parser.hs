@@ -122,7 +122,10 @@ quantityP = quantityExpression <|> quantityWord <|> quantityMissing
       _ -> fail $ unpack str <> " is not a fractional quantity"
 
     quantityImproper = quantityParser $ \str -> case filter (not . null) . mconcat . map (split isSpace) . split ((==) '-') $ str of
-      [x, y] -> (+) <$> quantitySimple x <*> quantitySimple y
+      [x, y] -> do
+        x' <- quantitySimple x
+        y' <- quantitySimple y
+        pure $ if x' < y' then (x' + y') / 2 else x' + y'
       _ -> fail $ unpack str <> " is not an improper quantity"
 
     quantitySimple str =
