@@ -267,18 +267,39 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
         guard let indexPath = coordinator.destinationIndexPath else { return }
         guard let info = coordinator.session.localDragSession?.localContext as? DragInfo else { return }
         let existing: ReadableGroceryItemWithId
+        let newOrder: Int
         switch (indexPath.section, info.type) {
         case (2, .merge):
             existing = toBuy[indexPath.row]
+            newOrder = existing.item.order
             break
         case (2, .reorder):
-            existing = info.indexPath.row < indexPath.row ? toBuy[indexPath.row] : toBuy[indexPath.row - 1]
+            if info.indexPath.row < indexPath.row {
+                existing = toBuy[indexPath.row]
+                newOrder = existing.item.order + 1
+            } else if indexPath.row == 0 {
+                existing = toBuy[indexPath.row]
+                newOrder = existing.item.order
+            } else {
+                existing = toBuy[indexPath.row - 1]
+                newOrder = existing.item.order + 1
+            }
             break
         case (4, .merge):
             existing = bought[tableView.cellForRow(at: indexPath)!.tag]
+            newOrder = existing.item.order
             break
         case (4, .reorder):
-            existing = info.indexPath.row < indexPath.row ? bought[indexPath.row] : bought[indexPath.row - 1]
+            if info.indexPath.row < indexPath.row {
+                existing = bought[indexPath.row]
+                newOrder = existing.item.order + 1
+            } else if indexPath.row == 0 {
+                existing = bought[indexPath.row]
+                newOrder = existing.item.order
+            } else {
+                existing = bought[indexPath.row - 1]
+                newOrder = existing.item.order + 1
+            }
             break
         default:
             return
@@ -290,7 +311,7 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
                     let new = try JSONDecoder().decode(ReadableGroceryItemWithId.self, from: string.data(using: .utf8)!)
                     switch info.type {
                     case .reorder:
-                        self.updateGroceryItem(groceryItemId: new.id, groceryItem: ReadableGroceryItem(name: new.item.name, quantity: new.item.quantity, unit: new.item.unit, active: existing.item.active, order: existing.item.order + 1), completion: self.onChange)
+                        self.updateGroceryItem(groceryItemId: new.id, groceryItem: ReadableGroceryItem(name: new.item.name, quantity: new.item.quantity, unit: new.item.unit, active: existing.item.active, order: newOrder), completion: self.onChange)
                         break
                     case .merge:
                         let prefs = Persistence.loadPreferencess()
