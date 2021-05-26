@@ -10,9 +10,10 @@ import UIKit
 
 class GroceryController: UIViewController {
     @IBOutlet weak var banner: UIView!
-    @IBOutlet weak var delete: UIBarButtonItem!
-    @IBOutlet weak var export: UIBarButtonItem!
-    @IBOutlet weak var add: UIBarButtonItem!
+    @IBOutlet weak var toolbar: Toolbar!
+    @IBOutlet weak var clear: UIButton!
+    @IBOutlet weak var export: UIButton!
+    @IBOutlet weak var add: UIButton!
 
     var groceryVc: GroceryListController? = nil
     
@@ -29,8 +30,11 @@ class GroceryController: UIViewController {
     }
     
     @IBAction func clear(_ sender: Any?) {
-        let handler = { [weak self] (action: UIAlertAction) -> Void in self?.clearGroceryItems(completion: self?.loadData) }
-        promptForConfirmation(title: "Clear", message: "Are you sure you want to clear your grocery list?", handler: handler)
+        let items: [ReadableGroceryItemWithId] = (groceryVc?.toBuy ?? []) + (groceryVc?.bought ?? [])
+        if !items.isEmpty {
+            let handler = { [weak self] (action: UIAlertAction) -> Void in self?.clearGroceryItems(completion: self?.loadData) }
+            promptForConfirmation(title: "Clear", message: "Are you sure you want to clear your grocery list?", handler: handler)
+        }
     }
     
     @objc func loadData() {
@@ -64,6 +68,13 @@ class GroceryController: UIViewController {
     }
     
     override func viewDidLoad() {
+        super.viewDidLoad()
+        clear.frame = CGRect(x: clear.frame.minX, y: clear.frame.minY, width: clear.frame.width, height: toolbar.frame.height)
+        clear.alignTextUnderImage()
+        export.frame = CGRect(x: export.frame.minX, y: export.frame.minY, width: export.frame.width, height: toolbar.frame.height)
+        export.alignTextUnderImage()
+        add.frame = CGRect(x: add.frame.minX, y: add.frame.minY, width: add.frame.width, height: toolbar.frame.height)
+        add.alignTextUnderImage()
         NotificationCenter.default.addObserver(self, selector: #selector(loadData), name: UIApplication.willEnterForegroundNotification, object: nil)
     }
     

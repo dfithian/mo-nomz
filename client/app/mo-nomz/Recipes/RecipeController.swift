@@ -9,8 +9,14 @@ import UIKit
 
 class RecipeController: UIViewController {
     @IBOutlet weak var banner: UIView!
+    @IBOutlet weak var toolbar: Toolbar!
+    @IBOutlet weak var add: UIButton!
 
     var recipeVc: RecipeListController? = nil
+    
+    @objc func triggerAdd(_ sender: Any) {
+        performSegue(withIdentifier: "addGroceries", sender: sender)
+    }
 
     @objc func loadData() {
         let completion = { [weak self] (resp: ListRecipeResponse) -> Void in
@@ -45,6 +51,9 @@ class RecipeController: UIViewController {
     }
     
     override func viewDidLoad() {
+        super.viewDidLoad()
+        add.frame = CGRect(x: add.frame.minX, y: add.frame.minY, width: add.frame.width, height: toolbar.frame.height)
+        add.alignTextUnderImage()
         NotificationCenter.default.addObserver(self, selector: #selector(loadData), name: UIApplication.willEnterForegroundNotification, object: nil)
     }
     

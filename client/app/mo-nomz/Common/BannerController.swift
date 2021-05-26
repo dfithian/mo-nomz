@@ -27,7 +27,6 @@ class BannerController: UIViewController, GADBannerViewDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("loading")
         banner = GADBannerView()
         banner.delegate = self
         banner.adUnitID = Configuration.googleBannerId

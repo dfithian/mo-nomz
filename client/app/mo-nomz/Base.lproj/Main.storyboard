@@ -3,6 +3,8 @@
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
+        <capability name="Image references" minToolsVersion="12.0"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -288,17 +290,6 @@
                                 <rect key="frame" x="0.0" y="769" width="414" height="44"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                             </navigationBar>
-                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FTm-0u-hQf">
-                                <rect key="frame" x="0.0" y="76" width="414" height="44"/>
-                                <items>
-                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="rHL-IJ-gH2"/>
-                                    <barButtonItem title="Add" image="plus" catalog="system" id="p9p-yv-YRk">
-                                        <connections>
-                                            <segue destination="G6h-5j-u4H" kind="show" identifier="addGroceries" id="fXg-xG-Ygv"/>
-                                        </connections>
-                                    </barButtonItem>
-                                </items>
-                            </toolbar>
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="wq3-Ui-YiB">
                                 <rect key="frame" x="0.0" y="763" width="414" height="50"/>
                                 <constraints>
@@ -308,27 +299,49 @@
                                     <segue destination="W8V-Kf-LnW" kind="embed" identifier="embedBanner" id="RLt-FV-xLP"/>
                                 </connections>
                             </containerView>
+                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Nwd-by-Fmi" customClass="Toolbar" customModule="mo_nomz" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="76" width="414" height="44"/>
+                                <items>
+                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="S94-Fc-eTR"/>
+                                    <barButtonItem style="plain" id="ZiR-Hz-chD">
+                                        <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="tUe-bR-zm9">
+                                            <rect key="frame" x="343" y="11" width="51" height="22"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                            <state key="normal" title="Add">
+                                                <color key="titleColor" name="AccentColor"/>
+                                                <imageReference key="image" image="plus" catalog="system" symbolScale="large"/>
+                                            </state>
+                                            <connections>
+                                                <segue destination="G6h-5j-u4H" kind="show" identifier="addGroceries" id="q9j-wi-4gI"/>
+                                            </connections>
+                                        </button>
+                                    </barButtonItem>
+                                </items>
+                            </toolbar>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="lEH-cO-OP7"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="FTm-0u-hQf" firstAttribute="trailing" secondItem="lEH-cO-OP7" secondAttribute="trailing" id="1iT-te-cjg"/>
-                            <constraint firstItem="mYf-bB-0W0" firstAttribute="top" secondItem="FTm-0u-hQf" secondAttribute="bottom" id="4Oa-nT-50M"/>
-                            <constraint firstItem="FTm-0u-hQf" firstAttribute="leading" secondItem="lEH-cO-OP7" secondAttribute="leading" id="9RX-yH-DMu"/>
+                            <constraint firstItem="Nwd-by-Fmi" firstAttribute="top" secondItem="OKO-ca-LY2" secondAttribute="bottom" id="CSm-H2-Awq"/>
                             <constraint firstItem="wq3-Ui-YiB" firstAttribute="leading" secondItem="lEH-cO-OP7" secondAttribute="leading" id="CaP-Sm-5zx"/>
+                            <constraint firstItem="Nwd-by-Fmi" firstAttribute="leading" secondItem="lEH-cO-OP7" secondAttribute="leading" id="EHV-fc-dfj"/>
                             <constraint firstItem="wq3-Ui-YiB" firstAttribute="trailing" secondItem="lEH-cO-OP7" secondAttribute="trailing" id="JyY-11-hYe"/>
                             <constraint firstItem="OKO-ca-LY2" firstAttribute="top" secondItem="lEH-cO-OP7" secondAttribute="top" id="LYZ-7H-Ef9"/>
                             <constraint firstItem="mYf-bB-0W0" firstAttribute="leading" secondItem="lEH-cO-OP7" secondAttribute="leading" id="OII-QM-t2D"/>
                             <constraint firstItem="OKO-ca-LY2" firstAttribute="centerX" secondItem="eII-h4-H7F" secondAttribute="centerX" id="QZf-T6-6Uy"/>
                             <constraint firstItem="wq3-Ui-YiB" firstAttribute="bottom" secondItem="lEH-cO-OP7" secondAttribute="bottom" id="QwV-sU-nY8"/>
+                            <constraint firstItem="Nwd-by-Fmi" firstAttribute="trailing" secondItem="lEH-cO-OP7" secondAttribute="trailing" id="W9Z-sr-yLN"/>
                             <constraint firstItem="wq3-Ui-YiB" firstAttribute="top" secondItem="mYf-bB-0W0" secondAttribute="bottom" constant="8" symbolic="YES" id="ZkN-hN-ypa"/>
                             <constraint firstItem="mYf-bB-0W0" firstAttribute="trailing" secondItem="lEH-cO-OP7" secondAttribute="trailing" id="hML-ho-Tqk"/>
-                            <constraint firstItem="FTm-0u-hQf" firstAttribute="top" secondItem="OKO-ca-LY2" secondAttribute="bottom" id="p2Z-1N-W6p"/>
+                            <constraint firstItem="mYf-bB-0W0" firstAttribute="top" secondItem="Nwd-by-Fmi" secondAttribute="bottom" id="oDD-cq-kxp"/>
                         </constraints>
                     </view>
                     <tabBarItem key="tabBarItem" title="Recipes" image="list.dash" catalog="system" id="sBs-eL-zOR"/>
                     <connections>
+                        <outlet property="add" destination="tUe-bR-zm9" id="xvc-wE-ald"/>
                         <outlet property="banner" destination="wq3-Ui-YiB" id="QM2-JT-yqW"/>
+                        <outlet property="toolbar" destination="Nwd-by-Fmi" id="gSh-Af-cPV"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="oNS-8K-ynE" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -364,25 +377,49 @@
                                     <segue destination="BN6-UF-C9x" kind="embed" identifier="embedBanner" id="GMd-FF-4H2"/>
                                 </connections>
                             </containerView>
-                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rma-TU-TU9">
+                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rma-TU-TU9" customClass="Toolbar" customModule="mo_nomz" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="76" width="414" height="44"/>
                                 <items>
-                                    <barButtonItem title="Delete" image="arrow.clockwise" catalog="system" id="MB6-yn-IDp">
-                                        <connections>
-                                            <action selector="clear:" destination="6IF-YC-SCE" id="kTB-Oc-hvI"/>
-                                        </connections>
+                                    <barButtonItem style="plain" id="qVY-JI-nXC">
+                                        <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="whC-Q7-8v7">
+                                            <rect key="frame" x="20" y="11" width="61" height="22"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                            <state key="normal" title="Clear" image="arrow.clockwise" catalog="system">
+                                                <color key="titleColor" name="AccentColor"/>
+                                            </state>
+                                            <connections>
+                                                <action selector="clear:" destination="6IF-YC-SCE" eventType="touchUpInside" id="Qb4-tY-gfe"/>
+                                            </connections>
+                                        </button>
                                     </barButtonItem>
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="a2R-uN-y99"/>
-                                    <barButtonItem title="Export" image="square.and.arrow.up" catalog="system" id="rIg-vs-R9v">
-                                        <connections>
-                                            <action selector="export:" destination="6IF-YC-SCE" id="fMm-yU-Vh7"/>
-                                        </connections>
+                                    <barButtonItem style="plain" id="fV5-2F-HH5">
+                                        <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="Xoy-rw-hfn">
+                                            <rect key="frame" x="171" y="11" width="72" height="22"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                            <state key="normal" title="Export" image="square.and.arrow.up" catalog="system">
+                                                <color key="titleColor" name="AccentColor"/>
+                                            </state>
+                                            <connections>
+                                                <action selector="export:" destination="6IF-YC-SCE" eventType="touchUpInside" id="oRX-w2-rIY"/>
+                                            </connections>
+                                        </button>
                                     </barButtonItem>
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="DES-NG-AGY"/>
-                                    <barButtonItem title="Add" image="plus" catalog="system" id="AEO-zc-Dc9">
-                                        <connections>
-                                            <segue destination="Fme-Df-R9C" kind="show" identifier="addGroceries" id="1Ad-rW-Lw5"/>
-                                        </connections>
+                                    <barButtonItem style="plain" id="fuO-hA-iUI">
+                                        <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="jOe-Cx-5V7">
+                                            <rect key="frame" x="343" y="11" width="51" height="22"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                            <state key="normal" title="Add" image="plus" catalog="system">
+                                                <color key="titleColor" name="AccentColor"/>
+                                            </state>
+                                            <connections>
+                                                <segue destination="Fme-Df-R9C" kind="show" identifier="addGroceries" id="6DV-xn-37n"/>
+                                            </connections>
+                                        </button>
                                     </barButtonItem>
                                 </items>
                             </toolbar>
@@ -406,10 +443,11 @@
                     </view>
                     <tabBarItem key="tabBarItem" title="Grocery List" image="cart" catalog="system" id="gkS-fY-qIs"/>
                     <connections>
-                        <outlet property="add" destination="AEO-zc-Dc9" id="dwg-0A-Sfq"/>
+                        <outlet property="add" destination="jOe-Cx-5V7" id="qyh-oO-DOR"/>
                         <outlet property="banner" destination="TVo-0J-usG" id="ixn-3G-oTr"/>
-                        <outlet property="delete" destination="MB6-yn-IDp" id="F9h-3v-r8a"/>
-                        <outlet property="export" destination="rIg-vs-R9v" id="YXp-B4-qgS"/>
+                        <outlet property="clear" destination="whC-Q7-8v7" id="dvI-cq-8ML"/>
+                        <outlet property="export" destination="Xoy-rw-hfn" id="xsk-BL-Z2G"/>
+                        <outlet property="toolbar" destination="rma-TU-TU9" id="3VI-Gh-CBr"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="25s-xu-CdQ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -1039,6 +1077,9 @@
         <image name="list.dash" catalog="system" width="128" height="85"/>
         <image name="plus" catalog="system" width="128" height="113"/>
         <image name="square.and.arrow.up" catalog="system" width="115" height="128"/>
+        <namedColor name="AccentColor">
+            <color red="0.0" green="0.46000000000000002" blue="0.89000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
         <systemColor name="labelColor">
             <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
