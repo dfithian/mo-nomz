@@ -10,6 +10,9 @@ import UIKit
 
 class GroceryController: UIViewController {
     @IBOutlet weak var banner: UIView!
+    @IBOutlet weak var delete: UIBarButtonItem!
+    @IBOutlet weak var export: UIBarButtonItem!
+    @IBOutlet weak var add: UIBarButtonItem!
 
     var groceryVc: GroceryListController? = nil
     

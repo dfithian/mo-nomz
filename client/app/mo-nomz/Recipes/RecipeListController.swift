@@ -142,14 +142,6 @@ class RecipeListController: UITableViewController {
         return UISwipeActionsConfiguration(actions: [action])
     }
     
-    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        switch indexPath.section {
-        case 1: return self.tableView.sectionHeaderHeight
-        case 3: return self.tableView.sectionHeaderHeight
-        default: return 44
-        }
-    }
-    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch indexPath.section {
         case 0:
@@ -185,11 +177,5 @@ class RecipeListController: UITableViewController {
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SectionHeader
             return cell
         }
-    }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        tableView.separatorStyle = .none
-        tableView.layer.cornerRadius = 5
     }
 }

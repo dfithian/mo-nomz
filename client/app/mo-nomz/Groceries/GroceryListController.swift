@@ -152,14 +152,6 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
         action.backgroundColor = .systemRed
         return UISwipeActionsConfiguration(actions: [action])
     }
-    
-    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        switch indexPath.section {
-        case 1: return self.tableView.sectionHeaderHeight
-        case 3: return self.tableView.sectionHeaderHeight
-        default: return 44
-        }
-    }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch indexPath.section {
@@ -359,10 +351,8 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        tableView.separatorStyle = .none
         tableView.dragDelegate = self
         tableView.dropDelegate = self
         tableView.dragInteractionEnabled = true
-        tableView.layer.cornerRadius = 5
     }
 }
