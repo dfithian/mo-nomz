@@ -13,7 +13,6 @@ class RecipeAddController: UIViewController {
     @IBOutlet weak var link: UITextField!
     @IBOutlet weak var inactive: UISwitch!
     @IBOutlet weak var indicator: UILabel!
-    var onChange: (() -> Void)?
     var existingLinks: [String] = []
     var active: Bool = true
     
@@ -41,24 +40,24 @@ class RecipeAddController: UIViewController {
             present(SFSafariViewController(url: u), animated: true, completion: nil)
         }
     }
+    
+    @IBAction func didTapSwitch(_ sender: Any) {
+        if let s = sender as? UISwitch {
+            updateActive(!s.isOn)
+        }
+    }
 
-    @IBAction func didTapSave(_ sender: Any) {
+    func save(_ onChange: (() -> Void)?, onCancel: (() -> Void)?) {
         let completion = { () -> Void in
             DispatchQueue.main.async {
                 self.dismiss(animated: true, completion: nil)
             }
-            self.onChange?()
+            onChange?()
         }
         if let newLink = link.text, !newLink.isEmpty {
             addRecipeLink(link: newLink, active: active, completion: completion)
         } else {
-            didTapCancel(sender)
-        }
-    }
-    
-    @IBAction func didTapCancel(_ sender: Any) {
-        DispatchQueue.main.async {
-            self.dismiss(animated: true, completion: nil)
+            onCancel?()
         }
     }
     
@@ -72,23 +71,10 @@ class RecipeAddController: UIViewController {
         }
     }
     
-    @objc func didTapSwitch(_ sender: Any) {
-        if let s = sender as? UISwitch {
-            updateActive(!s.isOn)
-        }
-    }
-    
-    @objc func keyboardWillShow(notification: NSNotification) {
-        keyboardWillShowInternal(view: label, notification: notification)
-    }
-    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         link.addDoneButtonOnKeyboard()
         updateActive(true)
         inactive.isOn = false
-        inactive.addTarget(self, action: #selector(didTapSwitch), for: .valueChanged)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardDidShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
 }

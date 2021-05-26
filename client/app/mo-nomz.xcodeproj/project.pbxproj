@@ -11,8 +11,6 @@
 		3728B0982633AA240055D2E1 /* GoogleMobileAds.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3728B0972633AA240055D2E1 /* GoogleMobileAds.xcframework */; };
 		3728B0A42633B40D0055D2E1 /* BannerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3728B0A32633B40D0055D2E1 /* BannerController.swift */; };
 		3728B0CD2635BCF00055D2E1 /* AddItems.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3728B0CC2635BCF00055D2E1 /* AddItems.storyboard */; };
-		3728B0D52635C30E0055D2E1 /* GroceryAddItemController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3728B0D42635C30E0055D2E1 /* GroceryAddItemController.swift */; };
-		3728B0D92635CD4A0055D2E1 /* AddLink.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3728B0D82635CD4A0055D2E1 /* AddLink.storyboard */; };
 		372DDC1E262B1BE200CA83A8 /* Confirmation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372DDC1D262B1BE200CA83A8 /* Confirmation.swift */; };
 		372DDC40262B435400CA83A8 /* Keyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372DDC3F262B435400CA83A8 /* Keyboard.swift */; };
 		372DDC43262B43CB00CA83A8 /* Loading.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372DDC42262B43CB00CA83A8 /* Loading.swift */; };
@@ -28,8 +26,6 @@
 		3774A5B5262489F70029E35D /* ProfileController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3774A5B4262489F70029E35D /* ProfileController.swift */; };
 		3774A5C92624B3E90029E35D /* RecipeAddController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3774A5C82624B3E90029E35D /* RecipeAddController.swift */; };
 		3779AB702632EE0600C332BC /* GroceryAddController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3779AB6F2632EE0600C332BC /* GroceryAddController.swift */; };
-		3779AB742632F07600C332BC /* GroceryAddedItemsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3779AB732632F07600C332BC /* GroceryAddedItemsController.swift */; };
-		3779AB7E2632F39200C332BC /* GroceryAddItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3779AB7D2632F39200C332BC /* GroceryAddItem.swift */; };
 		3779AB8826330C2C00C332BC /* GroceryAddBlobController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3779AB8726330C2C00C332BC /* GroceryAddBlobController.swift */; };
 		378EBD5126214A41008FF6C4 /* Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = 378EBD5026214A41008FF6C4 /* Types.swift */; };
 		378EBD5726214DFE008FF6C4 /* GroceryListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 378EBD5626214DFE008FF6C4 /* GroceryListController.swift */; };
@@ -87,8 +83,6 @@
 		3728B0972633AA240055D2E1 /* GoogleMobileAds.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = GoogleMobileAds.xcframework; path = "Pods/Google-Mobile-Ads-SDK/Frameworks/GoogleMobileAdsFramework-Current/GoogleMobileAds.xcframework"; sourceTree = "<group>"; };
 		3728B0A32633B40D0055D2E1 /* BannerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerController.swift; sourceTree = "<group>"; };
 		3728B0CC2635BCF00055D2E1 /* AddItems.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = AddItems.storyboard; sourceTree = "<group>"; };
-		3728B0D42635C30E0055D2E1 /* GroceryAddItemController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroceryAddItemController.swift; sourceTree = "<group>"; };
-		3728B0D82635CD4A0055D2E1 /* AddLink.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = AddLink.storyboard; sourceTree = "<group>"; };
 		372DDC1D262B1BE200CA83A8 /* Confirmation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Confirmation.swift; sourceTree = "<group>"; };
 		372DDC3F262B435400CA83A8 /* Keyboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keyboard.swift; sourceTree = "<group>"; };
 		372DDC42262B43CB00CA83A8 /* Loading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Loading.swift; sourceTree = "<group>"; };
@@ -105,8 +99,6 @@
 		3774A5B4262489F70029E35D /* ProfileController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileController.swift; sourceTree = "<group>"; };
 		3774A5C82624B3E90029E35D /* RecipeAddController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeAddController.swift; sourceTree = "<group>"; };
 		3779AB6F2632EE0600C332BC /* GroceryAddController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroceryAddController.swift; sourceTree = "<group>"; };
-		3779AB732632F07600C332BC /* GroceryAddedItemsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroceryAddedItemsController.swift; sourceTree = "<group>"; };
-		3779AB7D2632F39200C332BC /* GroceryAddItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroceryAddItem.swift; sourceTree = "<group>"; };
 		3779AB8726330C2C00C332BC /* GroceryAddBlobController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroceryAddBlobController.swift; sourceTree = "<group>"; };
 		378EBD5026214A41008FF6C4 /* Types.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Types.swift; sourceTree = "<group>"; };
 		378EBD5626214DFE008FF6C4 /* GroceryListController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroceryListController.swift; sourceTree = "<group>"; };
@@ -185,7 +177,6 @@
 				3774A5CF2624B5260029E35D /* Common */,
 				3774A59F2623EE430029E35D /* LaunchScreen.storyboard */,
 				3728B0CC2635BCF00055D2E1 /* AddItems.storyboard */,
-				3728B0D82635CD4A0055D2E1 /* AddLink.storyboard */,
 				376095C5262125C10015B6F0 /* Main.storyboard */,
 				376095BF262125C10015B6F0 /* AppDelegate.swift */,
 				376095C1262125C10015B6F0 /* SceneDelegate.swift */,
@@ -204,10 +195,7 @@
 				379D4785262555FB003DD2C6 /* GroceryMergeController.swift */,
 				379D479226262104003DD2C6 /* GroceryEditController.swift */,
 				3779AB6F2632EE0600C332BC /* GroceryAddController.swift */,
-				3779AB732632F07600C332BC /* GroceryAddedItemsController.swift */,
-				3779AB7D2632F39200C332BC /* GroceryAddItem.swift */,
 				3779AB8726330C2C00C332BC /* GroceryAddBlobController.swift */,
-				3728B0D42635C30E0055D2E1 /* GroceryAddItemController.swift */,
 			);
 			path = Groceries;
 			sourceTree = "<group>";
@@ -358,7 +346,6 @@
 				3728B0CD2635BCF00055D2E1 /* AddItems.storyboard in Resources */,
 				376095C9262125C10015B6F0 /* Assets.xcassets in Resources */,
 				376095C7262125C10015B6F0 /* Main.storyboard in Resources */,
-				3728B0D92635CD4A0055D2E1 /* AddLink.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -425,7 +412,6 @@
 				378EBD5126214A41008FF6C4 /* Types.swift in Sources */,
 				3779AB8826330C2C00C332BC /* GroceryAddBlobController.swift in Sources */,
 				379D479326262104003DD2C6 /* GroceryEditController.swift in Sources */,
-				3728B0D52635C30E0055D2E1 /* GroceryAddItemController.swift in Sources */,
 				37145F2B2623CE460011C6C1 /* Configuration.swift in Sources */,
 				379D4786262555FB003DD2C6 /* GroceryMergeController.swift in Sources */,
 				3774A5A82624769F0029E35D /* Persistence.swift in Sources */,
@@ -435,9 +421,7 @@
 				376095D926212FBB0015B6F0 /* GroceryController.swift in Sources */,
 				379D479B26264D6E003DD2C6 /* RecipeListController.swift in Sources */,
 				3779AB702632EE0600C332BC /* GroceryAddController.swift in Sources */,
-				3779AB7E2632F39200C332BC /* GroceryAddItem.swift in Sources */,
 				376095C0262125C10015B6F0 /* AppDelegate.swift in Sources */,
-				3779AB742632F07600C332BC /* GroceryAddedItemsController.swift in Sources */,
 				37E1DC1D2631B7C000330C5B /* UserDefaults.swift in Sources */,
 				372DDC43262B43CB00CA83A8 /* Loading.swift in Sources */,
 				376095C2262125C10015B6F0 /* SceneDelegate.swift in Sources */,
@@ -628,7 +612,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.1;
+				MARKETING_VERSION = 3.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-l\"c++\"",
@@ -711,7 +695,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.1;
+				MARKETING_VERSION = 3.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-l\"c++\"",
@@ -795,7 +779,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 2.1;
+				MARKETING_VERSION = 3.0;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = "mo-nomz.mo-nomz.sharing";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -819,7 +803,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 2.1;
+				MARKETING_VERSION = 3.0;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = "mo-nomz.mo-nomz.sharing";
 				PRODUCT_NAME = "$(TARGET_NAME)";

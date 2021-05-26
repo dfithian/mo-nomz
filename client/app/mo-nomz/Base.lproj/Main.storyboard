@@ -125,11 +125,11 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nuT-dj-WFL">
-                                                    <rect key="frame" x="144.5" y="4" width="125" height="36"/>
+                                                    <rect key="frame" x="154" y="4" width="106" height="36"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="36" id="BVe-BA-lxG"/>
                                                     </constraints>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <state key="normal" title="Contact support"/>
                                                     <connections>
                                                         <action selector="didTapContactSupport:" destination="Em2-cS-aPW" eventType="touchUpInside" id="1q9-ec-Hc6"/>
@@ -292,14 +292,9 @@
                                 <rect key="frame" x="0.0" y="764" width="414" height="49"/>
                                 <items>
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="rHL-IJ-gH2"/>
-                                    <barButtonItem title="Add groceries" image="square.and.pencil" catalog="system" id="N1M-5H-10l">
+                                    <barButtonItem title="Add items" id="p9p-yv-YRk">
                                         <connections>
-                                            <segue destination="rzB-jy-0tQ" kind="show" identifier="addGroceries" id="L1w-fQ-sOP"/>
-                                        </connections>
-                                    </barButtonItem>
-                                    <barButtonItem title="Add link" image="plus" catalog="system" id="p9p-yv-YRk">
-                                        <connections>
-                                            <segue destination="G6h-5j-u4H" kind="show" identifier="addLink" id="fXg-xG-Ygv"/>
+                                            <segue destination="G6h-5j-u4H" kind="show" identifier="addGroceries" id="fXg-xG-Ygv"/>
                                         </connections>
                                     </barButtonItem>
                                 </items>
@@ -374,14 +369,9 @@
                                         </connections>
                                     </barButtonItem>
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="DES-NG-AGY"/>
-                                    <barButtonItem title="Add groceries" image="square.and.pencil" catalog="system" id="JgI-tb-ZPv">
+                                    <barButtonItem title="Add items" id="AEO-zc-Dc9">
                                         <connections>
-                                            <segue destination="dYB-SM-luH" kind="show" identifier="addGroceries" id="h8m-az-DYV"/>
-                                        </connections>
-                                    </barButtonItem>
-                                    <barButtonItem title="Add link" image="plus" catalog="system" id="AEO-zc-Dc9">
-                                        <connections>
-                                            <segue destination="Fme-Df-R9C" kind="show" identifier="addLink" id="1Ad-rW-Lw5"/>
+                                            <segue destination="Fme-Df-R9C" kind="show" identifier="addGroceries" id="1Ad-rW-Lw5"/>
                                         </connections>
                                     </barButtonItem>
                                 </items>
@@ -423,10 +413,10 @@
             </objects>
             <point key="canvasLocation" x="-436.23188405797106" y="490.84821428571428"/>
         </scene>
-        <!--AddLink-->
+        <!--AddItems-->
         <scene sceneID="fBg-vw-ZNQ">
             <objects>
-                <viewControllerPlaceholder storyboardName="AddLink" id="Fme-Df-R9C" sceneMemberID="viewController">
+                <viewControllerPlaceholder storyboardName="AddItems" id="Fme-Df-R9C" sceneMemberID="viewController">
                     <navigationItem key="navigationItem" id="yof-Te-Fgu"/>
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="CGw-9f-Zsy" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -826,19 +816,9 @@
             <point key="canvasLocation" x="-1019" y="1888"/>
         </scene>
         <!--AddItems-->
-        <scene sceneID="QaK-oI-Byv">
-            <objects>
-                <viewControllerPlaceholder storyboardName="AddItems" id="rzB-jy-0tQ" sceneMemberID="viewController">
-                    <navigationItem key="navigationItem" id="0hG-oY-ngc"/>
-                </viewControllerPlaceholder>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="C3t-wf-Rjn" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1641" y="704"/>
-        </scene>
-        <!--AddLink-->
         <scene sceneID="W1r-bP-7Zq">
             <objects>
-                <viewControllerPlaceholder storyboardName="AddLink" id="G6h-5j-u4H" sceneMemberID="viewController">
+                <viewControllerPlaceholder storyboardName="AddItems" id="G6h-5j-u4H" sceneMemberID="viewController">
                     <navigationItem key="navigationItem" id="yoM-Rb-Uxu"/>
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="gbf-cM-Ial" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -997,16 +977,6 @@
             </objects>
             <point key="canvasLocation" x="960.86956521739137" y="1229.4642857142856"/>
         </scene>
-        <!--AddItems-->
-        <scene sceneID="KlJ-Zf-Hrw">
-            <objects>
-                <viewControllerPlaceholder storyboardName="AddItems" id="dYB-SM-luH" sceneMemberID="viewController">
-                    <navigationItem key="navigationItem" id="Rca-5v-4kk"/>
-                </viewControllerPlaceholder>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="sHF-Cq-4lD" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="222" y="705"/>
-        </scene>
         <!--Banner Controller-->
         <scene sceneID="jw8-q5-k55">
             <objects>
@@ -1063,9 +1033,7 @@
         <image name="eye.slash" catalog="system" width="128" height="86"/>
         <image name="info" catalog="system" width="93" height="128"/>
         <image name="list.dash" catalog="system" width="128" height="85"/>
-        <image name="plus" catalog="system" width="128" height="113"/>
         <image name="square.and.arrow.up" catalog="system" width="115" height="128"/>
-        <image name="square.and.pencil" catalog="system" width="128" height="115"/>
         <image name="trash" catalog="system" width="121" height="128"/>
         <systemColor name="labelColor">
             <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
