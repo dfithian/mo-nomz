@@ -1,6 +1,6 @@
 module.exports = {
   siteMetadata: {
-    title: "Grocer EZ",
+    title: "Nomz",
     siteUrl: "https://mo-nomz.herokuapp.com"
   },
   plugins: [

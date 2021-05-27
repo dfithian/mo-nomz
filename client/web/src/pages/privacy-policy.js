@@ -26,10 +26,10 @@ const PrivacyPolicy = () => {
     <p><strong>Affiliate</strong> means an entity that controls, is controlled by or is under common control with a party, where &quot;control&quot; means ownership of 50% or more of the shares, equity interest or other securities entitled to vote for election of directors or other managing authority.</p>
     </li>
     <li>
-    <p><strong>Application</strong> means the software program provided by the Company downloaded by You on any electronic device, named Grocery EZ</p>
+    <p><strong>Application</strong> means the software program provided by the Company downloaded by You on any electronic device, named Nomz.</p>
     </li>
     <li>
-    <p><strong>Company</strong> (referred to as either &quot;the Company&quot;, &quot;We&quot;, &quot;Us&quot; or &quot;Our&quot; in this Agreement) refers to Grocery EZ.</p>
+    <p><strong>Company</strong> (referred to as either &quot;the Company&quot;, &quot;We&quot;, &quot;Us&quot; or &quot;Our&quot; in this Agreement) refers to Nomz.</p>
     </li>
     <li>
     <p><strong>Country</strong> refers to: Maine,  United States</p>

@@ -14,9 +14,9 @@ const inlineStyles = {
 const IndexPage = () => {
   return (
     <main className="center" style={pageStyles}>
-      <title>Grocer EZ</title>
-      <h1>Grocer EZ</h1>
-      <p>Add recipes, get groceries.</p>
+      <title>Nomz</title>
+      <h1>Nomz</h1>
+      <p>Meal Planner & Grocery List</p>
       <a href="https://apps.apple.com/us/app/grocer-ez/id1563273742">
         <img src={appStore} alt="Download on the App Store" />
       </a>

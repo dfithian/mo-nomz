@@ -10,7 +10,7 @@ const pageStyles = {
 const Support = () => {
   return (
     <main className="center" style={pageStyles}>
-      <h1>Grocer EZ</h1>
+      <h1>Nomz</h1>
       <p>
         We'd love to get your feedback.
         <br />
