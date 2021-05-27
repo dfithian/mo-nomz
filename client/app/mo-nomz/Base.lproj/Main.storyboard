@@ -382,11 +382,12 @@
                                 <items>
                                     <barButtonItem style="plain" id="qVY-JI-nXC">
                                         <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="whC-Q7-8v7">
-                                            <rect key="frame" x="20" y="11" width="61" height="22"/>
+                                            <rect key="frame" x="20" y="9.5" width="61" height="25.5"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                            <state key="normal" title="Clear" image="arrow.clockwise" catalog="system">
+                                            <state key="normal" title="Clear">
                                                 <color key="titleColor" name="AccentColor"/>
+                                                <imageReference key="image" image="arrow.clockwise" catalog="system" symbolScale="large"/>
                                             </state>
                                             <connections>
                                                 <action selector="clear:" destination="6IF-YC-SCE" eventType="touchUpInside" id="Qb4-tY-gfe"/>
@@ -396,11 +397,12 @@
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="a2R-uN-y99"/>
                                     <barButtonItem style="plain" id="fV5-2F-HH5">
                                         <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="Xoy-rw-hfn">
-                                            <rect key="frame" x="171" y="11" width="72" height="22"/>
+                                            <rect key="frame" x="171" y="9" width="72" height="26"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                            <state key="normal" title="Export" image="square.and.arrow.up" catalog="system">
+                                            <state key="normal" title="Export">
                                                 <color key="titleColor" name="AccentColor"/>
+                                                <imageReference key="image" image="square.and.arrow.up" catalog="system" symbolScale="large"/>
                                             </state>
                                             <connections>
                                                 <action selector="export:" destination="6IF-YC-SCE" eventType="touchUpInside" id="oRX-w2-rIY"/>
@@ -413,8 +415,9 @@
                                             <rect key="frame" x="343" y="11" width="51" height="22"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                            <state key="normal" title="Add" image="plus" catalog="system">
+                                            <state key="normal" title="Add">
                                                 <color key="titleColor" name="AccentColor"/>
+                                                <imageReference key="image" image="plus" catalog="system" symbolScale="large"/>
                                             </state>
                                             <connections>
                                                 <segue destination="Fme-Df-R9C" kind="show" identifier="addGroceries" id="6DV-xn-37n"/>
