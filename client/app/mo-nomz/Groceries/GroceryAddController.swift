@@ -59,9 +59,9 @@ class GroceryAddController: UIViewController {
     
     @objc func keyboardWillShow(notification: NSNotification) {
         if linkView.alpha == 1 {
-            keyboardWillShowInternal(view: linkVc!.link, notification: notification)
+            keyboardWillShowInternal(subview: linkVc!.link, notification: notification)
         } else {
-            keyboardWillShowInternal(view: bulkVc!.blob, notification: notification)
+            keyboardWillShowInternal(subview: bulkVc!.blob, notification: notification)
         }
     }
     

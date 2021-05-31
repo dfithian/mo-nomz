@@ -65,7 +65,7 @@ class GroceryEditController: UIViewController, UIPickerViewDataSource, UIPickerV
     }
     
     @objc func keyboardWillShow(notification: NSNotification) {
-        keyboardWillShowInternal(view: name, notification: notification)
+        keyboardWillShowInternal(subview: name, notification: notification)
     }
     
     override func viewDidLoad() {
