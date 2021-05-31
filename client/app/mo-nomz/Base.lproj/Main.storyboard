@@ -134,7 +134,6 @@
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <state key="normal" title="Contact support"/>
                                                     <connections>
-                                                        <action selector="didTapContactSupport:" destination="Em2-cS-aPW" eventType="touchUpInside" id="1q9-ec-Hc6"/>
                                                         <action selector="didTapContactSupport:" destination="EmB-qz-tNe" eventType="touchUpInside" id="p9e-Pg-3Jl"/>
                                                     </connections>
                                                 </button>
@@ -145,12 +144,39 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="XJo-se-QRq">
+                                        <rect key="frame" x="0.0" y="156.5" width="414" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="XJo-se-QRq" id="S2s-Ae-j57">
+                                            <rect key="frame" x="0.0" y="0.0" width="414" height="44"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xvp-3Q-Paw">
+                                                    <rect key="frame" x="173.5" y="4" width="67.5" height="36"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="36" id="YOY-ZV-vzJ"/>
+                                                    </constraints>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                    <state key="normal" title="Donate" image="heart" catalog="system">
+                                                        <color key="titleColor" name="AccentColor"/>
+                                                    </state>
+                                                    <connections>
+                                                        <action selector="didTapDonate:" destination="EmB-qz-tNe" eventType="touchUpInside" id="l4v-cD-FJf"/>
+                                                    </connections>
+                                                </button>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="xvp-3Q-Paw" firstAttribute="centerY" secondItem="S2s-Ae-j57" secondAttribute="centerY" id="AkJ-me-eyg"/>
+                                                <constraint firstItem="xvp-3Q-Paw" firstAttribute="centerX" secondItem="S2s-Ae-j57" secondAttribute="centerX" id="daU-V5-4ob"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
                                 </cells>
                             </tableViewSection>
                             <tableViewSection headerTitle="" id="eJt-dv-vwK">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="sectionHeader" id="kdo-b8-w6S" customClass="SectionHeader" customModule="mo_nomz" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="205.50000034679067" width="414" height="44"/>
+                                        <rect key="frame" x="0.0" y="249.50000034679067" width="414" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="kdo-b8-w6S" id="i7f-wz-yla">
                                             <rect key="frame" x="0.0" y="0.0" width="414" height="44"/>
@@ -175,7 +201,7 @@
                                         </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="ew4-kR-LDq">
-                                        <rect key="frame" x="0.0" y="249.50000034679067" width="414" height="44"/>
+                                        <rect key="frame" x="0.0" y="293.50000034679067" width="414" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="ew4-kR-LDq" id="CGZ-bN-d6H">
                                             <rect key="frame" x="0.0" y="0.0" width="414" height="44"/>
@@ -195,7 +221,7 @@
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="Klf-C3-m3L">
-                                        <rect key="frame" x="0.0" y="293.50000034679067" width="414" height="44"/>
+                                        <rect key="frame" x="0.0" y="337.50000034679067" width="414" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Klf-C3-m3L" id="a36-dx-pvx">
                                             <rect key="frame" x="0.0" y="0.0" width="414" height="44"/>
@@ -215,7 +241,7 @@
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="9U1-XT-LoE">
-                                        <rect key="frame" x="0.0" y="337.50000034679067" width="414" height="44"/>
+                                        <rect key="frame" x="0.0" y="381.50000034679067" width="414" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="9U1-XT-LoE" id="81O-jH-lsJ">
                                             <rect key="frame" x="0.0" y="0.0" width="414" height="44"/>
@@ -1076,6 +1102,7 @@
         <image name="circle.fill" catalog="system" width="128" height="121"/>
         <image name="eye" catalog="system" width="128" height="81"/>
         <image name="eye.slash" catalog="system" width="128" height="86"/>
+        <image name="heart" catalog="system" width="128" height="109"/>
         <image name="info" catalog="system" width="93" height="128"/>
         <image name="list.dash" catalog="system" width="128" height="85"/>
         <image name="plus" catalog="system" width="128" height="113"/>

@@ -56,4 +56,8 @@ class Configuration {
         return "ca-app-pub-1682263410056980/9786643840" // "ca-app-pub-3940256099942544/2934735716"
         #endif
     }
+    
+    static var venmoUrl: String {
+        return "https://venmo.com/code?user_id=1305125788319744156"
+    }
 }

@@ -21,6 +21,7 @@ const IndexPage = () => {
         <img src={appStore} alt="Download on the App Store" />
       </a>
       <div>
+        <a style={inlineStyles} href="https://venmo.com/code?user_id=1305125788319744156">❤️ Donate</a>
         <a style={inlineStyles} href="/privacy-policy">Privacy Policy</a>
         <a style={inlineStyles} href="/support">Support</a>
       </div>
