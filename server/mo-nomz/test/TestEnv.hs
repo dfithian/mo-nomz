@@ -50,3 +50,8 @@ loadEnv = do
       insertToken c bcryptedToken ) pool ) mempty
   manager <- createManager
   pure $ Env pool userId token manager
+
+loadEnvNoDb :: IO Env
+loadEnvNoDb = do
+  manager <- createManager
+  pure $ Env (error "No connection pool") (error "No connection pool") (error "No connection pool") manager
