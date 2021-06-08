@@ -65,6 +65,14 @@ class GroceryAddController: UIViewController {
         }
     }
     
+    @objc func keyboardWillHide(notification: NSNotification) {
+        if linkView.alpha == 1 {
+            keyboardWillHideInternal(notification: notification)
+        } else {
+            keyboardWillHideInternal(notification: notification)
+        }
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         linkView.alpha = 1
