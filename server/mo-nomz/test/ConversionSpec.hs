@@ -66,7 +66,7 @@ spec = describe "Conversion" $ do
             , pureIngredientNoUnit 2 "(9 inch) unbaked pie crusts"
 
             -- pillsbury
-            , pureIngredient 1 "box" "pillsbury\8482 refrigerated pie crusts, softened as directed on box"
+            , pureIngredient 1 "box" "(14.1 oz) refrigerated pillsbury\8482 pie crusts (2 count), softened as directed on box"
             , pureIngredient (1 / 3) "cup" "butter or margarine"
             -- , pureIngredient (1 / 3) "cup" "chopped onion"
             -- , pureIngredient (1 / 3) "cup" "all-purpose flour"

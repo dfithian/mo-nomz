@@ -17,8 +17,6 @@ siteScrapers = mapFromList
   , ("geniuskitchen.com", geniusKitchen1)
   , ("tasteofhome.com", geniusKitchen2)
 
-  , ("bettycrocker.com", bettyCrocker)
-
   , ("rachlmansfield.com", tasty1)
   , ("cookieandkate.com", tasty1)
   , ("simpleveganblog.com", tasty1)
@@ -61,6 +59,7 @@ siteScrapers = mapFromList
   , ("davidlebovitz.com", wprm)
   , ("skinnytaste.com", wprm)
   , ("twopeasandtheirpod.com", wprm)
+  , ("sweetandsavorymeals.com", wprm)
 
   , ("melskitchencafe.com", mv)
   , ("glutenfreecuppatea.co.uk", mv)
@@ -74,6 +73,7 @@ siteScrapers = mapFromList
 
   , ("yummly.com", yummly)
 
+  , ("bettycrocker.com", ingredientLi1)
   , ("pillsbury.com", ingredientLi1)
   , ("epicurious.com", ingredientLi1)
   , ("tasty.co", ingredientLi1)
@@ -88,7 +88,6 @@ siteScrapers = mapFromList
   , ("everydayannie.com", ingredientLi8)
   , ("notwithoutsalt.com", ingredientLi9)
   , ("chefspencil.com", ingredientLi10)
-  , ("sweetandsavorymeals.com", ingredientLi11)
 
   , ("delish.com", delish)
   , ("thepioneerwoman.com", delish)
@@ -143,11 +142,6 @@ geniusKitchen2 :: SiteScraper
 geniusKitchen2 = simpleScraper "geniusKitchen2"
   (testScrape ("div" @: [Scalpel.hasClass "recipe-ingredients"]))
   ("div" @: [Scalpel.hasClass "recipe-ingredients"] // "li")
-
-bettyCrocker :: SiteScraper
-bettyCrocker = simpleScraper "bettyCrocker"
-  denyAll
-  ("div" @: [Scalpel.hasClass "recipePartIngredient"])
 
 tasty1 :: SiteScraper
 tasty1 = simpleScraper "tasty1"
@@ -248,11 +242,6 @@ ingredientLi10 :: SiteScraper
 ingredientLi10 = simpleScraper "ingredientLi10"
   (testScrape ("table" @: [Scalpel.hasClass "ingredients-table"]))
   ("table" @: [Scalpel.hasClass "ingredients-table"] // "tr")
-
-ingredientLi11 :: SiteScraper
-ingredientLi11 = simpleScraper "ingredientLi11"
-  (testScrape ("div" @: [Scalpel.hasClass "product-recipe__ingredients"]))
-  ("div" @: [Scalpel.hasClass "product-recipe__ingredients"] // "li")
 
 delish :: SiteScraper
 delish = simpleScraper "delish"
