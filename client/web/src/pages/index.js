@@ -1,9 +1,5 @@
 import * as React from "react"
 import appStore from "../images/app-store.svg"
-import groceryList from "../images/grocery-list.png"
-import recipeList from "../images/recipe-list.png"
-import addLink from "../images/add-link.png"
-import addBulk from "../images/add-bulk.png"
 
 const pageStyles = {
   color: "#232129",
@@ -26,12 +22,24 @@ const IndexPage = () => {
     <main className="center" style={pageStyles}>
       <title>Nomz</title>
       <h1>Nomz</h1>
-      <p>Meal Planner & Grocery List</p>
-      <div style={centerStyles}>
-        <img style={imgStyles} src={groceryList} alt="Grocery List" width="150"/>
-        <img style={imgStyles} src={recipeList} alt="Recipe List" width="150"/>
-        <img style={imgStyles} src={addLink} alt="Add Link" width="150"/>
-        <img style={imgStyles} src={addBulk} alt="Add Bulk" width="150"/>
+      <h2>Meal Planner & Grocery List</h2>
+      <div className="container" style={centerStyles}>
+        <div className="item">
+          <p>Add a recipe link</p>
+          <img style={imgStyles} src="/add-link.gif" alt="Add Link" width="150"/>
+        </div>
+        <div className="item">
+          <p>Add groceries</p>
+          <img style={imgStyles} src="/add-manual.gif" alt="Add Manual" width="150"/>
+        </div>
+        <div className="item">
+          <p>Reorder items</p>
+          <img style={imgStyles} src="/reorder.gif" alt="Reorder" width="150"/>
+        </div>
+        <div className="item">
+          <p>Activate a saved recipe</p>
+          <img style={imgStyles} src="/activate.gif" alt="Activate" width="150"/>
+        </div>
       </div>
       <div>
         <a style={inlineStyles} href="https://venmo.com/code?user_id=1305125788319744156">❤️ Donate</a>
