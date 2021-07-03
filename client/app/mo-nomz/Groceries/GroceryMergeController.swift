@@ -14,6 +14,7 @@ class GroceryMergeController: UIViewController, UIPickerViewDataSource, UIPicker
     var onChange: (() -> Void)? = nil
     var currentWholeQuantity: Int? = nil
     var currentFractionQuantity: ReadableFraction? = nil
+    var beforeHeight: CGFloat? = nil
     
     @IBOutlet weak var quantity: UIPickerView!
     @IBOutlet weak var unit: UITextField!
@@ -68,11 +69,11 @@ class GroceryMergeController: UIViewController, UIPickerViewDataSource, UIPicker
     }
     
     @objc func keyboardWillShow(notification: NSNotification) {
-        keyboardWillShowInternal(subview: name, notification: notification)
+        beforeHeight = keyboardWillShowInternal(subview: name, notification: notification)
     }
     
     @objc func keyboardWillHide(notification: NSNotification) {
-        keyboardWillHideInternal(notification: notification)
+        keyboardWillHideInternal(heightMay: beforeHeight, notification: notification)
     }
     
     override func viewDidLoad() {

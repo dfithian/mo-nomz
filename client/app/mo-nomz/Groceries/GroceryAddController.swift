@@ -11,6 +11,7 @@ class GroceryAddController: UIViewController {
     var onChange: (() -> Void)? = nil
     var linkVc: RecipeAddController? = nil
     var bulkVc: GroceryAddBlobController? = nil
+    var beforeHeight: CGFloat? = nil
     
     @IBOutlet weak var segment: UISegmentedControl!
     @IBOutlet weak var linkView: UIView!
@@ -59,17 +60,17 @@ class GroceryAddController: UIViewController {
     
     @objc func keyboardWillShow(notification: NSNotification) {
         if linkView.alpha == 1 {
-            keyboardWillShowInternal(subview: linkVc!.link, notification: notification)
+            beforeHeight = keyboardWillShowInternal(subview: linkVc!.link, notification: notification)
         } else {
-            keyboardWillShowInternal(subview: bulkVc!.blob, notification: notification)
+            beforeHeight = keyboardWillShowInternal(subview: bulkVc!.blob, notification: notification)
         }
     }
     
     @objc func keyboardWillHide(notification: NSNotification) {
         if linkView.alpha == 1 {
-            keyboardWillHideInternal(notification: notification)
+            keyboardWillHideInternal(heightMay: beforeHeight, notification: notification)
         } else {
-            keyboardWillHideInternal(notification: notification)
+            keyboardWillHideInternal(heightMay: beforeHeight, notification: notification)
         }
     }
     

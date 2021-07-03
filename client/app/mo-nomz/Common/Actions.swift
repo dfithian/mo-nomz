@@ -152,7 +152,7 @@ extension UIViewController {
         req.httpBody = try? JSONEncoder().encode(ImportGroceryBlobRequest(content: content))
         let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
             self.stopLoading(spinner)
-            self.defaultWithCompletion(data: data, resp: resp, error: error, completion: completion)
+            self.withCompletion(data: data, resp: resp, error: error, completion: completion, onUnsuccessfulStatus: self.onParseError, onError: self.defaultOnError)
         })
         task.resume()
     }
