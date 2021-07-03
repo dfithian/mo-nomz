@@ -11,7 +11,8 @@ extension UIViewController {
     func importFile(_ url: URL) {
         do {
             let content = try String(contentsOf: url, encoding: .utf8)
-            addGroceryBlob(content: content, completion: nil)
+            let name = url.lastPathComponent == "" ? nil : url.lastPathComponent
+            addGroceryBlob(name: name, content: content, active: true, completion: nil)
         } catch {
             print("Failed to get file \(error)")
         }
@@ -20,6 +21,6 @@ extension UIViewController {
         addRecipeLink(link: url.absoluteString, active: true, completion: nil)
     }
     func importData(_ text: String) {
-        addGroceryBlob(content: text, completion: nil)
+        addGroceryBlob(name: nil, content: text, active: true, completion: nil)
     }
 }

@@ -62,7 +62,7 @@ class GroceryAddController: UIViewController {
         if linkView.alpha == 1 {
             beforeHeight = keyboardWillShowInternal(subview: linkVc!.link, notification: notification)
         } else {
-            beforeHeight = keyboardWillShowInternal(subview: bulkVc!.blob, notification: notification)
+            beforeHeight = keyboardWillShowInternal(subview: bulkVc!.name, notification: notification)
         }
     }
     

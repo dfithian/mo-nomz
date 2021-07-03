@@ -16,34 +16,9 @@ class RecipeAddController: UIViewController {
     var existingLinks: [String] = []
     var active: Bool = true
     
-    @IBAction func didTapSearch(_ sender: Any) {
-        var clearSearch: Bool = false
-        var url: URL? = nil
-        if let linkText = link.text {
-            if let linkUrl = URL(string: linkText), ["http", "https"].contains(linkUrl.scheme) {
-                url = linkUrl
-            } else if let escaped = linkText.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) {
-                clearSearch = true
-                url = URL(string: "https://google.com/search?q=\(escaped)")
-            } else {
-                clearSearch = true
-                url = URL(string: "https://google.com")
-            }
-        } else {
-            clearSearch = true
-            url = URL(string: "https://google.com")
-        }
-        if let u = url {
-            if clearSearch {
-                link.text = ""
-            }
-            present(SFSafariViewController(url: u), animated: true, completion: nil)
-        }
-    }
-    
     @IBAction func didTapSwitch(_ sender: Any) {
         if let s = sender as? UISwitch {
-            updateActive(!s.isOn)
+            updateActive(s.isOn)
         }
     }
 
@@ -75,6 +50,6 @@ class RecipeAddController: UIViewController {
         super.viewWillAppear(animated)
         link.addDoneButtonOnKeyboard()
         updateActive(true)
-        inactive.isOn = false
+        inactive.isOn = true
     }
 }

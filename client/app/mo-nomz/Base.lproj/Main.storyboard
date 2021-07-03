@@ -292,7 +292,7 @@
             </objects>
             <point key="canvasLocation" x="-435" y="-282"/>
         </scene>
-        <!--Recipes-->
+        <!--Meals-->
         <scene sceneID="e4A-Cj-XXK">
             <objects>
                 <viewController id="YMV-r0-X4W" customClass="RecipeController" customModule="mo_nomz" customModuleProvider="target" sceneMemberID="viewController">
@@ -300,8 +300,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Recipes" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OKO-ca-LY2">
-                                <rect key="frame" x="162" y="44" width="90" height="32"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Meals" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OKO-ca-LY2">
+                                <rect key="frame" x="173" y="44" width="68" height="32"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="26"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -363,7 +363,7 @@
                             <constraint firstItem="mYf-bB-0W0" firstAttribute="top" secondItem="Nwd-by-Fmi" secondAttribute="bottom" id="oDD-cq-kxp"/>
                         </constraints>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Recipes" image="list.dash" catalog="system" id="sBs-eL-zOR"/>
+                    <tabBarItem key="tabBarItem" title="Meals" image="list.dash" catalog="system" id="sBs-eL-zOR"/>
                     <connections>
                         <outlet property="add" destination="tUe-bR-zm9" id="xvc-wE-ald"/>
                         <outlet property="banner" destination="wq3-Ui-YiB" id="QM2-JT-yqW"/>
