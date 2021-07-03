@@ -10,12 +10,21 @@ import UIKit
 class RecipeController: UIViewController {
     @IBOutlet weak var banner: UIView!
     @IBOutlet weak var toolbar: Toolbar!
+    @IBOutlet weak var clear: UIButton!
     @IBOutlet weak var add: UIButton!
 
     var recipeVc: RecipeListController? = nil
     
     @objc func triggerAdd(_ sender: Any) {
         performSegue(withIdentifier: "addGroceries", sender: sender)
+    }
+    
+    @IBAction func clear(_ sender: Any?) {
+        let items : [RecipeWithId] = (recipeVc?.active ?? []) + (recipeVc?.saved ?? [])
+        if !items.isEmpty {
+            let handler = { [weak self] (action: UIAlertAction) -> Void in self?.clearGroceryItems(completion: self?.loadData) }
+            promptForConfirmation(title: "Clear", message: "Are you sure you want to clear?", handler: handler)
+        }
     }
 
     @objc func loadData() {
@@ -52,6 +61,8 @@ class RecipeController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        clear.frame = CGRect(x: clear.frame.minX, y: clear.frame.minY, width: clear.frame.width, height: toolbar.frame.height)
+        clear.alignTextUnderImage()
         add.frame = CGRect(x: add.frame.minX, y: add.frame.minY, width: add.frame.width, height: toolbar.frame.height)
         add.alignTextUnderImage()
         NotificationCenter.default.addObserver(self, selector: #selector(loadData), name: UIApplication.willEnterForegroundNotification, object: nil)

@@ -328,10 +328,25 @@
                             <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Nwd-by-Fmi" customClass="Toolbar" customModule="mo_nomz" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="76" width="414" height="44"/>
                                 <items>
+                                    <barButtonItem style="plain" id="ElH-qG-a4A">
+                                        <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="gJO-d3-elv">
+                                            <rect key="frame" x="20" y="9" width="61" height="26"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                            <state key="normal" title="Clear">
+                                                <color key="titleColor" name="AccentColor"/>
+                                                <imageReference key="image" image="arrow.clockwise" catalog="system" symbolScale="large"/>
+                                            </state>
+                                            <connections>
+                                                <action selector="clear:" destination="YMV-r0-X4W" eventType="touchUpInside" id="V9x-s2-KHc"/>
+                                                <action selector="clear:" destination="6IF-YC-SCE" eventType="touchUpInside" id="kpE-2d-NeY"/>
+                                            </connections>
+                                        </button>
+                                    </barButtonItem>
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="S94-Fc-eTR"/>
                                     <barButtonItem style="plain" id="ZiR-Hz-chD">
                                         <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="tUe-bR-zm9">
-                                            <rect key="frame" x="343" y="11" width="51" height="22"/>
+                                            <rect key="frame" x="343" y="9" width="51" height="26"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                             <state key="normal" title="Add">
@@ -367,6 +382,7 @@
                     <connections>
                         <outlet property="add" destination="tUe-bR-zm9" id="xvc-wE-ald"/>
                         <outlet property="banner" destination="wq3-Ui-YiB" id="QM2-JT-yqW"/>
+                        <outlet property="clear" destination="gJO-d3-elv" id="NwR-6R-Qu1"/>
                         <outlet property="toolbar" destination="Nwd-by-Fmi" id="gSh-Af-cPV"/>
                     </connections>
                 </viewController>
@@ -408,7 +424,7 @@
                                 <items>
                                     <barButtonItem style="plain" id="qVY-JI-nXC">
                                         <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="whC-Q7-8v7">
-                                            <rect key="frame" x="20" y="9.5" width="61" height="25.5"/>
+                                            <rect key="frame" x="20" y="9" width="61" height="26"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                             <state key="normal" title="Clear">
@@ -438,7 +454,7 @@
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="DES-NG-AGY"/>
                                     <barButtonItem style="plain" id="fuO-hA-iUI">
                                         <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="jOe-Cx-5V7">
-                                            <rect key="frame" x="343" y="11" width="51" height="22"/>
+                                            <rect key="frame" x="343" y="9" width="51" height="26"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                             <state key="normal" title="Add">
