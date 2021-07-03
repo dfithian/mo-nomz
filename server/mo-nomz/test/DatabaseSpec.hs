@@ -69,7 +69,7 @@ spec env@Env {..} = describe "Database" $ do
   it "unmergeGroceryItems" $ do
     ingredient <- generate arbitraryIngredient
     ingredients <- generate $ listOf1 arbitraryIngredient
-    let item = ingredientToGroceryItem ingredient
+    let item = ingredientToGroceryItem True ingredient
     runEnv env $ \c -> do
       [groceryItemId] <- insertGroceryItems c envUser [item]
       ingredientId:_ <- insertGroceryItemIngredients c envUser ((groceryItemId,) <$> (ingredient:ingredients))
@@ -77,7 +77,7 @@ spec env@Env {..} = describe "Database" $ do
 
   it "insertGroceryItemIngredients" $ do
     ingredient <- generate arbitraryIngredient
-    let item = ingredientToGroceryItem ingredient
+    let item = ingredientToGroceryItem True ingredient
     runEnv env $ \c -> do
       [groceryItemId] <- insertGroceryItems c envUser [item]
       void $ insertGroceryItemIngredients c envUser [(groceryItemId, ingredient)]
@@ -85,7 +85,7 @@ spec env@Env {..} = describe "Database" $ do
   it "insertRecipe then selectRecipes then selectIngredientsByRecipeId then selectRecipeIngredientIds" $ do
     recipe <- generate arbitraryRecipe
     ingredients <- generate $ listOf1 arbitraryIngredient
-    let items = ingredientToGroceryItem <$> ingredients
+    let items = ingredientToGroceryItem True <$> ingredients
     (actualRecipes, actualIngredients, ingredientIds, actualIngredientIds) <- runEnv env $ \c -> do
       groceryItemIds <- insertGroceryItems c envUser items
       recipeId <- insertRecipe c envUser recipe (zip groceryItemIds ingredients)
@@ -100,7 +100,7 @@ spec env@Env {..} = describe "Database" $ do
   it "insertRecipe then deactivateRecipe then activateRecipe" $ do
     recipe <- generate arbitraryRecipe
     ingredients <- generate $ listOf1 arbitraryIngredient
-    let items = ingredientToGroceryItem <$> ingredients
+    let items = ingredientToGroceryItem True <$> ingredients
     runEnv env $ \c -> do
       groceryItemIds <- insertGroceryItems c envUser items
       recipeId <- insertRecipe c envUser recipe (zip groceryItemIds ingredients)
@@ -110,7 +110,7 @@ spec env@Env {..} = describe "Database" $ do
   it "insertRecipe then deleteRecipes" $ do
     recipe <- generate arbitraryRecipe
     ingredients <- generate $ listOf1 arbitraryIngredient
-    let items = ingredientToGroceryItem <$> ingredients
+    let items = ingredientToGroceryItem True <$> ingredients
     runEnv env $ \c -> do
       groceryItemIds <- insertGroceryItems c envUser items
       recipeId <- insertRecipe c envUser recipe (zip groceryItemIds ingredients)
@@ -119,7 +119,7 @@ spec env@Env {..} = describe "Database" $ do
   it "deactivateEverything" $ do
     recipe <- generate arbitraryRecipe
     ingredients <- generate $ listOf1 arbitraryIngredient
-    let items = ingredientToGroceryItem <$> ingredients
+    let items = ingredientToGroceryItem True <$> ingredients
     runEnv env $ \c -> do
       groceryItemIds <- insertGroceryItems c envUser items
       void $ insertRecipe c envUser recipe (zip groceryItemIds ingredients)

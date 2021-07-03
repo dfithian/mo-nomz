@@ -155,11 +155,8 @@ liter = Unit "l"
 milligram = Unit "mg"
 gram = Unit "g"
 
-ingredientToGroceryItem :: Ingredient -> GroceryItem
-ingredientToGroceryItem = ingredientToGroceryItem' True
-
-ingredientToGroceryItem' :: Bool -> Ingredient -> GroceryItem
-ingredientToGroceryItem' active Ingredient {..} = GroceryItem
+ingredientToGroceryItem :: Bool -> Ingredient -> GroceryItem
+ingredientToGroceryItem active Ingredient {..} = GroceryItem
   { groceryItemName = ingredientName
   , groceryItemQuantity = ingredientQuantity
   , groceryItemUnit = ingredientUnit

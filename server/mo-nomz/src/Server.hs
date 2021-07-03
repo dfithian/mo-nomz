@@ -135,11 +135,11 @@ postRecipeImportLink token userId RecipeImportLinkRequest {..} = do
       when (null scrapedRecipeIngredients) $ throwError err400 { errReasonPhrase = "Failed to parse ingredients" }
       let recipe = Recipe
             { recipeName = scrapedRecipeName
-            , recipeLink = (Just recipeImportLinkRequestLink)
+            , recipeLink = Just recipeImportLinkRequestLink
             , recipeActive = recipeImportLinkRequestActive
             }
       unwrapDb $ withDbConn $ \c -> do
-        groceryItemIds <- Database.insertGroceryItems c userId (ingredientToGroceryItem <$> scrapedRecipeIngredients)
+        groceryItemIds <- Database.insertGroceryItems c userId (ingredientToGroceryItem recipeImportLinkRequestActive <$> scrapedRecipeIngredients)
         void $ Database.insertRecipe c userId recipe $ zip groceryItemIds scrapedRecipeIngredients
         Database.automergeGroceryItems c userId
   pure NoContent
@@ -153,7 +153,7 @@ postGroceryImportList token userId GroceryImportListRequest {..} = do
         , ingredientUnit = mkUnit groceryImportSingleUnit
         }
   unwrapDb $ withDbConn $ \c -> do
-    groceryItemIds <- Database.insertGroceryItems c userId (ingredientToGroceryItem <$> ingredients)
+    groceryItemIds <- Database.insertGroceryItems c userId (ingredientToGroceryItem True <$> ingredients)
     void $ Database.insertGroceryItemIngredients c userId $ zip groceryItemIds ingredients
     Database.automergeGroceryItems c userId
   pure NoContent
@@ -163,8 +163,16 @@ postGroceryImportBlob token userId GroceryImportBlobRequest {..} = do
   validateUserToken token userId
   ingredients <- either (\e -> throwError err500 { errReasonPhrase = unpack e }) pure $ parseRawIngredients groceryImportBlobRequestContent
   unwrapDb $ withDbConn $ \c -> do
-    groceryItemIds <- Database.insertGroceryItems c userId (ingredientToGroceryItem <$> ingredients)
-    void $ Database.insertGroceryItemIngredients c userId $ zip groceryItemIds ingredients
+    groceryItemIds <- Database.insertGroceryItems c userId (ingredientToGroceryItem groceryImportBlobRequestActive <$> ingredients)
+    case groceryImportBlobRequestName of
+      Nothing -> void $ Database.insertGroceryItemIngredients c userId $ zip groceryItemIds ingredients
+      Just name -> do
+        let recipe = Recipe
+              { recipeName = name
+              , recipeLink = Nothing
+              , recipeActive = groceryImportBlobRequestActive
+              }
+        void $ Database.insertRecipe c userId recipe $ zip groceryItemIds ingredients
     Database.automergeGroceryItems c userId
   pure NoContent
 

@@ -32,7 +32,7 @@ spec env@Env {..} = describe "Server" $ do
           <*> arbitraryIngredient
         runEnv env $ \c -> do
           [groceryItemId1, groceryItemId2, groceryItemId3, groceryItemId4, groceryItemId5, groceryItemId6] <-
-            Database.insertGroceryItems c envUser (ingredientToGroceryItem <$> [ingredient1, ingredient2, ingredient3, ingredient4, ingredient5, ingredient6])
+            Database.insertGroceryItems c envUser (ingredientToGroceryItem True <$> [ingredient1, ingredient2, ingredient3, ingredient4, ingredient5, ingredient6])
           recipeId1 <- Database.insertRecipe c envUser recipe1 [(groceryItemId1, ingredient1), (groceryItemId2, ingredient2)]
           recipeId2 <- Database.insertRecipe c envUser recipe2 [(groceryItemId3, ingredient3), (groceryItemId4, ingredient4)]
           void $ Database.insertGroceryItemIngredients c envUser [(groceryItemId5, ingredient5), (groceryItemId6, ingredient6)]
@@ -45,7 +45,7 @@ spec env@Env {..} = describe "Server" $ do
 
       toReadableDef = toReadable . zip [1..]
       toReadable xs = flip map xs $ \(order, ingredient) ->
-        mkReadableGroceryItem (OrderedGroceryItem (ingredientToGroceryItem ingredient) order)
+        mkReadableGroceryItem (OrderedGroceryItem (ingredientToGroceryItem True ingredient) order)
 
   before runBefore $ do
     it "insert" $ \(_, _, _, ingredients) -> do
@@ -74,7 +74,7 @@ spec env@Env {..} = describe "Server" $ do
           (ingredient1, _, _, ingredient4, _, ingredient6) = ingredients
       mergedGroceryItemId <- runEnv env $ \c -> do
         maxOrder <- Database.selectMaxOrder c envUser
-        Database.mergeGroceryItems c envUser [groceryItemId1, groceryItemId3, groceryItemId5] (OrderedGroceryItem (ingredientToGroceryItem ingredient1) (maxOrder + 1))
+        Database.mergeGroceryItems c envUser [groceryItemId1, groceryItemId3, groceryItemId5] (OrderedGroceryItem (ingredientToGroceryItem True ingredient1) (maxOrder + 1))
       ListGroceryItemResponse items <- runServer env $ do
         void $ deleteGroceryItem envAuth envUser DeleteGroceryItemRequest
           { deleteGroceryItemRequestIds = setFromList [mergedGroceryItemId, groceryItemId2]
@@ -96,7 +96,7 @@ spec env@Env {..} = describe "Server" $ do
             )
       void $ runEnv env $ \c -> do
         maxOrder <- Database.selectMaxOrder c envUser
-        Database.mergeGroceryItems c envUser [groceryItemId1, groceryItemId3, groceryItemId5] (OrderedGroceryItem (ingredientToGroceryItem ingredient1) (maxOrder + 1))
+        Database.mergeGroceryItems c envUser [groceryItemId1, groceryItemId3, groceryItemId5] (OrderedGroceryItem (ingredientToGroceryItem True ingredient1) (maxOrder + 1))
       ListGroceryItemResponse items <- runServer env $ do
         void $ deleteGroceryItem envAuth envUser DeleteGroceryItemRequest
           { deleteGroceryItemRequestIds = setFromList [groceryItemId2]
@@ -121,7 +121,7 @@ spec env@Env {..} = describe "Server" $ do
             )
       void $ runEnv env $ \c -> do
         maxOrder <- Database.selectMaxOrder c envUser
-        Database.mergeGroceryItems c envUser [groceryItemId1, groceryItemId3, groceryItemId5] (OrderedGroceryItem (ingredientToGroceryItem ingredient1) (maxOrder + 1))
+        Database.mergeGroceryItems c envUser [groceryItemId1, groceryItemId3, groceryItemId5] (OrderedGroceryItem (ingredientToGroceryItem True ingredient1) (maxOrder + 1))
       ListGroceryItemResponse items <- runServer env $ do
         void $ deleteGroceryItem envAuth envUser DeleteGroceryItemRequest
           { deleteGroceryItemRequestIds = setFromList [groceryItemId2]
@@ -139,7 +139,7 @@ spec env@Env {..} = describe "Server" $ do
           (ingredient1, _, _, _, _, _) = ingredients
       void $ runEnv env $ \c -> do
         maxOrder <- Database.selectMaxOrder c envUser
-        Database.mergeGroceryItems c envUser [groceryItemId1, groceryItemId3, groceryItemId5] (OrderedGroceryItem (ingredientToGroceryItem ingredient1) (maxOrder + 1))
+        Database.mergeGroceryItems c envUser [groceryItemId1, groceryItemId3, groceryItemId5] (OrderedGroceryItem (ingredientToGroceryItem True ingredient1) (maxOrder + 1))
       ListGroceryItemResponse items <- runServer env $ do
         void $ deleteGroceryItem envAuth envUser DeleteGroceryItemRequest
           { deleteGroceryItemRequestIds = setFromList [groceryItemId2]
@@ -159,7 +159,7 @@ spec env@Env {..} = describe "Server" $ do
           (ingredient1, ingredient2, ingredient3, _, ingredient5, _) = ingredients
       void $ runEnv env $ \c -> do
         maxOrder <- Database.selectMaxOrder c envUser
-        Database.mergeGroceryItems c envUser [groceryItemId1, groceryItemId3, groceryItemId5] (OrderedGroceryItem (ingredientToGroceryItem ingredient1) (maxOrder + 1))
+        Database.mergeGroceryItems c envUser [groceryItemId1, groceryItemId3, groceryItemId5] (OrderedGroceryItem (ingredientToGroceryItem True ingredient1) (maxOrder + 1))
       runServer env $ do
         void $ deleteGroceryItem envAuth envUser DeleteGroceryItemRequest
           { deleteGroceryItemRequestIds = setFromList [groceryItemId2]
@@ -175,7 +175,7 @@ spec env@Env {..} = describe "Server" $ do
           }
       runEnv env $ \c -> do
         [groceryItemId7, groceryItemId8, groceryItemId9] <-
-          Database.insertGroceryItems c envUser (ingredientToGroceryItem <$> [ingredient1, ingredient3, ingredient5])
+          Database.insertGroceryItems c envUser (ingredientToGroceryItem True <$> [ingredient1, ingredient3, ingredient5])
         void $ Database.insertRecipe c envUser recipe1 [(groceryItemId7, ingredient1)]
         void $ Database.insertRecipe c envUser recipe2 [(groceryItemId8, ingredient3)]
         void $ Database.insertGroceryItemIngredients c envUser [(groceryItemId9, ingredient5)]

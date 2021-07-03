@@ -198,7 +198,7 @@ deactivateRecipe conn userId recipeId = do
 activateRecipe :: Connection -> UserId -> RecipeId -> IO ()
 activateRecipe conn userId recipeId = do
   (ingredientIds, ingredients) <- unzip <$> selectIngredientsByRecipeId conn userId recipeId
-  groceryItemIds <- insertGroceryItems conn userId (ingredientToGroceryItem <$> ingredients)
+  groceryItemIds <- insertGroceryItems conn userId (ingredientToGroceryItem True <$> ingredients)
   for_ (zip groceryItemIds ingredientIds) $ \(groceryItemId, ingredientId) ->
     void $ execute conn "update nomz.ingredient set grocery_id = ? where user_id = ? and id = ?" (groceryItemId, userId, ingredientId)
   void $ execute conn "update nomz.recipe set active = true where user_id = ? and id = ?" (userId, recipeId)
