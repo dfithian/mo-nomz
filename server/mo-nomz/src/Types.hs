@@ -107,6 +107,8 @@ data Recipe = Recipe
   { recipeName   :: RecipeName
   , recipeLink   :: Maybe RecipeLink
   , recipeActive :: Bool
+  , recipeRating :: Int
+  , recipeNotes  :: Text
   }
   deriving (Eq, Ord, Show)
 

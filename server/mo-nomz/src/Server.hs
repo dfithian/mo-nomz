@@ -137,6 +137,8 @@ postRecipeImportLink token userId RecipeImportLinkRequest {..} = do
             { recipeName = scrapedRecipeName
             , recipeLink = Just recipeImportLinkRequestLink
             , recipeActive = recipeImportLinkRequestActive
+            , recipeRating = 0
+            , recipeNotes = ""
             }
       unwrapDb $ withDbConn $ \c -> do
         groceryItemIds <- Database.insertGroceryItems c userId (ingredientToGroceryItem recipeImportLinkRequestActive <$> scrapedRecipeIngredients)
@@ -171,6 +173,8 @@ postGroceryImportBlob token userId GroceryImportBlobRequest {..} = do
               { recipeName = name
               , recipeLink = Nothing
               , recipeActive = groceryImportBlobRequestActive
+              , recipeRating = 0
+              , recipeNotes = ""
               }
         void $ Database.insertRecipe c userId recipe $ zip groceryItemIds ingredients
     Database.automergeGroceryItems c userId
@@ -180,10 +184,12 @@ postUpdateRecipe :: AppM m => Authorization -> UserId -> UpdateRecipeRequest -> 
 postUpdateRecipe token userId UpdateRecipeRequest {..} = do
   validateUserToken token userId
   unwrapDb $ withDbConn $ \c -> do
-    void $ maybe (throwIO err404) pure . headMay =<< Database.selectRecipes c userId [updateRecipeRequestId]
-    case updateRecipeRequestActive of
-      True -> Database.activateRecipe c userId updateRecipeRequestId
-      False -> Database.deactivateRecipe c userId updateRecipeRequestId
+    Recipe {..} <- maybe (throwIO err404) pure . headMay =<< Database.selectRecipes c userId [updateRecipeRequestId]
+    Database.updateRecipe c userId updateRecipeRequestId updateRecipeRequestRating updateRecipeRequestNotes
+    when (updateRecipeRequestActive /= recipeActive) $
+      case updateRecipeRequestActive of
+        True -> Database.activateRecipe c userId updateRecipeRequestId
+        False -> Database.deactivateRecipe c userId updateRecipeRequestId
   pure NoContent
 
 getRecipes :: AppM m => Authorization -> UserId -> m ListRecipeResponse

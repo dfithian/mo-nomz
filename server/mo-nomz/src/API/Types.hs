@@ -89,6 +89,8 @@ data GroceryImportListRequest = GroceryImportListRequest
 data UpdateRecipeRequest = UpdateRecipeRequest
   { updateRecipeRequestId     :: RecipeId
   , updateRecipeRequestActive :: Bool
+  , updateRecipeRequestRating :: Int
+  , updateRecipeRequestNotes  :: Text
   }
   deriving (Eq, Ord, Show)
 
@@ -101,6 +103,8 @@ data ReadableRecipe = ReadableRecipe
   { readableRecipeName   :: RecipeName
   , readableRecipeLink   :: Maybe RecipeLink
   , readableRecipeActive :: Bool
+  , readableRecipeRating :: Int
+  , readableRecipeNotes  :: Text
   }
   deriving (Eq, Ord, Show)
 

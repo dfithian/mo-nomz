@@ -166,4 +166,6 @@ mkReadableRecipe Recipe {..} = ReadableRecipe
   { readableRecipeName = recipeName
   , readableRecipeLink = recipeLink
   , readableRecipeActive = recipeActive
+  , readableRecipeRating = recipeRating
+  , readableRecipeNotes = recipeNotes
   }

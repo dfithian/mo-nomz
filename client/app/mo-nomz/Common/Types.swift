@@ -129,6 +129,8 @@ struct ReadableRecipe: Codable {
     let name: String
     let link: String?
     let active: Bool
+    let rating: Int
+    let notes: String
 }
 
 struct ImportRecipeLinkRequest: Codable {
@@ -164,6 +166,8 @@ struct ImportGroceryBlobRequest: Codable {
 struct UpdateRecipeRequest: Codable {
     let id: Int
     let active: Bool
+    let rating: Int
+    let notes: String
 }
 
 struct ListRecipeResponse: Codable {

@@ -174,14 +174,14 @@ extension UIViewController {
         task.resume()
     }
     
-    func updateRecipe(id: Int, active: Bool, completion: (() -> Void)?) {
+    func updateRecipe(id: Int, active: Bool, rating: Int, notes: String, completion: (() -> Void)?) {
         let spinner = startLoading()
         guard let state = Persistence.loadState() else { return }
         var req = URLRequest(url: URL(string: Configuration.baseURL + "api/v1/user/" + String(state.userId) + "/recipe")!)
         req.addValue(state.apiToken, forHTTPHeaderField: "X-Mo-Nomz-API-Token")
         req.addValue("application/json", forHTTPHeaderField: "Content-Type")
         req.httpMethod = "POST"
-        req.httpBody = try? JSONEncoder().encode(UpdateRecipeRequest(id: id, active: active))
+        req.httpBody = try? JSONEncoder().encode(UpdateRecipeRequest(id: id, active: active, rating: rating, notes: notes))
         let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
             self.stopLoading(spinner)
             self.defaultWithCompletion(data: data, resp: resp, error: error, completion: completion)
