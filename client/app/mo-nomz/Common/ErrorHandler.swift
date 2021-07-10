@@ -10,7 +10,7 @@ import UIKit
 extension UIViewController {
     func withCompletion(data: Data?, resp: URLResponse?, error: Error?, completion: (() -> Void)?, onUnsuccessfulStatus: ((URLResponse?) -> Void), onError: ((Error?) -> Void)) {
         if error == nil {
-            if self.statusIsSuccessful(resp) {
+            if statusIsSuccessful(resp) {
                 completion?()
             } else {
                 onUnsuccessfulStatus(resp)
@@ -21,7 +21,7 @@ extension UIViewController {
     }
 
     func defaultWithCompletion(data: Data?, resp: URLResponse?, error: Error?, completion: (() -> Void)?) {
-        self.withCompletion(data: data, resp: resp, error: error, completion: completion, onUnsuccessfulStatus: self.defaultOnUnsuccessfulStatus, onError: self.defaultOnError)
+        withCompletion(data: data, resp: resp, error: error, completion: completion, onUnsuccessfulStatus: defaultOnUnsuccessfulStatus, onError: defaultOnError)
     }
 
     func statusIsSuccessful(_ resp: URLResponse?) -> Bool {

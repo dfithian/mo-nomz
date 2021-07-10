@@ -51,6 +51,7 @@ class GroceryAddBlobController: UIViewController {
     override func viewDidLoad() {
         name.addDoneButtonOnKeyboard()
         blob.addDoneButtonOnKeyboard()
+        blob.layer.cornerRadius = 10
         updateActive(true)
         inactive.isOn = true
     }

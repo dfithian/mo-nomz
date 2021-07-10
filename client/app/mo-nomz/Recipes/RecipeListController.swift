@@ -51,12 +51,12 @@ class RecipeListController: UITableViewController {
     
     @objc func didTapActive(_ sender: Any?) {
         let b = sender as! UIButton
-        self.updateRecipe(id: active[b.tag].id, active: false, rating: active[b.tag].recipe.rating, notes: active[b.tag].recipe.notes, completion: onChange)
+        updateRecipe(id: active[b.tag].id, active: false, rating: active[b.tag].recipe.rating, notes: active[b.tag].recipe.notes, completion: onChange)
     }
     
     @objc func didTapSavedForLater(_ sender: Any?) {
         let b = sender as! UIButton
-        self.updateRecipe(id: saved[b.tag].id, active: true, rating: active[b.tag].recipe.rating, notes: active[b.tag].recipe.notes, completion: onChange)
+        updateRecipe(id: saved[b.tag].id, active: true, rating: saved[b.tag].recipe.rating, notes: saved[b.tag].recipe.notes, completion: onChange)
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -170,10 +170,10 @@ class RecipeListController: UITableViewController {
             vc.onChange = onChange
             switch indexPath.section {
             case 2:
-                vc.recipe = self.active[indexPath.row]
+                vc.recipe = active[indexPath.row]
                 break
             case 4:
-                vc.recipe = self.saved[indexPath.row]
+                vc.recipe = saved[indexPath.row]
                 break
             default: break
             }

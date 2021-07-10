@@ -33,12 +33,12 @@ class GroceryAddController: UIViewController {
     @IBAction func didTapSegment(_ sender: UISegmentedControl) {
         switch sender.selectedSegmentIndex {
         case 0:
-            self.linkView.alpha = 1
-            self.bulkView.alpha = 0
+            linkView.alpha = 1
+            bulkView.alpha = 0
             break
         default:
-            self.linkView.alpha = 0
-            self.bulkView.alpha = 1
+            linkView.alpha = 0
+            bulkView.alpha = 1
             break
         }
     }

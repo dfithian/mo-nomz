@@ -20,7 +20,6 @@ class RecipeDetailController: UIViewController {
     var recipe: RecipeWithId? = nil
     var onChange: (() -> Void)? = nil
     var beforeHeight: CGFloat? = nil
-    var rating: Int? = nil
     
     @IBAction func didTapLink(_ sender: Any?) {
         if let link = recipe?.recipe.link {
@@ -36,47 +35,52 @@ class RecipeDetailController: UIViewController {
     private func didTapStar(which: Int) {
         let filledStar = UIImage(systemName: "star.fill")
         let unfilledStar = UIImage(systemName: "star")
-        rating = which
         switch which {
         case 0:
-            self.star1.setImage(unfilledStar, for: .normal)
-            self.star2.setImage(unfilledStar, for: .normal)
-            self.star3.setImage(unfilledStar, for: .normal)
-            self.star4.setImage(unfilledStar, for: .normal)
-            self.star5.setImage(unfilledStar, for: .normal)
+            star1.setImage(unfilledStar, for: .normal)
+            star2.setImage(unfilledStar, for: .normal)
+            star3.setImage(unfilledStar, for: .normal)
+            star4.setImage(unfilledStar, for: .normal)
+            star5.setImage(unfilledStar, for: .normal)
         case 1:
-            self.star1.setImage(filledStar, for: .normal)
-            self.star2.setImage(unfilledStar, for: .normal)
-            self.star3.setImage(unfilledStar, for: .normal)
-            self.star4.setImage(unfilledStar, for: .normal)
-            self.star5.setImage(unfilledStar, for: .normal)
+            star1.setImage(filledStar, for: .normal)
+            star2.setImage(unfilledStar, for: .normal)
+            star3.setImage(unfilledStar, for: .normal)
+            star4.setImage(unfilledStar, for: .normal)
+            star5.setImage(unfilledStar, for: .normal)
         case 2:
-            self.star1.setImage(filledStar, for: .normal)
-            self.star2.setImage(filledStar, for: .normal)
-            self.star3.setImage(unfilledStar, for: .normal)
-            self.star4.setImage(unfilledStar, for: .normal)
-            self.star5.setImage(unfilledStar, for: .normal)
+            star1.setImage(filledStar, for: .normal)
+            star2.setImage(filledStar, for: .normal)
+            star3.setImage(unfilledStar, for: .normal)
+            star4.setImage(unfilledStar, for: .normal)
+            star5.setImage(unfilledStar, for: .normal)
         case 3:
-            self.star1.setImage(filledStar, for: .normal)
-            self.star2.setImage(filledStar, for: .normal)
-            self.star3.setImage(filledStar, for: .normal)
-            self.star4.setImage(unfilledStar, for: .normal)
-            self.star5.setImage(unfilledStar, for: .normal)
+            star1.setImage(filledStar, for: .normal)
+            star2.setImage(filledStar, for: .normal)
+            star3.setImage(filledStar, for: .normal)
+            star4.setImage(unfilledStar, for: .normal)
+            star5.setImage(unfilledStar, for: .normal)
         case 4:
-            self.star1.setImage(filledStar, for: .normal)
-            self.star2.setImage(filledStar, for: .normal)
-            self.star3.setImage(filledStar, for: .normal)
-            self.star4.setImage(filledStar, for: .normal)
-            self.star5.setImage(unfilledStar, for: .normal)
+            star1.setImage(filledStar, for: .normal)
+            star2.setImage(filledStar, for: .normal)
+            star3.setImage(filledStar, for: .normal)
+            star4.setImage(filledStar, for: .normal)
+            star5.setImage(unfilledStar, for: .normal)
         default:
-            self.star1.setImage(filledStar, for: .normal)
-            self.star2.setImage(filledStar, for: .normal)
-            self.star3.setImage(filledStar, for: .normal)
-            self.star4.setImage(filledStar, for: .normal)
-            self.star5.setImage(filledStar, for: .normal)
+            star1.setImage(filledStar, for: .normal)
+            star2.setImage(filledStar, for: .normal)
+            star3.setImage(filledStar, for: .normal)
+            star4.setImage(filledStar, for: .normal)
+            star5.setImage(filledStar, for: .normal)
         }
-        DispatchQueue.main.async {
-            self.view.reloadInputViews()
+        if let r = recipe, which != r.recipe.rating && which > 0 {
+            let completion = { () -> Void in
+                self.recipe = RecipeWithId(recipe: ReadableRecipe(name: r.recipe.name, link: r.recipe.link, active: r.recipe.active, rating: which, notes: r.recipe.notes), id: r.id)
+                DispatchQueue.main.async {
+                    self.view.reloadInputViews()
+                }
+            }
+            updateRecipe(id: r.id, active: r.recipe.active, rating: which, notes: r.recipe.notes, completion: completion)
         }
     }
     
@@ -108,7 +112,7 @@ class RecipeDetailController: UIViewController {
                 }
                 self.onChange?()
             }
-            updateRecipe(id: r.id, active: r.recipe.active, rating: rating ?? r.recipe.rating, notes: notes.text, completion: completion)
+            updateRecipe(id: r.id, active: r.recipe.active, rating: r.recipe.rating, notes: notes.text, completion: completion)
         }
     }
     
@@ -127,13 +131,14 @@ class RecipeDetailController: UIViewController {
     }
     
     override func viewDidLoad() {
-        self.label.text = recipe?.recipe.name
-        self.notes.addDoneButtonOnKeyboard()
-        self.notes.text = recipe?.recipe.notes ?? ""
+        label.text = recipe?.recipe.name
+        notes.addDoneButtonOnKeyboard()
+        notes.text = recipe?.recipe.notes ?? ""
+        notes.layer.cornerRadius = 10
         if recipe?.recipe.link == nil {
-            self.link.removeFromSuperview()
+            link.removeFromSuperview()
         }
-        self.didTapStar(which: recipe?.recipe.rating ?? 0)
+        didTapStar(which: recipe?.recipe.rating ?? 0)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardDidShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
