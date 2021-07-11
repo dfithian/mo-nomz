@@ -141,10 +141,11 @@ class RecipeListController: UITableViewController {
             return cell
         case 2:
             let cell = tableView.dequeueReusableCell(withIdentifier: "recipeListItem") as! RecipeListItem
-            let name = active[indexPath.row].recipe.name
-            cell.name.text = name
+            let recipe = active[indexPath.row].recipe
+            cell.name.text = recipe.name
             cell.select.tag = indexPath.row
             cell.select.addTarget(self, action: #selector(didTapActive), for: .touchUpInside)
+            cell.rating.text = String(recipe.rating)
             return cell
         case 3:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SectionHeader
@@ -154,10 +155,11 @@ class RecipeListController: UITableViewController {
             return cell
         case 4:
             let cell = tableView.dequeueReusableCell(withIdentifier: "savedListItem") as! RecipeListItem
-            let name = saved[indexPath.row].recipe.name
-            cell.name.text = name
+            let recipe = saved[indexPath.row].recipe
+            cell.name.text = recipe.name
             cell.select.tag = indexPath.row
             cell.select.addTarget(self, action: #selector(didTapSavedForLater), for: .touchUpInside)
+            cell.rating.text = String(recipe.rating)
             return cell
         default:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SectionHeader

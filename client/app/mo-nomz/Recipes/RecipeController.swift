@@ -32,8 +32,8 @@ class RecipeController: UIViewController {
             let recipes = resp.recipes.map({
                 RecipeWithId(recipe: $0.value, id: $0.key)
             })
-            self?.recipeVc?.active = recipes.filter({ $0.recipe.active }).sorted(by: { $0.id < $1.id })
-            self?.recipeVc?.saved = recipes.filter({ !$0.recipe.active }).sorted(by: { $0.id < $1.id })
+            self?.recipeVc?.active = recipes.filter({ $0.recipe.active }).sorted(by: { $0.recipe.rating > $1.recipe.rating })
+            self?.recipeVc?.saved = recipes.filter({ !$0.recipe.active }).sorted(by: { $0.recipe.rating > $1.recipe.rating })
             DispatchQueue.main.async {
                 self?.recipeVc?.tableView.reloadData()
             }

@@ -76,6 +76,7 @@ class RecipeDetailController: UIViewController {
         if let r = recipe, which != r.recipe.rating && which > 0 {
             let completion = { () -> Void in
                 self.recipe = RecipeWithId(recipe: ReadableRecipe(name: r.recipe.name, link: r.recipe.link, active: r.recipe.active, rating: which, notes: r.recipe.notes), id: r.id)
+                self.onChange?()
                 DispatchQueue.main.async {
                     self.view.reloadInputViews()
                 }
