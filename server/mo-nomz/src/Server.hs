@@ -195,9 +195,14 @@ postUpdateRecipe token userId UpdateRecipeRequest {..} = do
 getRecipes :: AppM m => Authorization -> UserId -> m ListRecipeResponse
 getRecipes token userId = do
   validateUserToken token userId
-  recipes <- unwrapDb $ withDbConn $ \c -> Database.selectRecipes c userId []
+  (recipes, ingredients) <- unwrapDb $ withDbConn $ \c -> (,)
+    <$> Database.selectRecipes c userId []
+    <*> Database.selectIngredientsByRecipeIds c userId []
   pure ListRecipeResponse
-    { listRecipeResponseRecipes = mkReadableRecipe <$> recipes
+    { listRecipeResponseRecipes = mapFromList
+        . map (\(recipeId, recipe) -> (recipeId, mkReadableRecipe (findWithDefault [] recipeId ingredients) recipe))
+        . mapToList
+        $ recipes
     }
 
 deleteRecipes :: AppM m => Authorization -> UserId -> DeleteRecipeRequest -> m NoContent

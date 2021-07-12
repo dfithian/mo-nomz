@@ -99,12 +99,20 @@ data DeleteRecipeRequest = DeleteRecipeRequest
   }
   deriving (Eq, Ord, Show)
 
+data ReadableIngredient = ReadableIngredient
+  { readableIngredientName     :: IngredientName
+  , readableIngredientQuantity :: ReadableQuantity
+  , readableIngredientUnit     :: Maybe ReadableUnit
+  }
+  deriving (Eq, Ord, Show)
+
 data ReadableRecipe = ReadableRecipe
-  { readableRecipeName   :: RecipeName
-  , readableRecipeLink   :: Maybe RecipeLink
-  , readableRecipeActive :: Bool
-  , readableRecipeRating :: Int
-  , readableRecipeNotes  :: Text
+  { readableRecipeName        :: RecipeName
+  , readableRecipeLink        :: Maybe RecipeLink
+  , readableRecipeActive      :: Bool
+  , readableRecipeRating      :: Int
+  , readableRecipeNotes       :: Text
+  , readableRecipeIngredients :: [ReadableIngredient]
   }
   deriving (Eq, Ord, Show)
 
@@ -126,5 +134,6 @@ deriveJSON (jsonOptions "groceryImportListRequest") ''GroceryImportListRequest
 deriveJSON (jsonOptions "groceryImportBlobRequest") ''GroceryImportBlobRequest
 deriveJSON (jsonOptions "updateRecipeRequest") ''UpdateRecipeRequest
 deriveJSON (jsonOptions "deleteRecipeRequest") ''DeleteRecipeRequest
+deriveJSON (jsonOptions "readableIngredient") ''ReadableIngredient
 deriveJSON (jsonOptions "readableRecipe") ''ReadableRecipe
 deriveJSON (jsonOptions "listRecipeResponse") ''ListRecipeResponse

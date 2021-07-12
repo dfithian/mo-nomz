@@ -152,7 +152,9 @@ extension UIViewController {
         req.httpBody = try? JSONEncoder().encode(ImportGroceryBlobRequest(name: name, content: content, active: active))
         let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
             self.stopLoading(spinner)
-            self.withCompletion(data: data, resp: resp, error: error, completion: completion, onUnsuccessfulStatus: self.onParseError, onError: self.defaultOnError)
+            let onUnsuccessfulStatus = { (resp: URLResponse?) -> Void in self.alertUnsuccessful("Couldn't parse items. Please use one line per item, leading with the quantity.")
+            }
+            self.withCompletion(data: data, resp: resp, error: error, completion: completion, onUnsuccessfulStatus: onUnsuccessfulStatus, onError: self.defaultOnError)
         })
         task.resume()
     }
@@ -167,7 +169,7 @@ extension UIViewController {
         req.httpBody = try? JSONEncoder().encode(ImportRecipeLinkRequest(link: link, active: active))
         let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
             self.stopLoading(spinner)
-            let onUnsuccessfulStatus = { (resp: URLResponse?) -> Void in self.alertUnsuccessful("Unable to import recipe. Please enter items manually.")
+            let onUnsuccessfulStatus = { (resp: URLResponse?) -> Void in self.alertUnsuccessful("Unable to import recipe. Please enter ingredients manually.")
             }
             self.withCompletion(data: data, resp: resp, error: error, completion: completion, onUnsuccessfulStatus: onUnsuccessfulStatus, onError: self.defaultOnError)
         })

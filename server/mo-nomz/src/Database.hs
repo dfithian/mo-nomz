@@ -165,6 +165,16 @@ selectRecipeIngredientIds conn userId recipeIds =
     False -> map fromOnly
       <$> query conn "select id from nomz.ingredient where user_id = ? and recipe_id in ?" (userId, In recipeIds)
 
+selectIngredientsByRecipeIds :: Connection -> UserId -> [RecipeId] -> IO (Map RecipeId [Ingredient])
+selectIngredientsByRecipeIds conn userId recipeIds = do
+  case null recipeIds of
+    True -> do
+      ingredients <- query conn "select recipe_id, name, quantity, unit from nomz.ingredient where user_id = ? order by id" (Only userId)
+      pure $ foldr (\(recipeId, name, quantity, unit) -> insertWith (<>) recipeId [Ingredient name quantity unit]) mempty ingredients
+    False -> do
+      ingredients <- query conn "select recipe_id, name, quantity, unit from nomz.ingredient where user_id = ? and recipe_id in ? order by id" (userId, In recipeIds)
+      pure $ foldr (\(recipeId, name, quantity, unit) -> insertWith (<>) recipeId [Ingredient name quantity unit]) mempty ingredients
+
 selectRecipes :: Connection -> UserId -> [RecipeId] -> IO (Map RecipeId Recipe)
 selectRecipes conn userId recipeIds = do
   case null recipeIds of

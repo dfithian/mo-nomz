@@ -52,19 +52,6 @@ extension UIViewController {
         }
         alertUnsuccessful(message)
     }
-    
-    func onParseError(_ resp: URLResponse?) {
-        let message: String
-        switch Configuration.environment {
-        case .Release:
-            message = "Couldn't parse items. Please try to format items as they'd appear on a grocery list."
-            break
-        default:
-            message = "\(resp as Any)"
-            break
-        }
-        alertUnsuccessful(message)
-    }
 
     func defaultOnError(_ error: Error?) {
         let message: String

@@ -15,11 +15,10 @@ class RecipeDetailController: UIViewController {
     @IBOutlet weak var star4: UIButton!
     @IBOutlet weak var star5: UIButton!
     @IBOutlet weak var link: UIButton!
-    @IBOutlet weak var notes: UITextView!
     
     var recipe: RecipeWithId? = nil
     var onChange: (() -> Void)? = nil
-    var beforeHeight: CGFloat? = nil
+    var detailVc: RecipeDetailListController? = nil
     
     @IBAction func didTapLink(_ sender: Any?) {
         if let link = recipe?.recipe.link {
@@ -75,7 +74,7 @@ class RecipeDetailController: UIViewController {
         }
         if let r = recipe, which != r.recipe.rating && which > 0 {
             let completion = { () -> Void in
-                self.recipe = RecipeWithId(recipe: ReadableRecipe(name: r.recipe.name, link: r.recipe.link, active: r.recipe.active, rating: which, notes: r.recipe.notes), id: r.id)
+                self.recipe = RecipeWithId(recipe: ReadableRecipe(name: r.recipe.name, link: r.recipe.link, active: r.recipe.active, rating: which, notes: r.recipe.notes, ingredients: r.recipe.ingredients), id: r.id)
                 self.onChange?()
                 DispatchQueue.main.async {
                     self.view.reloadInputViews()
@@ -113,7 +112,7 @@ class RecipeDetailController: UIViewController {
                 }
                 self.onChange?()
             }
-            updateRecipe(id: r.id, active: r.recipe.active, rating: r.recipe.rating, notes: notes.text, completion: completion)
+            updateRecipe(id: r.id, active: r.recipe.active, rating: r.recipe.rating, notes: detailVc?.blob.text ?? r.recipe.notes, completion: completion)
         }
     }
     
@@ -123,24 +122,19 @@ class RecipeDetailController: UIViewController {
         }
     }
     
-    @objc func keyboardWillShow(notification: NSNotification) {
-        beforeHeight = keyboardWillShowInternal(subview: notes, notification: notification)
-    }
-    
-    @objc func keyboardWillHide(notification: NSNotification) {
-        keyboardWillHideInternal(heightMay: beforeHeight, notification: notification)
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let vc = segue.destination as? RecipeDetailListController, segue.identifier == "embedDetail" {
+            detailVc = vc
+            vc.ingredients = recipe?.recipe.ingredients ?? []
+            vc.notes = recipe?.recipe.notes
+        }
     }
     
     override func viewDidLoad() {
         label.text = recipe?.recipe.name
-        notes.addDoneButtonOnKeyboard()
-        notes.text = recipe?.recipe.notes ?? ""
-        notes.layer.cornerRadius = 10
         if recipe?.recipe.link == nil {
             link.removeFromSuperview()
         }
         didTapStar(which: recipe?.recipe.rating ?? 0)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardDidShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
 }

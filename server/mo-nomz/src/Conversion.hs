@@ -4,10 +4,10 @@ import ClassyPrelude
 
 import Data.Monoid (Sum(..))
 
-import API.Types (ReadableGroceryItem(..), ReadableRecipe(..))
+import API.Types (ReadableGroceryItem(..), ReadableIngredient(..), ReadableRecipe(..))
 import Combinable (Constant(..), Combinable)
 import Types
-  ( GroceryItem(..), OrderedGroceryItem(..), Quantity(..), ReadableFraction(..)
+  ( GroceryItem(..), Ingredient(..), OrderedGroceryItem(..), Quantity(..), ReadableFraction(..)
   , ReadableQuantity(..), ReadableUnit(..), Recipe(..), Unit(..), cup, gram, liter, milligram
   , milliliter, ounce, pinch, tablespoon, teaspoon
   )
@@ -161,11 +161,19 @@ mkGroceryItem ReadableGroceryItem {..} = GroceryItem
   , groceryItemActive = readableGroceryItemActive
   }
 
-mkReadableRecipe :: Recipe -> ReadableRecipe
-mkReadableRecipe Recipe {..} = ReadableRecipe
+mkReadableIngredient :: Ingredient -> ReadableIngredient
+mkReadableIngredient Ingredient {..} = ReadableIngredient
+  { readableIngredientName = ingredientName
+  , readableIngredientQuantity = mkReadableQuantity ingredientQuantity
+  , readableIngredientUnit = mkReadableUnit ingredientUnit
+  }
+
+mkReadableRecipe :: [Ingredient] -> Recipe -> ReadableRecipe
+mkReadableRecipe ingredients Recipe {..} = ReadableRecipe
   { readableRecipeName = recipeName
   , readableRecipeLink = recipeLink
   , readableRecipeActive = recipeActive
   , readableRecipeRating = recipeRating
   , readableRecipeNotes = recipeNotes
+  , readableRecipeIngredients = mkReadableIngredient <$> ingredients
   }
