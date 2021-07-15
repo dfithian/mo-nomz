@@ -102,7 +102,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="zfK-sC-B4g">
-                                <rect key="frame" x="20" y="79" width="374" height="529"/>
+                                <rect key="frame" x="20" y="123" width="374" height="485"/>
                                 <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
                                 <color key="textColor" systemColor="labelColor"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -123,12 +123,6 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Separate items with new lines" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" enabled="NO" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rM6-7u-Tnp">
-                                <rect key="frame" x="30" y="29" width="364" height="17"/>
-                                <fontDescription key="fontDescription" type="italicSystem" pointSize="14"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sNi-Aa-240">
                                 <rect key="frame" x="20" y="622" width="151" height="22"/>
                                 <state key="normal" title="Save as recipe" image="square" catalog="system">
@@ -138,12 +132,18 @@
                                     <action selector="didTapIsRecipe:" destination="heA-81-HX2" eventType="touchUpInside" id="fik-G5-QJo"/>
                                 </connections>
                             </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Touch below to type" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" enabled="NO" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HGB-fb-NtO">
-                                <rect key="frame" x="30" y="54" width="364" height="17"/>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" textAlignment="natural" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7oV-hb-DZ0">
+                                <rect key="frame" x="30" y="29" width="364" height="86"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="364" id="29o-kh-ZzY"/>
+                                    <constraint firstAttribute="height" constant="86" id="TVZ-DE-dhq"/>
+                                </constraints>
+                                <string key="text">Touch below to type. Separate items with new lines. Nomz will add the items to your grocery list. If these are ingredients from a recipe you make often, check "Save as recipe" below and provide a name.</string>
+                                <color key="textColor" systemColor="secondaryLabelColor"/>
                                 <fontDescription key="fontDescription" type="italicSystem" pointSize="14"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="WgY-9f-0Yd"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -152,20 +152,17 @@
                             <constraint firstItem="WgY-9f-0Yd" firstAttribute="trailing" secondItem="XpS-u2-aJI" secondAttribute="trailing" constant="20" id="8Cn-W1-6fq"/>
                             <constraint firstItem="XpS-u2-aJI" firstAttribute="leading" secondItem="sNi-Aa-240" secondAttribute="trailing" constant="8" symbolic="YES" id="Cj6-mx-Tln"/>
                             <constraint firstItem="WgY-9f-0Yd" firstAttribute="bottom" secondItem="XpS-u2-aJI" secondAttribute="bottom" constant="20" id="Jpl-j6-YYG"/>
-                            <constraint firstItem="HGB-fb-NtO" firstAttribute="leading" secondItem="WgY-9f-0Yd" secondAttribute="leading" constant="30" id="NKq-fk-E6m"/>
-                            <constraint firstItem="rM6-7u-Tnp" firstAttribute="leading" secondItem="WgY-9f-0Yd" secondAttribute="leading" constant="30" id="Nhs-bv-aRO"/>
                             <constraint firstItem="XpS-u2-aJI" firstAttribute="top" secondItem="zfK-sC-B4g" secondAttribute="bottom" constant="8" symbolic="YES" id="NnI-CU-wi3"/>
+                            <constraint firstItem="WgY-9f-0Yd" firstAttribute="trailing" secondItem="7oV-hb-DZ0" secondAttribute="trailing" constant="20" id="OJ3-td-ZfD"/>
+                            <constraint firstItem="zfK-sC-B4g" firstAttribute="top" secondItem="7oV-hb-DZ0" secondAttribute="bottom" constant="8" symbolic="YES" id="PbA-eY-oxp"/>
                             <constraint firstItem="WgY-9f-0Yd" firstAttribute="bottom" secondItem="sNi-Aa-240" secondAttribute="bottom" constant="26" id="UxH-WA-1o3"/>
                             <constraint firstItem="Vvp-At-GAQ" firstAttribute="leading" secondItem="WgY-9f-0Yd" secondAttribute="leading" constant="20" id="VRN-Nh-tSM"/>
-                            <constraint firstItem="WgY-9f-0Yd" firstAttribute="trailing" secondItem="rM6-7u-Tnp" secondAttribute="trailing" constant="20" id="XIl-Fc-iR3"/>
                             <constraint firstItem="zfK-sC-B4g" firstAttribute="leading" secondItem="WgY-9f-0Yd" secondAttribute="leading" constant="20" id="YWK-4g-Dwb"/>
                             <constraint firstItem="Vvp-At-GAQ" firstAttribute="top" secondItem="t2q-mo-dxV" secondAttribute="top" id="hIg-Hi-Mqx"/>
+                            <constraint firstItem="7oV-hb-DZ0" firstAttribute="leading" secondItem="WgY-9f-0Yd" secondAttribute="leading" constant="30" id="hut-Rq-e1P"/>
                             <constraint firstItem="XpS-u2-aJI" firstAttribute="leading" secondItem="sNi-Aa-240" secondAttribute="trailing" constant="8" symbolic="YES" id="iHJ-Hb-ec0"/>
-                            <constraint firstItem="WgY-9f-0Yd" firstAttribute="trailing" secondItem="HGB-fb-NtO" secondAttribute="trailing" constant="20" id="l4M-fm-CQc"/>
-                            <constraint firstItem="HGB-fb-NtO" firstAttribute="top" secondItem="rM6-7u-Tnp" secondAttribute="bottom" constant="8" symbolic="YES" id="lca-pW-p8W"/>
-                            <constraint firstItem="rM6-7u-Tnp" firstAttribute="top" secondItem="Vvp-At-GAQ" secondAttribute="bottom" constant="8" symbolic="YES" id="nH9-dh-gkg"/>
                             <constraint firstItem="sNi-Aa-240" firstAttribute="leading" secondItem="WgY-9f-0Yd" secondAttribute="leading" constant="20" id="oKd-Ey-vkv"/>
-                            <constraint firstItem="zfK-sC-B4g" firstAttribute="top" secondItem="HGB-fb-NtO" secondAttribute="bottom" constant="8" symbolic="YES" id="oqu-3Y-DY0"/>
+                            <constraint firstItem="7oV-hb-DZ0" firstAttribute="top" secondItem="Vvp-At-GAQ" secondAttribute="bottom" constant="8" symbolic="YES" id="sk8-eL-xqG"/>
                             <constraint firstItem="WgY-9f-0Yd" firstAttribute="trailing" secondItem="Vvp-At-GAQ" secondAttribute="trailing" constant="20" id="y1X-LN-iND"/>
                         </constraints>
                     </view>
@@ -188,8 +185,34 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="670"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Add a recipe link" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Dbs-Ec-QtS">
+                                <rect key="frame" x="20" y="0.0" width="374" height="21"/>
+                                <fontDescription key="fontDescription" type="italicSystem" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" textAlignment="natural" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LBw-qg-3zy">
+                                <rect key="frame" x="30" y="29" width="364" height="86"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="86" id="suk-37-Ixz"/>
+                                </constraints>
+                                <string key="text">Add a link to a recipe online. Nomz will import the recipe and add the ingredients to your grocery list. If you'd just like to save the recipe without changing your grocery list, uncheck "Active".</string>
+                                <color key="textColor" systemColor="secondaryLabelColor"/>
+                                <fontDescription key="fontDescription" type="italicSystem" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Recipe link" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Mxj-HG-raG">
+                                <rect key="frame" x="20" y="123" width="374" height="34"/>
+                                <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uxF-fz-ow1">
-                                <rect key="frame" x="20" y="73" width="70" height="22"/>
+                                <rect key="frame" x="20" y="165" width="70" height="34"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="34" id="Uxg-Xf-uu4"/>
+                                </constraints>
                                 <state key="normal" title="Active" image="checkmark.square" catalog="system">
                                     <color key="titleColor" name="AccentColor"/>
                                 </state>
@@ -197,28 +220,19 @@
                                     <action selector="didTapIsActive:" destination="E2R-Sx-ND8" eventType="touchUpInside" id="gZr-tW-nPh"/>
                                 </connections>
                             </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Add a recipe link" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Dbs-Ec-QtS">
-                                <rect key="frame" x="20" y="0.0" width="374" height="21"/>
-                                <fontDescription key="fontDescription" type="italicSystem" pointSize="17"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Recipe link" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Mxj-HG-raG">
-                                <rect key="frame" x="20" y="29" width="374" height="34"/>
-                                <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits"/>
-                            </textField>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="V6B-UV-9Pu"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
+                            <constraint firstItem="LBw-qg-3zy" firstAttribute="top" secondItem="Dbs-Ec-QtS" secondAttribute="bottom" constant="8" symbolic="YES" id="6O0-Es-yJR"/>
+                            <constraint firstItem="V6B-UV-9Pu" firstAttribute="trailing" secondItem="LBw-qg-3zy" secondAttribute="trailing" constant="20" id="7x2-bJ-Jjg"/>
                             <constraint firstItem="Dbs-Ec-QtS" firstAttribute="top" secondItem="Wd9-Um-a46" secondAttribute="top" id="8QZ-2M-tYP"/>
                             <constraint firstAttribute="trailing" secondItem="Mxj-HG-raG" secondAttribute="trailing" constant="20" symbolic="YES" id="Qa7-jN-fTp"/>
                             <constraint firstAttribute="trailing" secondItem="Dbs-Ec-QtS" secondAttribute="trailing" constant="20" symbolic="YES" id="Z9y-Vs-74n"/>
-                            <constraint firstItem="uxF-fz-ow1" firstAttribute="top" secondItem="Mxj-HG-raG" secondAttribute="bottom" constant="10" id="dff-p8-aWJ"/>
+                            <constraint firstItem="Mxj-HG-raG" firstAttribute="top" secondItem="LBw-qg-3zy" secondAttribute="bottom" constant="8" symbolic="YES" id="bDg-NH-51Y"/>
+                            <constraint firstItem="uxF-fz-ow1" firstAttribute="top" secondItem="Mxj-HG-raG" secondAttribute="bottom" constant="8" symbolic="YES" id="dff-p8-aWJ"/>
                             <constraint firstItem="uxF-fz-ow1" firstAttribute="leading" secondItem="V6B-UV-9Pu" secondAttribute="leading" constant="20" id="ebY-Of-hLa"/>
-                            <constraint firstItem="Mxj-HG-raG" firstAttribute="top" secondItem="Dbs-Ec-QtS" secondAttribute="bottom" constant="8" symbolic="YES" id="qA8-VD-clI"/>
+                            <constraint firstItem="LBw-qg-3zy" firstAttribute="leading" secondItem="V6B-UV-9Pu" secondAttribute="leading" constant="30" id="qkO-Zh-FMY"/>
                             <constraint firstItem="Mxj-HG-raG" firstAttribute="leading" secondItem="Wd9-Um-a46" secondAttribute="leading" constant="20" symbolic="YES" id="wVm-MR-4sM"/>
                             <constraint firstItem="Dbs-Ec-QtS" firstAttribute="leading" secondItem="Wd9-Um-a46" secondAttribute="leading" constant="20" symbolic="YES" id="zvm-iH-wDt"/>
                         </constraints>
@@ -242,6 +256,9 @@
         </namedColor>
         <systemColor name="labelColor">
             <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="secondaryLabelColor">
+            <color red="0.23529411764705882" green="0.23529411764705882" blue="0.2627450980392157" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="secondarySystemBackgroundColor">
             <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
