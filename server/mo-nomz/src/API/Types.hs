@@ -70,7 +70,6 @@ data RecipeImportLinkRequest = RecipeImportLinkRequest
 data GroceryImportBlobRequest = GroceryImportBlobRequest
   { groceryImportBlobRequestContent :: Text
   , groceryImportBlobRequestName    :: Maybe RecipeName
-  , groceryImportBlobRequestActive  :: Bool
   }
   deriving (Eq, Ord, Show)
 

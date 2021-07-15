@@ -176,7 +176,6 @@ struct ImportGroceryListRequest: Codable {
 struct ImportGroceryBlobRequest: Codable {
     let name: String?
     let content: String
-    let active: Bool
 }
 
 struct UpdateRecipeRequest: Codable {

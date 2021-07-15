@@ -35,12 +35,12 @@ class GroceryAddBlobController: UIViewController {
             }
             if isRecipe {
                 if let name = name.text, name != "" {
-                    addGroceryBlob(name: name, content: content, active: true, completion: completion)
+                    addGroceryBlob(name: name, content: content, completion: completion)
                 } else {
                     alertUnsuccessful("To save as a recipe, please provide a name.")
                 }
             } else {
-                addGroceryBlob(name: nil, content: content, active: true, completion: completion)
+                addGroceryBlob(name: nil, content: content, completion: completion)
             }
         } else {
             onCancel?()

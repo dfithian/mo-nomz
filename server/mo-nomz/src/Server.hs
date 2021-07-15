@@ -165,14 +165,14 @@ postGroceryImportBlob token userId GroceryImportBlobRequest {..} = do
   validateUserToken token userId
   ingredients <- either (\e -> throwError err500 { errReasonPhrase = unpack e }) pure $ parseRawIngredients groceryImportBlobRequestContent
   unwrapDb $ withDbConn $ \c -> do
-    groceryItemIds <- Database.insertGroceryItems c userId (ingredientToGroceryItem groceryImportBlobRequestActive <$> ingredients)
+    groceryItemIds <- Database.insertGroceryItems c userId (ingredientToGroceryItem True <$> ingredients)
     case groceryImportBlobRequestName of
       Nothing -> void $ Database.insertGroceryItemIngredients c userId $ zip groceryItemIds ingredients
       Just name -> do
         let recipe = Recipe
               { recipeName = name
               , recipeLink = Nothing
-              , recipeActive = groceryImportBlobRequestActive
+              , recipeActive = True
               , recipeRating = 0
               , recipeNotes = ""
               }
