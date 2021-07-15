@@ -102,7 +102,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="zfK-sC-B4g">
-                                <rect key="frame" x="20" y="123" width="374" height="485"/>
+                                <rect key="frame" x="20" y="137" width="374" height="471"/>
                                 <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
                                 <color key="textColor" systemColor="labelColor"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -115,16 +115,16 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Recipe name" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="XpS-u2-aJI">
-                                <rect key="frame" x="179" y="616" width="215" height="34"/>
+                                <rect key="frame" x="172" y="616" width="222" height="34"/>
                                 <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="215" id="ej6-EA-w0H"/>
-                                </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sNi-Aa-240">
-                                <rect key="frame" x="20" y="622" width="151" height="22"/>
+                                <rect key="frame" x="20" y="622" width="144" height="22"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="144" id="48B-w6-1tB"/>
+                                </constraints>
                                 <state key="normal" title="Save as recipe" image="square" catalog="system">
                                     <color key="titleColor" name="AccentColor"/>
                                 </state>
@@ -133,11 +133,11 @@
                                 </connections>
                             </button>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" textAlignment="natural" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7oV-hb-DZ0">
-                                <rect key="frame" x="30" y="29" width="364" height="86"/>
+                                <rect key="frame" x="30" y="29" width="364" height="100"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="364" id="29o-kh-ZzY"/>
-                                    <constraint firstAttribute="height" constant="86" id="TVZ-DE-dhq"/>
+                                    <constraint firstAttribute="height" constant="100" id="TVZ-DE-dhq"/>
                                 </constraints>
                                 <string key="text">Touch below to type. Separate items with new lines. Nomz will add the items to your grocery list. If these are ingredients from a recipe you make often, check "Save as recipe" below and provide a name.</string>
                                 <color key="textColor" systemColor="secondaryLabelColor"/>
@@ -150,7 +150,6 @@
                         <constraints>
                             <constraint firstItem="WgY-9f-0Yd" firstAttribute="trailing" secondItem="zfK-sC-B4g" secondAttribute="trailing" constant="20" id="3jj-73-gYA"/>
                             <constraint firstItem="WgY-9f-0Yd" firstAttribute="trailing" secondItem="XpS-u2-aJI" secondAttribute="trailing" constant="20" id="8Cn-W1-6fq"/>
-                            <constraint firstItem="XpS-u2-aJI" firstAttribute="leading" secondItem="sNi-Aa-240" secondAttribute="trailing" constant="8" symbolic="YES" id="Cj6-mx-Tln"/>
                             <constraint firstItem="WgY-9f-0Yd" firstAttribute="bottom" secondItem="XpS-u2-aJI" secondAttribute="bottom" constant="20" id="Jpl-j6-YYG"/>
                             <constraint firstItem="XpS-u2-aJI" firstAttribute="top" secondItem="zfK-sC-B4g" secondAttribute="bottom" constant="8" symbolic="YES" id="NnI-CU-wi3"/>
                             <constraint firstItem="WgY-9f-0Yd" firstAttribute="trailing" secondItem="7oV-hb-DZ0" secondAttribute="trailing" constant="20" id="OJ3-td-ZfD"/>
@@ -192,10 +191,10 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" textAlignment="natural" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LBw-qg-3zy">
-                                <rect key="frame" x="30" y="29" width="364" height="86"/>
+                                <rect key="frame" x="30" y="29" width="364" height="100"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="86" id="suk-37-Ixz"/>
+                                    <constraint firstAttribute="height" constant="100" id="suk-37-Ixz"/>
                                 </constraints>
                                 <string key="text">Add a link to a recipe online. Nomz will import the recipe and add the ingredients to your grocery list. If you'd just like to save the recipe without changing your grocery list, uncheck "Active".</string>
                                 <color key="textColor" systemColor="secondaryLabelColor"/>
@@ -203,13 +202,13 @@
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Recipe link" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Mxj-HG-raG">
-                                <rect key="frame" x="20" y="123" width="374" height="34"/>
+                                <rect key="frame" x="20" y="137" width="374" height="34"/>
                                 <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uxF-fz-ow1">
-                                <rect key="frame" x="20" y="165" width="70" height="34"/>
+                                <rect key="frame" x="20" y="179" width="70" height="34"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="34" id="Uxg-Xf-uu4"/>
                                 </constraints>
