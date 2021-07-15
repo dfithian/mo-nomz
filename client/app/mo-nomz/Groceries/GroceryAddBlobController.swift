@@ -8,15 +8,20 @@
 import UIKit
 
 class GroceryAddBlobController: UIViewController {
-    @IBOutlet weak var indicator: UILabel!
-    @IBOutlet weak var inactive: UISwitch!
     @IBOutlet weak var name: UITextField!
     @IBOutlet weak var blob: UITextView!
-    var active: Bool = true
+    @IBOutlet weak var checkbox: UIButton!
+    var isRecipe: Bool = false
     
-    @IBAction func didTapSwitch(_ sender: Any) {
-        if let s = sender as? UISwitch {
-            updateActive(s.isOn)
+    @IBAction func didTapIsRecipe(_ sender: Any?) {
+        if isRecipe {
+            isRecipe = false
+            checkbox.setImage(UIImage(systemName: "square"), for: .normal)
+            name.alpha = 0
+        } else {
+            isRecipe = true
+            checkbox.setImage(UIImage(systemName: "checkmark.square"), for: .normal)
+            name.alpha = 1
         }
     }
     
@@ -28,8 +33,12 @@ class GroceryAddBlobController: UIViewController {
                 }
                 onChange?()
             }
-            if let name = name.text, name != "" {
-                addGroceryBlob(name: name, content: content, active: active, completion: completion)
+            if isRecipe {
+                if let name = name.text, name != "" {
+                    addGroceryBlob(name: name, content: content, active: true, completion: completion)
+                } else {
+                    alertUnsuccessful("To save as a recipe, please provide a name.")
+                }
             } else {
                 addGroceryBlob(name: nil, content: content, active: true, completion: completion)
             }
@@ -38,21 +47,11 @@ class GroceryAddBlobController: UIViewController {
         }
     }
     
-    private func updateActive(_ val: Bool) {
-        if val {
-            active = true
-            indicator.text = "Active"
-        } else {
-            active = false
-            indicator.text = "Saved for later"
-        }
-    }
-    
     override func viewDidLoad() {
+        super.viewDidLoad()
         name.addDoneButtonOnKeyboard()
+        name.alpha = 0
         blob.addDoneButtonOnKeyboard()
         blob.layer.cornerRadius = 10
-        updateActive(true)
-        inactive.isOn = true
     }
 }

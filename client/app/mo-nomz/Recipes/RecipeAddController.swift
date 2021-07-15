@@ -9,16 +9,18 @@ import UIKit
 import SafariServices
 
 class RecipeAddController: UIViewController {
-    @IBOutlet weak var label: UILabel!
     @IBOutlet weak var link: UITextField!
-    @IBOutlet weak var inactive: UISwitch!
-    @IBOutlet weak var indicator: UILabel!
+    @IBOutlet weak var checkbox: UIButton!
     var existingLinks: [String] = []
     var active: Bool = true
     
-    @IBAction func didTapSwitch(_ sender: Any) {
-        if let s = sender as? UISwitch {
-            updateActive(s.isOn)
+    @IBAction func didTapIsActive(_ sender: Any?) {
+        if active {
+            active = false
+            checkbox.setImage(UIImage(systemName: "square"), for: .normal)
+        } else {
+            active = true
+            checkbox.setImage(UIImage(systemName: "checkmark.square"), for: .normal)
         }
     }
 
@@ -36,20 +38,8 @@ class RecipeAddController: UIViewController {
         }
     }
     
-    private func updateActive(_ val: Bool) {
-        if val {
-            active = true
-            indicator.text = "Active"
-        } else {
-            active = false
-            indicator.text = "Saved for later"
-        }
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+    override func viewDidLoad() {
+        super.viewDidLoad()
         link.addDoneButtonOnKeyboard()
-        updateActive(true)
-        inactive.isOn = true
     }
 }
