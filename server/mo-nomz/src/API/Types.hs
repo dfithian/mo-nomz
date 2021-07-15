@@ -88,8 +88,8 @@ data GroceryImportListRequest = GroceryImportListRequest
 data UpdateRecipeRequest = UpdateRecipeRequest
   { updateRecipeRequestId     :: RecipeId
   , updateRecipeRequestActive :: Bool
-  , updateRecipeRequestRating :: Int
-  , updateRecipeRequestNotes  :: Text
+  , updateRecipeRequestRating :: Maybe Int
+  , updateRecipeRequestNotes  :: Maybe Text
   }
   deriving (Eq, Ord, Show)
 

@@ -129,8 +129,8 @@ spec env@Env {..} = describe "Server" $ do
         void $ postUpdateRecipe envAuth envUser UpdateRecipeRequest
           { updateRecipeRequestId = recipeId1
           , updateRecipeRequestActive = False
-          , updateRecipeRequestRating = 0
-          , updateRecipeRequestNotes = ""
+          , updateRecipeRequestRating = Nothing
+          , updateRecipeRequestNotes = Nothing
           }
         getGroceryItems envAuth envUser
       Map.elems items `shouldMatchList` expected
@@ -149,8 +149,8 @@ spec env@Env {..} = describe "Server" $ do
         void $ postUpdateRecipe envAuth envUser UpdateRecipeRequest
           { updateRecipeRequestId = recipeId1
           , updateRecipeRequestActive = False
-          , updateRecipeRequestRating = 0
-          , updateRecipeRequestNotes = ""
+          , updateRecipeRequestRating = Nothing
+          , updateRecipeRequestNotes = Nothing
           }
         void $ postClearGroceryItems envAuth envUser
         getGroceryItems envAuth envUser
@@ -171,15 +171,15 @@ spec env@Env {..} = describe "Server" $ do
         void $ postUpdateRecipe envAuth envUser UpdateRecipeRequest
           { updateRecipeRequestId = recipeId1
           , updateRecipeRequestActive = False
-          , updateRecipeRequestRating = 0
-          , updateRecipeRequestNotes = ""
+          , updateRecipeRequestRating = Nothing
+          , updateRecipeRequestNotes = Nothing
           }
         void $ postClearGroceryItems envAuth envUser
         void $ postUpdateRecipe envAuth envUser UpdateRecipeRequest
           { updateRecipeRequestId = recipeId1
           , updateRecipeRequestActive = True
-          , updateRecipeRequestRating = 0
-          , updateRecipeRequestNotes = ""
+          , updateRecipeRequestRating = Nothing
+          , updateRecipeRequestNotes = Nothing
           }
       runEnv env $ \c -> do
         [groceryItemId7, groceryItemId8, groceryItemId9] <-

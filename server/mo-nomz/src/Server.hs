@@ -185,7 +185,7 @@ postUpdateRecipe token userId UpdateRecipeRequest {..} = do
   validateUserToken token userId
   unwrapDb $ withDbConn $ \c -> do
     Recipe {..} <- maybe (throwIO err404) pure . headMay =<< Database.selectRecipes c userId [updateRecipeRequestId]
-    Database.updateRecipe c userId updateRecipeRequestId updateRecipeRequestRating updateRecipeRequestNotes
+    Database.updateRecipe c userId updateRecipeRequestId (fromMaybe 0 updateRecipeRequestRating) (fromMaybe "" updateRecipeRequestNotes)
     when (updateRecipeRequestActive /= recipeActive) $
       case updateRecipeRequestActive of
         True -> Database.activateRecipe c userId updateRecipeRequestId
