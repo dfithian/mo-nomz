@@ -9,41 +9,18 @@ import UIKit
 import SafariServices
 
 class RecipeAddController: UIViewController {
-    @IBOutlet weak var label: UILabel!
     @IBOutlet weak var link: UITextField!
-    @IBOutlet weak var inactive: UISwitch!
-    @IBOutlet weak var indicator: UILabel!
+    @IBOutlet weak var checkbox: UIButton!
     var existingLinks: [String] = []
     var active: Bool = true
     
-    @IBAction func didTapSearch(_ sender: Any) {
-        var clearSearch: Bool = false
-        var url: URL? = nil
-        if let linkText = link.text {
-            if let linkUrl = URL(string: linkText), ["http", "https"].contains(linkUrl.scheme) {
-                url = linkUrl
-            } else if let escaped = linkText.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) {
-                clearSearch = true
-                url = URL(string: "https://google.com/search?q=\(escaped)")
-            } else {
-                clearSearch = true
-                url = URL(string: "https://google.com")
-            }
+    @IBAction func didTapIsActive(_ sender: Any?) {
+        if active {
+            active = false
+            checkbox.setImage(UIImage(systemName: "square"), for: .normal)
         } else {
-            clearSearch = true
-            url = URL(string: "https://google.com")
-        }
-        if let u = url {
-            if clearSearch {
-                link.text = ""
-            }
-            present(SFSafariViewController(url: u), animated: true, completion: nil)
-        }
-    }
-    
-    @IBAction func didTapSwitch(_ sender: Any) {
-        if let s = sender as? UISwitch {
-            updateActive(!s.isOn)
+            active = true
+            checkbox.setImage(UIImage(systemName: "checkmark.square"), for: .normal)
         }
     }
 
@@ -61,20 +38,8 @@ class RecipeAddController: UIViewController {
         }
     }
     
-    private func updateActive(_ val: Bool) {
-        if val {
-            active = true
-            indicator.text = "Active"
-        } else {
-            active = false
-            indicator.text = "Saved for later"
-        }
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+    override func viewDidLoad() {
+        super.viewDidLoad()
         link.addDoneButtonOnKeyboard()
-        updateActive(true)
-        inactive.isOn = false
     }
 }

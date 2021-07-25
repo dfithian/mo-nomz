@@ -33,7 +33,7 @@ class GroceryController: UIViewController {
         let items: [ReadableGroceryItemWithId] = (groceryVc?.toBuy ?? []) + (groceryVc?.bought ?? [])
         if !items.isEmpty {
             let handler = { [weak self] (action: UIAlertAction) -> Void in self?.clearGroceryItems(completion: self?.loadData) }
-            promptForConfirmation(title: "Clear", message: "Are you sure you want to clear your grocery list?", handler: handler)
+            promptForConfirmation(title: "Clear", message: "Are you sure you want to clear?", handler: handler)
         }
     }
     

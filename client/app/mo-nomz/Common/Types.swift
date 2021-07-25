@@ -125,10 +125,28 @@ struct CreateUserResponse: Codable {
     let apiToken: String
 }
 
+struct ReadableIngredient: Codable {
+    let name: String
+    let quantity: ReadableQuantity
+    let unit: String?
+    
+    func render() -> String {
+        switch (quantity.render(), unit) {
+        case (.some(let q), .some(let u)): return "\(q) \(u) \(name)"
+        case (.some(let q), .none): return "\(q) \(name)"
+        case (.none, .some(let u)): return "\(u) \(name)"
+        case (.none, .none): return name
+        }
+    }
+}
+
 struct ReadableRecipe: Codable {
     let name: String
     let link: String?
     let active: Bool
+    let rating: Int
+    let notes: String
+    let ingredients: [ReadableIngredient]
 }
 
 struct ImportRecipeLinkRequest: Codable {
@@ -156,12 +174,15 @@ struct ImportGroceryListRequest: Codable {
 }
 
 struct ImportGroceryBlobRequest: Codable {
+    let name: String?
     let content: String
 }
 
 struct UpdateRecipeRequest: Codable {
     let id: Int
     let active: Bool
+    let rating: Int
+    let notes: String
 }
 
 struct ListRecipeResponse: Codable {

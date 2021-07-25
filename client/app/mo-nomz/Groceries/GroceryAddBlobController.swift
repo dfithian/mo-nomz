@@ -8,7 +8,22 @@
 import UIKit
 
 class GroceryAddBlobController: UIViewController {
+    @IBOutlet weak var name: UITextField!
     @IBOutlet weak var blob: UITextView!
+    @IBOutlet weak var checkbox: UIButton!
+    var isRecipe: Bool = false
+    
+    @IBAction func didTapIsRecipe(_ sender: Any?) {
+        if isRecipe {
+            isRecipe = false
+            checkbox.setImage(UIImage(systemName: "square"), for: .normal)
+            name.alpha = 0
+        } else {
+            isRecipe = true
+            checkbox.setImage(UIImage(systemName: "checkmark.square"), for: .normal)
+            name.alpha = 1
+        }
+    }
     
     func save(_ onChange: (() -> Void)?, onCancel: (() -> Void)?) {
         if let content = blob.text, !content.isEmpty {
@@ -18,13 +33,25 @@ class GroceryAddBlobController: UIViewController {
                 }
                 onChange?()
             }
-            addGroceryBlob(content: content, completion: completion)
+            if isRecipe {
+                if let name = name.text, name != "" {
+                    addGroceryBlob(name: name, content: content, completion: completion)
+                } else {
+                    alertUnsuccessful("To save as a recipe, please provide a name.")
+                }
+            } else {
+                addGroceryBlob(name: nil, content: content, completion: completion)
+            }
         } else {
             onCancel?()
         }
     }
     
     override func viewDidLoad() {
+        super.viewDidLoad()
+        name.addDoneButtonOnKeyboard()
+        name.alpha = 0
         blob.addDoneButtonOnKeyboard()
+        blob.layer.cornerRadius = 10
     }
 }

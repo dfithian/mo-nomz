@@ -30,7 +30,11 @@ const IndexPage = () => {
         </div>
         <div className="item">
           <p>Add groceries</p>
-          <img style={imgStyles} src="/add-manual.gif" alt="Add Manual" width="150"/>
+          <img style={imgStyles} src="/add-manual.gif" alt="Add Groceries" width="150"/>
+        </div>
+        <div className="item">
+          <p>Add a recipe manually</p>
+          <img style={imgStyles} src="/add-recipe.gif" alt="Add Recipe" width="150"/>
         </div>
         <div className="item">
           <p>Reorder items</p>
@@ -39,6 +43,10 @@ const IndexPage = () => {
         <div className="item">
           <p>Activate a saved recipe</p>
           <img style={imgStyles} src="/activate.gif" alt="Activate" width="150"/>
+        </div>
+        <div className="item">
+          <p>Add notes to a recipe</p>
+          <img style={imgStyles} src="/add-notes.gif" alt="Add notes" width="150"/>
         </div>
       </div>
       <div>

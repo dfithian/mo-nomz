@@ -107,6 +107,8 @@ data Recipe = Recipe
   { recipeName   :: RecipeName
   , recipeLink   :: Maybe RecipeLink
   , recipeActive :: Bool
+  , recipeRating :: Int
+  , recipeNotes  :: Text
   }
   deriving (Eq, Ord, Show)
 
@@ -155,11 +157,8 @@ liter = Unit "l"
 milligram = Unit "mg"
 gram = Unit "g"
 
-ingredientToGroceryItem :: Ingredient -> GroceryItem
-ingredientToGroceryItem = ingredientToGroceryItem' True
-
-ingredientToGroceryItem' :: Bool -> Ingredient -> GroceryItem
-ingredientToGroceryItem' active Ingredient {..} = GroceryItem
+ingredientToGroceryItem :: Bool -> Ingredient -> GroceryItem
+ingredientToGroceryItem active Ingredient {..} = GroceryItem
   { groceryItemName = ingredientName
   , groceryItemQuantity = ingredientQuantity
   , groceryItemUnit = ingredientUnit

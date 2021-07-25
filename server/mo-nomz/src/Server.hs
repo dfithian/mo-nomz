@@ -135,11 +135,13 @@ postRecipeImportLink token userId RecipeImportLinkRequest {..} = do
       when (null scrapedRecipeIngredients) $ throwError err400 { errReasonPhrase = "Failed to parse ingredients" }
       let recipe = Recipe
             { recipeName = scrapedRecipeName
-            , recipeLink = (Just recipeImportLinkRequestLink)
+            , recipeLink = Just recipeImportLinkRequestLink
             , recipeActive = recipeImportLinkRequestActive
+            , recipeRating = 0
+            , recipeNotes = ""
             }
       unwrapDb $ withDbConn $ \c -> do
-        groceryItemIds <- Database.insertGroceryItems c userId (ingredientToGroceryItem <$> scrapedRecipeIngredients)
+        groceryItemIds <- Database.insertGroceryItems c userId (ingredientToGroceryItem recipeImportLinkRequestActive <$> scrapedRecipeIngredients)
         void $ Database.insertRecipe c userId recipe $ zip groceryItemIds scrapedRecipeIngredients
         Database.automergeGroceryItems c userId
   pure NoContent
@@ -153,7 +155,7 @@ postGroceryImportList token userId GroceryImportListRequest {..} = do
         , ingredientUnit = mkUnit groceryImportSingleUnit
         }
   unwrapDb $ withDbConn $ \c -> do
-    groceryItemIds <- Database.insertGroceryItems c userId (ingredientToGroceryItem <$> ingredients)
+    groceryItemIds <- Database.insertGroceryItems c userId (ingredientToGroceryItem True <$> ingredients)
     void $ Database.insertGroceryItemIngredients c userId $ zip groceryItemIds ingredients
     Database.automergeGroceryItems c userId
   pure NoContent
@@ -163,8 +165,18 @@ postGroceryImportBlob token userId GroceryImportBlobRequest {..} = do
   validateUserToken token userId
   ingredients <- either (\e -> throwError err500 { errReasonPhrase = unpack e }) pure $ parseRawIngredients groceryImportBlobRequestContent
   unwrapDb $ withDbConn $ \c -> do
-    groceryItemIds <- Database.insertGroceryItems c userId (ingredientToGroceryItem <$> ingredients)
-    void $ Database.insertGroceryItemIngredients c userId $ zip groceryItemIds ingredients
+    groceryItemIds <- Database.insertGroceryItems c userId (ingredientToGroceryItem True <$> ingredients)
+    case groceryImportBlobRequestName of
+      Nothing -> void $ Database.insertGroceryItemIngredients c userId $ zip groceryItemIds ingredients
+      Just name -> do
+        let recipe = Recipe
+              { recipeName = name
+              , recipeLink = Nothing
+              , recipeActive = True
+              , recipeRating = 0
+              , recipeNotes = ""
+              }
+        void $ Database.insertRecipe c userId recipe $ zip groceryItemIds ingredients
     Database.automergeGroceryItems c userId
   pure NoContent
 
@@ -172,18 +184,25 @@ postUpdateRecipe :: AppM m => Authorization -> UserId -> UpdateRecipeRequest -> 
 postUpdateRecipe token userId UpdateRecipeRequest {..} = do
   validateUserToken token userId
   unwrapDb $ withDbConn $ \c -> do
-    void $ maybe (throwIO err404) pure . headMay =<< Database.selectRecipes c userId [updateRecipeRequestId]
-    case updateRecipeRequestActive of
-      True -> Database.activateRecipe c userId updateRecipeRequestId
-      False -> Database.deactivateRecipe c userId updateRecipeRequestId
+    Recipe {..} <- maybe (throwIO err404) pure . headMay =<< Database.selectRecipes c userId [updateRecipeRequestId]
+    Database.updateRecipe c userId updateRecipeRequestId (fromMaybe 0 updateRecipeRequestRating) (fromMaybe "" updateRecipeRequestNotes)
+    when (updateRecipeRequestActive /= recipeActive) $
+      case updateRecipeRequestActive of
+        True -> Database.activateRecipe c userId updateRecipeRequestId
+        False -> Database.deactivateRecipe c userId updateRecipeRequestId
   pure NoContent
 
 getRecipes :: AppM m => Authorization -> UserId -> m ListRecipeResponse
 getRecipes token userId = do
   validateUserToken token userId
-  recipes <- unwrapDb $ withDbConn $ \c -> Database.selectRecipes c userId []
+  (recipes, ingredients) <- unwrapDb $ withDbConn $ \c -> (,)
+    <$> Database.selectRecipes c userId []
+    <*> Database.selectIngredientsByRecipeIds c userId []
   pure ListRecipeResponse
-    { listRecipeResponseRecipes = mkReadableRecipe <$> recipes
+    { listRecipeResponseRecipes = mapFromList
+        . map (\(recipeId, recipe) -> (recipeId, mkReadableRecipe (findWithDefault [] recipeId ingredients) recipe))
+        . mapToList
+        $ recipes
     }
 
 deleteRecipes :: AppM m => Authorization -> UserId -> DeleteRecipeRequest -> m NoContent

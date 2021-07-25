@@ -110,7 +110,7 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
     
     func editRow(item: ReadableGroceryItemWithId) {
         editItem = item
-        self.performSegue(withIdentifier: "editItem", sender: nil)
+        performSegue(withIdentifier: "editItem", sender: nil)
     }
     
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
@@ -338,13 +338,13 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let vc = segue.destination as? GroceryMergeController, segue.identifier == "mergeItems" {
-            vc.existing = self.mergeItems!.0
-            vc.new = self.mergeItems!.1
-            vc.ids = self.mergeItems!.2
+            vc.existing = mergeItems!.0
+            vc.new = mergeItems!.1
+            vc.ids = mergeItems!.2
             vc.onChange = onChange
         }
         if let vc = segue.destination as? GroceryEditController, segue.identifier == "editItem" {
-            vc.existing = self.editItem!
+            vc.existing = editItem!
             vc.onChange = onChange
         }
     }

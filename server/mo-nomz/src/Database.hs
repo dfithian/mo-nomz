@@ -165,24 +165,34 @@ selectRecipeIngredientIds conn userId recipeIds =
     False -> map fromOnly
       <$> query conn "select id from nomz.ingredient where user_id = ? and recipe_id in ?" (userId, In recipeIds)
 
+selectIngredientsByRecipeIds :: Connection -> UserId -> [RecipeId] -> IO (Map RecipeId [Ingredient])
+selectIngredientsByRecipeIds conn userId recipeIds = do
+  case null recipeIds of
+    True -> do
+      ingredients <- query conn "select recipe_id, name, quantity, unit from nomz.ingredient where user_id = ? and recipe_id is not null order by id" (Only userId)
+      pure $ foldr (\(recipeId, name, quantity, unit) -> insertWith (<>) recipeId [Ingredient name quantity unit]) mempty ingredients
+    False -> do
+      ingredients <- query conn "select recipe_id, name, quantity, unit from nomz.ingredient where user_id = ? and recipe_id is not null and recipe_id in ? order by id" (userId, In recipeIds)
+      pure $ foldr (\(recipeId, name, quantity, unit) -> insertWith (<>) recipeId [Ingredient name quantity unit]) mempty ingredients
+
 selectRecipes :: Connection -> UserId -> [RecipeId] -> IO (Map RecipeId Recipe)
 selectRecipes conn userId recipeIds = do
   case null recipeIds of
     True -> do
-      recipes <- query conn "select id, name, link, active from nomz.recipe where user_id = ? order by id" (Only userId)
-      pure . mapFromList . map (\(recipeId, name, link, active) -> (recipeId, Recipe name link active)) $ recipes
+      recipes <- query conn "select id, name, link, active, rating, notes from nomz.recipe where user_id = ? order by id" (Only userId)
+      pure . mapFromList . map (\(recipeId, name, link, active, rating, notes) -> (recipeId, Recipe name link active rating notes)) $ recipes
     False -> do
-      recipes <- query conn "select id, name, link, active from nomz.recipe where user_id = ? and id in ? order by id" (userId, In recipeIds)
-      pure . mapFromList . map (\(recipeId, name, link, active) -> (recipeId, Recipe name link active)) $ recipes
+      recipes <- query conn "select id, name, link, active, rating, notes from nomz.recipe where user_id = ? and id in ? order by id" (userId, In recipeIds)
+      pure . mapFromList . map (\(recipeId, name, link, active, rating, notes) -> (recipeId, Recipe name link active rating notes)) $ recipes
 
 selectRecipesByLink :: Connection -> UserId -> RecipeLink -> IO (Map RecipeId Recipe)
 selectRecipesByLink conn userId recipeLink = do
-  recipes <- query conn "select id, name, link, active from nomz.recipe where user_id = ? and link = ?" (userId, recipeLink)
-  pure . mapFromList . map (\(recipeId, name, link, active) -> (recipeId, Recipe name link active)) $ recipes
+  recipes <- query conn "select id, name, link, active, rating, notes from nomz.recipe where user_id = ? and link = ?" (userId, recipeLink)
+  pure . mapFromList . map (\(recipeId, name, link, active, rating, notes) -> (recipeId, Recipe name link active rating notes)) $ recipes
 
 insertRecipe :: Connection -> UserId -> Recipe -> [(GroceryItemId, Ingredient)] -> IO RecipeId
 insertRecipe conn userId Recipe {..} ingredients = do
-  [(Only (recipeId :: RecipeId))] <- returning conn "insert into nomz.recipe (user_id, name, link, active) values (?, ?, ?, ?) returning id" [(userId, recipeName, recipeLink, recipeActive)]
+  [(Only (recipeId :: RecipeId))] <- returning conn "insert into nomz.recipe (user_id, name, link, active, rating, notes) values (?, ?, ?, ?, ?, ?) returning id" [(userId, recipeName, recipeLink, recipeActive, recipeRating, recipeNotes)]
   void $ executeMany conn "insert into nomz.ingredient (recipe_id, grocery_id, user_id, name, quantity, unit) values (?, ?, ?, ?, ?, ?)" $
     map (\(groceryItemId, Ingredient {..}) -> (recipeId, groceryItemId, userId, ingredientName, ingredientQuantity, ingredientUnit)) ingredients
   pure recipeId
@@ -198,10 +208,14 @@ deactivateRecipe conn userId recipeId = do
 activateRecipe :: Connection -> UserId -> RecipeId -> IO ()
 activateRecipe conn userId recipeId = do
   (ingredientIds, ingredients) <- unzip <$> selectIngredientsByRecipeId conn userId recipeId
-  groceryItemIds <- insertGroceryItems conn userId (ingredientToGroceryItem <$> ingredients)
+  groceryItemIds <- insertGroceryItems conn userId (ingredientToGroceryItem True <$> ingredients)
   for_ (zip groceryItemIds ingredientIds) $ \(groceryItemId, ingredientId) ->
     void $ execute conn "update nomz.ingredient set grocery_id = ? where user_id = ? and id = ?" (groceryItemId, userId, ingredientId)
   void $ execute conn "update nomz.recipe set active = true where user_id = ? and id = ?" (userId, recipeId)
+
+updateRecipe :: Connection -> UserId -> RecipeId -> Int -> Text -> IO ()
+updateRecipe conn userId recipeId rating notes =
+  void $ execute conn "update nomz.recipe set rating = ?, notes = ? where user_id = ? and id = ?" (rating, notes, userId, recipeId)
 
 deleteRecipes :: Connection -> UserId -> [RecipeId] -> IO ()
 deleteRecipes conn userId recipeIds = do

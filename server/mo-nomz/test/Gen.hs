@@ -66,3 +66,5 @@ arbitraryRecipe = Recipe
   <$> arbitraryRecipeName
   <*> pure Nothing
   <*> pure True
+  <*> pure 0
+  <*> pure ""

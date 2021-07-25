@@ -11,6 +11,8 @@ class GroceryAddController: UIViewController {
     var onChange: (() -> Void)? = nil
     var linkVc: RecipeAddController? = nil
     var bulkVc: GroceryAddBlobController? = nil
+    var linkBeforeHeight: CGFloat? = nil
+    var blobBeforeHeight: CGFloat? = nil
     
     @IBOutlet weak var segment: UISegmentedControl!
     @IBOutlet weak var linkView: UIView!
@@ -32,12 +34,12 @@ class GroceryAddController: UIViewController {
     @IBAction func didTapSegment(_ sender: UISegmentedControl) {
         switch sender.selectedSegmentIndex {
         case 0:
-            self.linkView.alpha = 1
-            self.bulkView.alpha = 0
+            linkView.alpha = 1
+            bulkView.alpha = 0
             break
         default:
-            self.linkView.alpha = 0
-            self.bulkView.alpha = 1
+            linkView.alpha = 0
+            bulkView.alpha = 1
             break
         }
     }
@@ -59,17 +61,17 @@ class GroceryAddController: UIViewController {
     
     @objc func keyboardWillShow(notification: NSNotification) {
         if linkView.alpha == 1 {
-            keyboardWillShowInternal(subview: linkVc!.link, notification: notification)
+            linkBeforeHeight = keyboardWillShowInternal(subview: linkVc!.link, notification: notification)
         } else {
-            keyboardWillShowInternal(subview: bulkVc!.blob, notification: notification)
+            blobBeforeHeight = keyboardWillShowInternal(subview: bulkVc!.blob, notification: notification)
         }
     }
     
     @objc func keyboardWillHide(notification: NSNotification) {
         if linkView.alpha == 1 {
-            keyboardWillHideInternal(notification: notification)
+            keyboardWillHideInternal(heightMay: linkBeforeHeight, notification: notification)
         } else {
-            keyboardWillHideInternal(notification: notification)
+            keyboardWillHideInternal(heightMay: blobBeforeHeight, notification: notification)
         }
     }
     

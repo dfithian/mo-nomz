@@ -1,4 +1,4 @@
-# Mo Nomz
+# Nomz
 
 A Haskell / Swift app which will scrape provided recipe URLs ingredients and aggregate them into grocery lists.
 
