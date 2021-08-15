@@ -7,8 +7,8 @@ import Data.Aeson.TH (deriveJSON)
 import Auth (Authorization)
 import Json (jsonOptions)
 import Types
-  ( GroceryItemId, IngredientName, ReadableQuantity, ReadableUnit, RecipeId, RecipeLink, RecipeName
-  , UserId
+  ( GroceryItemId, IngredientId, IngredientName, ReadableQuantity, ReadableUnit, RecipeId
+  , RecipeLink, RecipeName, UserId
   )
 
 data GetHealthResponse = GetHealthResponse
@@ -93,6 +93,13 @@ data UpdateRecipeRequest = UpdateRecipeRequest
   }
   deriving (Eq, Ord, Show)
 
+data UpdateRecipeIngredientsRequest = UpdateRecipeIngredientsRequest
+  { updateRecipeIngredientsRequestId      :: RecipeId
+  , updateRecipeIngredientsRequestDeletes :: Set IngredientId
+  , updateRecipeIngredientsRequestAdds    :: [ReadableIngredient]
+  }
+  deriving (Eq, Ord, Show)
+
 data DeleteRecipeRequest = DeleteRecipeRequest
   { deleteRecipeRequestIds :: Set RecipeId
   }
@@ -102,16 +109,18 @@ data ReadableIngredient = ReadableIngredient
   { readableIngredientName     :: IngredientName
   , readableIngredientQuantity :: ReadableQuantity
   , readableIngredientUnit     :: Maybe ReadableUnit
+  , readableIngredientOrder    :: Int
   }
   deriving (Eq, Ord, Show)
 
 data ReadableRecipe = ReadableRecipe
-  { readableRecipeName        :: RecipeName
-  , readableRecipeLink        :: Maybe RecipeLink
-  , readableRecipeActive      :: Bool
-  , readableRecipeRating      :: Int
-  , readableRecipeNotes       :: Text
-  , readableRecipeIngredients :: [ReadableIngredient]
+  { readableRecipeName          :: RecipeName
+  , readableRecipeLink          :: Maybe RecipeLink
+  , readableRecipeActive        :: Bool
+  , readableRecipeRating        :: Int
+  , readableRecipeNotes         :: Text
+  , readableRecipeIngredients   :: [ReadableIngredient]
+  , readableRecipeIngredientsV2 :: Map IngredientId ReadableIngredient
   }
   deriving (Eq, Ord, Show)
 
@@ -132,6 +141,7 @@ deriveJSON (jsonOptions "groceryImportSingle") ''GroceryImportSingle
 deriveJSON (jsonOptions "groceryImportListRequest") ''GroceryImportListRequest
 deriveJSON (jsonOptions "groceryImportBlobRequest") ''GroceryImportBlobRequest
 deriveJSON (jsonOptions "updateRecipeRequest") ''UpdateRecipeRequest
+deriveJSON (jsonOptions "updateRecipeIngredientsRequest") ''UpdateRecipeIngredientsRequest
 deriveJSON (jsonOptions "deleteRecipeRequest") ''DeleteRecipeRequest
 deriveJSON (jsonOptions "readableIngredient") ''ReadableIngredient
 deriveJSON (jsonOptions "readableRecipe") ''ReadableRecipe

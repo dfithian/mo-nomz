@@ -7,11 +7,12 @@ import Data.Monoid (Sum(..))
 import API.Types (ReadableGroceryItem(..), ReadableIngredient(..), ReadableRecipe(..))
 import Combinable (Constant(..), Combinable)
 import Types
-  ( GroceryItem(..), Ingredient(..), OrderedGroceryItem(..), Quantity(..), ReadableFraction(..)
-  , ReadableQuantity(..), ReadableUnit(..), Recipe(..), Unit(..), cup, gram, liter, milligram
-  , milliliter, ounce, pinch, tablespoon, teaspoon
+  ( GroceryItem(..), Ingredient(..), OrderedGroceryItem(..), OrderedIngredient(..), Quantity(..)
+  , ReadableFraction(..), ReadableQuantity(..), ReadableUnit(..), Recipe(..), Unit(..), IngredientId
+  , cup, gram, liter, milligram, milliliter, ounce, pinch, tablespoon, teaspoon
   )
 import qualified Combinable as C
+import qualified Data.Map as Map
 
 data UnitHierarchy
   = UnitHierarchyEnd (Unit, Quantity)
@@ -161,19 +162,33 @@ mkGroceryItem ReadableGroceryItem {..} = GroceryItem
   , groceryItemActive = readableGroceryItemActive
   }
 
-mkReadableIngredient :: Ingredient -> ReadableIngredient
-mkReadableIngredient Ingredient {..} = ReadableIngredient
+mkReadableIngredient :: OrderedIngredient -> ReadableIngredient
+mkReadableIngredient OrderedIngredient {..} = ReadableIngredient
   { readableIngredientName = ingredientName
   , readableIngredientQuantity = mkReadableQuantity ingredientQuantity
   , readableIngredientUnit = mkReadableUnit ingredientUnit
+  , readableIngredientOrder = orderedIngredientOrder
+  }
+  where
+    Ingredient {..} = orderedIngredientIngredient
+
+mkOrderedIngredient :: ReadableIngredient -> OrderedIngredient
+mkOrderedIngredient ReadableIngredient {..} = OrderedIngredient
+  { orderedIngredientIngredient = Ingredient
+    { ingredientName = readableIngredientName
+    , ingredientQuantity = mkQuantity readableIngredientQuantity
+    , ingredientUnit = mkUnit readableIngredientUnit
+    }
+  , orderedIngredientOrder = readableIngredientOrder
   }
 
-mkReadableRecipe :: [Ingredient] -> Recipe -> ReadableRecipe
+mkReadableRecipe :: Map IngredientId OrderedIngredient -> Recipe -> ReadableRecipe
 mkReadableRecipe ingredients Recipe {..} = ReadableRecipe
   { readableRecipeName = recipeName
   , readableRecipeLink = recipeLink
   , readableRecipeActive = recipeActive
   , readableRecipeRating = recipeRating
   , readableRecipeNotes = recipeNotes
-  , readableRecipeIngredients = mkReadableIngredient <$> ingredients
+  , readableRecipeIngredients = mkReadableIngredient <$> Map.elems ingredients
+  , readableRecipeIngredientsV2 = mkReadableIngredient <$> ingredients
   }

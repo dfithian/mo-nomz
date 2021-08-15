@@ -96,6 +96,12 @@ data Ingredient = Ingredient
   }
   deriving (Eq, Ord, Show)
 
+data OrderedIngredient = OrderedIngredient
+  { orderedIngredientIngredient :: Ingredient
+  , orderedIngredientOrder      :: Int
+  }
+  deriving (Eq, Ord, Show)
+
 data RawIngredient = RawIngredient
   { rawIngredientName     :: IngredientName
   , rawIngredientQuantity :: RawQuantity

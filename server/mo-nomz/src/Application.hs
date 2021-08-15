@@ -35,9 +35,10 @@ import Foundation
 import Paths_mo_nomz (version)
 import Servant (NomzApi, nomzApi, wholeApi)
 import Server
-  ( deleteGroceryItem, deleteRecipes, getGroceryItems, getHealth, getRecipes, postClearGroceryItems
-  , postCreateUser, postGroceryImportBlob, postGroceryImportList, postMergeGroceryItem
-  , postRecipeImportLink, postUpdateGroceryItem, postUpdateRecipe
+  ( deleteGroceryItem, deleteRecipes, getGroceryItems, getHealth, getRecipe, getRecipes
+  , postClearGroceryItems, postCreateUser, postGroceryImportBlob, postGroceryImportList
+  , postMergeGroceryItem, postRecipeImportLink, postUpdateGroceryItem, postUpdateRecipe
+  , postUpdateRecipeIngredients
   )
 import Settings (AppSettings(..), DatabaseSettings(..), staticSettingsValue)
 
@@ -78,7 +79,9 @@ nomzServer =
     :<|> postGroceryImportBlob
     :<|> postRecipeImportLink
     :<|> postUpdateRecipe
+    :<|> postUpdateRecipeIngredients
     :<|> getRecipes
+    :<|> getRecipe
     :<|> deleteRecipes
 
 migrateDatabase :: App -> IO ()

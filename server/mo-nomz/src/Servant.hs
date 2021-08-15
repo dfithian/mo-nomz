@@ -12,10 +12,11 @@ import Text.Blaze.Renderer.Utf8 (renderMarkup)
 import API.Types
   ( DeleteGroceryItemRequest, DeleteRecipeRequest, GetHealthResponse, GroceryImportBlobRequest
   , GroceryImportListRequest, ListGroceryItemResponse, ListRecipeResponse, MergeGroceryItemRequest
-  , RecipeImportLinkRequest, UpdateGroceryItemRequest, UpdateRecipeRequest, UserCreateResponse
+  , ReadableRecipe, RecipeImportLinkRequest, UpdateGroceryItemRequest
+  , UpdateRecipeIngredientsRequest, UpdateRecipeRequest, UserCreateResponse
   )
 import Auth (Authorized)
-import Types (UserId)
+import Types (RecipeId, UserId)
 
 wholeApi :: Proxy (NomzApi :<|> Raw)
 wholeApi = Proxy
@@ -44,6 +45,8 @@ type NomzApi =
     :<|> Authorized :> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "grocery" :> "blob" :> ReqBody '[JSON] GroceryImportBlobRequest :> PostNoContent
     :<|> Authorized :> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "recipe" :> "link" :> ReqBody '[JSON] RecipeImportLinkRequest :> PostNoContent
     :<|> Authorized :> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "recipe" :> ReqBody '[JSON] UpdateRecipeRequest :> PostNoContent
+    :<|> Authorized :> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "recipe" :> "ingredients" :> ReqBody '[JSON] UpdateRecipeIngredientsRequest :> PostNoContent
     :<|> Authorized :> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "recipe" :> Get '[JSON] ListRecipeResponse
+    :<|> Authorized :> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "recipe" :> Capture "recipe-id" RecipeId :> Get '[JSON] ReadableRecipe
     :<|> Authorized :> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "recipe" :> ReqBody '[JSON] DeleteRecipeRequest :> DeleteNoContent
 
