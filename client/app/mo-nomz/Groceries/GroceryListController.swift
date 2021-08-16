@@ -210,7 +210,7 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
         }
         if let cell = tableView.cellForRow(at: indexPath) as? GroceryListItem {
             let loc = session.location(in: cell)
-            if loc.x >= cell.move.frame.origin.x && loc.x <= cell.move.frame.origin.x + cell.move.frame.width {
+            if loc.x >= (cell.move.frame.origin.x - 10) && loc.x <= cell.move.frame.origin.x + cell.move.frame.width {
                 type = .reorder
             }
         }
@@ -312,7 +312,7 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
                             self.performSegue(withIdentifier: "mergeItems", sender: nil)
                         }
                         let runAndIgnore = { () -> Void in
-                            Persistence.setPreferences(Preferences(dismissedMergeWarning: true))
+                            Persistence.setPreferences(Preferences(dismissedMergeWarning: true, dismissedIngredientMergeWarning: prefs.dismissedIngredientMergeWarning))
                             run()
                         }
                         if !prefs.dismissedMergeWarning {

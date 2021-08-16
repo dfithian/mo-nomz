@@ -51,16 +51,12 @@ class GroceryController: UIViewController {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let vc = segue.destination as? GroceryAddController, segue.identifier == "addGroceries" {
-            vc.onChange = { () -> Void in
-                self.loadData()
-            }
+            vc.onChange = loadData
         }
         if let vc = segue.destination as? GroceryListController, segue.identifier == "embedGroceryItems" {
             groceryVc = vc
             loadData()
-            vc.onChange = { () -> Void in
-                self.loadData()
-            }
+            vc.onChange = loadData
         }
         if let vc = segue.destination as? BannerController, segue.identifier == "embedBanner" {
             vc.height = banner.constraints.filter({ $0.identifier == "height" }).first
