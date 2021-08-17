@@ -7,16 +7,21 @@ import Control.Monad.Logger (logError)
 import Network.URI (parseURI)
 import Servant.API (NoContent(NoContent))
 import Servant.Server (ServerError, err400, err401, err403, err404, err500, errReasonPhrase)
+import qualified Data.Map as Map
 
 import API.Types
   ( DeleteGroceryItemRequest(..), DeleteRecipeRequest(..), GetHealthResponse(..)
   , GroceryImportBlobRequest(..), GroceryImportListRequest(..), GroceryImportSingle(..)
-  , ListGroceryItemResponse(..), ListRecipeResponse(..), MergeGroceryItemRequest(..)
-  , RecipeImportLinkRequest(..), UpdateGroceryItemRequest(..), UpdateRecipeIngredientsRequest(..)
-  , UpdateRecipeRequest(..), UserCreateResponse(..), ReadableRecipe
+  , ListGroceryItemResponse(..), ListRecipeResponse(..), ListRecipeResponseV1(..)
+  , MergeGroceryItemRequest(..), RecipeImportLinkRequest(..), UpdateGroceryItemRequest(..)
+  , UpdateRecipeIngredientsRequest(..), UpdateRecipeRequest(..), UserCreateResponse(..)
+  , ReadableRecipe
   )
 import Auth (Authorization, generateToken, validateToken)
-import Conversion (mkOrderedIngredient, mkQuantity, mkReadableGroceryItem, mkReadableRecipe, mkUnit)
+import Conversion
+  ( mkOrderedIngredient, mkQuantity, mkReadableGroceryItem, mkReadableRecipe, mkReadableRecipeV1
+  , mkUnit
+  )
 import Foundation (AppM, settings, withDbConn)
 import Parser (parseRawIngredients)
 import Scrape (ScrapedRecipe(..), scrapeUrl)
@@ -40,6 +45,10 @@ getHealth = do
   pure GetHealthResponse
     { getHealthResponseStatus = "ok"
     }
+
+getRecentUsers :: AppM m => m Int64
+getRecentUsers =
+  unwrapDb $ withDbConn Database.selectRecentUsers
 
 postCreateUser :: AppM m => m UserCreateResponse
 postCreateUser = do
@@ -201,20 +210,29 @@ postUpdateRecipeIngredients token userId UpdateRecipeIngredientsRequest {..} = d
         deleteIngredientIds = setToList updateRecipeIngredientsRequestDeletes
     Recipe {..} <- maybe (throwIO err400) pure $ lookup updateRecipeIngredientsRequestId existing
     unless (null $ difference (singletonSet updateRecipeIngredientsRequestId) existingIds) $ throwIO err400
-
     Database.unmergeGroceryItems c userId deleteIngredientIds
-
-    -- deletes
     Database.deleteIngredients c userId deleteIngredientIds
-
-    -- adds
     let adds = mkOrderedIngredient <$> updateRecipeIngredientsRequestAdds
-    groceryItemIds <- Database.insertGroceryItems c userId (ingredientToGroceryItem recipeActive . orderedIngredientIngredient <$> adds)
-    Database.insertIngredients c userId updateRecipeIngredientsRequestId $ zip groceryItemIds adds
-
+    case recipeActive of
+      True -> do
+        groceryItemIds <- Database.insertGroceryItems c userId (ingredientToGroceryItem recipeActive . orderedIngredientIngredient <$> adds)
+        Database.insertIngredients c userId updateRecipeIngredientsRequestId $ zip groceryItemIds adds
+      False -> Database.insertIngredientsNoGrocery c userId updateRecipeIngredientsRequestId adds
     Database.automergeGroceryItems c userId
-
   pure NoContent
+
+getRecipesV1 :: AppM m => Authorization -> UserId -> m ListRecipeResponseV1
+getRecipesV1 token userId = do
+  validateUserToken token userId
+  (recipes, ingredients) <- unwrapDb $ withDbConn $ \c -> (,)
+    <$> Database.selectRecipes c userId []
+    <*> Database.selectIngredientsByRecipeIds c userId []
+  pure ListRecipeResponseV1
+    { listRecipeResponseV1Recipes = mapFromList
+        . map (\(recipeId, recipe) -> (recipeId, mkReadableRecipeV1 (orderedIngredientIngredient <$> Map.elems (findWithDefault mempty recipeId ingredients)) recipe))
+        . mapToList
+        $ recipes
+    }
 
 getRecipes :: AppM m => Authorization -> UserId -> m ListRecipeResponse
 getRecipes token userId = do

@@ -110,7 +110,7 @@ extension UIViewController {
     func loadRecipes(completion: ((ListRecipeResponse) -> Void)?) {
         let spinner = startLoading()
         guard let state = Persistence.loadState() else { return }
-        var req = URLRequest(url: URL(string: Configuration.baseURL + "api/v1/user/" + String(state.userId) + "/recipe")!)
+        var req = URLRequest(url: URL(string: Configuration.baseURL + "api/v2/user/" + String(state.userId) + "/recipe")!)
         req.addValue(state.apiToken, forHTTPHeaderField: "X-Mo-Nomz-API-Token")
         req.addValue("application/json", forHTTPHeaderField: "Accept")
         let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in

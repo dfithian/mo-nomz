@@ -147,7 +147,7 @@ struct ReadableRecipe: Codable {
     let active: Bool
     let rating: Int
     let notes: String
-    let ingredientsV2: [Int:ReadableIngredient]
+    let ingredients: [Int:ReadableIngredient]
 }
 
 struct ImportRecipeLinkRequest: Codable {

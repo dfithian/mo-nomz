@@ -35,10 +35,10 @@ import Foundation
 import Paths_mo_nomz (version)
 import Servant (NomzApi, nomzApi, wholeApi)
 import Server
-  ( deleteGroceryItem, deleteRecipes, getGroceryItems, getHealth, getRecipe, getRecipes
-  , postClearGroceryItems, postCreateUser, postGroceryImportBlob, postGroceryImportList
-  , postMergeGroceryItem, postRecipeImportLink, postUpdateGroceryItem, postUpdateRecipe
-  , postUpdateRecipeIngredients
+  ( deleteGroceryItem, deleteRecipes, getGroceryItems, getHealth, getRecentUsers, getRecipe
+  , getRecipes, getRecipesV1, postClearGroceryItems, postCreateUser, postGroceryImportBlob
+  , postGroceryImportList, postMergeGroceryItem, postRecipeImportLink, postUpdateGroceryItem
+  , postUpdateRecipe, postUpdateRecipeIngredients
   )
 import Settings (AppSettings(..), DatabaseSettings(..), staticSettingsValue)
 
@@ -53,12 +53,13 @@ getMetrics = do
         in Html.div (Html.span (Html.toHtml (unwords [key, valueStr])))
   App {..} <- ask
   now <- liftIO getCurrentTime
+  userCount <- getRecentUsers
   current <- liftIO $ sampleAll (appMetricsStore appMetrics)
   healthHtml <- Html.div (Html.span (Html.text "Health OK")) <$ getHealth
   let uptimeHtml = Html.div (Html.span (Html.text $ "Started at " <> pack (formatTime defaultTimeLocale (iso8601DateFormat $ Just "%H:%M:%S") appStarted <> " UTC")))
       refreshHtml = Html.div (Html.span (Html.text $ "Last refreshed at " <> pack (formatTime defaultTimeLocale (iso8601DateFormat $ Just "%H:%M:%S") now <> " UTC")))
       versionHtml = Html.div (Html.span (Html.text $ "Version " <> pack (showVersion version)))
-      metricsHtml = mconcat . map renderMetric . sortOn fst . mapToList $ current
+      metricsHtml = mconcat . map renderMetric . sortOn fst $ mapToList current <> [("recent_users", Gauge userCount)]
   pure $ Html.html $ do
     Html.head $ do
       Html.meta ! HtmlAttr.httpEquiv "Refresh" ! HtmlAttr.content "300"
@@ -80,6 +81,7 @@ nomzServer =
     :<|> postRecipeImportLink
     :<|> postUpdateRecipe
     :<|> postUpdateRecipeIngredients
+    :<|> getRecipesV1
     :<|> getRecipes
     :<|> getRecipe
     :<|> deleteRecipes

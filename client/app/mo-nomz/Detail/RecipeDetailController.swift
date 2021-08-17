@@ -111,7 +111,7 @@ class RecipeDetailController: UIViewController, UITextViewDelegate {
             detailVc = vc
             loadData()
             vc.recipe = r
-            vc.ingredients = r.recipe.ingredientsV2.map({ IngredientWithId(id: $0, ingredient: $1) }).sorted(by: { $0.ingredient.order < $1.ingredient.order })
+            vc.ingredients = r.recipe.ingredients.map({ IngredientWithId(id: $0, ingredient: $1) }).sorted(by: { $0.ingredient.order < $1.ingredient.order })
             vc.onChange = { () -> Void in
                 self.loadData()
                 self.onChange?()
@@ -123,7 +123,7 @@ class RecipeDetailController: UIViewController, UITextViewDelegate {
         guard let r = recipe else { return }
         let completion = { [weak self] (resp: ReadableRecipe) -> Void in
             self?.detailVc?.recipe = RecipeWithId(recipe: resp, id: r.id)
-            self?.detailVc?.ingredients = resp.ingredientsV2.map({ IngredientWithId(id: $0, ingredient: $1) }).sorted(by: { $0.ingredient.order < $1.ingredient.order })
+            self?.detailVc?.ingredients = resp.ingredients.map({ IngredientWithId(id: $0, ingredient: $1) }).sorted(by: { $0.ingredient.order < $1.ingredient.order })
             DispatchQueue.main.async {
                 self?.detailVc?.tableView.reloadData()
             }

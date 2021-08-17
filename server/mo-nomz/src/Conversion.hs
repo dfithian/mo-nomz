@@ -4,7 +4,10 @@ import ClassyPrelude
 
 import Data.Monoid (Sum(..))
 
-import API.Types (ReadableGroceryItem(..), ReadableIngredient(..), ReadableRecipe(..))
+import API.Types
+  ( ReadableGroceryItem(..), ReadableIngredient(..), ReadableIngredientV1(..), ReadableRecipe(..)
+  , ReadableRecipeV1(..)
+  )
 import Combinable (Constant(..), Combinable)
 import Types
   ( GroceryItem(..), Ingredient(..), OrderedGroceryItem(..), OrderedIngredient(..), Quantity(..)
@@ -12,7 +15,6 @@ import Types
   , cup, gram, liter, milligram, milliliter, ounce, pinch, tablespoon, teaspoon
   )
 import qualified Combinable as C
-import qualified Data.Map as Map
 
 data UnitHierarchy
   = UnitHierarchyEnd (Unit, Quantity)
@@ -162,6 +164,13 @@ mkGroceryItem ReadableGroceryItem {..} = GroceryItem
   , groceryItemActive = readableGroceryItemActive
   }
 
+mkReadableIngredientV1 :: Ingredient -> ReadableIngredientV1
+mkReadableIngredientV1 Ingredient {..} = ReadableIngredientV1
+  { readableIngredientV1Name = ingredientName
+  , readableIngredientV1Quantity = mkReadableQuantity ingredientQuantity
+  , readableIngredientV1Unit = mkReadableUnit ingredientUnit
+  }
+
 mkReadableIngredient :: OrderedIngredient -> ReadableIngredient
 mkReadableIngredient OrderedIngredient {..} = ReadableIngredient
   { readableIngredientName = ingredientName
@@ -171,6 +180,13 @@ mkReadableIngredient OrderedIngredient {..} = ReadableIngredient
   }
   where
     Ingredient {..} = orderedIngredientIngredient
+
+mkIngredientV1 :: ReadableIngredientV1 -> Ingredient
+mkIngredientV1 ReadableIngredientV1 {..} = Ingredient
+  { ingredientName = readableIngredientV1Name
+  , ingredientQuantity = mkQuantity readableIngredientV1Quantity
+  , ingredientUnit = mkUnit readableIngredientV1Unit
+  }
 
 mkOrderedIngredient :: ReadableIngredient -> OrderedIngredient
 mkOrderedIngredient ReadableIngredient {..} = OrderedIngredient
@@ -182,6 +198,16 @@ mkOrderedIngredient ReadableIngredient {..} = OrderedIngredient
   , orderedIngredientOrder = readableIngredientOrder
   }
 
+mkReadableRecipeV1 :: [Ingredient] -> Recipe -> ReadableRecipeV1
+mkReadableRecipeV1 ingredients Recipe {..} = ReadableRecipeV1
+  { readableRecipeV1Name = recipeName
+  , readableRecipeV1Link = recipeLink
+  , readableRecipeV1Active = recipeActive
+  , readableRecipeV1Rating = recipeRating
+  , readableRecipeV1Notes = recipeNotes
+  , readableRecipeV1Ingredients = mkReadableIngredientV1 <$> ingredients
+  }
+
 mkReadableRecipe :: Map IngredientId OrderedIngredient -> Recipe -> ReadableRecipe
 mkReadableRecipe ingredients Recipe {..} = ReadableRecipe
   { readableRecipeName = recipeName
@@ -189,6 +215,5 @@ mkReadableRecipe ingredients Recipe {..} = ReadableRecipe
   , readableRecipeActive = recipeActive
   , readableRecipeRating = recipeRating
   , readableRecipeNotes = recipeNotes
-  , readableRecipeIngredients = mkReadableIngredient <$> Map.elems ingredients
-  , readableRecipeIngredientsV2 = mkReadableIngredient <$> ingredients
+  , readableRecipeIngredients = mkReadableIngredient <$> ingredients
   }

@@ -105,6 +105,13 @@ data DeleteRecipeRequest = DeleteRecipeRequest
   }
   deriving (Eq, Ord, Show)
 
+data ReadableIngredientV1 = ReadableIngredientV1
+  { readableIngredientV1Name     :: IngredientName
+  , readableIngredientV1Quantity :: ReadableQuantity
+  , readableIngredientV1Unit     :: Maybe ReadableUnit
+  }
+  deriving (Eq, Ord, Show)
+
 data ReadableIngredient = ReadableIngredient
   { readableIngredientName     :: IngredientName
   , readableIngredientQuantity :: ReadableQuantity
@@ -113,14 +120,28 @@ data ReadableIngredient = ReadableIngredient
   }
   deriving (Eq, Ord, Show)
 
+data ReadableRecipeV1 = ReadableRecipeV1
+  { readableRecipeV1Name        :: RecipeName
+  , readableRecipeV1Link        :: Maybe RecipeLink
+  , readableRecipeV1Active      :: Bool
+  , readableRecipeV1Rating      :: Int
+  , readableRecipeV1Notes       :: Text
+  , readableRecipeV1Ingredients :: [ReadableIngredientV1]
+  }
+  deriving (Eq, Ord, Show)
+
 data ReadableRecipe = ReadableRecipe
-  { readableRecipeName          :: RecipeName
-  , readableRecipeLink          :: Maybe RecipeLink
-  , readableRecipeActive        :: Bool
-  , readableRecipeRating        :: Int
-  , readableRecipeNotes         :: Text
-  , readableRecipeIngredients   :: [ReadableIngredient]
-  , readableRecipeIngredientsV2 :: Map IngredientId ReadableIngredient
+  { readableRecipeName        :: RecipeName
+  , readableRecipeLink        :: Maybe RecipeLink
+  , readableRecipeActive      :: Bool
+  , readableRecipeRating      :: Int
+  , readableRecipeNotes       :: Text
+  , readableRecipeIngredients :: Map IngredientId ReadableIngredient
+  }
+  deriving (Eq, Ord, Show)
+
+data ListRecipeResponseV1 = ListRecipeResponseV1
+  { listRecipeResponseV1Recipes :: Map RecipeId ReadableRecipeV1
   }
   deriving (Eq, Ord, Show)
 
@@ -143,6 +164,9 @@ deriveJSON (jsonOptions "groceryImportBlobRequest") ''GroceryImportBlobRequest
 deriveJSON (jsonOptions "updateRecipeRequest") ''UpdateRecipeRequest
 deriveJSON (jsonOptions "updateRecipeIngredientsRequest") ''UpdateRecipeIngredientsRequest
 deriveJSON (jsonOptions "deleteRecipeRequest") ''DeleteRecipeRequest
+deriveJSON (jsonOptions "readableIngredientV1") ''ReadableIngredientV1
 deriveJSON (jsonOptions "readableIngredient") ''ReadableIngredient
+deriveJSON (jsonOptions "readableRecipeV1") ''ReadableRecipeV1
 deriveJSON (jsonOptions "readableRecipe") ''ReadableRecipe
+deriveJSON (jsonOptions "listRecipeResponseV1") ''ListRecipeResponseV1
 deriveJSON (jsonOptions "listRecipeResponse") ''ListRecipeResponse

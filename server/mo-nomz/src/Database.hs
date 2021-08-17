@@ -31,9 +31,15 @@ insertToken conn token = do
 
 fetchToken :: Connection -> UserId -> IO (Maybe BcryptedAuthorization)
 fetchToken conn userId = do
-  query conn "select token from nomz.user where id = ? and is_valid" (Only userId) >>= \case
+  token <- query conn "select token from nomz.user where id = ? and is_valid" (Only userId) >>= \case
     [(Only token)] -> pure token
     _ -> pure Nothing
+  void $ execute conn "update nomz.user set last_active = now() where id = ?" (Only userId)
+  pure token
+
+selectRecentUsers :: Connection -> IO Int64
+selectRecentUsers conn = maybe 0 fromOnly . headMay
+  <$> query_ conn "select count(id) from nomz.user where last_active >= now() - interval '1 day'"
 
 selectGroceryItems :: Connection -> UserId -> [GroceryItemId] -> IO (Map GroceryItemId OrderedGroceryItem)
 selectGroceryItems conn userId groceryItemIds = do
@@ -156,7 +162,7 @@ insertGroceryItemIngredients conn userId ingredients =
 selectIngredientsByRecipeId :: Connection -> UserId -> RecipeId -> IO (Map IngredientId OrderedIngredient)
 selectIngredientsByRecipeId conn userId recipeId =
   mapFromList . map (\(ingredientId, name, quantity, unit, order) -> (ingredientId, OrderedIngredient (Ingredient name quantity unit) order))
-    <$> query conn "select id, name, quantity, unit, ordering from nomz.ingredient where user_id = ? and recipe_id = ?" (userId, recipeId)
+    <$> query conn "select id, name, quantity, unit, ordering from nomz.ingredient where user_id = ? and recipe_id = ? order by ordering, name" (userId, recipeId)
 
 selectRecipeIngredientIds :: Connection -> UserId -> [RecipeId] -> IO [IngredientId]
 selectRecipeIngredientIds conn userId recipeIds =
@@ -168,8 +174,8 @@ selectRecipeIngredientIds conn userId recipeIds =
 selectIngredientsByRecipeIds :: Connection -> UserId -> [RecipeId] -> IO (Map RecipeId (Map IngredientId OrderedIngredient))
 selectIngredientsByRecipeIds conn userId recipeIds = do
   ingredients <- case null recipeIds of
-    True -> query conn "select recipe_id, id, name, quantity, unit, ordering from nomz.ingredient where user_id = ? and recipe_id is not null order by ordering" (Only userId)
-    False -> query conn "select recipe_id, id, name, quantity, unit, ordering from nomz.ingredient where user_id = ? and recipe_id is not null and recipe_id in ? order by ordering" (userId, In recipeIds)
+    True -> query conn "select recipe_id, id, name, quantity, unit, ordering from nomz.ingredient where user_id = ? and recipe_id is not null order by ordering, name" (Only userId)
+    False -> query conn "select recipe_id, id, name, quantity, unit, ordering from nomz.ingredient where user_id = ? and recipe_id is not null and recipe_id in ? order by ordering, name" (userId, In recipeIds)
   pure
     . map mapFromList
     . Map.fromListWith (<>)
@@ -195,6 +201,11 @@ insertIngredients :: Connection -> UserId -> RecipeId -> [(GroceryItemId, Ordere
 insertIngredients conn userId recipeId ingredients = do
   void $ executeMany conn "insert into nomz.ingredient (recipe_id, grocery_id, user_id, name, quantity, unit, ordering) values (?, ?, ?, ?, ?, ?, ?)" $
     map (\(groceryItemId, OrderedIngredient {..}) -> let Ingredient {..} = orderedIngredientIngredient in (recipeId, groceryItemId, userId, ingredientName, ingredientQuantity, ingredientUnit, orderedIngredientOrder)) ingredients
+
+insertIngredientsNoGrocery :: Connection -> UserId -> RecipeId -> [OrderedIngredient] -> IO ()
+insertIngredientsNoGrocery conn userId recipeId ingredients = do
+  void $ executeMany conn "insert into nomz.ingredient (recipe_id, user_id, name, quantity, unit, ordering) values (?, ?, ?, ?, ?, ?)" $
+    map (\OrderedIngredient {..} -> let Ingredient {..} = orderedIngredientIngredient in (recipeId, userId, ingredientName, ingredientQuantity, ingredientUnit, orderedIngredientOrder)) ingredients
 
 insertRecipe :: Connection -> UserId -> Recipe -> [(GroceryItemId, Ingredient)] -> IO RecipeId
 insertRecipe conn userId Recipe {..} ingredients = do
