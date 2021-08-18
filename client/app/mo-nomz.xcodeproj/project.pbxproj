@@ -45,6 +45,8 @@
 		37B979AF269BD915002B677F /* SimpleSectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37B979AE269BD915002B677F /* SimpleSectionHeader.swift */; };
 		37B979B526C36BAC002B677F /* IngredientEditController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37B979B426C36BAC002B677F /* IngredientEditController.swift */; };
 		37B979B726C8AB38002B677F /* IngredientMergeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37B979B626C8AB37002B677F /* IngredientMergeController.swift */; };
+		37B979B926CC9068002B677F /* IngredientAddController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37B979B826CC9068002B677F /* IngredientAddController.swift */; };
+		37B979BB26CC92F1002B677F /* AddItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37B979BA26CC92F1002B677F /* AddItem.swift */; };
 		37C6714E2627BFB100B5838C /* ErrorHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C6714D2627BFB100B5838C /* ErrorHandler.swift */; };
 		37E1DBEF262FCE3600330C5B /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37E1DBEE262FCE3600330C5B /* ShareViewController.swift */; };
 		37E1DBF6262FCE3600330C5B /* sharing.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 37E1DBEC262FCE3600330C5B /* sharing.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -127,6 +129,8 @@
 		37B979AE269BD915002B677F /* SimpleSectionHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleSectionHeader.swift; sourceTree = "<group>"; };
 		37B979B426C36BAC002B677F /* IngredientEditController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IngredientEditController.swift; sourceTree = "<group>"; };
 		37B979B626C8AB37002B677F /* IngredientMergeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IngredientMergeController.swift; sourceTree = "<group>"; };
+		37B979B826CC9068002B677F /* IngredientAddController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IngredientAddController.swift; sourceTree = "<group>"; };
+		37B979BA26CC92F1002B677F /* AddItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddItem.swift; sourceTree = "<group>"; };
 		37C6714D2627BFB100B5838C /* ErrorHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorHandler.swift; sourceTree = "<group>"; };
 		37E1DBEC262FCE3600330C5B /* sharing.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = sharing.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		37E1DBEE262FCE3600330C5B /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
@@ -264,6 +268,8 @@
 		37B979B326C36B96002B677F /* Detail */ = {
 			isa = PBXGroup;
 			children = (
+				37B979BA26CC92F1002B677F /* AddItem.swift */,
+				37B979B826CC9068002B677F /* IngredientAddController.swift */,
 				37B979B426C36BAC002B677F /* IngredientEditController.swift */,
 				37B979A8269BB370002B677F /* IngredientListItem.swift */,
 				37B979B626C8AB37002B677F /* IngredientMergeController.swift */,
@@ -447,6 +453,7 @@
 				37B979AB269BB3C6002B677F /* RecipeDetailListController.swift in Sources */,
 				372DDC1E262B1BE200CA83A8 /* Confirmation.swift in Sources */,
 				378EBD5126214A41008FF6C4 /* Types.swift in Sources */,
+				37B979BB26CC92F1002B677F /* AddItem.swift in Sources */,
 				3779AB8826330C2C00C332BC /* GroceryAddBlobController.swift in Sources */,
 				372C0DC3265EE30E00DFB791 /* Toolbar.swift in Sources */,
 				379D479326262104003DD2C6 /* GroceryEditController.swift in Sources */,
@@ -458,6 +465,7 @@
 				3774A5A82624769F0029E35D /* Persistence.swift in Sources */,
 				379D479E26264DD5003DD2C6 /* RecipeListItem.swift in Sources */,
 				378EBD5726214DFE008FF6C4 /* GroceryListController.swift in Sources */,
+				37B979B926CC9068002B677F /* IngredientAddController.swift in Sources */,
 				3750F93F2627F42D0094E733 /* Import.swift in Sources */,
 				376095D926212FBB0015B6F0 /* GroceryController.swift in Sources */,
 				37B979B726C8AB38002B677F /* IngredientMergeController.swift in Sources */,
@@ -649,7 +657,7 @@
 				CODE_SIGN_ENTITLEMENTS = "mo-nomz/mo-nomzDebug.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_TEAM = 5A6Y383S44;
 				INFOPLIST_FILE = "mo-nomz/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -732,7 +740,7 @@
 				CODE_SIGN_ENTITLEMENTS = "mo-nomz/mo-nomzRelease.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_TEAM = 5A6Y383S44;
 				INFOPLIST_FILE = "mo-nomz/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -811,7 +819,7 @@
 				CODE_SIGN_ENTITLEMENTS = sharing/sharingDebug.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_TEAM = 5A6Y383S44;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -839,7 +847,7 @@
 				CODE_SIGN_ENTITLEMENTS = sharing/sharingRelease.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_TEAM = 5A6Y383S44;
 				INFOPLIST_FILE = sharing/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (

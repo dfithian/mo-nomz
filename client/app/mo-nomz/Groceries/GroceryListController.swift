@@ -13,7 +13,7 @@ enum DragAndDropType {
     case reorder
 }
 
-struct DragInfo {
+struct GroceryDragInfo {
     let type: DragAndDropType
     let toBuy: Bool
     let indexPath: IndexPath
@@ -215,7 +215,7 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
             }
         }
         do {
-            session.localContext = DragInfo(type: type, toBuy: isToBuy, indexPath: indexPath)
+            session.localContext = GroceryDragInfo(type: type, toBuy: isToBuy, indexPath: indexPath)
             let data = try JSONEncoder().encode(item)
             return [UIDragItem(itemProvider: NSItemProvider(item: data as NSData, typeIdentifier: kUTTypePlainText as String))]
         } catch {
@@ -226,7 +226,7 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
 
     func tableView(_ tableView: UITableView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UITableViewDropProposal {
         let cancel = UITableViewDropProposal(operation: .cancel)
-        guard let info = session.localDragSession?.localContext as? DragInfo else { return cancel }
+        guard let info = session.localDragSession?.localContext as? GroceryDragInfo else { return cancel }
         guard let indexPath = destinationIndexPath else { return cancel }
         guard session.items.count == 1 else { return cancel }
         switch (indexPath.section, info.toBuy) {
@@ -257,7 +257,7 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
 
     func tableView(_ tableView: UITableView, performDropWith coordinator: UITableViewDropCoordinator) {
         guard let indexPath = coordinator.destinationIndexPath else { return }
-        guard let info = coordinator.session.localDragSession?.localContext as? DragInfo else { return }
+        guard let info = coordinator.session.localDragSession?.localContext as? GroceryDragInfo else { return }
         let existing: ReadableGroceryItemWithId
         let newOrder: Int
         switch (indexPath.section, info.type) {

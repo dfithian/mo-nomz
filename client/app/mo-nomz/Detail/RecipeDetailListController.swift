@@ -21,13 +21,17 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
     var mergeItems: (IngredientWithId, IngredientWithId)? = nil
     var editItem: IngredientWithId? = nil
     
+    @objc func didTapAdd(_ sender: Any?) {
+        performSegue(withIdentifier: "addItem", sender: nil)
+    }
+    
     func textViewDidEndEditing(_ textView: UITextView) {
         guard let r = recipe else { return }
         updateRecipe(id: r.id, active: r.recipe.active, rating: r.recipe.rating, notes: textView.text ?? r.recipe.notes, completion: onChange)
     }
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 4
+        return 5
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -35,6 +39,7 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
         case 0: return 1
         case 1: return 1
         case 2: return 1
+        case 4: return 1
         default: return ingredients.count
         }
     }
@@ -55,6 +60,10 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
         case 2:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SimpleSectionHeader
             cell.label.text = "Ingredients"
+            return cell
+        case 4:
+            let cell = tableView.dequeueReusableCell(withIdentifier: "addItem") as! AddItem
+            cell.add.addTarget(self, action: #selector(didTapAdd), for: .touchUpInside)
             return cell
         default:
             let cell = tableView.dequeueReusableCell(withIdentifier: "listItem") as! IngredientListItem
@@ -105,6 +114,9 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
         case 3:
             editItem = ingredients[indexPath.row]
             performSegue(withIdentifier: "editItem", sender: nil)
+            break
+        case 4:
+            performSegue(withIdentifier: "addItem", sender: nil)
             break
         default:
             break
@@ -203,6 +215,11 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
         if let vc = segue.destination as? IngredientEditController, segue.identifier == "editItem" {
             vc.recipe = recipe
             vc.existing = editItem
+            vc.onChange = onChange
+        }
+        if let vc = segue.destination as? IngredientAddController, segue.identifier == "addItem" {
+            vc.recipe = recipe
+            vc.order = recipe?.recipe.ingredients.map({ $0.value.order }).max().map({ $0 + 1 })
             vc.onChange = onChange
         }
     }
