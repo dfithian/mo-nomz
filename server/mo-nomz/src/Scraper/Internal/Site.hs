@@ -60,8 +60,8 @@ siteScrapers = mapFromList
   , ("skinnytaste.com", wprm)
   , ("twopeasandtheirpod.com", wprm)
   , ("sweetandsavorymeals.com", wprm)
+  , ("melskitchencafe.com", wprm)
 
-  , ("melskitchencafe.com", mv)
   , ("glutenfreecuppatea.co.uk", mv)
 
   , ("localmilkblog.com", zl)
