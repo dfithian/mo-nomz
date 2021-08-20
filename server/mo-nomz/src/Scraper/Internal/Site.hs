@@ -75,7 +75,6 @@ siteScrapers = mapFromList
 
   , ("bettycrocker.com", ingredientLi1)
   , ("pillsbury.com", ingredientLi1)
-  , ("epicurious.com", ingredientLi1)
   , ("tasty.co", ingredientLi1)
   , ("seriouseats.com", ingredientLi1)
   , ("simplyrecipes.com", ingredientLi1)
@@ -91,6 +90,8 @@ siteScrapers = mapFromList
 
   , ("delish.com", delish)
   , ("thepioneerwoman.com", delish)
+
+  -- , ("epicurious.com", epicurious)
 
   , ("spoonacular.com", spoonacular)
 
@@ -257,6 +258,11 @@ food52 :: SiteScraper
 food52 = simpleScraper "food52"
   denyAll
   ("div" @: [Scalpel.hasClass "recipe__list--ingredients"] // "li")
+
+-- epicurious :: SiteScraper
+-- epicurious = simpleScraper "epicurious"
+--   denyAll
+--   ("div" @: [Scalpel.hasClass "recipe__ingredient-list"])
 
 thekitchn :: SiteScraper
 thekitchn = simpleScraper "thekitchn"
