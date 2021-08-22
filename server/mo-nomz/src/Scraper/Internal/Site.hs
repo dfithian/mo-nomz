@@ -73,11 +73,12 @@ siteScrapers = mapFromList
 
   , ("yummly.com", yummly)
 
+  , ("simplyrecipes.com", simplyRecipes)
+
   , ("bettycrocker.com", ingredientLi1)
   , ("pillsbury.com", ingredientLi1)
   , ("tasty.co", ingredientLi1)
   , ("seriouseats.com", ingredientLi1)
-  , ("simplyrecipes.com", ingredientLi1)
   , ("lazycatkitchen.com", ingredientLi2)
   , ("deliciouslyella.com", ingredientLi3)
   , ("cookingandcooking.com", ingredientLi5)
@@ -87,6 +88,7 @@ siteScrapers = mapFromList
   , ("everydayannie.com", ingredientLi8)
   , ("notwithoutsalt.com", ingredientLi9)
   , ("chefspencil.com", ingredientLi10)
+  , ("shutterbean.com", ingredientLi11)
 
   , ("delish.com", delish)
   , ("thepioneerwoman.com", delish)
@@ -98,6 +100,8 @@ siteScrapers = mapFromList
   , ("food52.com", food52)
 
   , ("thekitchn.com", thekitchn)
+
+  -- , ("eatwell101.com", eatwell101)
   ]
 
 -- |Get all site scrapers, ordered by most popular first.
@@ -194,6 +198,11 @@ yummly = simpleScraper "yummly"
   denyAll
   ("li" @: [Scalpel.hasClass "IngredientLine"])
 
+simplyRecipes :: SiteScraper
+simplyRecipes = simpleScraper "simplyrecipes"
+  denyAll
+  ("section" @: ["id" @= "section--ingredients_1-0"] // "li")
+
 ingredientLi1 :: SiteScraper
 ingredientLi1 = simpleScraper "ingredientLi1"
   (testScrape ("li" @: [Scalpel.hasClass "ingredient"]))
@@ -244,6 +253,11 @@ ingredientLi10 = simpleScraper "ingredientLi10"
   (testScrape ("table" @: [Scalpel.hasClass "ingredients-table"]))
   ("table" @: [Scalpel.hasClass "ingredients-table"] // "tr")
 
+ingredientLi11 :: SiteScraper
+ingredientLi11 = simpleScraper "ingredientLi11"
+  (testScrape ("blockquote" @: [Scalpel.hasClass "recipe-block"]))
+  ("blockquote" @: [Scalpel.hasClass "recipe-block"] // "li")
+
 delish :: SiteScraper
 delish = simpleScraper "delish"
   acceptAll
@@ -268,3 +282,8 @@ thekitchn :: SiteScraper
 thekitchn = simpleScraper "thekitchn"
   denyAll
   ("ul" @: [Scalpel.hasClass "Recipe__ingredients"] // "li")
+
+-- eatwell101 :: SiteScraper
+-- eatwell101 = simpleScraper "eatwell101"
+--   denyAll
+--   ("div" @: [Scalpel.hasClass "pf-content"] // "li")

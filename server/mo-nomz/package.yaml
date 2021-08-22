@@ -46,6 +46,7 @@ default-extensions:
 
 dependencies:
   - aeson
+  - aeson-pretty
   - attoparsec
   - base
   - blaze-html

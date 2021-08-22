@@ -204,6 +204,7 @@ spec env = describe "Scrape" $ do
     it "handles notwithoutsalt" $ scrapeAndParseConfig defCfg "http://notwithoutsalt.com/brussels-sprout-green-apple-slaw-pickled-cranberries/"
     it "handles chefspencil" $ scrapeAndParseConfig defCfg "https://www.chefspencil.com/recipe/carrot-tarte-tatin/"
     it "handles sweetandsavorymeals" $ scrapeAndParseConfig defCfg "https://sweetandsavorymeals.com/air-fryer-eggplant/"
+    -- it "handles eatwell101" $ scrapeAndParseConfig defCfg "https://www.eatwell101.com/garlic-butter-chicken-bites-asparagus-recipe"
 
   describe "Implicit" $ do
     describe "WPRM" $ do
@@ -220,9 +221,10 @@ spec env = describe "Scrape" $ do
       it "handles ohmyveggies" $ scrapeAndParseConfig defCfg "https://ohmyveggies.com/vegan-snickerdoodles/"
       it "handles thevanillabeanblog" $ scrapeAndParseConfig defCfg "https://www.thevanillabeanblog.com/2021/03/devils-food-cake-buttercream-chocolate-ganache.html"
       it "handles sugarfreelondoner" $ scrapeAndParseConfig defCfg "https://sugarfreelondoner.com/keto-breakfast-cookies/#wprm-recipe-container-20704"
-    describe "Ingredient List 1" $ do
+    describe "Ingredient List" $ do
       it "handles loveandoliveoil" $ scrapeAndParseConfig defCfg "https://www.loveandoliveoil.com/2021/04/stuffed-cherry-amaretti-cookies.html"
       it "handles ohsheglows" $ scrapeAndParseConfig defCfg "https://ohsheglows.com/2020/09/20/perfect-little-pumpkin-cookies-with-spiced-buttercream/"
+      it "handles shutterbean" $ scrapeAndParseConfig defCfg "https://www.shutterbean.com/2019/polenta-cornbread/"
     describe "MV" $ do
       it "handles bakerella" $ scrapeAndParseConfig defCfg "https://www.bakerella.com/secret-ingredient-chocolate-chip-cookies/"
       it "handles mybakingaddiction" $ scrapeAndParseConfig defCfg "https://www.mybakingaddiction.com/flank-steak-tacos/"
@@ -234,3 +236,5 @@ spec env = describe "Scrape" $ do
       it "handles ourbestbites" $ scrapeAndParseConfig (defCfg { requiredIngredients = 1 }) "https://ourbestbites.com/greek-pasta-salad/#tasty-recipes-45657"
     describe "Eating Well" $ do
       it "handles bhg" $ scrapeAndParseConfig defCfg "https://www.bhg.com/recipe/air-fried-ginger-glazed-pork-ribs/"
+    describe "Simply Recipes" $ do
+      it "handles simplyrecipes" $ scrapeAndParseConfig defCfg "https://www.simplyrecipes.com/recipes/easy_green_chicken_chili/"
