@@ -2,12 +2,15 @@ module Scrape (module Scrape, ScrapedRecipe(..)) where
 
 import ClassyPrelude
 
-import Control.Monad.Except (MonadError, throwError)
+import Control.Monad (fail)
+import Control.Monad.Except (MonadError, runExceptT, throwError)
+import Data.Aeson.Encode.Pretty (encodePretty)
 import Data.Text (replace)
-import Network.URI (URI, uriAuthority, uriRegName)
+import Network.URI (URI, parseURI, uriAuthority, uriRegName)
 import qualified Text.HTML.Scalpel as Scalpel
 
-import Foundation (HasManager, manager)
+import Conversion (mkReadableIngredient)
+import Foundation (HasManager, createManager, manager)
 import Parser (parseIngredients)
 import Scraper.Internal.Site (allSiteScrapers, siteScrapers)
 import Scraper.Internal.Types (ScrapedRecipe(..), SiteName(..), SiteScraper(..), title)
@@ -35,3 +38,11 @@ scrapeUrl uri = do
       . sortOn (length . scrapedRecipeIngredients)
       . foldr go mempty
       $ allSiteScrapers
+
+unsafeScrapeUrl :: String -> IO ()
+unsafeScrapeUrl url = do
+  uri <- maybe (fail "Invalid link") pure $ parseURI url
+  man <- createManager
+  ingredients <- either (fail . unpack) (pure . scrapedRecipeIngredients)
+    =<< runExceptT (runReaderT (scrapeUrl uri) man)
+  putStrLn . toStrict . decodeUtf8 . encodePretty . map mkReadableIngredient $ ingredients
