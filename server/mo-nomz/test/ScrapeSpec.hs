@@ -7,6 +7,7 @@ import Control.Monad.Except (runExceptT)
 import Network.URI (parseURI)
 import Test.Hspec
   ( Expectation, Spec, describe, expectationFailure, it, shouldBe, shouldMatchList, shouldSatisfy
+  , xit
   )
 import qualified Data.CaseInsensitive as CI
 
@@ -145,7 +146,8 @@ spec env = describe "Scrape" $ do
   describe "Smoke Test" $ do
     it "handles nytimes" $ scrapeAndParseConfig defCfg "https://cooking.nytimes.com/recipes/1017256-french-onion-soup"
     it "handles yummly" $ scrapeAndParseConfig defCfg "https://www.yummly.com/recipe/Barbecue-Baked-Chicken-Legs-9073054"
-    -- it "handles epicurious" $ scrapeAndParseConfig defCfg "https://www.epicurious.com/recipes/food/views/cashew-chicken"
+    -- this one can't parse anymore
+    xit "handles epicurious" $ scrapeAndParseConfig defCfg "https://www.epicurious.com/recipes/food/views/cashew-chicken"
     it "handles tasty" $ scrapeAndParseConfig defCfg "https://tasty.co/recipe/cilantro-lime-chicken-veggie-rice-meal-prep"
     it "handles delish" $ scrapeAndParseConfig defCfg "https://www.delish.com/cooking/recipe-ideas/a27469808/acai-bowl-recipe/"
     it "handles delish" $ scrapeAndParseConfig defCfg "https://www.delish.com/cooking/a36146989/vegan-tofu-grain-bowl/"
@@ -180,7 +182,8 @@ spec env = describe "Scrape" $ do
     it "handles deliciouslyella" $ scrapeAndParseConfig defCfg "https://deliciouslyella.com/recipes/sweet-potato-black-bean-shepherds-pie/"
     it "handles deliciouseveryday" $ scrapeAndParseConfig defCfg "https://www.deliciouseveryday.com/thai-pumpkin-soup-recipe/"
     it "handles eatyourselfskinny" $ scrapeAndParseConfig defCfg "https://www.eatyourselfskinny.com/easy-beef-stroganoff-casserole/"
-    it "handles iamafoodblog" $ scrapeAndParseConfig defCfg "https://iamafoodblog.com/smashed-brussel-sprouts/"
+    -- gh actions can't get to this url
+    xit "handles iamafoodblog" $ scrapeAndParseConfig defCfg "https://iamafoodblog.com/smashed-brussel-sprouts/"
     it "handles naturallyella" $ scrapeAndParseConfig defCfg "https://naturallyella.com/roasted-sweet-potato-sorghum-salad/"
     it "handles glutenfreecuppatea" $ scrapeAndParseConfig defCfg "https://glutenfreecuppatea.co.uk/2021/04/13/toblerone-millionaires-shortbread-recipe/"
     it "handles thelastfoodblog" $ scrapeAndParseConfig defCfg "https://www.thelastfoodblog.com/spinach-and-ricotta-cannelloni/"
@@ -217,7 +220,8 @@ spec env = describe "Scrape" $ do
       it "handles steamykitchen" $ scrapeAndParseConfig defCfg "https://steamykitchen.com/59396-shrimp-chow-mein.html"
       it "handles sweetashoney" $ scrapeAndParseConfig defCfg "https://www.sweetashoney.co/keto-french-baguette-recipe/"
       it "handles thestayathomechef" $ scrapeAndParseConfig defCfg "https://thestayathomechef.com/taco-casserole/"
-      it "handles cookilicious" $ scrapeAndParseConfig defCfg "https://cookilicious.com/condiments/andhra-style-peanut-tomato-chutney-recipe-for-idli-dosa/"
+      -- this one returns a 404
+      xit "handles cookilicious" $ scrapeAndParseConfig defCfg "https://cookilicious.com/condiments/andhra-style-peanut-tomato-chutney-recipe-for-idli-dosa/"
       it "handles ohmyveggies" $ scrapeAndParseConfig defCfg "https://ohmyveggies.com/vegan-snickerdoodles/"
       it "handles thevanillabeanblog" $ scrapeAndParseConfig defCfg "https://www.thevanillabeanblog.com/2021/03/devils-food-cake-buttercream-chocolate-ganache.html"
       it "handles sugarfreelondoner" $ scrapeAndParseConfig defCfg "https://sugarfreelondoner.com/keto-breakfast-cookies/#wprm-recipe-container-20704"
