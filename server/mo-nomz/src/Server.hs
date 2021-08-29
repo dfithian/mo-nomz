@@ -180,7 +180,7 @@ postGroceryImportBlob token userId GroceryImportBlobRequest {..} = do
       Just name -> do
         let recipe = Recipe
               { recipeName = name
-              , recipeLink = Nothing
+              , recipeLink = groceryImportBlobRequestLink
               , recipeActive = True
               , recipeRating = 0
               , recipeNotes = ""
