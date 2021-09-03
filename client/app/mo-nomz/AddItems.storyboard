@@ -139,11 +139,17 @@
                                     <constraint firstAttribute="width" constant="364" id="29o-kh-ZzY"/>
                                     <constraint firstAttribute="height" constant="100" id="TVZ-DE-dhq"/>
                                 </constraints>
-                                <string key="text">Touch below to type. Separate items with new lines. Nomz will add the items to your grocery list. If these are ingredients from a recipe you make often, check "Save as recipe" below and provide a name.</string>
+                                <string key="text">Touch below to type. Separate items with new lines. Nomz will add the items to your grocery list. If these are ingredients from a recipe you make often, check "Save as recipe" below and provide a name and link.</string>
                                 <color key="textColor" systemColor="secondaryLabelColor"/>
                                 <fontDescription key="fontDescription" type="italicSystem" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Recipe link (optional)" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="D3K-3F-4hw">
+                                <rect key="frame" x="20" y="574" width="374" height="34"/>
+                                <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="WgY-9f-0Yd"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -151,9 +157,12 @@
                             <constraint firstItem="WgY-9f-0Yd" firstAttribute="trailing" secondItem="zfK-sC-B4g" secondAttribute="trailing" constant="20" id="3jj-73-gYA"/>
                             <constraint firstItem="WgY-9f-0Yd" firstAttribute="trailing" secondItem="XpS-u2-aJI" secondAttribute="trailing" constant="20" id="8Cn-W1-6fq"/>
                             <constraint firstItem="WgY-9f-0Yd" firstAttribute="bottom" secondItem="XpS-u2-aJI" secondAttribute="bottom" constant="20" id="Jpl-j6-YYG"/>
-                            <constraint firstItem="XpS-u2-aJI" firstAttribute="top" secondItem="zfK-sC-B4g" secondAttribute="bottom" constant="8" symbolic="YES" id="NnI-CU-wi3"/>
                             <constraint firstItem="WgY-9f-0Yd" firstAttribute="trailing" secondItem="7oV-hb-DZ0" secondAttribute="trailing" constant="20" id="OJ3-td-ZfD"/>
                             <constraint firstItem="zfK-sC-B4g" firstAttribute="top" secondItem="7oV-hb-DZ0" secondAttribute="bottom" constant="8" symbolic="YES" id="PbA-eY-oxp"/>
+                            <constraint firstItem="WgY-9f-0Yd" firstAttribute="trailing" secondItem="D3K-3F-4hw" secondAttribute="trailing" constant="20" id="PpU-bO-a7Z"/>
+                            <constraint firstItem="D3K-3F-4hw" firstAttribute="top" secondItem="zfK-sC-B4g" secondAttribute="bottom" constant="8" symbolic="YES" id="Q5K-pz-RPX"/>
+                            <constraint firstItem="XpS-u2-aJI" firstAttribute="top" secondItem="zfK-sC-B4g" secondAttribute="bottom" constant="8" symbolic="YES" id="QhR-5u-Zkf"/>
+                            <constraint firstItem="XpS-u2-aJI" firstAttribute="top" secondItem="D3K-3F-4hw" secondAttribute="bottom" constant="8" symbolic="YES" id="UKx-Ux-3fm"/>
                             <constraint firstItem="WgY-9f-0Yd" firstAttribute="bottom" secondItem="sNi-Aa-240" secondAttribute="bottom" constant="26" id="UxH-WA-1o3"/>
                             <constraint firstItem="Vvp-At-GAQ" firstAttribute="leading" secondItem="WgY-9f-0Yd" secondAttribute="leading" constant="20" id="VRN-Nh-tSM"/>
                             <constraint firstItem="zfK-sC-B4g" firstAttribute="leading" secondItem="WgY-9f-0Yd" secondAttribute="leading" constant="20" id="YWK-4g-Dwb"/>
@@ -161,15 +170,24 @@
                             <constraint firstItem="7oV-hb-DZ0" firstAttribute="leading" secondItem="WgY-9f-0Yd" secondAttribute="leading" constant="30" id="hut-Rq-e1P"/>
                             <constraint firstItem="XpS-u2-aJI" firstAttribute="leading" secondItem="sNi-Aa-240" secondAttribute="trailing" constant="8" symbolic="YES" id="iHJ-Hb-ec0"/>
                             <constraint firstItem="sNi-Aa-240" firstAttribute="leading" secondItem="WgY-9f-0Yd" secondAttribute="leading" constant="20" id="oKd-Ey-vkv"/>
+                            <constraint firstItem="D3K-3F-4hw" firstAttribute="leading" secondItem="WgY-9f-0Yd" secondAttribute="leading" constant="20" id="qUn-UP-EIw"/>
                             <constraint firstItem="7oV-hb-DZ0" firstAttribute="top" secondItem="Vvp-At-GAQ" secondAttribute="bottom" constant="8" symbolic="YES" id="sk8-eL-xqG"/>
                             <constraint firstItem="WgY-9f-0Yd" firstAttribute="trailing" secondItem="Vvp-At-GAQ" secondAttribute="trailing" constant="20" id="y1X-LN-iND"/>
                         </constraints>
+                        <variation key="default">
+                            <mask key="constraints">
+                                <exclude reference="Q5K-pz-RPX"/>
+                            </mask>
+                        </variation>
                     </view>
                     <navigationItem key="navigationItem" id="gOP-sJ-NPy"/>
                     <connections>
                         <outlet property="blob" destination="zfK-sC-B4g" id="aEU-aA-cDh"/>
                         <outlet property="checkbox" destination="sNi-Aa-240" id="i5k-La-MgC"/>
+                        <outlet property="link" destination="D3K-3F-4hw" id="GD2-98-KPm"/>
                         <outlet property="name" destination="XpS-u2-aJI" id="Ix6-CT-dKl"/>
+                        <outlet property="noRecipeConstraint" destination="QhR-5u-Zkf" id="Q2x-Ww-ew1"/>
+                        <outlet property="recipeConstraint" destination="Q5K-pz-RPX" id="HXT-cY-DPv"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="6rG-Nz-hxd" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

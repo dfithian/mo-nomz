@@ -176,6 +176,7 @@ struct ImportGroceryListRequest: Codable {
 
 struct ImportGroceryBlobRequest: Codable {
     let name: String?
+    let link: String?
     let content: String
 }
 

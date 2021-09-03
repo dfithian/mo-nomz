@@ -9,8 +9,11 @@ import UIKit
 
 class GroceryAddBlobController: UIViewController {
     @IBOutlet weak var name: UITextField!
+    @IBOutlet weak var link: UITextField!
     @IBOutlet weak var blob: UITextView!
     @IBOutlet weak var checkbox: UIButton!
+    @IBOutlet weak var noRecipeConstraint: NSLayoutConstraint!
+    @IBOutlet weak var recipeConstraint: NSLayoutConstraint!
     var isRecipe: Bool = false
     
     @IBAction func didTapIsRecipe(_ sender: Any?) {
@@ -18,10 +21,18 @@ class GroceryAddBlobController: UIViewController {
             isRecipe = false
             checkbox.setImage(UIImage(systemName: "square"), for: .normal)
             name.alpha = 0
+            link.alpha = 0
+            recipeConstraint.isActive = false
+            noRecipeConstraint.isActive = true
+            self.view.layoutIfNeeded()
         } else {
             isRecipe = true
             checkbox.setImage(UIImage(systemName: "checkmark.square"), for: .normal)
             name.alpha = 1
+            link.alpha = 1
+            noRecipeConstraint.isActive = false
+            recipeConstraint.isActive = true
+            self.view.layoutIfNeeded()
         }
     }
     
@@ -35,12 +46,13 @@ class GroceryAddBlobController: UIViewController {
             }
             if isRecipe {
                 if let name = name.text, name != "" {
-                    addGroceryBlob(name: name, content: content, completion: completion)
+                    let link = (link.text != nil && link.text != "" ? link.text : nil)
+                    addGroceryBlob(name: name, link: link, content: content, completion: completion)
                 } else {
                     alertUnsuccessful("To save as a recipe, please provide a name.")
                 }
             } else {
-                addGroceryBlob(name: nil, content: content, completion: completion)
+                addGroceryBlob(name: nil, link: nil, content: content, completion: completion)
             }
         } else {
             onCancel?()
@@ -51,6 +63,8 @@ class GroceryAddBlobController: UIViewController {
         super.viewDidLoad()
         name.addDoneButtonOnKeyboard()
         name.alpha = 0
+        link.addDoneButtonOnKeyboard()
+        link.alpha = 0
         blob.addDoneButtonOnKeyboard()
         blob.layer.cornerRadius = 10
     }

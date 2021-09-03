@@ -162,14 +162,14 @@ extension UIViewController {
         task.resume()
     }
     
-    func addGroceryBlob(name: String?, content: String, completion: (() -> Void)?) {
+    func addGroceryBlob(name: String?, link: String?, content: String, completion: (() -> Void)?) {
         let spinner = startLoading()
         guard let state = Persistence.loadState() else { return }
         var req = URLRequest(url: URL(string: Configuration.baseURL + "api/v1/user/" + String(state.userId) + "/grocery/blob")!)
         req.addValue(state.apiToken, forHTTPHeaderField: "X-Mo-Nomz-API-Token")
         req.addValue("application/json", forHTTPHeaderField: "Content-Type")
         req.httpMethod = "POST"
-        req.httpBody = try? JSONEncoder().encode(ImportGroceryBlobRequest(name: name, content: content))
+        req.httpBody = try? JSONEncoder().encode(ImportGroceryBlobRequest(name: name, link: link, content: content))
         let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
             self.stopLoading(spinner)
             let onUnsuccessfulStatus = { (resp: URLResponse?) -> Void in self.alertUnsuccessful("Couldn't parse items. Please use one line per item, leading with the quantity.")
