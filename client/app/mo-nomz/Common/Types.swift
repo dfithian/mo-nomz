@@ -129,6 +129,7 @@ struct ReadableIngredient: Codable {
     let name: String
     let quantity: ReadableQuantity
     let unit: String?
+    let order: Int
     
     func render() -> String {
         switch (quantity.render(), unit) {
@@ -146,7 +147,7 @@ struct ReadableRecipe: Codable {
     let active: Bool
     let rating: Int
     let notes: String
-    let ingredients: [ReadableIngredient]
+    let ingredients: [Int:ReadableIngredient]
 }
 
 struct ImportRecipeLinkRequest: Codable {
@@ -183,6 +184,12 @@ struct UpdateRecipeRequest: Codable {
     let active: Bool
     let rating: Int
     let notes: String
+}
+
+struct UpdateRecipeIngredientsRequest: Codable {
+    let id: Int
+    let deletes: [Int]
+    let adds: [ReadableIngredient]
 }
 
 struct ListRecipeResponse: Codable {

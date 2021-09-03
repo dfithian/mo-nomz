@@ -13,7 +13,6 @@ class BannerController: UIViewController, GADBannerViewDelegate {
     var height: NSLayoutConstraint?
     
     func bannerView(_ bannerView: GADBannerView, didFailToReceiveAdWithError error: Error) {
-        print("no")
         print(error)
         banner.removeFromSuperview()
         height?.constant = 0

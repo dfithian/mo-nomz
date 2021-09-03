@@ -7,8 +7,8 @@ import Data.Aeson.TH (deriveJSON)
 import Auth (Authorization)
 import Json (jsonOptions)
 import Types
-  ( GroceryItemId, IngredientName, ReadableQuantity, ReadableUnit, RecipeId, RecipeLink, RecipeName
-  , UserId
+  ( GroceryItemId, IngredientId, IngredientName, ReadableQuantity, ReadableUnit, RecipeId
+  , RecipeLink, RecipeName, UserId
   )
 
 data GetHealthResponse = GetHealthResponse
@@ -70,6 +70,7 @@ data RecipeImportLinkRequest = RecipeImportLinkRequest
 data GroceryImportBlobRequest = GroceryImportBlobRequest
   { groceryImportBlobRequestContent :: Text
   , groceryImportBlobRequestName    :: Maybe RecipeName
+  , groceryImportBlobRequestLink    :: Maybe RecipeLink
   }
   deriving (Eq, Ord, Show)
 
@@ -93,8 +94,22 @@ data UpdateRecipeRequest = UpdateRecipeRequest
   }
   deriving (Eq, Ord, Show)
 
+data UpdateRecipeIngredientsRequest = UpdateRecipeIngredientsRequest
+  { updateRecipeIngredientsRequestId      :: RecipeId
+  , updateRecipeIngredientsRequestDeletes :: Set IngredientId
+  , updateRecipeIngredientsRequestAdds    :: [ReadableIngredient]
+  }
+  deriving (Eq, Ord, Show)
+
 data DeleteRecipeRequest = DeleteRecipeRequest
   { deleteRecipeRequestIds :: Set RecipeId
+  }
+  deriving (Eq, Ord, Show)
+
+data ReadableIngredientV1 = ReadableIngredientV1
+  { readableIngredientV1Name     :: IngredientName
+  , readableIngredientV1Quantity :: ReadableQuantity
+  , readableIngredientV1Unit     :: Maybe ReadableUnit
   }
   deriving (Eq, Ord, Show)
 
@@ -102,6 +117,17 @@ data ReadableIngredient = ReadableIngredient
   { readableIngredientName     :: IngredientName
   , readableIngredientQuantity :: ReadableQuantity
   , readableIngredientUnit     :: Maybe ReadableUnit
+  , readableIngredientOrder    :: Int
+  }
+  deriving (Eq, Ord, Show)
+
+data ReadableRecipeV1 = ReadableRecipeV1
+  { readableRecipeV1Name        :: RecipeName
+  , readableRecipeV1Link        :: Maybe RecipeLink
+  , readableRecipeV1Active      :: Bool
+  , readableRecipeV1Rating      :: Int
+  , readableRecipeV1Notes       :: Text
+  , readableRecipeV1Ingredients :: [ReadableIngredientV1]
   }
   deriving (Eq, Ord, Show)
 
@@ -111,7 +137,12 @@ data ReadableRecipe = ReadableRecipe
   , readableRecipeActive      :: Bool
   , readableRecipeRating      :: Int
   , readableRecipeNotes       :: Text
-  , readableRecipeIngredients :: [ReadableIngredient]
+  , readableRecipeIngredients :: Map IngredientId ReadableIngredient
+  }
+  deriving (Eq, Ord, Show)
+
+data ListRecipeResponseV1 = ListRecipeResponseV1
+  { listRecipeResponseV1Recipes :: Map RecipeId ReadableRecipeV1
   }
   deriving (Eq, Ord, Show)
 
@@ -132,7 +163,11 @@ deriveJSON (jsonOptions "groceryImportSingle") ''GroceryImportSingle
 deriveJSON (jsonOptions "groceryImportListRequest") ''GroceryImportListRequest
 deriveJSON (jsonOptions "groceryImportBlobRequest") ''GroceryImportBlobRequest
 deriveJSON (jsonOptions "updateRecipeRequest") ''UpdateRecipeRequest
+deriveJSON (jsonOptions "updateRecipeIngredientsRequest") ''UpdateRecipeIngredientsRequest
 deriveJSON (jsonOptions "deleteRecipeRequest") ''DeleteRecipeRequest
+deriveJSON (jsonOptions "readableIngredientV1") ''ReadableIngredientV1
 deriveJSON (jsonOptions "readableIngredient") ''ReadableIngredient
+deriveJSON (jsonOptions "readableRecipeV1") ''ReadableRecipeV1
 deriveJSON (jsonOptions "readableRecipe") ''ReadableRecipe
+deriveJSON (jsonOptions "listRecipeResponseV1") ''ListRecipeResponseV1
 deriveJSON (jsonOptions "listRecipeResponse") ''ListRecipeResponse

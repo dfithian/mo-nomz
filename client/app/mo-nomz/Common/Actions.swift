@@ -110,7 +110,7 @@ extension UIViewController {
     func loadRecipes(completion: ((ListRecipeResponse) -> Void)?) {
         let spinner = startLoading()
         guard let state = Persistence.loadState() else { return }
-        var req = URLRequest(url: URL(string: Configuration.baseURL + "api/v1/user/" + String(state.userId) + "/recipe")!)
+        var req = URLRequest(url: URL(string: Configuration.baseURL + "api/v2/user/" + String(state.userId) + "/recipe")!)
         req.addValue(state.apiToken, forHTTPHeaderField: "X-Mo-Nomz-API-Token")
         req.addValue("application/json", forHTTPHeaderField: "Accept")
         let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
@@ -118,6 +118,26 @@ extension UIViewController {
             self.defaultWithCompletion(data: data, resp: resp, error: error, completion: {
                 do {
                     let output = try JSONDecoder().decode(ListRecipeResponse.self, from: data!)
+                    completion?(output)
+                } catch {
+                    self.defaultOnError(error)
+                }
+            })
+        })
+        task.resume()
+    }
+    
+    func getRecipe(id: Int, completion: ((ReadableRecipe) -> Void)?) {
+        let spinner = startLoading()
+        guard let state = Persistence.loadState() else { return }
+        var req = URLRequest(url: URL(string: Configuration.baseURL + "api/v1/user/" + String(state.userId) + "/recipe/" + String(id))!)
+        req.addValue(state.apiToken, forHTTPHeaderField: "X-Mo-Nomz-API-Token")
+        req.addValue("application/json", forHTTPHeaderField: "Accept")
+        let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
+            self.stopLoading(spinner)
+            self.defaultWithCompletion(data: data, resp: resp, error: error, completion: {
+                do {
+                    let output = try JSONDecoder().decode(ReadableRecipe.self, from: data!)
                     completion?(output)
                 } catch {
                     self.defaultOnError(error)
@@ -184,6 +204,21 @@ extension UIViewController {
         req.addValue("application/json", forHTTPHeaderField: "Content-Type")
         req.httpMethod = "POST"
         req.httpBody = try? JSONEncoder().encode(UpdateRecipeRequest(id: id, active: active, rating: rating, notes: notes))
+        let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
+            self.stopLoading(spinner)
+            self.defaultWithCompletion(data: data, resp: resp, error: error, completion: completion)
+        })
+        task.resume()
+    }
+    
+    func updateRecipeIngredients(id: Int, deletes: [Int], adds: [ReadableIngredient], completion: (() -> Void)?) {
+        let spinner = startLoading()
+        guard let state = Persistence.loadState() else { return }
+        var req = URLRequest(url: URL(string: Configuration.baseURL + "api/v1/user/" + String(state.userId) + "/recipe/ingredients")!)
+        req.addValue(state.apiToken, forHTTPHeaderField: "X-Mo-Nomz-API-Token")
+        req.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        req.httpMethod = "POST"
+        req.httpBody = try? JSONEncoder().encode(UpdateRecipeIngredientsRequest(id: id, deletes: deletes, adds: adds))
         let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
             self.stopLoading(spinner)
             self.defaultWithCompletion(data: data, resp: resp, error: error, completion: completion)

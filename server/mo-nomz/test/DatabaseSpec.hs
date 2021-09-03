@@ -9,7 +9,7 @@ import qualified Data.Map as Map
 import Auth (BcryptedAuthorization(..))
 import Gen (arbitraryGroceryItem, arbitraryIngredient, arbitraryOrderedGroceryItem, arbitraryRecipe)
 import TestEnv (Env(..), runEnv)
-import Types (OrderedGroceryItem(..), ingredientToGroceryItem)
+import Types (OrderedGroceryItem(..), OrderedIngredient(..), ingredientToGroceryItem)
 
 import Database
 
@@ -90,7 +90,7 @@ spec env@Env {..} = describe "Database" $ do
       groceryItemIds <- insertGroceryItems c envUser items
       recipeId <- insertRecipe c envUser recipe (zip groceryItemIds ingredients)
       actualRecipes <- Map.elems <$> selectRecipes c envUser []
-      (ingredientIds, actualIngredients) <- unzip <$> selectIngredientsByRecipeId c envUser recipeId
+      (ingredientIds, actualIngredients) <- unzip . mapToList . map orderedIngredientIngredient <$> selectIngredientsByRecipeId c envUser recipeId
       actualIngredientIds <- selectRecipeIngredientIds c envUser [recipeId]
       pure (actualRecipes, actualIngredients, ingredientIds, actualIngredientIds)
     actualRecipes `shouldMatchList` [recipe]

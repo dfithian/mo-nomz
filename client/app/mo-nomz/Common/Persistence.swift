@@ -9,6 +9,7 @@ import Foundation
 
 struct Preferences {
     let dismissedMergeWarning: Bool
+    let dismissedIngredientMergeWarning: Bool
 }
 
 struct State {
@@ -55,9 +56,11 @@ class Persistence {
     }
     static func loadPreferencess() -> Preferences {
         let dismissedMergeWarning = UserDefaults.shared.bool(forKey: "dismissedMergeWarning")
-        return Preferences(dismissedMergeWarning: dismissedMergeWarning)
+        let dismissedIngredientMergeWarning = UserDefaults.shared.bool(forKey: "dismissedIngredientMergeWarning")
+        return Preferences(dismissedMergeWarning: dismissedMergeWarning, dismissedIngredientMergeWarning: dismissedIngredientMergeWarning)
     }
     static func setPreferences(_ preferences: Preferences) {
         UserDefaults.shared.set(preferences.dismissedMergeWarning, forKey: "dismissedMergeWarning")
+        UserDefaults.shared.set(preferences.dismissedIngredientMergeWarning, forKey: "dismissedIngredientMergeWarning")
     }
 }
