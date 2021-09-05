@@ -160,9 +160,13 @@ insertGroceryItemIngredients conn userId ingredients =
     $ ingredients
 
 selectIngredientsByRecipeId :: Connection -> UserId -> RecipeId -> IO (Map IngredientId OrderedIngredient)
-selectIngredientsByRecipeId conn userId recipeId =
-  mapFromList . map (\(ingredientId, name, quantity, unit, order) -> (ingredientId, OrderedIngredient (Ingredient name quantity unit) order))
-    <$> query conn "select id, name, quantity, unit, ordering from nomz.ingredient where user_id = ? and recipe_id = ? order by ordering, name" (userId, recipeId)
+selectIngredientsByRecipeId conn userId recipeId = do
+  ingredients <- query conn "select id, name, quantity, unit, ordering from nomz.ingredient where user_id = ? and recipe_id = ? order by ordering, name" (userId, recipeId)
+  pure
+    . mapFromList
+    . map (\(defaultOrder, (ingredientId, name, quantity, unit, order)) -> (ingredientId, OrderedIngredient (Ingredient name quantity unit) (fromMaybe defaultOrder order)))
+    . zip [1..]
+    $ ingredients
 
 selectRecipeIngredientIds :: Connection -> UserId -> [RecipeId] -> IO [IngredientId]
 selectRecipeIngredientIds conn userId recipeIds =
@@ -179,7 +183,8 @@ selectIngredientsByRecipeIds conn userId recipeIds = do
   pure
     . map mapFromList
     . Map.fromListWith (<>)
-    . map (\(recipeId, ingredientId, name, quantity, unit, order) -> (recipeId, [(ingredientId, OrderedIngredient (Ingredient name quantity unit) order)]))
+    . map (\(defaultOrder, (recipeId, ingredientId, name, quantity, unit, order)) -> (recipeId, [(ingredientId, OrderedIngredient (Ingredient name quantity unit) (fromMaybe defaultOrder order))]))
+    . zip [1..]
     $ ingredients
 
 selectRecipes :: Connection -> UserId -> [RecipeId] -> IO (Map RecipeId Recipe)
