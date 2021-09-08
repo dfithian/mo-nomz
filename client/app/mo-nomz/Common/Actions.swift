@@ -63,21 +63,6 @@ extension UIViewController {
         task.resume()
     }
     
-    func mergeGroceryItems(groceryItemIds: [Int], groceryItem: ReadableGroceryItem, completion: (() -> Void)?) {
-        let spinner = startLoading()
-        guard let state = Persistence.loadState() else { return }
-        var req = URLRequest(url: URL(string: Configuration.baseURL + "api/v1/user/" + String(state.userId) + "/grocery/merge")!)
-        req.addValue(state.apiToken, forHTTPHeaderField: "X-Mo-Nomz-API-Token")
-        req.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        req.httpMethod = "POST"
-        req.httpBody = try? JSONEncoder().encode(MergeGroceryItemRequest(ids: groceryItemIds, name: groceryItem.name, quantity: groceryItem.quantity, unit: groceryItem.unit, active: groceryItem.active, order: groceryItem.order))
-        let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
-            self.stopLoading(spinner)
-            self.defaultWithCompletion(data: data, resp: resp, error: error, completion: completion)
-        })
-        task.resume()
-    }
-    
     func deleteGroceryItems(groceryItemIds: [Int], completion: (() -> Void)?) {
         let spinner = startLoading()
         guard let state = Persistence.loadState() else { return }

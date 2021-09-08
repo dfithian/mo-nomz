@@ -13,12 +13,11 @@ struct IngredientWithId: Codable {
     let ingredient: ReadableIngredient
 }
 
-class RecipeDetailListController: UITableViewController, UITextViewDelegate, UITableViewDragDelegate, UITableViewDropDelegate {
+class RecipeDetailListController: UITableViewController, UITextViewDelegate {
     var recipe: RecipeWithId? = nil
     var ingredients: [IngredientWithId] = []
     var onChange: (() -> Void)? = nil
     var beforeHeight: CGFloat? = nil
-    var mergeItems: (IngredientWithId, IngredientWithId)? = nil
     var editItem: IngredientWithId? = nil
     
     @objc func didTapAdd(_ sender: Any?) {
@@ -123,95 +122,7 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
         }
     }
     
-    func tableView(_ tableView: UITableView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
-        let item: IngredientWithId
-        switch indexPath.section {
-        case 3:
-            item = ingredients[indexPath.row]
-            break
-        default:
-            return []
-        }
-        do {
-            let data = try JSONEncoder().encode(item)
-            return [UIDragItem(itemProvider: NSItemProvider(item: data as NSData, typeIdentifier: kUTTypePlainText as String))]
-        } catch {
-            print("Failed to initiate drag and drop \(error)")
-        }
-        return []
-    }
-
-    func tableView(_ tableView: UITableView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UITableViewDropProposal {
-        let cancel = UITableViewDropProposal(operation: .cancel)
-        guard let indexPath = destinationIndexPath else { return cancel }
-        guard session.items.count == 1 else { return cancel }
-        switch indexPath.section {
-        case 3:
-            if indexPath.row < ingredients.count {
-                tableView.scrollToRow(at: indexPath, at: .none, animated: true)
-            } else {
-                tableView.scrollToRow(at: IndexPath(row: ingredients.count - 1, section: indexPath.section), at: .none, animated: true)
-            }
-            break
-        default: return cancel
-        }
-        if tableView.hasActiveDrag {
-            return UITableViewDropProposal(operation: .move, intent: .insertIntoDestinationIndexPath)
-        }
-        return cancel
-    }
-
-    func tableView(_ tableView: UITableView, performDropWith coordinator: UITableViewDropCoordinator) {
-        guard let indexPath = coordinator.destinationIndexPath else { return }
-        let existing: IngredientWithId
-        switch indexPath.section {
-        case 3:
-            existing = ingredients[indexPath.row]
-            break
-        default:
-            return
-        }
-        coordinator.session.loadObjects(ofClass: NSString.self, completion: { items in
-            guard let strings = items as? [String] else { return }
-            for string in strings {
-                do {
-                    let new = try JSONDecoder().decode(IngredientWithId.self, from: string.data(using: .utf8)!)
-                    let prefs = Persistence.loadPreferencess()
-                    let run = { () -> Void in
-                        self.mergeItems = (existing, new)
-                        self.performSegue(withIdentifier: "mergeItems", sender: nil)
-                    }
-                    let runAndIgnore = { () -> Void in
-                        Persistence.setPreferences(Preferences(dismissedMergeWarning: prefs.dismissedMergeWarning, dismissedIngredientMergeWarning: true))
-                        run()
-                    }
-                    if !prefs.dismissedIngredientMergeWarning {
-                        self.promptForConfirmationThree(
-                            title: "Warning",
-                            message: "Merging items may result in unexpected grocery list behavior. You may want to deactivate this recipe first.",
-                            option1Button: "OK",
-                            option1Handler: { _ in run() },
-                            option2Button: "Ignore future warnings",
-                            option2Handler: { _ in runAndIgnore() }
-                        )
-                    } else {
-                        run()
-                    }
-                    break
-                } catch {
-                    print("Failed completing drag and drop \(error)")
-                }
-            }
-        })
-    }
-    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let vc = segue.destination as? IngredientMergeController, segue.identifier == "mergeItems" {
-            vc.recipe = recipe
-            vc.existing = mergeItems!.0
-            vc.new = mergeItems!.1
-            vc.onChange = onChange
-        }
         if let vc = segue.destination as? IngredientEditController, segue.identifier == "editItem" {
             vc.recipe = recipe
             vc.existing = editItem
@@ -222,12 +133,5 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
             vc.order = recipe?.recipe.ingredients.map({ $0.value.order }).max().map({ $0 + 1 })
             vc.onChange = onChange
         }
-    }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        tableView.dragDelegate = self
-        tableView.dropDelegate = self
-        tableView.dragInteractionEnabled = true
     }
 }

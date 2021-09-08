@@ -107,15 +107,6 @@ struct UpdateGroceryItemRequest: Codable {
     let order: Int
 }
 
-struct MergeGroceryItemRequest: Codable {
-    let ids: [Int]
-    let name: String
-    let quantity: ReadableQuantity
-    let unit: String?
-    let active: Bool
-    let order: Int
-}
-
 struct DeleteGroceryItemRequest: Codable {
     let ids: [Int]
 }

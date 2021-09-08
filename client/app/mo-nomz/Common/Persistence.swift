@@ -8,8 +8,7 @@
 import Foundation
 
 struct Preferences {
-    let dismissedMergeWarning: Bool
-    let dismissedIngredientMergeWarning: Bool
+    let dismissedReorderTip: Bool
 }
 
 struct State {
@@ -55,12 +54,10 @@ class Persistence {
         SecItemAdd(query, &ref)
     }
     static func loadPreferencess() -> Preferences {
-        let dismissedMergeWarning = UserDefaults.shared.bool(forKey: "dismissedMergeWarning")
-        let dismissedIngredientMergeWarning = UserDefaults.shared.bool(forKey: "dismissedIngredientMergeWarning")
-        return Preferences(dismissedMergeWarning: dismissedMergeWarning, dismissedIngredientMergeWarning: dismissedIngredientMergeWarning)
+        let dismissedReorderTip = UserDefaults.shared.bool(forKey: "dismissedReorderTip")
+        return Preferences(dismissedReorderTip: dismissedReorderTip)
     }
     static func setPreferences(_ preferences: Preferences) {
-        UserDefaults.shared.set(preferences.dismissedMergeWarning, forKey: "dismissedMergeWarning")
-        UserDefaults.shared.set(preferences.dismissedIngredientMergeWarning, forKey: "dismissedIngredientMergeWarning")
+        UserDefaults.shared.set(preferences.dismissedReorderTip, forKey: "dismissedReorderTip")
     }
 }
