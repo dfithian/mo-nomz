@@ -10,17 +10,18 @@ import Servant.Server (ServerError, err400, err401, err403, err404, err500, errR
 import qualified Data.Map as Map
 
 import API.Types
-  ( DeleteGroceryItemRequest(..), DeleteRecipeRequest(..), GetHealthResponse(..)
-  , GroceryImportBlobRequest(..), GroceryImportListRequest(..), GroceryImportSingle(..)
-  , ListGroceryItemResponse(..), ListRecipeResponse(..), ListRecipeResponseV1(..)
-  , MergeGroceryItemRequest(..), RecipeImportLinkRequest(..), UpdateGroceryItemRequest(..)
-  , UpdateRecipeIngredientsRequest(..), UpdateRecipeRequest(..), UserCreateResponse(..)
-  , ReadableRecipe
+  ( DeleteGroceryItemRequest(..), DeleteRecipeRequest(..), ExportGroceryItem(..)
+  , ExportIngredient(..), ExportRecipe(..), ExportResponse(..), GetHealthResponse(..)
+  , GroceryImportBlobRequest(..), ListGroceryItemResponse(..), ListRecipeResponse(..)
+  , ListRecipeResponseV1(..), MergeGroceryItemRequest(..), ParseBlobRequest(..)
+  , ParseBlobResponse(..), ParseLinkRequest(..), ParseLinkResponse(..), RecipeImportLinkRequest(..)
+  , UpdateGroceryItemRequest(..), UpdateRecipeIngredientsRequest(..), UpdateRecipeRequest(..)
+  , UserCreateResponse(..), ReadableRecipe
   )
 import Auth (Authorization, generateToken, validateToken)
 import Conversion
-  ( mkOrderedIngredient, mkQuantity, mkReadableGroceryItem, mkReadableRecipe, mkReadableRecipeV1
-  , mkUnit
+  ( mkOrderedIngredient, mkQuantity, mkReadableGroceryItem, mkReadableIngredient, mkReadableQuantity
+  , mkReadableRecipe, mkReadableRecipeV1, mkReadableUnit, mkUnit
   )
 import Foundation (AppM, settings, withDbConn)
 import Parser (parseRawIngredients)
@@ -155,20 +156,6 @@ postRecipeImportLink token userId RecipeImportLinkRequest {..} = do
         Database.automergeGroceryItems c userId
   pure NoContent
 
-postGroceryImportList :: AppM m => Authorization -> UserId -> GroceryImportListRequest -> m NoContent
-postGroceryImportList token userId GroceryImportListRequest {..} = do
-  validateUserToken token userId
-  let ingredients = flip map groceryImportListRequestItems $ \GroceryImportSingle {..} -> Ingredient
-        { ingredientName = groceryImportSingleName
-        , ingredientQuantity = mkQuantity groceryImportSingleQuantity
-        , ingredientUnit = mkUnit groceryImportSingleUnit
-        }
-  unwrapDb $ withDbConn $ \c -> do
-    groceryItemIds <- Database.insertGroceryItems c userId (ingredientToGroceryItem True <$> ingredients)
-    void $ Database.insertGroceryItemIngredients c userId $ zip groceryItemIds ingredients
-    Database.automergeGroceryItems c userId
-  pure NoContent
-
 postGroceryImportBlob :: AppM m => Authorization -> UserId -> GroceryImportBlobRequest -> m NoContent
 postGroceryImportBlob token userId GroceryImportBlobRequest {..} = do
   validateUserToken token userId
@@ -267,3 +254,66 @@ deleteRecipes token userId DeleteRecipeRequest {..} = do
     Database.unmergeGroceryItems c userId ingredientIds
     Database.deleteRecipes c userId (setToList deleteRecipeRequestIds)
   pure NoContent
+
+-- parsing only
+postParseBlob :: AppM m => Authorization -> UserId -> ParseBlobRequest -> m ParseBlobResponse
+postParseBlob token userId ParseBlobRequest {..} = do
+  validateUserToken token userId
+  ingredients <- either (\e -> throwError err500 { errReasonPhrase = unpack e }) pure $ parseRawIngredients parseBlobRequestContent
+  pure ParseBlobResponse
+    { parseBlobResponseIngredients = mkReadableIngredient <$> zipWith OrderedIngredient ingredients [1..]
+    }
+
+postParseLink :: AppM m => Authorization -> UserId -> ParseLinkRequest -> m ParseLinkResponse
+postParseLink token userId ParseLinkRequest {..} = do
+  validateUserToken token userId
+  uri <- maybe (throwError err400 { errReasonPhrase = "Invalid link" }) pure $ parseURI (unpack $ unRecipeLink parseLinkRequestLink)
+  ScrapedRecipe {..} <- mapError (\e -> err500 { errReasonPhrase = unpack e }) $ scrapeUrl uri
+  when (null scrapedRecipeIngredients) $ throwError err400 { errReasonPhrase = "Failed to parse ingredients" }
+  pure ParseLinkResponse
+    { parseLinkResponseName = scrapedRecipeName
+    , parseLinkResponseIngredients = mkReadableIngredient <$> zipWith OrderedIngredient scrapedRecipeIngredients [1..]
+    }
+
+-- export data
+getExport :: AppM m => Authorization -> UserId -> m ExportResponse
+getExport token userId = do
+  validateUserToken token userId
+  (groceries, recipes, ingredients) <- unwrapDb $ withDbConn $ \c -> do
+    groceries <- Database.selectGroceryItems c userId []
+    recipes <- Database.selectRecipes c userId []
+    ingredients <- Database.selectIngredients c userId []
+    Database.exportConfirm c userId
+    pure (groceries, recipes, ingredients)
+  pure ExportResponse
+    { exportResponseGroceries = map (\OrderedGroceryItem {..} ->
+        let GroceryItem {..} = orderedGroceryItemItem
+        in ExportGroceryItem
+          { exportGroceryItemName = groceryItemName
+          , exportGroceryItemQuantity = mkReadableQuantity groceryItemQuantity
+          , exportGroceryItemUnit = mkReadableUnit groceryItemUnit
+          , exportGroceryItemActive = groceryItemActive
+          , exportGroceryItemOrder = orderedGroceryItemOrder
+          }
+      ) groceries
+    , exportResponseRecipes = map (\Recipe {..} ->
+        ExportRecipe
+          { exportRecipeName = recipeName
+          , exportRecipeLink = recipeLink
+          , exportRecipeActive = recipeActive
+          , exportRecipeRating = recipeRating
+          , exportRecipeNotes = recipeNotes
+          }
+      ) recipes
+    , exportResponseIngredients = map (\(recipeId, groceryItemId, OrderedIngredient {..}) ->
+        let Ingredient {..} = orderedIngredientIngredient
+        in ExportIngredient
+          { exportIngredientGroceryItemId = groceryItemId
+          , exportIngredientRecipeId = recipeId
+          , exportIngredientName = ingredientName
+          , exportIngredientQuantity = mkReadableQuantity ingredientQuantity
+          , exportIngredientUnit = mkReadableUnit ingredientUnit
+          , exportIngredientOrder = orderedIngredientOrder
+          }
+      ) ingredients
+    }
