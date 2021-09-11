@@ -8,17 +8,12 @@
 import MobileCoreServices
 import UIKit
 
-struct IngredientWithId: Codable {
-    let id: Int
-    let ingredient: ReadableIngredient
-}
-
 class RecipeDetailListController: UITableViewController, UITextViewDelegate {
-    var recipe: RecipeWithId? = nil
-    var ingredients: [IngredientWithId] = []
+    var recipe: ReadableRecipeWithId? = nil
+    var ingredients: [ReadableIngredientWithId] = []
     var onChange: (() -> Void)? = nil
     var beforeHeight: CGFloat? = nil
-    var editItem: IngredientWithId? = nil
+    var editItem: ReadableIngredientWithId? = nil
     
     @objc func didTapAdd(_ sender: Any?) {
         performSegue(withIdentifier: "addItem", sender: nil)
@@ -26,7 +21,7 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate {
     
     func textViewDidEndEditing(_ textView: UITextView) {
         guard let r = recipe else { return }
-        updateRecipe(id: r.id, active: r.recipe.active, rating: r.recipe.rating, notes: textView.text ?? r.recipe.notes, completion: onChange)
+        updateRecipe(id: r.id, recipe: ReadableRecipe(name: r.recipe.name, link: r.recipe.link, active: r.recipe.active, rating: r.recipe.rating, notes: textView.text ?? r.recipe.notes, ingredients: r.recipe.ingredients), completion: onChange)
     }
 
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -74,7 +69,7 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate {
     
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         guard let r = recipe else { return nil }
-        let delete: Int
+        let delete: UUID
         switch indexPath.section {
         case 3:
             delete = ingredients[indexPath.row].id
@@ -83,7 +78,7 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate {
             return nil
         }
         let action = UIContextualAction(style: .destructive, title: "Delete") { [weak self] (action, view, completionHandler) in
-            self?.updateRecipeIngredients(id: r.id, deletes: [delete], adds: [], completion: self?.onChange)
+            self?.updateRecipeIngredients(id: r.id, active: r.recipe.active, deletes: [delete], adds: [], completion: self?.onChange)
             completionHandler(true)
         }
         action.backgroundColor = .systemRed
@@ -92,7 +87,7 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate {
     
     override func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         guard let r = recipe else { return nil }
-        let delete: Int
+        let delete: UUID
         switch indexPath.section {
         case 3:
             delete = ingredients[indexPath.row].id
@@ -101,7 +96,7 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate {
             return nil
         }
         let action = UIContextualAction(style: .destructive, title: "Delete") { [weak self] (action, view, completionHandler) in
-            self?.updateRecipeIngredients(id: r.id, deletes: [delete], adds: [], completion: self?.onChange)
+            self?.updateRecipeIngredients(id: r.id, active: r.recipe.active, deletes: [delete], adds: [], completion: self?.onChange)
             completionHandler(true)
         }
         action.backgroundColor = .systemRed

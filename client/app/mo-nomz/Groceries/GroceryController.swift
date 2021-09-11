@@ -38,15 +38,14 @@ class GroceryController: UIViewController {
     }
     
     @objc func loadData() {
-        let completion = { [weak self] (resp: ListGroceryItemResponse) -> Void in
-            let items = resp.items
-            self?.groceryVc?.toBuy = items.map({ ReadableGroceryItemWithId(item: $0.value, id: $0.key) }).filter({ $0.item.active }).sorted(by: { $0.item.order < $1.item.order })
-            self?.groceryVc?.bought = items.map({ ReadableGroceryItemWithId(item: $0.value, id: $0.key) }).filter({ !$0.item.active }).sorted(by: { $0.item.order < $1.item.order })
+        let completion = { [weak self] (items: [ReadableGroceryItemWithId]) -> Void in
+            self?.groceryVc?.toBuy = items.map({ ReadableGroceryItemWithId(item: $0.item, id: $0.id) }).filter({ $0.item.active }).sorted(by: { $0.item.order < $1.item.order })
+            self?.groceryVc?.bought = items.map({ ReadableGroceryItemWithId(item: $0.item, id: $0.id) }).filter({ !$0.item.active }).sorted(by: { $0.item.order < $1.item.order })
             DispatchQueue.main.async {
                 self?.groceryVc?.tableView.reloadData()
             }
         }
-        loadGroceryItems(completion: completion)
+        loadGroceries(completion: completion)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

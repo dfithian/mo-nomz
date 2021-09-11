@@ -32,7 +32,7 @@ class RecipeAddController: UIViewController {
             onChange?()
         }
         if let newLink = link.text, !newLink.isEmpty {
-            addRecipeLink(link: newLink, active: active, completion: completion)
+            addLink(link: newLink, active: active, completion: completion)
         } else {
             onCancel?()
         }

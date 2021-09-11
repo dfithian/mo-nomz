@@ -20,7 +20,7 @@ class RecipeController: UIViewController {
     }
     
     @IBAction func clear(_ sender: Any?) {
-        let items : [RecipeWithId] = (recipeVc?.active ?? []) + (recipeVc?.saved ?? [])
+        let items : [ReadableRecipeWithId] = (recipeVc?.active ?? []) + (recipeVc?.saved ?? [])
         if !items.isEmpty {
             let handler = { [weak self] (action: UIAlertAction) -> Void in self?.clearGroceryItems(completion: self?.loadData) }
             promptForConfirmation(title: "Clear", message: "Are you sure you want to clear?", handler: handler)
@@ -28,12 +28,9 @@ class RecipeController: UIViewController {
     }
 
     @objc func loadData() {
-        let completion = { [weak self] (resp: ListRecipeResponse) -> Void in
-            let recipes = resp.recipes.map({
-                RecipeWithId(recipe: $0.value, id: $0.key)
-            })
-            self?.recipeVc?.active = recipes.filter({ $0.recipe.active }).sorted(by: { ($0.recipe.rating, $0.id) > ($1.recipe.rating, $1.id) })
-            self?.recipeVc?.saved = recipes.filter({ !$0.recipe.active }).sorted(by: { ($0.recipe.rating, $0.id) > ($1.recipe.rating, $1.id) })
+        let completion = { [weak self] (recipes: [ReadableRecipeWithId]) -> Void in
+            self?.recipeVc?.active = recipes.filter({ $0.recipe.active }).sorted(by: { ($0.recipe.rating, $0.recipe.name) > ($1.recipe.rating, $1.recipe.name) })
+            self?.recipeVc?.saved = recipes.filter({ !$0.recipe.active }).sorted(by: { ($0.recipe.rating, $0.recipe.name) > ($1.recipe.rating, $1.recipe.name) })
             DispatchQueue.main.async {
                 self?.recipeVc?.tableView.reloadData()
             }
@@ -43,16 +40,12 @@ class RecipeController: UIViewController {
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let vc = segue.destination as? GroceryAddController, segue.identifier == "addGroceries" {
-            vc.onChange = { () -> Void in
-                self.loadData()
-            }
+            vc.onChange = loadData
         }
         if let vc = segue.destination as? RecipeListController, segue.identifier == "embedRecipes" {
             recipeVc = vc
             loadData()
-            vc.onChange = { () -> Void in
-                self.loadData()
-            }
+            vc.onChange = loadData
         }
         if let vc = segue.destination as? BannerController, segue.identifier == "embedBanner" {
             vc.height = banner.constraints.filter({ $0.identifier == "height" }).first

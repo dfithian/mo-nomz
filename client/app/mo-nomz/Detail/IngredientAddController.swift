@@ -8,7 +8,7 @@
 import UIKit
 
 class IngredientAddController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate {
-    var recipe: RecipeWithId? = nil
+    var recipe: ReadableRecipeWithId? = nil
     var order: Int? = nil
     var onChange: (() -> Void)? = nil
     var currentWholeQuantity: Int? = nil
@@ -27,15 +27,14 @@ class IngredientAddController: UIViewController, UIPickerViewDataSource, UIPicke
     
     @IBAction func didTapSave(_ sender: Any?) {
         guard let r = recipe else { return }
-        let item = ReadableIngredient(name: name.text!, quantity: ReadableQuantity(whole: currentWholeQuantity, fraction: currentFractionQuantity), unit: unit.text, order: order ?? 1)
+        let item = ReadableIngredientWithId(id: UUID(), ingredient: ReadableIngredient(name: name.text!, quantity: ReadableQuantity(whole: currentWholeQuantity, fraction: currentFractionQuantity), unit: unit.text, order: order ?? 1))
         let completion = {
             DispatchQueue.main.async {
                 self.dismiss(animated: true, completion: nil)
             }
             self.onChange?()
-            
         }
-        updateRecipeIngredients(id: r.id, deletes: [], adds: [item], completion: completion)
+        updateRecipeIngredients(id: r.id, active: r.recipe.active, deletes: [], adds: [item], completion: completion)
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {

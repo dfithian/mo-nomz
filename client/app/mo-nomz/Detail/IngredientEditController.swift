@@ -8,8 +8,8 @@
 import UIKit
 
 class IngredientEditController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate {
-    var recipe: RecipeWithId? = nil
-    var existing: IngredientWithId? = nil
+    var recipe: ReadableRecipeWithId? = nil
+    var existing: ReadableIngredientWithId? = nil
     var onChange: (() -> Void)? = nil
     var currentWholeQuantity: Int? = nil
     var currentFractionQuantity: ReadableFraction? = nil
@@ -28,15 +28,14 @@ class IngredientEditController: UIViewController, UIPickerViewDataSource, UIPick
     
     @IBAction func didTapSave(_ sender: Any?) {
         guard let r = recipe, let e = existing else { return }
-        let item = ReadableIngredient(name: name.text!, quantity: ReadableQuantity(whole: currentWholeQuantity, fraction: currentFractionQuantity), unit: unit.text, order: e.ingredient.order)
+        let item = ReadableIngredientWithId(id: UUID(), ingredient: ReadableIngredient(name: name.text!, quantity: ReadableQuantity(whole: currentWholeQuantity, fraction: currentFractionQuantity), unit: unit.text, order: e.ingredient.order))
         let completion = {
             DispatchQueue.main.async {
                 self.dismiss(animated: true, completion: nil)
             }
             self.onChange?()
-            
         }
-        updateRecipeIngredients(id: r.id, deletes: [e.id], adds: [item], completion: completion)
+        updateRecipeIngredients(id: r.id, active: r.recipe.active, deletes: [e.id], adds: [item], completion: completion)
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {

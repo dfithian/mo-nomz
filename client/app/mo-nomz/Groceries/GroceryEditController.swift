@@ -8,7 +8,7 @@
 import UIKit
 
 class GroceryEditController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate {
-    var existing: ReadableGroceryItemWithId = ReadableGroceryItemWithId(item: ReadableGroceryItem(name: "", quantity: ReadableQuantity(whole: nil, fraction: nil), unit: "", active: true, order: 0), id: 0)
+    var existing: ReadableGroceryItemWithId? = nil
     var onChange: (() -> Void)? = nil
     var currentWholeQuantity: Int? = nil
     var currentFractionQuantity: ReadableFraction? = nil
@@ -26,14 +26,15 @@ class GroceryEditController: UIViewController, UIPickerViewDataSource, UIPickerV
     }
     
     @IBAction func didTapSave(_ sender: Any?) {
-        let item = ReadableGroceryItem(name: name.text!, quantity: ReadableQuantity(whole: currentWholeQuantity, fraction: currentFractionQuantity), unit: unit.text, active: existing.item.active, order: existing.item.order)
+        guard let e = existing else { return }
+        let item = ReadableGroceryItem(name: name.text!, quantity: ReadableQuantity(whole: currentWholeQuantity, fraction: currentFractionQuantity), unit: unit.text, active: e.item.active, order: e.item.order)
         let completion = {
             DispatchQueue.main.async {
                 self.dismiss(animated: true, completion: nil)
             }
             self.onChange?()
         }
-        updateGroceryItem(groceryItemId: existing.id, groceryItem: item, completion: completion)
+        updateGroceryItem(id: e.id, grocery: item, completion: completion)
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
@@ -75,13 +76,15 @@ class GroceryEditController: UIViewController, UIPickerViewDataSource, UIPickerV
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        existingInfo.text = existing.item.render()
-        unit.text = existing.item.unit
-        name.text = existing.item.name
-        currentWholeQuantity = existing.item.quantity.whole
-        currentFractionQuantity = existing.item.quantity.fraction
-        quantity.selectRow(existing.item.quantity.whole ?? 0, inComponent: 0, animated: true)
-        quantity.selectRow(existing.item.quantity.fraction?.toInt() ?? 0, inComponent: 1, animated: true)
+        if let e = existing {
+            existingInfo.text = e.item.render()
+            unit.text = e.item.unit
+            name.text = e.item.name
+            currentWholeQuantity = e.item.quantity.whole
+            currentFractionQuantity = e.item.quantity.fraction
+            quantity.selectRow(e.item.quantity.whole ?? 0, inComponent: 0, animated: true)
+            quantity.selectRow(e.item.quantity.fraction?.toInt() ?? 0, inComponent: 1, animated: true)
+        }
         unit.addDoneButtonOnKeyboard()
         name.addDoneButtonOnKeyboard()
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardDidShowNotification, object: nil)

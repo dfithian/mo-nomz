@@ -8,14 +8,9 @@
 import MobileCoreServices
 import UIKit
 
-struct RecipeWithId: Codable {
-    let recipe: ReadableRecipe
-    let id: Int
-}
-
 class RecipeListController: UITableViewController {
-    var active: [RecipeWithId] = []
-    var saved: [RecipeWithId] = []
+    var active: [ReadableRecipeWithId] = []
+    var saved: [ReadableRecipeWithId] = []
     var onChange: (() -> Void)?
     var collapsed: [Bool] = [false, true]
     
@@ -51,12 +46,14 @@ class RecipeListController: UITableViewController {
     
     @objc func didTapActive(_ sender: Any?) {
         let b = sender as! UIButton
-        updateRecipe(id: active[b.tag].id, active: false, rating: active[b.tag].recipe.rating, notes: active[b.tag].recipe.notes, completion: onChange)
+        let r = active[b.tag]
+        updateRecipe(id: r.id, recipe: ReadableRecipe(name: r.recipe.name, link: r.recipe.link, active: false, rating: r.recipe.rating, notes: r.recipe.notes, ingredients: [:]), completion: onChange)
     }
     
     @objc func didTapSavedForLater(_ sender: Any?) {
         let b = sender as! UIButton
-        updateRecipe(id: saved[b.tag].id, active: true, rating: saved[b.tag].recipe.rating, notes: saved[b.tag].recipe.notes, completion: onChange)
+        let r = saved[b.tag]
+        updateRecipe(id: r.id, recipe: ReadableRecipe(name: r.recipe.name, link: r.recipe.link, active: true, rating: r.recipe.rating, notes: r.recipe.notes, ingredients: [:]), completion: onChange)
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -84,12 +81,12 @@ class RecipeListController: UITableViewController {
         }
     }
     
-    func deleteRow(_ id: Int) {
-        deleteRecipes(recipeIds: [id], completion: onChange)
+    func deleteRow(_ id: UUID) {
+        deleteRecipe(id: id, completion: onChange)
     }
     
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        let id: Int
+        let id: UUID
         switch indexPath.section {
         case 2:
             id = active[indexPath.row].id
@@ -109,7 +106,7 @@ class RecipeListController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        let id: Int
+        let id: UUID
         switch indexPath.section {
         case 2:
             id = active[indexPath.row].id

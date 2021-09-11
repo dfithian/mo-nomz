@@ -25,6 +25,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 }
             }
             window?.rootViewController?.loadUser(completion: completion)
+        } else if !Persistence.loadPreferencess().exported {
+            let completion = {
+                DispatchQueue.main.async {
+                    self.window?.rootViewController = mainVc
+                }
+            }
+            window?.rootViewController?.loadExport(completion: completion)
         } else {
             window?.rootViewController = mainVc
         }

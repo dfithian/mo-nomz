@@ -31,13 +31,13 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
     func selectRow(_ row: Int) {
         let item = toBuy[row]
         let newItem = ReadableGroceryItem(name: item.item.name, quantity: item.item.quantity, unit: item.item.unit, active: false, order: item.item.order)
-        updateGroceryItem(groceryItemId: item.id, groceryItem: newItem, completion: onChange)
+        updateGroceryItem(id: item.id, grocery: newItem, completion: onChange)
     }
     
     func deselectRow(_ row: Int) {
         let item = bought[row]
         let newItem = ReadableGroceryItem(name: item.item.name, quantity: item.item.quantity, unit: item.item.unit, active: true, order: item.item.order)
-        updateGroceryItem(groceryItemId: item.id, groceryItem: newItem, completion: onChange)
+        updateGroceryItem(id: item.id, grocery: newItem, completion: onChange)
     }
     
     @objc func didTapToBuy(_ sender: Any?) {
@@ -102,8 +102,8 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
         }
     }
     
-    func deleteRow(_ ids: [Int]) {
-        deleteGroceryItems(groceryItemIds: ids, completion: onChange)
+    func deleteRow(_ id: UUID) {
+        deleteGroceryItem(id: id, completion: onChange)
     }
     
     func editRow(item: ReadableGroceryItemWithId) {
@@ -111,9 +111,9 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
         performSegue(withIdentifier: "editItem", sender: nil)
     }
     
-    private func deleteRowSwipe(_ id: Int) -> UISwipeActionsConfiguration {
+    private func deleteRowSwipe(_ id: UUID) -> UISwipeActionsConfiguration {
         let action = UIContextualAction(style: .destructive, title: "Delete") { [weak self] (action, view, completionHandler) in
-            self?.deleteRow([id])
+            self?.deleteRow(id)
             completionHandler(true)
         }
         action.backgroundColor = .systemRed
@@ -122,7 +122,8 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
     
     private func dismissReorderTip() -> UISwipeActionsConfiguration {
         let action = UIContextualAction(style: .normal, title: "Dismiss") { (action, view, completionHandler) in
-            Persistence.setPreferences(Preferences(dismissedReorderTip: true))
+            let preferences = Persistence.loadPreferencess()
+            Persistence.setPreferences(Preferences(exported: preferences.exported, dismissedReorderTip: true))
         }
         action.backgroundColor = .systemBlue
         return UISwipeActionsConfiguration(actions: [action])
@@ -289,7 +290,7 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
             for string in strings {
                 do {
                     let new = try JSONDecoder().decode(ReadableGroceryItemWithId.self, from: string.data(using: .utf8)!)
-                    self.updateGroceryItem(groceryItemId: new.id, groceryItem: ReadableGroceryItem(name: new.item.name, quantity: new.item.quantity, unit: new.item.unit, active: existing.item.active, order: newOrder), completion: self.onChange)
+                    self.updateGroceryItem(id: new.id, grocery: ReadableGroceryItem(name: new.item.name, quantity: new.item.quantity, unit: new.item.unit, active: existing.item.active, order: newOrder), completion: self.onChange)
                 } catch {
                     print("Failed completing drag and drop \(error)")
                 }

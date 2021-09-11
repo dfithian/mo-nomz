@@ -16,18 +16,17 @@ class RecipeDetailController: UIViewController, UITextViewDelegate {
     @IBOutlet weak var star5: UIButton!
     @IBOutlet weak var link: UIButton!
     
-    var recipe: RecipeWithId? = nil
+    var recipe: ReadableRecipeWithId? = nil
     var onChange: (() -> Void)? = nil
     var detailVc: RecipeDetailListController? = nil
     
     @IBAction func didTapLink(_ sender: Any?) {
-        if let link = recipe?.recipe.link {
-            let url = URL(string: link)!
-            if #available(iOS 10.0, *) {
-                UIApplication.shared.open(url, options: [:], completionHandler: nil)
-            } else {
-                UIApplication.shared.openURL(url)
-            }
+        guard let link = recipe?.recipe.link else { return }
+        let url = URL(string: link)!
+        if #available(iOS 10.0, *) {
+            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+        } else {
+            UIApplication.shared.openURL(url)
         }
     }
     
@@ -81,7 +80,8 @@ class RecipeDetailController: UIViewController, UITextViewDelegate {
                     self.view.reloadInputViews()
                 }
             }
-            updateRecipe(id: r.id, active: r.recipe.active, rating: which, notes: r.recipe.notes, completion: completion)
+            let newRecipe = ReadableRecipe(name: r.recipe.name, link: r.recipe.link, active: r.recipe.active, rating: which, notes: r.recipe.notes, ingredients: r.recipe.ingredients)
+            updateRecipe(id: r.id, recipe: newRecipe, completion: completion)
         }
     }
     
@@ -111,7 +111,7 @@ class RecipeDetailController: UIViewController, UITextViewDelegate {
             detailVc = vc
             loadData()
             vc.recipe = r
-            vc.ingredients = r.recipe.ingredients.map({ IngredientWithId(id: $0, ingredient: $1) }).sorted(by: { $0.ingredient.order < $1.ingredient.order })
+            vc.ingredients = r.recipe.ingredients.map({ ReadableIngredientWithId(id: $0, ingredient: $1) }).sorted(by: { $0.ingredient.order < $1.ingredient.order })
             vc.onChange = { () -> Void in
                 self.loadData()
                 self.onChange?()
@@ -121,9 +121,9 @@ class RecipeDetailController: UIViewController, UITextViewDelegate {
     
     private func loadData() {
         guard let r = recipe else { return }
-        let completion = { [weak self] (resp: ReadableRecipe) -> Void in
-            self?.detailVc?.recipe = RecipeWithId(recipe: resp, id: r.id)
-            self?.detailVc?.ingredients = resp.ingredients.map({ IngredientWithId(id: $0, ingredient: $1) }).sorted(by: { $0.ingredient.order < $1.ingredient.order })
+        let completion = { [weak self] (newRecipe: ReadableRecipe) -> Void in
+            self?.detailVc?.recipe = ReadableRecipeWithId(recipe: newRecipe, id: r.id)
+            self?.detailVc?.ingredients = newRecipe.ingredients.map({ ReadableIngredientWithId(id: $0, ingredient: $1) }).sorted(by: { $0.ingredient.order < $1.ingredient.order })
             DispatchQueue.main.async {
                 self?.detailVc?.tableView.reloadData()
             }
