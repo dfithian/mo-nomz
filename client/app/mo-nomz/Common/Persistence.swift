@@ -7,11 +7,6 @@
 
 import Foundation
 
-struct Preferences {
-    let exported: Bool
-    let dismissedReorderTip: Bool
-}
-
 struct State {
     let userId: Int
     let apiToken: String
@@ -54,13 +49,16 @@ class Persistence {
         var ref: AnyObject?
         SecItemAdd(query, &ref)
     }
-    static func loadPreferencess() -> Preferences {
-        let exported = UserDefaults.shared.bool(forKey: "exported")
-        let dismissedReorderTip = UserDefaults.shared.bool(forKey: "dismissedReorderTip")
-        return Preferences(exported: exported, dismissedReorderTip: dismissedReorderTip)
+    static func exported() -> Bool {
+        return UserDefaults.shared.bool(forKey: "exported")
     }
-    static func setPreferences(_ preferences: Preferences) {
-        UserDefaults.shared.set(preferences.exported, forKey: "exported")
-        UserDefaults.shared.set(preferences.dismissedReorderTip, forKey: "dismissedReorderTip")
+    static func setDidExport() {
+        UserDefaults.shared.set(true, forKey: "exported")
+    }
+    static func dismissedReorderTip() -> Bool {
+        return UserDefaults.shared.bool(forKey: "dismissedReorderTip")
+    }
+    static func setDidDismissReorderTip() {
+        UserDefaults.shared.set(true, forKey: "dismissedReorderTip")
     }
 }

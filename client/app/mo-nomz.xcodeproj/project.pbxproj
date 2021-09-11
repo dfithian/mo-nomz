@@ -49,6 +49,7 @@
 		37B979E526EC204B002B677F /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 37B979E226EC204B002B677F /* Model.xcdatamodeld */; };
 		37B979E726EC2057002B677F /* DataAccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37B979E626EC2057002B677F /* DataAccess.swift */; };
 		37B979E826EC2057002B677F /* DataAccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37B979E626EC2057002B677F /* DataAccess.swift */; };
+		37B979EA26EC41D3002B677F /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 37B979E926EC41D3002B677F /* CloudKit.framework */; };
 		37C6714E2627BFB100B5838C /* ErrorHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C6714D2627BFB100B5838C /* ErrorHandler.swift */; };
 		37E1DBEF262FCE3600330C5B /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37E1DBEE262FCE3600330C5B /* ShareViewController.swift */; };
 		37E1DBF6262FCE3600330C5B /* sharing.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 37E1DBEC262FCE3600330C5B /* sharing.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -133,6 +134,7 @@
 		37B979BA26CC92F1002B677F /* AddItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddItem.swift; sourceTree = "<group>"; };
 		37B979E326EC204B002B677F /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
 		37B979E626EC2057002B677F /* DataAccess.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataAccess.swift; sourceTree = "<group>"; };
+		37B979E926EC41D3002B677F /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		37C6714D2627BFB100B5838C /* ErrorHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorHandler.swift; sourceTree = "<group>"; };
 		37E1DBEC262FCE3600330C5B /* sharing.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = sharing.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		37E1DBEE262FCE3600330C5B /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
@@ -154,6 +156,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				37B979EA26EC41D3002B677F /* CloudKit.framework in Frameworks */,
 				3728B0982633AA240055D2E1 /* GoogleMobileAds.xcframework in Frameworks */,
 				A5AA8FF560BE489F2712D24F /* Pods_mo_nomz.framework in Frameworks */,
 			);
@@ -297,6 +300,7 @@
 		B9254777712D7CB58EFA53E5 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				37B979E926EC41D3002B677F /* CloudKit.framework */,
 				3728B0972633AA240055D2E1 /* GoogleMobileAds.xcframework */,
 				3D8E6C91D35B99778B838A8A /* Pods_mo_nomz.framework */,
 			);
@@ -661,7 +665,7 @@
 				CODE_SIGN_ENTITLEMENTS = "mo-nomz/mo-nomzDebug.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 5A6Y383S44;
 				INFOPLIST_FILE = "mo-nomz/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -730,7 +734,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -744,7 +748,7 @@
 				CODE_SIGN_ENTITLEMENTS = "mo-nomz/mo-nomzRelease.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 5A6Y383S44;
 				INFOPLIST_FILE = "mo-nomz/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -813,7 +817,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -823,7 +827,7 @@
 				CODE_SIGN_ENTITLEMENTS = sharing/sharingDebug.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 5A6Y383S44;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -841,7 +845,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -851,7 +855,7 @@
 				CODE_SIGN_ENTITLEMENTS = sharing/sharingRelease.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 5A6Y383S44;
 				INFOPLIST_FILE = sharing/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -865,7 +869,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};

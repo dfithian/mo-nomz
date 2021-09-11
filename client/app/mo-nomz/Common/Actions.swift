@@ -44,11 +44,11 @@ extension UIViewController {
                     try ctx.execute(NSBatchDeleteRequest(fetchRequest: NSFetchRequest(entityName: "RecipeData")))
                     try ctx.execute(NSBatchDeleteRequest(fetchRequest: NSFetchRequest(entityName: "GroceryItemData")))
                     try ctx.execute(NSBatchDeleteRequest(fetchRequest: NSFetchRequest(entityName: "IngredientData")))
+                    try ctx.save()
                     let output = try JSONDecoder().decode(ExportResponse.self, from: data!)
                     output.insert(ctx)
                     try ctx.save()
-                    let preferences = Persistence.loadPreferencess()
-                    Persistence.setPreferences(Preferences(exported: true, dismissedReorderTip: preferences.dismissedReorderTip))
+                    Persistence.setDidExport()
                     completion?()
                 } catch {
                     self.defaultOnError(error)

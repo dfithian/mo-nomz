@@ -25,7 +25,7 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
     }
     
     private func hasReorderTip() -> Bool {
-        return hasData() && !Persistence.loadPreferencess().dismissedReorderTip
+        return hasData() && !Persistence.dismissedReorderTip()
     }
     
     func selectRow(_ row: Int) {
@@ -52,6 +52,15 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.section {
+        case 1:
+            let handler = { (action: UIAlertAction) -> Void in
+                Persistence.setDidDismissReorderTip()
+                DispatchQueue.main.async {
+                    self.tableView.reloadData()
+                }
+            }
+            promptForConfirmation(title: "Dismiss this tip", message: "Drag items to reorder", handler: handler)
+            break
         case 2:
             collapsed[0] = !collapsed[0]
             DispatchQueue.main.async {
@@ -120,19 +129,8 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
         return UISwipeActionsConfiguration(actions: [action])
     }
     
-    private func dismissReorderTip() -> UISwipeActionsConfiguration {
-        let action = UIContextualAction(style: .normal, title: "Dismiss") { (action, view, completionHandler) in
-            let preferences = Persistence.loadPreferencess()
-            Persistence.setPreferences(Preferences(exported: preferences.exported, dismissedReorderTip: true))
-        }
-        action.backgroundColor = .systemBlue
-        return UISwipeActionsConfiguration(actions: [action])
-    }
-    
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         switch indexPath.section {
-        case 1:
-            return dismissReorderTip()
         case 3:
             return deleteRowSwipe(toBuy[indexPath.row].id)
         case 5:
@@ -145,8 +143,6 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
     
     override func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         switch indexPath.section {
-        case 1:
-            return dismissReorderTip()
         case 3:
             return deleteRowSwipe(toBuy[indexPath.row].id)
         case 5:
