@@ -29,13 +29,11 @@ class IngredientEditController: UIViewController, UIPickerViewDataSource, UIPick
     @IBAction func didTapSave(_ sender: Any?) {
         guard let r = recipe, let e = existing else { return }
         let item = ReadableIngredientWithId(id: UUID(), ingredient: ReadableIngredient(name: name.text!, quantity: ReadableQuantity(whole: currentWholeQuantity, fraction: currentFractionQuantity), unit: unit.text, order: e.ingredient.order))
-        let completion = {
-            DispatchQueue.main.async {
-                self.dismiss(animated: true, completion: nil)
-            }
-            self.onChange?()
+        updateRecipeIngredients(id: r.id, active: r.recipe.active, deletes: [e.id], adds: [item])
+        DispatchQueue.main.async {
+            self.dismiss(animated: true, completion: nil)
         }
-        updateRecipeIngredients(id: r.id, active: r.recipe.active, deletes: [e.id], adds: [item], completion: completion)
+        onChange?()
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {

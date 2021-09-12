@@ -73,15 +73,13 @@ class RecipeDetailController: UIViewController, UITextViewDelegate {
             star5.setImage(filledStar, for: .normal)
         }
         if which != r.recipe.rating && which > 0 {
-            let completion = { () -> Void in
-                self.loadData()
-                self.onChange?()
-                DispatchQueue.main.async {
-                    self.view.reloadInputViews()
-                }
-            }
             let newRecipe = ReadableRecipe(name: r.recipe.name, link: r.recipe.link, active: r.recipe.active, rating: which, notes: r.recipe.notes, ingredients: r.recipe.ingredients)
-            updateRecipe(id: r.id, recipe: newRecipe, completion: completion)
+            updateRecipe(id: r.id, recipe: newRecipe)
+            loadData()
+            onChange?()
+            DispatchQueue.main.async {
+                self.view.reloadInputViews()
+            }
         }
     }
     
@@ -121,14 +119,12 @@ class RecipeDetailController: UIViewController, UITextViewDelegate {
     
     private func loadData() {
         guard let r = recipe else { return }
-        let completion = { [weak self] (newRecipe: ReadableRecipe) -> Void in
-            self?.detailVc?.recipe = ReadableRecipeWithId(recipe: newRecipe, id: r.id)
-            self?.detailVc?.ingredients = newRecipe.ingredients.map({ ReadableIngredientWithId(id: $0, ingredient: $1) }).sorted(by: { $0.ingredient.order < $1.ingredient.order })
-            DispatchQueue.main.async {
-                self?.detailVc?.tableView.reloadData()
-            }
+        guard let newRecipe = getRecipe(id: r.id) else { return }
+        detailVc?.recipe = newRecipe
+        detailVc?.ingredients = newRecipe.recipe.ingredients.map({ ReadableIngredientWithId(id: $0, ingredient: $1) }).sorted(by: { $0.ingredient.order < $1.ingredient.order })
+        DispatchQueue.main.async {
+            self.detailVc?.tableView.reloadData()
         }
-        getRecipe(id: r.id, completion: completion)
     }
     
     override func viewDidLoad() {

@@ -47,13 +47,15 @@ class RecipeListController: UITableViewController {
     @objc func didTapActive(_ sender: Any?) {
         let b = sender as! UIButton
         let r = active[b.tag]
-        updateRecipe(id: r.id, recipe: ReadableRecipe(name: r.recipe.name, link: r.recipe.link, active: false, rating: r.recipe.rating, notes: r.recipe.notes, ingredients: [:]), completion: onChange)
+        updateRecipe(id: r.id, recipe: ReadableRecipe(name: r.recipe.name, link: r.recipe.link, active: false, rating: r.recipe.rating, notes: r.recipe.notes, ingredients: [:]))
+        onChange?()
     }
     
     @objc func didTapSavedForLater(_ sender: Any?) {
         let b = sender as! UIButton
         let r = saved[b.tag]
-        updateRecipe(id: r.id, recipe: ReadableRecipe(name: r.recipe.name, link: r.recipe.link, active: true, rating: r.recipe.rating, notes: r.recipe.notes, ingredients: [:]), completion: onChange)
+        updateRecipe(id: r.id, recipe: ReadableRecipe(name: r.recipe.name, link: r.recipe.link, active: true, rating: r.recipe.rating, notes: r.recipe.notes, ingredients: [:]))
+        onChange?()
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -82,7 +84,8 @@ class RecipeListController: UITableViewController {
     }
     
     func deleteRow(_ id: UUID) {
-        deleteRecipe(id: id, completion: onChange)
+        deleteRecipe(id: id)
+        onChange?()
     }
     
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {

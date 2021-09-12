@@ -15,7 +15,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         print("Started with configuration \(Configuration.environment)")
         if UserDefaults.shared.string(forKey: "firstRun") == nil {
             print("Initializing state")
-            Persistence.clearState()
+            User.clearState()
             UserDefaults.shared.setValue("true", forKey: "firstRun")
         }
         GADMobileAds.sharedInstance().start(completionHandler: nil)

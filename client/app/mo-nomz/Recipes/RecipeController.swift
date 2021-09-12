@@ -22,20 +22,21 @@ class RecipeController: UIViewController {
     @IBAction func clear(_ sender: Any?) {
         let items : [ReadableRecipeWithId] = (recipeVc?.active ?? []) + (recipeVc?.saved ?? [])
         if !items.isEmpty {
-            let handler = { [weak self] (action: UIAlertAction) -> Void in self?.clearGroceryItems(completion: self?.loadData) }
+            let handler = { [weak self] (action: UIAlertAction) -> Void in
+                self?.clearAll()
+                self?.loadData()
+            }
             promptForConfirmation(title: "Clear", message: "Are you sure you want to clear?", handler: handler)
         }
     }
 
     @objc func loadData() {
-        let completion = { [weak self] (recipes: [ReadableRecipeWithId]) -> Void in
-            self?.recipeVc?.active = recipes.filter({ $0.recipe.active }).sorted(by: { ($0.recipe.rating, $0.recipe.name) > ($1.recipe.rating, $1.recipe.name) })
-            self?.recipeVc?.saved = recipes.filter({ !$0.recipe.active }).sorted(by: { ($0.recipe.rating, $0.recipe.name) > ($1.recipe.rating, $1.recipe.name) })
-            DispatchQueue.main.async {
-                self?.recipeVc?.tableView.reloadData()
-            }
+        let recipes = selectRecipes()
+        recipeVc?.active = recipes.filter({ $0.recipe.active }).sorted(by: { ($0.recipe.rating, $0.recipe.name) > ($1.recipe.rating, $1.recipe.name) })
+        recipeVc?.saved = recipes.filter({ !$0.recipe.active }).sorted(by: { ($0.recipe.rating, $0.recipe.name) > ($1.recipe.rating, $1.recipe.name) })
+        DispatchQueue.main.async {
+            self.recipeVc?.tableView.reloadData()
         }
-        loadRecipes(completion: completion)
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

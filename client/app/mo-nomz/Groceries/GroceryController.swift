@@ -32,20 +32,21 @@ class GroceryController: UIViewController {
     @IBAction func clear(_ sender: Any?) {
         let items: [ReadableGroceryItemWithId] = (groceryVc?.toBuy ?? []) + (groceryVc?.bought ?? [])
         if !items.isEmpty {
-            let handler = { [weak self] (action: UIAlertAction) -> Void in self?.clearGroceryItems(completion: self?.loadData) }
+            let handler = { [weak self] (action: UIAlertAction) -> Void in
+                self?.clearAll()
+                self?.loadData()
+            }
             promptForConfirmation(title: "Clear", message: "Are you sure you want to clear?", handler: handler)
         }
     }
     
     @objc func loadData() {
-        let completion = { [weak self] (items: [ReadableGroceryItemWithId]) -> Void in
-            self?.groceryVc?.toBuy = items.map({ ReadableGroceryItemWithId(item: $0.item, id: $0.id) }).filter({ $0.item.active }).sorted(by: { $0.item.order < $1.item.order })
-            self?.groceryVc?.bought = items.map({ ReadableGroceryItemWithId(item: $0.item, id: $0.id) }).filter({ !$0.item.active }).sorted(by: { $0.item.order < $1.item.order })
-            DispatchQueue.main.async {
-                self?.groceryVc?.tableView.reloadData()
-            }
+        let groceries = selectGroceries()
+        groceryVc?.toBuy = groceries.map({ ReadableGroceryItemWithId(item: $0.item, id: $0.id) }).filter({ $0.item.active }).sorted(by: { $0.item.order < $1.item.order })
+        groceryVc?.bought = groceries.map({ ReadableGroceryItemWithId(item: $0.item, id: $0.id) }).filter({ !$0.item.active }).sorted(by: { $0.item.order < $1.item.order })
+        DispatchQueue.main.async {
+            self.groceryVc?.tableView.reloadData()
         }
-        loadGroceries(completion: completion)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

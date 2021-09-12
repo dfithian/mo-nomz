@@ -1,5 +1,5 @@
 //
-//  GroceryEditController.swift
+//  GroceryMergeController.swift
 //  mo-nomz
 //
 //  Created by Dan Fithian on 4/13/21.
@@ -7,8 +7,10 @@
 
 import UIKit
 
-class GroceryEditController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate {
-    var existing: ReadableGroceryItemWithId? = nil
+class GroceryMergeController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate {
+    var ids: [UUID] = []
+    var existing: ReadableGroceryItem = ReadableGroceryItem(name: "", quantity: ReadableQuantity(whole: nil, fraction: nil), unit: "", active: true, order: 0)
+    var new: ReadableGroceryItem = ReadableGroceryItem(name: "", quantity: ReadableQuantity(whole: nil, fraction: nil), unit: "", active: true, order: 0)
     var onChange: (() -> Void)? = nil
     var currentWholeQuantity: Int? = nil
     var currentFractionQuantity: ReadableFraction? = nil
@@ -18,6 +20,7 @@ class GroceryEditController: UIViewController, UIPickerViewDataSource, UIPickerV
     @IBOutlet weak var unit: UITextField!
     @IBOutlet weak var name: UITextField!
     @IBOutlet weak var existingInfo: UILabel!
+    @IBOutlet weak var newInfo: UILabel!
     
     @IBAction func didTapCancel(_ sender: Any?) {
         DispatchQueue.main.async {
@@ -26,9 +29,8 @@ class GroceryEditController: UIViewController, UIPickerViewDataSource, UIPickerV
     }
     
     @IBAction func didTapSave(_ sender: Any?) {
-        guard let e = existing else { return }
-        let item = ReadableGroceryItem(name: name.text!, quantity: ReadableQuantity(whole: currentWholeQuantity, fraction: currentFractionQuantity), unit: unit.text, active: e.item.active, order: e.item.order)
-        updateGrocery(grocery: ReadableGroceryItemWithId(item: item, id: e.id))
+        let item = ReadableGroceryItemWithId(item: ReadableGroceryItem(name: name.text!, quantity: ReadableQuantity(whole: currentWholeQuantity, fraction: currentFractionQuantity), unit: unit.text, active: existing.active, order: existing.order), id: UUID())
+        mergeGroceries(ids: ids, grocery: item)
         DispatchQueue.main.async {
             self.dismiss(animated: true, completion: nil)
         }
@@ -74,17 +76,17 @@ class GroceryEditController: UIViewController, UIPickerViewDataSource, UIPickerV
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        if let e = existing {
-            existingInfo.text = e.item.render()
-            unit.text = e.item.unit
-            name.text = e.item.name
-            currentWholeQuantity = e.item.quantity.whole
-            currentFractionQuantity = e.item.quantity.fraction
-            quantity.selectRow(e.item.quantity.whole ?? 0, inComponent: 0, animated: true)
-            quantity.selectRow(e.item.quantity.fraction?.toInt() ?? 0, inComponent: 1, animated: true)
-        }
-        unit.addDoneButtonOnKeyboard()
+        existingInfo.text = existing.render()
+        newInfo.text = new.render()
+        unit.text = existing.unit
+        name.text = existing.name
+        let q = existing.unit == new.unit ? existing.quantity + new.quantity : existing.quantity
+        currentWholeQuantity = q.whole
+        currentFractionQuantity = q.fraction
+        quantity.selectRow(q.whole ?? 0, inComponent: 0, animated: true)
+        quantity.selectRow(q.fraction?.toInt() ?? 0, inComponent: 1, animated: true)
         name.addDoneButtonOnKeyboard()
+        unit.addDoneButtonOnKeyboard()
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardDidShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }

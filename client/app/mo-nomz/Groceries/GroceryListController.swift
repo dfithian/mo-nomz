@@ -17,6 +17,7 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
     var toBuy: [ReadableGroceryItemWithId] = []
     var bought: [ReadableGroceryItemWithId] = []
     var onChange: (() -> Void)? = nil
+    var mergeItems: (ReadableGroceryItem, ReadableGroceryItem, [UUID])? = nil
     var editItem: ReadableGroceryItemWithId? = nil
     var collapsed: [Bool] = [false, true]
     
@@ -24,20 +25,18 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
         return (toBuy.count + bought.count) > 0
     }
     
-    private func hasReorderTip() -> Bool {
-        return hasData() && !Persistence.dismissedReorderTip()
-    }
-    
     func selectRow(_ row: Int) {
         let item = toBuy[row]
         let newItem = ReadableGroceryItem(name: item.item.name, quantity: item.item.quantity, unit: item.item.unit, active: false, order: item.item.order)
-        updateGroceryItem(id: item.id, grocery: newItem, completion: onChange)
+        updateGrocery(grocery: ReadableGroceryItemWithId(item: newItem, id: item.id))
+        onChange?()
     }
     
     func deselectRow(_ row: Int) {
         let item = bought[row]
         let newItem = ReadableGroceryItem(name: item.item.name, quantity: item.item.quantity, unit: item.item.unit, active: true, order: item.item.order)
-        updateGroceryItem(id: item.id, grocery: newItem, completion: onChange)
+        updateGrocery(grocery: ReadableGroceryItemWithId(item: newItem, id: item.id))
+        onChange?()
     }
     
     @objc func didTapToBuy(_ sender: Any?) {
@@ -54,12 +53,12 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
         switch indexPath.section {
         case 1:
             let handler = { (action: UIAlertAction) -> Void in
-                Persistence.setDidDismissReorderTip()
+                User.setDidDismissReorderMergeTip()
                 DispatchQueue.main.async {
                     self.tableView.reloadData()
                 }
             }
-            promptForConfirmation(title: "Dismiss this tip", message: "Drag items to reorder", handler: handler)
+            promptForConfirmation(title: "Dismiss this tip", message: "Drag items to reorder or merge", handler: handler)
             break
         case 2:
             collapsed[0] = !collapsed[0]
@@ -102,7 +101,7 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
         }
         switch section {
         case 0: return hasData() ? 0 : 1
-        case 1: return hasReorderTip() ? 1 : 0
+        case 1: return (hasData() && !User.dismissedReorderMergeTip()) ? 1 : 0
         case 2: return hasData() ? 1 : 0
         case 3: return toBuy.count
         case 4: return hasData() ? 1 : 0
@@ -112,7 +111,8 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
     }
     
     func deleteRow(_ id: UUID) {
-        deleteGroceryItem(id: id, completion: onChange)
+        deleteGrocery(id: id)
+        onChange?()
     }
     
     func editRow(item: ReadableGroceryItemWithId) {
@@ -159,8 +159,7 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
             let cell = tableView.dequeueReusableCell(withIdentifier: "emptyItem")!
             return cell
         case 1:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "reorderTip")!
-            return cell
+            return tableView.dequeueReusableCell(withIdentifier: "reorderMergeTip")!
         case 2:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SectionHeader
             let image = collapsed[0] ? UIImage(systemName: "chevron.forward.circle.fill") : UIImage(systemName: "chevron.down.circle.fill")
@@ -243,7 +242,7 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
         default: return cancel
         }
         if tableView.hasActiveDrag {
-            return UITableViewDropProposal(operation: .move, intent: .insertAtDestinationIndexPath)
+            return UITableViewDropProposal(operation: .move, intent: .automatic)
         }
         return cancel
     }
@@ -253,8 +252,13 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
         guard let info = coordinator.session.localDragSession?.localContext as? GroceryDragInfo else { return }
         let existing: ReadableGroceryItemWithId
         let newOrder: Int
-        switch indexPath.section {
-        case 3:
+        let isMerge = coordinator.proposal.intent == .insertIntoDestinationIndexPath
+        switch (indexPath.section, isMerge) {
+        case (3, true):
+            existing = toBuy[indexPath.row]
+            newOrder = existing.item.order
+            break
+        case (3, false):
             if info.indexPath.row < indexPath.row {
                 existing = toBuy[indexPath.row]
                 newOrder = existing.item.order + 1
@@ -266,7 +270,11 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
                 newOrder = existing.item.order + 1
             }
             break
-        case 5:
+        case (5, true):
+            existing = bought[tableView.cellForRow(at: indexPath)!.tag]
+            newOrder = existing.item.order
+            break
+        case (5, false):
             if info.indexPath.row < indexPath.row {
                 existing = bought[indexPath.row]
                 newOrder = existing.item.order + 1
@@ -286,7 +294,32 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
             for string in strings {
                 do {
                     let new = try JSONDecoder().decode(ReadableGroceryItemWithId.self, from: string.data(using: .utf8)!)
-                    self.updateGroceryItem(id: new.id, grocery: ReadableGroceryItem(name: new.item.name, quantity: new.item.quantity, unit: new.item.unit, active: existing.item.active, order: newOrder), completion: self.onChange)
+                    if isMerge {
+                        let run = { () -> Void in
+                            self.mergeItems = (existing.item, new.item, [existing.id, new.id])
+                            self.performSegue(withIdentifier: "mergeItems", sender: nil)
+                        }
+                        let runAndIgnore = { () -> Void in
+                            User.setDidDismissMergeWarning()
+                            run()
+                        }
+                        if !User.dismissedMergeWarning() {
+                            self.promptForConfirmationThree(
+                                title: "Warning",
+                                message: "Merging items may result in unexpected behavior when deleting recipes. If you need to delete recipes, do that first.",
+                                option1Button: "OK",
+                                option1Handler: { _ in run() },
+                                option2Button: "Ignore future warnings",
+                                option2Handler: { _ in runAndIgnore() }
+                            )
+                        } else {
+                            run()
+                        }
+                    } else {
+                        let newItem = ReadableGroceryItem(name: new.item.name, quantity: new.item.quantity, unit: new.item.unit, active: existing.item.active, order: newOrder)
+                        self.updateGrocery(grocery: ReadableGroceryItemWithId(item: newItem, id: new.id))
+                        self.onChange?()
+                    }
                 } catch {
                     print("Failed completing drag and drop \(error)")
                 }
@@ -295,6 +328,12 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let vc = segue.destination as? GroceryMergeController, segue.identifier == "mergeItems" {
+            vc.existing = mergeItems!.0
+            vc.new = mergeItems!.1
+            vc.ids = mergeItems!.2
+            vc.onChange = onChange
+        }
         if let vc = segue.destination as? GroceryEditController, segue.identifier == "editItem" {
             vc.existing = editItem!
             vc.onChange = onChange
