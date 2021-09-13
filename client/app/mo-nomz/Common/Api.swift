@@ -98,6 +98,7 @@ extension UIViewController {
                     }
                     let recipe = ReadableRecipe(name: name, link: link, active: true, rating: 0, notes: "", ingredients: ingredients)
                     self.insertRecipe(recipe: recipe)
+                    completion?()
                 } catch {
                     self.defaultOnError(error)
                 }

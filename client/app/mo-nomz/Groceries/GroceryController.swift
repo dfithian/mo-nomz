@@ -20,10 +20,9 @@ class GroceryController: UIViewController {
     @IBAction func export(_ sender: Any?) {
         let items: [ReadableGroceryItemWithId] = groceryVc?.toBuy ?? []
         if !items.isEmpty {
-            let itemsText: String = items.map({ (x: ReadableGroceryItemWithId) -> String in
+            let exportText: String = items.map({ (x: ReadableGroceryItemWithId) -> String in
                 return x.item.render()
             }).joined(separator: "\n")
-            let exportText: String = "Grocery List\n\(itemsText)"
             let vc = UIActivityViewController(activityItems: [exportText], applicationActivities: nil)
             present(vc, animated: true, completion: nil)
         }
@@ -42,8 +41,8 @@ class GroceryController: UIViewController {
     
     @objc func loadData() {
         let groceries = selectGroceries()
-        groceryVc?.toBuy = groceries.map({ ReadableGroceryItemWithId(item: $0.item, id: $0.id) }).filter({ $0.item.active }).sorted(by: { $0.item.order < $1.item.order })
-        groceryVc?.bought = groceries.map({ ReadableGroceryItemWithId(item: $0.item, id: $0.id) }).filter({ !$0.item.active }).sorted(by: { $0.item.order < $1.item.order })
+        groceryVc?.toBuy = groceries.map({ ReadableGroceryItemWithId(item: $0.item, id: $0.id) }).filter({ $0.item.active })
+        groceryVc?.bought = groceries.map({ ReadableGroceryItemWithId(item: $0.item, id: $0.id) }).filter({ !$0.item.active })
         DispatchQueue.main.async {
             self.groceryVc?.tableView.reloadData()
         }

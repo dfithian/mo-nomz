@@ -27,15 +27,16 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
     }
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 5
+        return 6
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
         case 0: return 1
         case 1: return 1
-        case 2: return 1
-        case 4: return 1
+        case 2: return !User.dismissedIngredientMergeTip() ? 1 : 0
+        case 3: return 1
+        case 5: return 1
         default: return ingredients.count
         }
     }
@@ -54,10 +55,12 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
             cell.blob.delegate = self
             return cell
         case 2:
+            return tableView.dequeueReusableCell(withIdentifier: "mergeTip")!
+        case 3:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SimpleSectionHeader
             cell.label.text = "Ingredients"
             return cell
-        case 4:
+        case 5:
             let cell = tableView.dequeueReusableCell(withIdentifier: "addItem") as! AddItem
             cell.add.addTarget(self, action: #selector(didTapAdd), for: .touchUpInside)
             return cell
@@ -73,7 +76,7 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
         guard let r = recipe else { return nil }
         let delete: UUID
         switch indexPath.section {
-        case 3:
+        case 4:
             delete = ingredients[indexPath.row].id
             break
         default:
@@ -92,7 +95,7 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
         guard let r = recipe else { return nil }
         let delete: UUID
         switch indexPath.section {
-        case 3:
+        case 4:
             delete = ingredients[indexPath.row].id
             break
         default:
@@ -109,11 +112,20 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.section {
-        case 3:
+        case 2:
+            let handler = { (action: UIAlertAction) -> Void in
+                User.setDidDismissIngredientMergeTip()
+                DispatchQueue.main.async {
+                    self.tableView.reloadData()
+                }
+            }
+            promptForConfirmation(title: "Dismiss this tip", message: "Drag items to merge", handler: handler)
+            break
+        case 4:
             editItem = ingredients[indexPath.row]
             performSegue(withIdentifier: "editItem", sender: nil)
             break
-        case 4:
+        case 5:
             performSegue(withIdentifier: "addItem", sender: nil)
             break
         default:
@@ -124,7 +136,7 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
     func tableView(_ tableView: UITableView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
         let item: ReadableIngredientWithId
         switch indexPath.section {
-        case 3:
+        case 4:
             item = ingredients[indexPath.row]
             break
         default:
@@ -144,7 +156,7 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
         guard let indexPath = destinationIndexPath else { return cancel }
         guard session.items.count == 1 else { return cancel }
         switch indexPath.section {
-        case 3:
+        case 4:
             if indexPath.row < ingredients.count {
                 tableView.scrollToRow(at: indexPath, at: .none, animated: true)
             } else {
@@ -163,7 +175,7 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
         guard let indexPath = coordinator.destinationIndexPath else { return }
         let existing: ReadableIngredientWithId
         switch indexPath.section {
-        case 3:
+        case 4:
             existing = ingredients[indexPath.row]
             break
         default:

@@ -61,6 +61,12 @@ class User {
     static func setDidDismissReorderMergeTip() {
         UserDefaults.shared.set(true, forKey: "dismissedReorderMergeTip")
     }
+    static func dismissedIngredientMergeTip() -> Bool {
+        return UserDefaults.shared.bool(forKey: "dismissedIngredientMergeTip")
+    }
+    static func setDidDismissIngredientMergeTip() {
+        UserDefaults.shared.set(true, forKey: "dismissedIngredientMergeTip")
+    }
     static func dismissedMergeWarning() -> Bool {
         return UserDefaults.shared.bool(forKey: "dismissedMergeWarning")
     }

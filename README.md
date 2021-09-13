@@ -72,7 +72,7 @@ Non food related tags:
         * To buy only
     * Add
         * Link
-        * Structured
+        * Pasted with name and link
         * Pasted
     * Move to bought
     * Move to to buy
@@ -85,3 +85,10 @@ Non food related tags:
     * Move to saved
     * Move to active
     * Delete
+* Recipe
+    * Edit ingredient
+    * Merge ingredients
+    * Add ingredient
+    * Add notes
+    * Rating
+    * Go to link

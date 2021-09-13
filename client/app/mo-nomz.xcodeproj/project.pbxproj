@@ -54,6 +54,8 @@
 		37B979ED26ED0B66002B677F /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37B979EB26ED0B66002B677F /* Database.swift */; };
 		37B979EF26ED5171002B677F /* GroceryMergeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37B979EE26ED5171002B677F /* GroceryMergeController.swift */; };
 		37B979F226ED52CC002B677F /* IngredientMergeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37B979F126ED52CC002B677F /* IngredientMergeController.swift */; };
+		37B979F526EEB9FC002B677F /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37B979F426EEB9FC002B677F /* String.swift */; };
+		37B979F626EEB9FC002B677F /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37B979F426EEB9FC002B677F /* String.swift */; };
 		37C6714E2627BFB100B5838C /* ErrorHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C6714D2627BFB100B5838C /* ErrorHandler.swift */; };
 		37E1DBEF262FCE3600330C5B /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37E1DBEE262FCE3600330C5B /* ShareViewController.swift */; };
 		37E1DBF6262FCE3600330C5B /* sharing.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 37E1DBEC262FCE3600330C5B /* sharing.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -142,6 +144,7 @@
 		37B979EB26ED0B66002B677F /* Database.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
 		37B979EE26ED5171002B677F /* GroceryMergeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroceryMergeController.swift; sourceTree = "<group>"; };
 		37B979F126ED52CC002B677F /* IngredientMergeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IngredientMergeController.swift; sourceTree = "<group>"; };
+		37B979F426EEB9FC002B677F /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		37C6714D2627BFB100B5838C /* ErrorHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorHandler.swift; sourceTree = "<group>"; };
 		37E1DBEC262FCE3600330C5B /* sharing.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = sharing.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		37E1DBEE262FCE3600330C5B /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
@@ -256,6 +259,7 @@
 				378EBD5026214A41008FF6C4 /* Types.swift */,
 				3774A5A72624769F0029E35D /* User.swift */,
 				37E1DC1C2631B7C000330C5B /* UserDefaults.swift */,
+				37B979F426EEB9FC002B677F /* String.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -481,6 +485,7 @@
 				37B979EF26ED5171002B677F /* GroceryMergeController.swift in Sources */,
 				37B979AF269BD915002B677F /* SimpleSectionHeader.swift in Sources */,
 				3774A5A82624769F0029E35D /* User.swift in Sources */,
+				37B979F526EEB9FC002B677F /* String.swift in Sources */,
 				379D479E26264DD5003DD2C6 /* RecipeListItem.swift in Sources */,
 				378EBD5726214DFE008FF6C4 /* GroceryListController.swift in Sources */,
 				37B979B926CC9068002B677F /* IngredientAddController.swift in Sources */,
@@ -512,6 +517,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				37E1DC202631B82600330C5B /* UserDefaults.swift in Sources */,
+				37B979F626EEB9FC002B677F /* String.swift in Sources */,
 				37E1DC192631B3EB00330C5B /* ErrorHandler.swift in Sources */,
 				37B979E826EC2057002B677F /* DataAccess.swift in Sources */,
 				37E1DC162631B3DC00330C5B /* Configuration.swift in Sources */,

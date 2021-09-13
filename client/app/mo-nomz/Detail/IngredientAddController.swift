@@ -27,7 +27,7 @@ class IngredientAddController: UIViewController, UIPickerViewDataSource, UIPicke
     
     @IBAction func didTapSave(_ sender: Any?) {
         guard let r = recipe else { return }
-        let item = ReadableIngredientWithId(id: UUID(), ingredient: ReadableIngredient(name: name.text!, quantity: ReadableQuantity(whole: currentWholeQuantity, fraction: currentFractionQuantity), unit: unit.text, order: order ?? 1))
+        let item = ReadableIngredientWithId(id: UUID(), ingredient: ReadableIngredient(name: name.text!, quantity: ReadableQuantity(whole: currentWholeQuantity, fraction: currentFractionQuantity), unit: unit.text?.nonEmpty(), order: order ?? 1))
         updateRecipeIngredients(id: r.id, active: r.recipe.active, deletes: [], adds: [item])
         DispatchQueue.main.async {
             self.dismiss(animated: true, completion: nil)

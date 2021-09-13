@@ -29,7 +29,7 @@ class GroceryMergeController: UIViewController, UIPickerViewDataSource, UIPicker
     }
     
     @IBAction func didTapSave(_ sender: Any?) {
-        let item = ReadableGroceryItemWithId(item: ReadableGroceryItem(name: name.text!, quantity: ReadableQuantity(whole: currentWholeQuantity, fraction: currentFractionQuantity), unit: unit.text, active: existing.active, order: existing.order), id: UUID())
+        let item = ReadableGroceryItemWithId(item: ReadableGroceryItem(name: name.text!, quantity: ReadableQuantity(whole: currentWholeQuantity, fraction: currentFractionQuantity), unit: unit.text?.nonEmpty(), active: existing.active, order: existing.order), id: UUID())
         mergeGroceries(ids: ids, grocery: item)
         DispatchQueue.main.async {
             self.dismiss(animated: true, completion: nil)

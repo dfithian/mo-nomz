@@ -44,7 +44,12 @@ extension UIViewController {
     func selectGroceries() -> [ReadableGroceryItemWithId] {
         do {
             let ctx = DataAccess.shared.managedObjectContext
-            return try ctx.fetch(GroceryItemData.req()).map({ $0.toReadableGroceryItemWithId() })
+            let req = GroceryItemData.req()
+            req.sortDescriptors = [
+                NSSortDescriptor(key: "ordering", ascending: true),
+                NSSortDescriptor(key: "name", ascending: true)
+            ]
+            return try ctx.fetch(req).map({ $0.toReadableGroceryItemWithId() })
         } catch let error as NSError {
             defaultOnError(error)
         }
@@ -90,7 +95,7 @@ extension UIViewController {
                 if fetched.ordering != Int32(grocery.item.order) {
                     let reorderReq = GroceryItemData.req()
                     let notThisId = NSPredicate(format: "id <> %@", grocery.id as CVarArg)
-                    let largerOrder = NSPredicate(format: "ordering >= %@", grocery.item.order as CVarArg)
+                    let largerOrder = NSPredicate(format: "ordering >= %@", grocery.item.order as NSNumber)
                     reorderReq.predicate = NSCompoundPredicate(type: .and, subpredicates: [notThisId, largerOrder])
                     for other in try ctx.fetch(reorderReq) {
                         other.ordering += 1
@@ -166,7 +171,12 @@ extension UIViewController {
     func selectRecipes() -> [ReadableRecipeWithId] {
         do {
             let ctx = DataAccess.shared.managedObjectContext
-            return try ctx.fetch(RecipeData.req()).map({ $0.toReadableRecipeWithId(ingredientsData: []) })
+            let req = RecipeData.req()
+            req.sortDescriptors = [
+                NSSortDescriptor(key: "rating", ascending: false),
+                NSSortDescriptor(key: "name", ascending: true)
+            ]
+            return try ctx.fetch(req).map({ $0.toReadableRecipeWithId(ingredientsData: []) })
         } catch let error as NSError {
             defaultOnError(error)
         }
@@ -178,6 +188,10 @@ extension UIViewController {
             let ctx = DataAccess.shared.managedObjectContext
             let ingredientReq = IngredientData.req()
             ingredientReq.predicate = NSPredicate(format: "recipe_id = %@", id as CVarArg)
+            ingredientReq.sortDescriptors = [
+                NSSortDescriptor(key: "ordering", ascending: true),
+                NSSortDescriptor(key: "name", ascending: true)
+            ]
             let ingredients = try ctx.fetch(ingredientReq)
             let recipeReq = RecipeData.req()
             recipeReq.predicate = NSPredicate(format: "id = %@", id as CVarArg)
@@ -192,8 +206,12 @@ extension UIViewController {
     func insertRecipe(recipe: ReadableRecipe) {
         do {
             let ctx = DataAccess.shared.managedObjectContext
+            
+            // insert recipe
             let recipeWithId = ReadableRecipeWithId(recipe: recipe, id: UUID())
             insertRecipeRaw(ctx, recipe: recipeWithId)
+            
+            // insert ingredients and groceries
             var maxOrder = try selectMaxOrderRaw(ctx)
             for (ingredientId, ingredient) in recipe.ingredients {
                 let ingredientWithId = ReadableIngredientWithId(id: ingredientId, ingredient: ingredient)
@@ -202,7 +220,10 @@ extension UIViewController {
                 insertGroceryRaw(ctx, grocery: groceryWithId)
                 insertIngredientRaw(ctx, ingredient: ingredientWithId, recipeId: recipeWithId.id, groceryId: groceryWithId.id)
             }
+            
+            // automerge
             try automergeGroceriesRaw(ctx)
+
             try ctx.save()
         } catch let error as NSError {
             defaultOnError(error)
@@ -213,6 +234,10 @@ extension UIViewController {
         // setting recipe active bit handled by caller
         let ingredientReq = IngredientData.req()
         ingredientReq.predicate = NSPredicate(format: "recipe_id = %@", id as CVarArg)
+        ingredientReq.sortDescriptors = [
+            NSSortDescriptor(key: "ordering", ascending: true),
+            NSSortDescriptor(key: "name", ascending: true)
+        ]
         var maxOrder = try selectMaxOrderRaw(ctx)
         for ingredient in try ctx.fetch(ingredientReq) {
             let grocery = ingredient.toReadableIngredientWithId().toGroceryItemWithId(active: true, order: maxOrder)

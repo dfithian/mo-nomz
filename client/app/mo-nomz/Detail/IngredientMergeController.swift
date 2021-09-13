@@ -30,7 +30,7 @@ class IngredientMergeController: UIViewController, UIPickerViewDataSource, UIPic
     
     @IBAction func didTapSave(_ sender: Any?) {
         guard let r = recipe, let e = existing, let n = new else { return }
-        let item = ReadableIngredientWithId(id: UUID(), ingredient: ReadableIngredient(name: name.text!, quantity: ReadableQuantity(whole: currentWholeQuantity, fraction: currentFractionQuantity), unit: unit.text, order: e.ingredient.order))
+        let item = ReadableIngredientWithId(id: UUID(), ingredient: ReadableIngredient(name: name.text!, quantity: ReadableQuantity(whole: currentWholeQuantity, fraction: currentFractionQuantity), unit: unit.text?.nonEmpty(), order: e.ingredient.order))
         updateRecipeIngredients(id: r.id, active: r.recipe.active, deletes: [e.id, n.id], adds: [item])
         DispatchQueue.main.async {
             self.dismiss(animated: true, completion: nil)

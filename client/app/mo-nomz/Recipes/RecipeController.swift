@@ -32,8 +32,8 @@ class RecipeController: UIViewController {
 
     @objc func loadData() {
         let recipes = selectRecipes()
-        recipeVc?.active = recipes.filter({ $0.recipe.active }).sorted(by: { ($0.recipe.rating, $0.recipe.name) > ($1.recipe.rating, $1.recipe.name) })
-        recipeVc?.saved = recipes.filter({ !$0.recipe.active }).sorted(by: { ($0.recipe.rating, $0.recipe.name) > ($1.recipe.rating, $1.recipe.name) })
+        recipeVc?.active = recipes.filter({ $0.recipe.active })
+        recipeVc?.saved = recipes.filter({ !$0.recipe.active })
         DispatchQueue.main.async {
             self.recipeVc?.tableView.reloadData()
         }

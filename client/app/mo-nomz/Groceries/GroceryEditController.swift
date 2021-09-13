@@ -27,7 +27,7 @@ class GroceryEditController: UIViewController, UIPickerViewDataSource, UIPickerV
     
     @IBAction func didTapSave(_ sender: Any?) {
         guard let e = existing else { return }
-        let item = ReadableGroceryItem(name: name.text!, quantity: ReadableQuantity(whole: currentWholeQuantity, fraction: currentFractionQuantity), unit: unit.text, active: e.item.active, order: e.item.order)
+        let item = ReadableGroceryItem(name: name.text!, quantity: ReadableQuantity(whole: currentWholeQuantity, fraction: currentFractionQuantity), unit: unit.text?.nonEmpty(), active: e.item.active, order: e.item.order)
         updateGrocery(grocery: ReadableGroceryItemWithId(item: item, id: e.id))
         DispatchQueue.main.async {
             self.dismiss(animated: true, completion: nil)

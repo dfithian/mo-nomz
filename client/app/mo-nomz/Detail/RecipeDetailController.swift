@@ -121,7 +121,7 @@ class RecipeDetailController: UIViewController, UITextViewDelegate {
         guard let r = recipe else { return }
         guard let newRecipe = getRecipe(id: r.id) else { return }
         detailVc?.recipe = newRecipe
-        detailVc?.ingredients = newRecipe.recipe.ingredients.map({ ReadableIngredientWithId(id: $0, ingredient: $1) }).sorted(by: { $0.ingredient.order < $1.ingredient.order })
+        detailVc?.ingredients = newRecipe.recipe.ingredients.map({ ReadableIngredientWithId(id: $0, ingredient: $1) }).sorted(by: { ($0.ingredient.order, $0.ingredient.name) < ($1.ingredient.order, $1.ingredient.name) })
         DispatchQueue.main.async {
             self.detailVc?.tableView.reloadData()
         }
