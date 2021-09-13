@@ -63,6 +63,7 @@ Non food related tags:
 
 ## Test plan
 
+* Export from service
 * Profile
     * Contact support
     * Support form

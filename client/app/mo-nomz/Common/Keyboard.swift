@@ -64,12 +64,14 @@ extension UITextView {
 }
 
 extension UIViewController {
+    static let margin: CGFloat = 10
+
     func keyboardWillShowInternal(subview: UIView, notification: NSNotification) -> CGFloat? {
         guard let keyboard = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return nil }
         if self.view.frame.origin.y == 0 {
             let height = self.view.frame.height
-            self.view.frame.origin.y -= subview.frame.origin.y
-            self.view.frame.size.height -= keyboard.cgRectValue.height - subview.frame.origin.y
+            self.view.frame.origin.y -= (subview.frame.origin.y - UIViewController.margin)
+            self.view.frame.size.height -= (keyboard.cgRectValue.height - subview.frame.origin.y + UIViewController.margin)
             return height
         }
         return nil
@@ -81,7 +83,7 @@ extension UIViewController {
             if let height = heightMay {
                 self.view.frame.size.height = height
             } else {
-                self.view.frame.size.height += keyboard.cgRectValue.height + self.view.frame.origin.y
+                self.view.frame.size.height += (keyboard.cgRectValue.height + self.view.frame.origin.y - UIViewController.margin)
             }
             self.view.frame.origin.y = 0
         }
