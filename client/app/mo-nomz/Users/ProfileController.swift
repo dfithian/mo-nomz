@@ -7,15 +7,9 @@
 
 import UIKit
 
-class ProfileController: UITableViewController {
-    @IBAction func didTapContactSupport(_ sender: Any) {
-        if let url = URL(string: Configuration.supportUrl) {
-            if #available(iOS 10.0, *) {
-                UIApplication.shared.open(url)
-            } else {
-                UIApplication.shared.openURL(url)
-            }
-        }
+class ProfileController: UITableViewController {    
+    @IBAction func didTapNeedHelp(_ sender: Any) {
+        needHelp()
     }
     
     @IBAction func didTapDonate(_ sender: Any) {

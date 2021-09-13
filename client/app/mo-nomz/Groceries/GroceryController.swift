@@ -13,12 +13,13 @@ class GroceryController: UIViewController {
     @IBOutlet weak var toolbar: Toolbar!
     @IBOutlet weak var clear: UIButton!
     @IBOutlet weak var export: UIButton!
+    @IBOutlet weak var help: UIButton!
     @IBOutlet weak var add: UIButton!
 
     var groceryVc: GroceryListController? = nil
     
     @IBAction func export(_ sender: Any?) {
-        let items: [ReadableGroceryItemWithId] = groceryVc?.toBuy ?? []
+        let items: [ReadableGroceryItemWithId] = selectGroceries().filter({ $0.item.active })
         if !items.isEmpty {
             let exportText: String = items.map({ (x: ReadableGroceryItemWithId) -> String in
                 return x.item.render()
@@ -26,6 +27,10 @@ class GroceryController: UIViewController {
             let vc = UIActivityViewController(activityItems: [exportText], applicationActivities: nil)
             present(vc, animated: true, completion: nil)
         }
+    }
+    
+    @IBAction func help(_ sender: Any?) {
+        needHelp()
     }
     
     @IBAction func clear(_ sender: Any?) {
@@ -68,6 +73,8 @@ class GroceryController: UIViewController {
         clear.alignTextUnderImage()
         export.frame = CGRect(x: export.frame.minX, y: export.frame.minY, width: export.frame.width, height: toolbar.frame.height)
         export.alignTextUnderImage()
+        help.frame = CGRect(x: help.frame.minX, y: help.frame.minY, width: help.frame.width, height: toolbar.frame.height)
+        help.alignTextUnderImage()
         add.frame = CGRect(x: add.frame.minX, y: add.frame.minY, width: add.frame.width, height: toolbar.frame.height)
         add.alignTextUnderImage()
         NotificationCenter.default.addObserver(self, selector: #selector(loadData), name: UIApplication.willEnterForegroundNotification, object: nil)

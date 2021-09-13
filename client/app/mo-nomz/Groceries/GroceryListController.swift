@@ -21,6 +21,13 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
     var editItem: ReadableGroceryItemWithId? = nil
     var collapsed: [Bool] = [false, true]
     
+    let EMPTY = 0
+    let REORDER_MERGE_TIP = 1
+    let TO_BUY_HEADING = 2
+    let TO_BUY = 3
+    let BOUGHT_HEADING = 4
+    let BOUGHT = 5
+    
     private func hasData() -> Bool {
         return (toBuy.count + bought.count) > 0
     }
@@ -51,7 +58,7 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.section {
-        case 1:
+        case REORDER_MERGE_TIP:
             let handler = { (action: UIAlertAction) -> Void in
                 User.setDidDismissReorderMergeTip()
                 DispatchQueue.main.async {
@@ -60,22 +67,22 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
             }
             promptForConfirmation(title: "Dismiss this tip", message: "Drag items to reorder or merge", handler: handler)
             break
-        case 2:
+        case TO_BUY_HEADING:
             collapsed[0] = !collapsed[0]
             DispatchQueue.main.async {
                 self.tableView.reloadData()
             }
             break
-        case 3:
+        case TO_BUY:
             editRow(item: toBuy[indexPath.row])
             break
-        case 4:
+        case BOUGHT_HEADING:
             collapsed[1] = !collapsed[1]
             DispatchQueue.main.async {
                 self.tableView.reloadData()
             }
             break
-        case 5:
+        case BOUGHT:
             editRow(item: bought[indexPath.row])
             break
         default:
@@ -89,8 +96,8 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
     
     private func collapsedSection(_ section: Int) -> Int? {
         switch section {
-        case 3: return 0
-        case 5: return 1
+        case TO_BUY: return 0
+        case BOUGHT: return 1
         default: return nil
         }
     }
@@ -100,13 +107,13 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
             if collapsed[c] { return 0 }
         }
         switch section {
-        case 0: return hasData() ? 0 : 1
-        case 1: return (hasData() && !User.dismissedReorderMergeTip()) ? 1 : 0
-        case 2: return hasData() ? 1 : 0
-        case 3: return toBuy.count
-        case 4: return hasData() ? 1 : 0
-        case 5: return bought.count
-        default: return 1
+        case EMPTY: return hasData() ? 0 : 1
+        case REORDER_MERGE_TIP: return (hasData() && !User.dismissedReorderMergeTip()) ? 1 : 0
+        case TO_BUY_HEADING: return hasData() ? 1 : 0
+        case TO_BUY: return toBuy.count
+        case BOUGHT_HEADING: return hasData() ? 1 : 0
+        case BOUGHT: return bought.count
+        default: return 0
         }
     }
     
@@ -131,9 +138,9 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
     
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         switch indexPath.section {
-        case 3:
+        case TO_BUY:
             return deleteRowSwipe(toBuy[indexPath.row].id)
-        case 5:
+        case BOUGHT:
             return deleteRowSwipe(bought[indexPath.row].id)
         default:
             break
@@ -143,9 +150,9 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
     
     override func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         switch indexPath.section {
-        case 3:
+        case TO_BUY:
             return deleteRowSwipe(toBuy[indexPath.row].id)
-        case 5:
+        case BOUGHT:
             return deleteRowSwipe(bought[indexPath.row].id)
         default:
             break
@@ -155,18 +162,18 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch indexPath.section {
-        case 0:
+        case EMPTY:
             let cell = tableView.dequeueReusableCell(withIdentifier: "emptyItem")!
             return cell
-        case 1:
+        case REORDER_MERGE_TIP:
             return tableView.dequeueReusableCell(withIdentifier: "reorderMergeTip")!
-        case 2:
+        case TO_BUY_HEADING:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SectionHeader
             let image = collapsed[0] ? UIImage(systemName: "chevron.forward.circle.fill") : UIImage(systemName: "chevron.down.circle.fill")
             cell.indicator.setImage(image, for: .normal)
             cell.label.text = "To buy (\(toBuy.count))"
             return cell
-        case 3:
+        case TO_BUY:
             let cell = tableView.dequeueReusableCell(withIdentifier: "toBuyListItem") as! GroceryListItem
             let item = toBuy[indexPath.row].item
             cell.tag = indexPath.row
@@ -174,13 +181,13 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
             cell.select.tag = indexPath.row
             cell.select.addTarget(self, action: #selector(didTapToBuy), for: .touchUpInside)
             return cell
-        case 4:
+        case BOUGHT_HEADING:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SectionHeader
             let image = collapsed[1] ? UIImage(systemName: "chevron.forward.circle.fill") : UIImage(systemName: "chevron.down.circle.fill")
             cell.indicator.setImage(image, for: .normal)
             cell.label.text = "Bought (\(bought.count))"
             return cell
-        case 5:
+        case BOUGHT:
             let cell = tableView.dequeueReusableCell(withIdentifier: "boughtListItem") as! GroceryListItem
             let item = bought[indexPath.row].item
             cell.tag = indexPath.row
@@ -198,11 +205,11 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
         let item: ReadableGroceryItemWithId
         let isToBuy: Bool
         switch indexPath.section {
-        case 3:
+        case TO_BUY:
             item = toBuy[indexPath.row]
             isToBuy = true
             break
-        case 5:
+        case BOUGHT:
             item = bought[indexPath.row]
             isToBuy = false
             break
@@ -225,14 +232,14 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
         guard let indexPath = destinationIndexPath else { return cancel }
         guard session.items.count == 1 else { return cancel }
         switch (indexPath.section, info.toBuy) {
-        case (3, true):
+        case (TO_BUY, true):
             if indexPath.row < toBuy.count {
                 tableView.scrollToRow(at: indexPath, at: .none, animated: true)
             } else {
                 tableView.scrollToRow(at: IndexPath(row: toBuy.count - 1, section: indexPath.section), at: .none, animated: true)
             }
             break
-        case (5, false):
+        case (BOUGHT, false):
             if indexPath.row < bought.count {
                 tableView.scrollToRow(at: indexPath, at: .none, animated: true)
             } else {
@@ -254,11 +261,11 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
         let newOrder: Int
         let isMerge = coordinator.proposal.intent == .insertIntoDestinationIndexPath
         switch (indexPath.section, isMerge) {
-        case (3, true):
+        case (TO_BUY, true):
             existing = toBuy[indexPath.row]
             newOrder = existing.item.order
             break
-        case (3, false):
+        case (TO_BUY, false):
             if info.indexPath.row < indexPath.row {
                 existing = toBuy[indexPath.row]
                 newOrder = existing.item.order + 1
@@ -270,11 +277,11 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
                 newOrder = existing.item.order + 1
             }
             break
-        case (5, true):
+        case (BOUGHT, true):
             existing = bought[tableView.cellForRow(at: indexPath)!.tag]
             newOrder = existing.item.order
             break
-        case (5, false):
+        case (BOUGHT, false):
             if info.indexPath.row < indexPath.row {
                 existing = bought[indexPath.row]
                 newOrder = existing.item.order + 1

@@ -16,6 +16,13 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
     var mergeItems: (ReadableIngredientWithId, ReadableIngredientWithId)? = nil
     var editItem: ReadableIngredientWithId? = nil
     
+    let NOTES_HEADING = 0
+    let NOTES = 1
+    let MERGE_TIP = 2
+    let LIST_HEADING = 3
+    let LIST = 4
+    let ADD = 5
+    
     @objc func didTapAdd(_ sender: Any?) {
         performSegue(withIdentifier: "addItem", sender: nil)
     }
@@ -32,42 +39,46 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
-        case 0: return 1
-        case 1: return 1
-        case 2: return !User.dismissedIngredientMergeTip() ? 1 : 0
-        case 3: return 1
-        case 5: return 1
-        default: return ingredients.count
+        case NOTES_HEADING: return 1
+        case NOTES: return 1
+        case MERGE_TIP: return !User.dismissedIngredientMergeTip() ? 1 : 0
+        case LIST_HEADING: return 1
+        case LIST: return ingredients.count
+        case ADD: return 1
+        default: return 0
         }
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch indexPath.section {
-        case 0:
+        case NOTES_HEADING:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SimpleSectionHeader
             cell.label.text = "Notes"
             return cell
-        case 1:
+        case NOTES:
             let cell = tableView.dequeueReusableCell(withIdentifier: "noteItem") as! NoteItem
             cell.blob.text = recipe?.recipe.notes ?? ""
             cell.blob.addDoneButtonOnKeyboard()
             cell.blob.layer.cornerRadius = 10
             cell.blob.delegate = self
             return cell
-        case 2:
+        case MERGE_TIP:
             return tableView.dequeueReusableCell(withIdentifier: "mergeTip")!
-        case 3:
+        case LIST_HEADING:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SimpleSectionHeader
             cell.label.text = "Ingredients"
             return cell
-        case 5:
+        case LIST:
+            let cell = tableView.dequeueReusableCell(withIdentifier: "listItem") as! IngredientListItem
+            let item = ingredients[indexPath.row]
+            cell.name.text = item.ingredient.render()
+            return cell
+        case ADD:
             let cell = tableView.dequeueReusableCell(withIdentifier: "addItem") as! AddItem
             cell.add.addTarget(self, action: #selector(didTapAdd), for: .touchUpInside)
             return cell
         default:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "listItem") as! IngredientListItem
-            let item = ingredients[indexPath.row]
-            cell.name.text = item.ingredient.render()
+            let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SimpleSectionHeader
             return cell
         }
     }
@@ -76,7 +87,7 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
         guard let r = recipe else { return nil }
         let delete: UUID
         switch indexPath.section {
-        case 4:
+        case LIST:
             delete = ingredients[indexPath.row].id
             break
         default:
@@ -95,7 +106,7 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
         guard let r = recipe else { return nil }
         let delete: UUID
         switch indexPath.section {
-        case 4:
+        case LIST:
             delete = ingredients[indexPath.row].id
             break
         default:
@@ -112,7 +123,7 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.section {
-        case 2:
+        case MERGE_TIP:
             let handler = { (action: UIAlertAction) -> Void in
                 User.setDidDismissIngredientMergeTip()
                 DispatchQueue.main.async {
@@ -121,11 +132,11 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
             }
             promptForConfirmation(title: "Dismiss this tip", message: "Drag items to merge", handler: handler)
             break
-        case 4:
+        case LIST:
             editItem = ingredients[indexPath.row]
             performSegue(withIdentifier: "editItem", sender: nil)
             break
-        case 5:
+        case ADD:
             performSegue(withIdentifier: "addItem", sender: nil)
             break
         default:
@@ -136,7 +147,7 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
     func tableView(_ tableView: UITableView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
         let item: ReadableIngredientWithId
         switch indexPath.section {
-        case 4:
+        case LIST:
             item = ingredients[indexPath.row]
             break
         default:
@@ -156,7 +167,7 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
         guard let indexPath = destinationIndexPath else { return cancel }
         guard session.items.count == 1 else { return cancel }
         switch indexPath.section {
-        case 4:
+        case LIST:
             if indexPath.row < ingredients.count {
                 tableView.scrollToRow(at: indexPath, at: .none, animated: true)
             } else {
@@ -175,7 +186,7 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
         guard let indexPath = coordinator.destinationIndexPath else { return }
         let existing: ReadableIngredientWithId
         switch indexPath.section {
-        case 4:
+        case LIST:
             existing = ingredients[indexPath.row]
             break
         default:

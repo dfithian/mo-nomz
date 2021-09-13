@@ -119,28 +119,28 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" id="hhr-2S-Bgz">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" id="AoS-j6-MNg">
                                         <rect key="frame" x="0.0" y="112.5" width="414" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="hhr-2S-Bgz" id="1jz-fr-Vyh">
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="AoS-j6-MNg" id="afM-CP-wby">
                                             <rect key="frame" x="0.0" y="0.0" width="414" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nuT-dj-WFL">
-                                                    <rect key="frame" x="154" y="4" width="106" height="36"/>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CuG-uT-G0T">
+                                                    <rect key="frame" x="170.5" y="4" width="73" height="36"/>
                                                     <constraints>
-                                                        <constraint firstAttribute="height" constant="36" id="BVe-BA-lxG"/>
+                                                        <constraint firstAttribute="height" constant="36" id="W78-o5-Syf"/>
                                                     </constraints>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                    <state key="normal" title="Contact support"/>
+                                                    <state key="normal" title="Need help?"/>
                                                     <connections>
-                                                        <action selector="didTapContactSupport:" destination="EmB-qz-tNe" eventType="touchUpInside" id="p9e-Pg-3Jl"/>
+                                                        <action selector="didTapNeedHelp:" destination="EmB-qz-tNe" eventType="touchUpInside" id="38p-Y1-pWx"/>
                                                     </connections>
                                                 </button>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstItem="nuT-dj-WFL" firstAttribute="centerY" secondItem="1jz-fr-Vyh" secondAttribute="centerY" id="OTO-vJ-fev"/>
-                                                <constraint firstItem="nuT-dj-WFL" firstAttribute="centerX" secondItem="1jz-fr-Vyh" secondAttribute="centerX" id="PQr-ol-rAU"/>
+                                                <constraint firstItem="CuG-uT-G0T" firstAttribute="centerX" secondItem="afM-CP-wby" secondAttribute="centerX" id="jdr-kR-Utw"/>
+                                                <constraint firstItem="CuG-uT-G0T" firstAttribute="centerY" secondItem="afM-CP-wby" secondAttribute="centerY" id="rvE-EG-eig"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
@@ -254,7 +254,37 @@
                                             </connections>
                                         </button>
                                     </barButtonItem>
+                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="Kh4-Dn-3ar"/>
+                                    <barButtonItem style="plain" id="8TV-Zi-ckR">
+                                        <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="iDQ-7n-RoD">
+                                            <rect key="frame" x="127" y="9" width="72" height="26"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                            <state key="normal" title="Export">
+                                                <color key="titleColor" name="AccentColor"/>
+                                                <imageReference key="image" image="square.and.arrow.up" catalog="system" symbolScale="large"/>
+                                            </state>
+                                            <connections>
+                                                <action selector="export:" destination="YMV-r0-X4W" eventType="touchUpInside" id="uOP-4r-cvC"/>
+                                            </connections>
+                                        </button>
+                                    </barButtonItem>
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="S94-Fc-eTR"/>
+                                    <barButtonItem style="plain" id="I3o-Wz-F5o">
+                                        <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="f91-Rl-3CB">
+                                            <rect key="frame" x="245" y="11" width="52" height="22.5"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                            <state key="normal" title="Help">
+                                                <color key="titleColor" name="AccentColor"/>
+                                                <imageReference key="image" image="questionmark" catalog="system" symbolScale="large"/>
+                                            </state>
+                                            <connections>
+                                                <action selector="help:" destination="YMV-r0-X4W" eventType="touchUpInside" id="aGT-ha-2eI"/>
+                                            </connections>
+                                        </button>
+                                    </barButtonItem>
+                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="A1C-GK-vSq"/>
                                     <barButtonItem style="plain" id="ZiR-Hz-chD">
                                         <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="tUe-bR-zm9">
                                             <rect key="frame" x="343" y="9" width="51" height="26"/>
@@ -294,6 +324,8 @@
                         <outlet property="add" destination="tUe-bR-zm9" id="xvc-wE-ald"/>
                         <outlet property="banner" destination="wq3-Ui-YiB" id="QM2-JT-yqW"/>
                         <outlet property="clear" destination="gJO-d3-elv" id="NwR-6R-Qu1"/>
+                        <outlet property="export" destination="iDQ-7n-RoD" id="S6l-lz-a7N"/>
+                        <outlet property="help" destination="f91-Rl-3CB" id="ssK-D3-c5O"/>
                         <outlet property="toolbar" destination="Nwd-by-Fmi" id="gSh-Af-cPV"/>
                     </connections>
                 </viewController>
@@ -350,7 +382,7 @@
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="a2R-uN-y99"/>
                                     <barButtonItem style="plain" id="fV5-2F-HH5">
                                         <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="Xoy-rw-hfn">
-                                            <rect key="frame" x="171" y="9" width="72" height="26"/>
+                                            <rect key="frame" x="127" y="9" width="72" height="26"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                             <state key="normal" title="Export">
@@ -363,6 +395,21 @@
                                         </button>
                                     </barButtonItem>
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="DES-NG-AGY"/>
+                                    <barButtonItem style="plain" id="ddY-XU-ka5">
+                                        <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="Nv7-dQ-adg">
+                                            <rect key="frame" x="245" y="11" width="52" height="22.5"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                            <state key="normal" title="Help">
+                                                <color key="titleColor" name="AccentColor"/>
+                                                <imageReference key="image" image="questionmark" catalog="system" symbolScale="large"/>
+                                            </state>
+                                            <connections>
+                                                <action selector="help:" destination="6IF-YC-SCE" eventType="touchUpInside" id="fjB-M9-bp0"/>
+                                            </connections>
+                                        </button>
+                                    </barButtonItem>
+                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="vI3-Ce-dwV"/>
                                     <barButtonItem style="plain" id="fuO-hA-iUI">
                                         <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="jOe-Cx-5V7">
                                             <rect key="frame" x="343" y="9" width="51" height="26"/>
@@ -403,6 +450,7 @@
                         <outlet property="banner" destination="TVo-0J-usG" id="ixn-3G-oTr"/>
                         <outlet property="clear" destination="whC-Q7-8v7" id="dvI-cq-8ML"/>
                         <outlet property="export" destination="Xoy-rw-hfn" id="xsk-BL-Z2G"/>
+                        <outlet property="help" destination="Nv7-dQ-adg" id="AHK-ei-cFq"/>
                         <outlet property="toolbar" destination="rma-TU-TU9" id="3VI-Gh-CBr"/>
                     </connections>
                 </viewController>
@@ -1637,6 +1685,7 @@
         <image name="info" catalog="system" width="93" height="128"/>
         <image name="list.dash" catalog="system" width="128" height="85"/>
         <image name="plus" catalog="system" width="128" height="113"/>
+        <image name="questionmark" catalog="system" width="96" height="128"/>
         <image name="square.and.arrow.up" catalog="system" width="115" height="128"/>
         <image name="star" catalog="system" width="128" height="116"/>
         <image name="star.fill" catalog="system" width="128" height="116"/>
