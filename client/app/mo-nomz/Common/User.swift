@@ -1,5 +1,5 @@
 //
-//  Persistence.swift
+//  User.swift
 //  mo-nomz
 //
 //  Created by Dan Fithian on 4/12/21.
@@ -7,17 +7,12 @@
 
 import Foundation
 
-struct Preferences {
-    let dismissedMergeWarning: Bool
-    let dismissedIngredientMergeWarning: Bool
-}
-
 struct State {
     let userId: Int
     let apiToken: String
 }
 
-class Persistence {
+class User {
     static let account: Data = Configuration.accountKey.data(using: .utf8)!
     static let server: Data = Configuration.serverKey.data(using: .utf8)!
     static func loadState() -> State? {
@@ -54,13 +49,34 @@ class Persistence {
         var ref: AnyObject?
         SecItemAdd(query, &ref)
     }
-    static func loadPreferencess() -> Preferences {
-        let dismissedMergeWarning = UserDefaults.shared.bool(forKey: "dismissedMergeWarning")
-        let dismissedIngredientMergeWarning = UserDefaults.shared.bool(forKey: "dismissedIngredientMergeWarning")
-        return Preferences(dismissedMergeWarning: dismissedMergeWarning, dismissedIngredientMergeWarning: dismissedIngredientMergeWarning)
+    static func exported() -> Bool {
+        return UserDefaults.shared.bool(forKey: "exported")
     }
-    static func setPreferences(_ preferences: Preferences) {
-        UserDefaults.shared.set(preferences.dismissedMergeWarning, forKey: "dismissedMergeWarning")
-        UserDefaults.shared.set(preferences.dismissedIngredientMergeWarning, forKey: "dismissedIngredientMergeWarning")
+    static func setDidExport() {
+        UserDefaults.shared.set(true, forKey: "exported")
+    }
+    static func dismissedReorderMergeTip() -> Bool {
+        return UserDefaults.shared.bool(forKey: "dismissedReorderMergeTip")
+    }
+    static func setDidDismissReorderMergeTip() {
+        UserDefaults.shared.set(true, forKey: "dismissedReorderMergeTip")
+    }
+    static func dismissedIngredientMergeTip() -> Bool {
+        return UserDefaults.shared.bool(forKey: "dismissedIngredientMergeTip")
+    }
+    static func setDidDismissIngredientMergeTip() {
+        UserDefaults.shared.set(true, forKey: "dismissedIngredientMergeTip")
+    }
+    static func dismissedMergeWarning() -> Bool {
+        return UserDefaults.shared.bool(forKey: "dismissedMergeWarning")
+    }
+    static func setDidDismissMergeWarning() {
+        UserDefaults.shared.set(true, forKey: "dismissedMergeWarning")
+    }
+    static func dismissedIngredientMergeWarning() -> Bool {
+        return UserDefaults.shared.bool(forKey: "dismissedIngredientMergeWarning")
+    }
+    static func setDidDismissIngredientMergeWarning() {
+        UserDefaults.shared.set(true, forKey: "dismissedIngredientMergeWarning")
     }
 }

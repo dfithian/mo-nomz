@@ -10,9 +10,10 @@ import Text.Blaze (Markup)
 import Text.Blaze.Renderer.Utf8 (renderMarkup)
 
 import API.Types
-  ( DeleteGroceryItemRequest, DeleteRecipeRequest, GetHealthResponse, GroceryImportBlobRequest
-  , GroceryImportListRequest, ListGroceryItemResponse, ListRecipeResponse, ListRecipeResponseV1
-  , MergeGroceryItemRequest, ReadableRecipe, RecipeImportLinkRequest, UpdateGroceryItemRequest
+  ( DeleteGroceryItemRequest, DeleteRecipeRequest, ExportResponse, GetHealthResponse
+  , GroceryImportBlobRequest, ListGroceryItemResponse, ListRecipeResponse, ListRecipeResponseV1
+  , MergeGroceryItemRequest, ParseBlobRequest, ParseBlobResponse, ParseLinkRequest
+  , ParseLinkResponse, ReadableRecipe, RecipeImportLinkRequest, UpdateGroceryItemRequest
   , UpdateRecipeIngredientsRequest, UpdateRecipeRequest, UserCreateResponse
   )
 import Auth (Authorized)
@@ -41,7 +42,6 @@ type NomzApi =
     :<|> Authorized :> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "grocery" :> "merge" :> ReqBody '[JSON] MergeGroceryItemRequest :> PostNoContent
     :<|> Authorized :> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "grocery" :> ReqBody '[JSON] DeleteGroceryItemRequest :> DeleteNoContent
     :<|> Authorized :> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "grocery" :> "clear" :> PostNoContent
-    :<|> Authorized :> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "grocery" :> "list" :> ReqBody '[JSON] GroceryImportListRequest :> PostNoContent
     :<|> Authorized :> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "grocery" :> "blob" :> ReqBody '[JSON] GroceryImportBlobRequest :> PostNoContent
     :<|> Authorized :> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "recipe" :> "link" :> ReqBody '[JSON] RecipeImportLinkRequest :> PostNoContent
     :<|> Authorized :> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "recipe" :> ReqBody '[JSON] UpdateRecipeRequest :> PostNoContent
@@ -51,3 +51,9 @@ type NomzApi =
     :<|> Authorized :> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "recipe" :> Capture "recipe-id" RecipeId :> Get '[JSON] ReadableRecipe
     :<|> Authorized :> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "recipe" :> ReqBody '[JSON] DeleteRecipeRequest :> DeleteNoContent
 
+    -- parsing only
+    :<|> Authorized :> "api" :> "v2" :> "user" :> Capture "user-id" UserId :> "blob" :> ReqBody '[JSON] ParseBlobRequest :> Post '[JSON] ParseBlobResponse
+    :<|> Authorized :> "api" :> "v2" :> "user" :> Capture "user-id" UserId :> "link" :> ReqBody '[JSON] ParseLinkRequest :> Post '[JSON] ParseLinkResponse
+
+    -- export data
+    :<|> Authorized :> "api" :> "v2" :> "user" :> Capture "user-id" UserId :> "export" :> Get '[JSON] ExportResponse

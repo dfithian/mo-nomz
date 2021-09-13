@@ -249,3 +249,19 @@ deleteRecipes conn userId recipeIds = do
   case null recipeIds of
     True -> pure ()
     False -> void $ execute conn "delete from nomz.recipe where user_id = ? and id in ?" (userId, In recipeIds)
+
+selectIngredients :: Connection -> UserId -> [IngredientId] -> IO (Map IngredientId (Maybe RecipeId, Maybe GroceryItemId, OrderedIngredient))
+selectIngredients conn userId ingredientIds = do
+  ingredients <- case null ingredientIds of
+    True -> query conn "select id, recipe_id, grocery_id, name, quantity, unit, ordering from nomz.ingredient where user_id = ? order by recipe_id, ordering, name" (Only userId)
+    False -> query conn "select id, recipe_id, grocery_id, name, quantity, unit, ordering from nomz.ingredient where user_id = ? and id in ?" (userId, In ingredientIds)
+  pure
+    . mapFromList
+    . map (\(defaultOrder, (ingredientId, recipeId, groceryItemId, name, quantity, unit, order)) -> (ingredientId, (recipeId, groceryItemId, OrderedIngredient (Ingredient name quantity unit) (fromMaybe defaultOrder order))))
+    . zip [1..]
+    $ ingredients
+
+exportConfirm :: Connection -> UserId -> IO ()
+exportConfirm conn userId = do
+  now <- getCurrentTime
+  void $ execute conn "insert into nomz.export (user_id, confirmed_at) values (?, ?)" (userId, now)

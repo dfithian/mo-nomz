@@ -8,16 +8,17 @@
 import MobileCoreServices
 import UIKit
 
-struct RecipeWithId: Codable {
-    let recipe: ReadableRecipe
-    let id: Int
-}
-
 class RecipeListController: UITableViewController {
-    var active: [RecipeWithId] = []
-    var saved: [RecipeWithId] = []
+    var active: [ReadableRecipeWithId] = []
+    var saved: [ReadableRecipeWithId] = []
     var onChange: (() -> Void)?
     var collapsed: [Bool] = [false, true]
+    
+    let EMPTY = 0
+    let ACTIVE_HEADING = 1
+    let ACTIVE = 2
+    let SAVED_HEADING = 3
+    let SAVED = 4
     
     private func hasData() -> Bool {
         return (active.count + saved.count) > 0
@@ -29,8 +30,8 @@ class RecipeListController: UITableViewController {
     
     private func collapsedSection(_ section: Int) -> Int? {
         switch section {
-        case 2: return 0
-        case 4: return 1
+        case ACTIVE: return 0
+        case SAVED: return 1
         default: return nil
         }
     }
@@ -40,43 +41,47 @@ class RecipeListController: UITableViewController {
             if collapsed[c] { return 0 }
         }
         switch section {
-        case 0: return hasData() ? 0 : 1
-        case 1: return hasData() ? 1 : 0
-        case 2: return active.count
-        case 3: return hasData() ? 1 : 0
-        case 4: return saved.count
-        default: return 1
+        case EMPTY: return hasData() ? 0 : 1
+        case ACTIVE_HEADING: return hasData() ? 1 : 0
+        case ACTIVE: return active.count
+        case SAVED_HEADING: return hasData() ? 1 : 0
+        case SAVED: return saved.count
+        default: return 0
         }
     }
     
     @objc func didTapActive(_ sender: Any?) {
         let b = sender as! UIButton
-        updateRecipe(id: active[b.tag].id, active: false, rating: active[b.tag].recipe.rating, notes: active[b.tag].recipe.notes, completion: onChange)
+        let r = active[b.tag]
+        updateRecipe(id: r.id, recipe: ReadableRecipe(name: r.recipe.name, link: r.recipe.link, active: false, rating: r.recipe.rating, notes: r.recipe.notes, ingredients: [:]))
+        onChange?()
     }
     
     @objc func didTapSavedForLater(_ sender: Any?) {
         let b = sender as! UIButton
-        updateRecipe(id: saved[b.tag].id, active: true, rating: saved[b.tag].recipe.rating, notes: saved[b.tag].recipe.notes, completion: onChange)
+        let r = saved[b.tag]
+        updateRecipe(id: r.id, recipe: ReadableRecipe(name: r.recipe.name, link: r.recipe.link, active: true, rating: r.recipe.rating, notes: r.recipe.notes, ingredients: [:]))
+        onChange?()
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.section {
-        case 1:
+        case ACTIVE_HEADING:
             collapsed[0] = !collapsed[0]
             DispatchQueue.main.async {
                 self.tableView.reloadData()
             }
             break
-        case 2:
+        case ACTIVE:
             performSegue(withIdentifier: "showRecipe", sender: indexPath)
             break
-        case 3:
+        case SAVED_HEADING:
             collapsed[1] = !collapsed[1]
             DispatchQueue.main.async {
                 self.tableView.reloadData()
             }
             break
-        case 4:
+        case SAVED:
             performSegue(withIdentifier: "showRecipe", sender: indexPath)
             break
         default:
@@ -84,17 +89,18 @@ class RecipeListController: UITableViewController {
         }
     }
     
-    func deleteRow(_ id: Int) {
-        deleteRecipes(recipeIds: [id], completion: onChange)
+    func deleteRow(_ id: UUID) {
+        deleteRecipe(id: id)
+        onChange?()
     }
     
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        let id: Int
+        let id: UUID
         switch indexPath.section {
-        case 2:
+        case ACTIVE:
             id = active[indexPath.row].id
             break
-        case 4:
+        case SAVED:
             id = saved[indexPath.row].id
             break
         default:
@@ -109,12 +115,12 @@ class RecipeListController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        let id: Int
+        let id: UUID
         switch indexPath.section {
-        case 2:
+        case ACTIVE:
             id = active[indexPath.row].id
             break
-        case 4:
+        case SAVED:
             id = saved[indexPath.row].id
             break
         default:
@@ -130,16 +136,16 @@ class RecipeListController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch indexPath.section {
-        case 0:
+        case EMPTY:
             let cell = tableView.dequeueReusableCell(withIdentifier: "emptyItem")!
             return cell
-        case 1:
+        case ACTIVE_HEADING:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SectionHeader
             let image = collapsed[0] ? UIImage(systemName: "chevron.forward.circle.fill") : UIImage(systemName: "chevron.down.circle.fill")
             cell.indicator.setImage(image, for: .normal)
             cell.label.text = "Active (\(active.count))"
             return cell
-        case 2:
+        case ACTIVE:
             let cell = tableView.dequeueReusableCell(withIdentifier: "recipeListItem") as! RecipeListItem
             let recipe = active[indexPath.row].recipe
             cell.name.text = recipe.name
@@ -147,13 +153,13 @@ class RecipeListController: UITableViewController {
             cell.select.addTarget(self, action: #selector(didTapActive), for: .touchUpInside)
             cell.rating.text = String(recipe.rating)
             return cell
-        case 3:
+        case SAVED_HEADING:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SectionHeader
             let image = collapsed[1] ? UIImage(systemName: "chevron.forward.circle.fill") : UIImage(systemName: "chevron.down.circle.fill")
             cell.indicator.setImage(image, for: .normal)
             cell.label.text = "Saved for later (\(saved.count))"
             return cell
-        case 4:
+        case SAVED:
             let cell = tableView.dequeueReusableCell(withIdentifier: "savedListItem") as! RecipeListItem
             let recipe = saved[indexPath.row].recipe
             cell.name.text = recipe.name
@@ -171,10 +177,10 @@ class RecipeListController: UITableViewController {
         if let vc = segue.destination as? RecipeDetailController, segue.identifier == "showRecipe", let indexPath = sender as? IndexPath {
             vc.onChange = onChange
             switch indexPath.section {
-            case 2:
+            case ACTIVE:
                 vc.recipe = active[indexPath.row]
                 break
-            case 4:
+            case SAVED:
                 vc.recipe = saved[indexPath.row]
                 break
             default: break

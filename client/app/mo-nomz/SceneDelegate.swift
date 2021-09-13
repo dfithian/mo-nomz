@@ -16,15 +16,22 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let mainSb = UIStoryboard(name: "Main", bundle: nil)
         let mainVc = mainSb.instantiateInitialViewController()
 
-        if Persistence.loadState() == nil {
+        if User.loadState() == nil {
             window?.rootViewController = launchVc
             let completion = { (resp: CreateUserResponse) -> Void in
                 DispatchQueue.main.async {
-                    Persistence.setState(State(userId: resp.userId, apiToken: resp.apiToken))
+                    User.setState(State(userId: resp.userId, apiToken: resp.apiToken))
                     self.window?.rootViewController = mainVc
                 }
             }
             window?.rootViewController?.loadUser(completion: completion)
+        } else if !User.exported() {
+            let completion = {
+                DispatchQueue.main.async {
+                    self.window?.rootViewController = mainVc
+                }
+            }
+            window?.rootViewController?.loadExport(completion: completion)
         } else {
             window?.rootViewController = mainVc
         }

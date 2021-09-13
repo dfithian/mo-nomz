@@ -11,8 +11,12 @@ import SafariServices
 class RecipeAddController: UIViewController {
     @IBOutlet weak var link: UITextField!
     @IBOutlet weak var checkbox: UIButton!
+    @IBOutlet weak var explanationConstraint: NSLayoutConstraint!
+    @IBOutlet weak var noExplanationConstraint: NSLayoutConstraint!
     var existingLinks: [String] = []
     var active: Bool = true
+    var onKeyboardShowConstraints: [NSLayoutConstraint] = []
+    var onKeyboardHideConstraints: [NSLayoutConstraint] = []
     
     @IBAction func didTapIsActive(_ sender: Any?) {
         if active {
@@ -31,8 +35,8 @@ class RecipeAddController: UIViewController {
             }
             onChange?()
         }
-        if let newLink = link.text, !newLink.isEmpty {
-            addRecipeLink(link: newLink, active: active, completion: completion)
+        if let newLink = link.text?.nonEmpty() {
+            addLink(link: newLink, active: active, completion: completion)
         } else {
             onCancel?()
         }
@@ -41,5 +45,7 @@ class RecipeAddController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         link.addDoneButtonOnKeyboard()
+        onKeyboardShowConstraints = [noExplanationConstraint]
+        onKeyboardHideConstraints = [explanationConstraint]
     }
 }

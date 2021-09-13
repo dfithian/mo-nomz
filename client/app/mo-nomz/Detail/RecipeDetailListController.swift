@@ -8,18 +8,20 @@
 import MobileCoreServices
 import UIKit
 
-struct IngredientWithId: Codable {
-    let id: Int
-    let ingredient: ReadableIngredient
-}
-
 class RecipeDetailListController: UITableViewController, UITextViewDelegate, UITableViewDragDelegate, UITableViewDropDelegate {
-    var recipe: RecipeWithId? = nil
-    var ingredients: [IngredientWithId] = []
+    var recipe: ReadableRecipeWithId? = nil
+    var ingredients: [ReadableIngredientWithId] = []
     var onChange: (() -> Void)? = nil
     var beforeHeight: CGFloat? = nil
-    var mergeItems: (IngredientWithId, IngredientWithId)? = nil
-    var editItem: IngredientWithId? = nil
+    var mergeItems: (ReadableIngredientWithId, ReadableIngredientWithId)? = nil
+    var editItem: ReadableIngredientWithId? = nil
+    
+    let NOTES_HEADING = 0
+    let NOTES = 1
+    let MERGE_TIP = 2
+    let LIST_HEADING = 3
+    let LIST = 4
+    let ADD = 5
     
     @objc func didTapAdd(_ sender: Any?) {
         performSegue(withIdentifier: "addItem", sender: nil)
@@ -27,64 +29,73 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
     
     func textViewDidEndEditing(_ textView: UITextView) {
         guard let r = recipe else { return }
-        updateRecipe(id: r.id, active: r.recipe.active, rating: r.recipe.rating, notes: textView.text ?? r.recipe.notes, completion: onChange)
+        updateRecipe(id: r.id, recipe: ReadableRecipe(name: r.recipe.name, link: r.recipe.link, active: r.recipe.active, rating: r.recipe.rating, notes: textView.text ?? r.recipe.notes, ingredients: r.recipe.ingredients))
+        onChange?()
     }
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 5
+        return 6
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
-        case 0: return 1
-        case 1: return 1
-        case 2: return 1
-        case 4: return 1
-        default: return ingredients.count
+        case NOTES_HEADING: return 1
+        case NOTES: return 1
+        case MERGE_TIP: return !User.dismissedIngredientMergeTip() ? 1 : 0
+        case LIST_HEADING: return 1
+        case LIST: return ingredients.count
+        case ADD: return 1
+        default: return 0
         }
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch indexPath.section {
-        case 0:
+        case NOTES_HEADING:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SimpleSectionHeader
             cell.label.text = "Notes"
             return cell
-        case 1:
+        case NOTES:
             let cell = tableView.dequeueReusableCell(withIdentifier: "noteItem") as! NoteItem
             cell.blob.text = recipe?.recipe.notes ?? ""
             cell.blob.addDoneButtonOnKeyboard()
             cell.blob.layer.cornerRadius = 10
             cell.blob.delegate = self
             return cell
-        case 2:
+        case MERGE_TIP:
+            return tableView.dequeueReusableCell(withIdentifier: "mergeTip")!
+        case LIST_HEADING:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SimpleSectionHeader
             cell.label.text = "Ingredients"
             return cell
-        case 4:
+        case LIST:
+            let cell = tableView.dequeueReusableCell(withIdentifier: "listItem") as! IngredientListItem
+            let item = ingredients[indexPath.row]
+            cell.name.text = item.ingredient.render()
+            return cell
+        case ADD:
             let cell = tableView.dequeueReusableCell(withIdentifier: "addItem") as! AddItem
             cell.add.addTarget(self, action: #selector(didTapAdd), for: .touchUpInside)
             return cell
         default:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "listItem") as! IngredientListItem
-            let item = ingredients[indexPath.row]
-            cell.name.text = item.ingredient.render()
+            let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SimpleSectionHeader
             return cell
         }
     }
     
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         guard let r = recipe else { return nil }
-        let delete: Int
+        let delete: UUID
         switch indexPath.section {
-        case 3:
+        case LIST:
             delete = ingredients[indexPath.row].id
             break
         default:
             return nil
         }
         let action = UIContextualAction(style: .destructive, title: "Delete") { [weak self] (action, view, completionHandler) in
-            self?.updateRecipeIngredients(id: r.id, deletes: [delete], adds: [], completion: self?.onChange)
+            self?.updateRecipeIngredients(id: r.id, active: r.recipe.active, deletes: [delete], adds: [])
+            self?.onChange?()
             completionHandler(true)
         }
         action.backgroundColor = .systemRed
@@ -93,16 +104,17 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
     
     override func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         guard let r = recipe else { return nil }
-        let delete: Int
+        let delete: UUID
         switch indexPath.section {
-        case 3:
+        case LIST:
             delete = ingredients[indexPath.row].id
             break
         default:
             return nil
         }
         let action = UIContextualAction(style: .destructive, title: "Delete") { [weak self] (action, view, completionHandler) in
-            self?.updateRecipeIngredients(id: r.id, deletes: [delete], adds: [], completion: self?.onChange)
+            self?.updateRecipeIngredients(id: r.id, active: r.recipe.active, deletes: [delete], adds: [])
+            self?.onChange?()
             completionHandler(true)
         }
         action.backgroundColor = .systemRed
@@ -111,11 +123,20 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.section {
-        case 3:
+        case MERGE_TIP:
+            let handler = { (action: UIAlertAction) -> Void in
+                User.setDidDismissIngredientMergeTip()
+                DispatchQueue.main.async {
+                    self.tableView.reloadData()
+                }
+            }
+            promptForConfirmation(title: "Dismiss this tip", message: "Drag items to merge", handler: handler)
+            break
+        case LIST:
             editItem = ingredients[indexPath.row]
             performSegue(withIdentifier: "editItem", sender: nil)
             break
-        case 4:
+        case ADD:
             performSegue(withIdentifier: "addItem", sender: nil)
             break
         default:
@@ -124,9 +145,9 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
     }
     
     func tableView(_ tableView: UITableView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
-        let item: IngredientWithId
+        let item: ReadableIngredientWithId
         switch indexPath.section {
-        case 3:
+        case LIST:
             item = ingredients[indexPath.row]
             break
         default:
@@ -146,7 +167,7 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
         guard let indexPath = destinationIndexPath else { return cancel }
         guard session.items.count == 1 else { return cancel }
         switch indexPath.section {
-        case 3:
+        case LIST:
             if indexPath.row < ingredients.count {
                 tableView.scrollToRow(at: indexPath, at: .none, animated: true)
             } else {
@@ -163,9 +184,9 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
 
     func tableView(_ tableView: UITableView, performDropWith coordinator: UITableViewDropCoordinator) {
         guard let indexPath = coordinator.destinationIndexPath else { return }
-        let existing: IngredientWithId
+        let existing: ReadableIngredientWithId
         switch indexPath.section {
-        case 3:
+        case LIST:
             existing = ingredients[indexPath.row]
             break
         default:
@@ -175,17 +196,16 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
             guard let strings = items as? [String] else { return }
             for string in strings {
                 do {
-                    let new = try JSONDecoder().decode(IngredientWithId.self, from: string.data(using: .utf8)!)
-                    let prefs = Persistence.loadPreferencess()
+                    let new = try JSONDecoder().decode(ReadableIngredientWithId.self, from: string.data(using: .utf8)!)
                     let run = { () -> Void in
                         self.mergeItems = (existing, new)
                         self.performSegue(withIdentifier: "mergeItems", sender: nil)
                     }
                     let runAndIgnore = { () -> Void in
-                        Persistence.setPreferences(Preferences(dismissedMergeWarning: prefs.dismissedMergeWarning, dismissedIngredientMergeWarning: true))
+                        User.setDidDismissIngredientMergeWarning()
                         run()
                     }
-                    if !prefs.dismissedIngredientMergeWarning {
+                    if !User.dismissedIngredientMergeWarning() {
                         self.promptForConfirmationThree(
                             title: "Warning",
                             message: "Merging items may result in unexpected grocery list behavior. You may want to deactivate this recipe first.",

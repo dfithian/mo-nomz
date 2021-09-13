@@ -8,7 +8,7 @@
 import UIKit
 
 class GroceryMergeController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate {
-    var ids: [Int] = []
+    var ids: [UUID] = []
     var existing: ReadableGroceryItem = ReadableGroceryItem(name: "", quantity: ReadableQuantity(whole: nil, fraction: nil), unit: "", active: true, order: 0)
     var new: ReadableGroceryItem = ReadableGroceryItem(name: "", quantity: ReadableQuantity(whole: nil, fraction: nil), unit: "", active: true, order: 0)
     var onChange: (() -> Void)? = nil
@@ -29,14 +29,12 @@ class GroceryMergeController: UIViewController, UIPickerViewDataSource, UIPicker
     }
     
     @IBAction func didTapSave(_ sender: Any?) {
-        let item = ReadableGroceryItem(name: name.text!, quantity: ReadableQuantity(whole: currentWholeQuantity, fraction: currentFractionQuantity), unit: unit.text, active: existing.active, order: existing.order)
-        let completion = {
-            DispatchQueue.main.async {
-                self.dismiss(animated: true, completion: nil)
-            }
-            self.onChange?()
+        let item = ReadableGroceryItemWithId(item: ReadableGroceryItem(name: name.text!, quantity: ReadableQuantity(whole: currentWholeQuantity, fraction: currentFractionQuantity), unit: unit.text?.nonEmpty(), active: existing.active, order: existing.order), id: UUID())
+        mergeGroceries(ids: ids, grocery: item)
+        DispatchQueue.main.async {
+            self.dismiss(animated: true, completion: nil)
         }
-        mergeGroceryItems(groceryItemIds: ids, groceryItem: item, completion: completion)
+        onChange?()
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {

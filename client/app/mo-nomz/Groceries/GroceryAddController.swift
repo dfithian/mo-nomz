@@ -62,16 +62,40 @@ class GroceryAddController: UIViewController {
     @objc func keyboardWillShow(notification: NSNotification) {
         if linkView.alpha == 1 {
             linkBeforeHeight = keyboardWillShowInternal(subview: linkVc!.link, notification: notification)
+            for constraint in linkVc!.onKeyboardHideConstraints {
+                constraint.isActive = false
+            }
+            for constraint in linkVc!.onKeyboardShowConstraints {
+                constraint.isActive = true
+            }
         } else {
             blobBeforeHeight = keyboardWillShowInternal(subview: bulkVc!.blob, notification: notification)
+            for constraint in bulkVc!.onKeyboardHideConstraints {
+                constraint.isActive = false
+            }
+            for constraint in bulkVc!.onKeyboardShowConstraints {
+                constraint.isActive = true
+            }
         }
     }
     
     @objc func keyboardWillHide(notification: NSNotification) {
         if linkView.alpha == 1 {
             keyboardWillHideInternal(heightMay: linkBeforeHeight, notification: notification)
+            for constraint in linkVc!.onKeyboardHideConstraints {
+                constraint.isActive = true
+            }
+            for constraint in linkVc!.onKeyboardShowConstraints {
+                constraint.isActive = false
+            }
         } else {
             keyboardWillHideInternal(heightMay: blobBeforeHeight, notification: notification)
+            for constraint in bulkVc!.onKeyboardHideConstraints {
+                constraint.isActive = true
+            }
+            for constraint in bulkVc!.onKeyboardShowConstraints {
+                constraint.isActive = false
+            }
         }
     }
     

@@ -29,8 +29,8 @@ class Configuration {
         #endif
     }
     
-    static var supportUrl: String {
-        return "https://mo-nomz.herokuapp.com/"
+    static var helpUrl: String {
+        return "https://mo-nomz.herokuapp.com/#how-it-works"
     }
     
     static var accountKey: String {

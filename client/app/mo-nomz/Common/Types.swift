@@ -5,6 +5,7 @@
 //  Created by Dan Fithian on 4/9/21.
 //
 
+import CoreData
 import Foundation
 
 struct ReadableFraction: Codable {
@@ -91,33 +92,7 @@ struct ReadableGroceryItem: Codable {
 
 struct ReadableGroceryItemWithId: Codable {
     let item: ReadableGroceryItem
-    let id: Int
-}
-
-struct ListGroceryItemResponse: Codable {
-    let items: Dictionary<Int, ReadableGroceryItem>
-}
-
-struct UpdateGroceryItemRequest: Codable {
-    let id: Int
-    let name: String
-    let quantity: ReadableQuantity
-    let unit: String?
-    let active: Bool
-    let order: Int
-}
-
-struct MergeGroceryItemRequest: Codable {
-    let ids: [Int]
-    let name: String
-    let quantity: ReadableQuantity
-    let unit: String?
-    let active: Bool
-    let order: Int
-}
-
-struct DeleteGroceryItemRequest: Codable {
-    let ids: [Int]
+    let id: UUID
 }
 
 struct CreateUserResponse: Codable {
@@ -141,62 +116,119 @@ struct ReadableIngredient: Codable {
     }
 }
 
+struct ReadableIngredientWithId: Codable {
+    let id: UUID
+    let ingredient: ReadableIngredient
+    
+    func toGroceryItemWithId(active: Bool, order: Int) -> ReadableGroceryItemWithId {
+        return ReadableGroceryItemWithId(item: ReadableGroceryItem(name: ingredient.name, quantity: ingredient.quantity, unit: ingredient.unit, active: active, order: order), id: UUID())
+    }
+}
+
 struct ReadableRecipe: Codable {
     let name: String
     let link: String?
     let active: Bool
     let rating: Int
     let notes: String
-    let ingredients: [Int:ReadableIngredient]
+    let ingredients: [UUID:ReadableIngredient]
 }
 
-struct ImportRecipeLinkRequest: Codable {
-    let link: String
-    let active: Bool
+struct ReadableRecipeWithId: Codable {
+    let recipe: ReadableRecipe
+    let id: UUID
 }
 
-struct ImportGrocerySingle: Codable {
-    let name: String
-    let quantity: ReadableQuantity
-    let unit: String?
-    
-    func render() -> String {
-        switch (quantity.render(), unit) {
-        case (.some(let q), .some(let u)): return "\(q) \(u) \(name)"
-        case (.some(let q), .none): return "\(q) \(name)"
-        case (.none, .some(let u)): return "\(u) \(name)"
-        case (.none, .none): return name
-        }
-    }
-}
-
-struct ImportGroceryListRequest: Codable {
-    let items: [ImportGrocerySingle]
-}
-
-struct ImportGroceryBlobRequest: Codable {
-    let name: String?
-    let link: String?
+struct ParseBlobRequest: Codable {
     let content: String
 }
 
-struct UpdateRecipeRequest: Codable {
-    let id: Int
+struct ParseLinkRequest: Codable {
+    let link: String
+}
+
+struct ParseBlobResponse: Codable {
+    let ingredients: [ReadableIngredient]
+}
+
+struct ParseLinkResponse: Codable {
+    let name: String
+    let ingredients: [ReadableIngredient]
+}
+
+public extension CodingUserInfoKey {
+    static let managedObjectContext = CodingUserInfoKey(rawValue: "managedObjectContext")
+}
+
+extension GroceryItemData {
+    class func req() -> NSFetchRequest<GroceryItemData> {
+        return NSFetchRequest<GroceryItemData>(entityName: "GroceryItemData")
+    }
+
+    func toReadableGroceryItem() -> ReadableGroceryItem {
+        return ReadableGroceryItem(name: name ?? "", quantity: ReadableQuantity.fromInt(x: Int(quantity)), unit: unit, active: active, order: Int(ordering))
+    }
+    
+    func toReadableGroceryItemWithId() -> ReadableGroceryItemWithId {
+        return ReadableGroceryItemWithId(item: toReadableGroceryItem(), id: id!)
+    }
+}
+
+extension IngredientData {
+    class func req() -> NSFetchRequest<IngredientData> {
+        return NSFetchRequest<IngredientData>(entityName: "IngredientData")
+    }
+
+    func toReadableIngredientWithId() -> ReadableIngredientWithId {
+        return ReadableIngredientWithId(id: id!, ingredient: ReadableIngredient(name: name ?? "", quantity: ReadableQuantity.fromInt(x: Int(quantity)), unit: unit, order: Int(ordering)))
+    }
+}
+
+extension RecipeData {
+    class func req() -> NSFetchRequest<RecipeData> {
+        return NSFetchRequest<RecipeData>(entityName: "RecipeData")
+    }
+
+    func toReadableRecipe(ingredientsData: [IngredientData]) -> ReadableRecipe {
+        var ingredients = [UUID:ReadableIngredient]()
+        for ingredient in ingredientsData {
+            ingredients[ingredient.id!] = ingredient.toReadableIngredientWithId().ingredient
+        }
+        return ReadableRecipe(name: name ?? "", link: link, active: active, rating: Int(rating), notes: notes ?? "", ingredients: ingredients)
+    }
+    
+    func toReadableRecipeWithId(ingredientsData: [IngredientData]) -> ReadableRecipeWithId {
+        return ReadableRecipeWithId(recipe: toReadableRecipe(ingredientsData: ingredientsData), id: id!)
+    }
+}
+
+struct ExportGroceryItem: Codable {
+    let name: String
+    let quantity: ReadableQuantity
+    let unit: String?
+    let active: Bool
+    let order: Int
+}
+
+struct ExportRecipe: Codable {
+    let name: String
+    let link: String?
     let active: Bool
     let rating: Int
     let notes: String
 }
 
-struct UpdateRecipeIngredientsRequest: Codable {
-    let id: Int
-    let deletes: [Int]
-    let adds: [ReadableIngredient]
+struct ExportIngredient: Codable {
+    let groceryItemId: Int?
+    let recipeId: Int?
+    let name: String
+    let quantity: ReadableQuantity
+    let unit: String?
+    let order: Int
 }
 
-struct ListRecipeResponse: Codable {
-    let recipes: Dictionary<Int, ReadableRecipe>
-}
-
-struct DeleteRecipeRequest: Codable {
-    let ids: [Int]
+struct ExportResponse: Codable {
+    let groceries: [Int:ExportGroceryItem]
+    let recipes: [Int:ExportRecipe]
+    let ingredients: [Int:ExportIngredient]
 }

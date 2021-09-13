@@ -37,4 +37,13 @@ extension UIViewController {
             self.present(confirmation, animated: true, completion: nil)
         }
     }
+    func needHelp() {
+        if let url = URL(string: Configuration.helpUrl) {
+            if #available(iOS 10.0, *) {
+                UIApplication.shared.open(url)
+            } else {
+                UIApplication.shared.openURL(url)
+            }
+        }
+    }
 }

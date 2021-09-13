@@ -14,7 +14,11 @@ class GroceryAddBlobController: UIViewController {
     @IBOutlet weak var checkbox: UIButton!
     @IBOutlet weak var noRecipeConstraint: NSLayoutConstraint!
     @IBOutlet weak var recipeConstraint: NSLayoutConstraint!
+    @IBOutlet weak var explanationConstraint: NSLayoutConstraint!
+    @IBOutlet weak var noExplanationConstraint: NSLayoutConstraint!
     var isRecipe: Bool = false
+    var onKeyboardShowConstraints: [NSLayoutConstraint] = []
+    var onKeyboardHideConstraints: [NSLayoutConstraint] = []
     
     @IBAction func didTapIsRecipe(_ sender: Any?) {
         if isRecipe {
@@ -45,14 +49,14 @@ class GroceryAddBlobController: UIViewController {
                 onChange?()
             }
             if isRecipe {
-                if let name = name.text, name != "" {
-                    let link = (link.text != nil && link.text != "" ? link.text : nil)
-                    addGroceryBlob(name: name, link: link, content: content, completion: completion)
+                if let name = name.text?.nonEmpty() {
+                    let link = link.text?.nonEmpty()
+                    addBlob(content: content, name: name, link: link, completion: completion)
                 } else {
                     alertUnsuccessful("To save as a recipe, please provide a name.")
                 }
             } else {
-                addGroceryBlob(name: nil, link: nil, content: content, completion: completion)
+                addBlob(content: content, completion: completion)
             }
         } else {
             onCancel?()
@@ -67,5 +71,7 @@ class GroceryAddBlobController: UIViewController {
         link.alpha = 0
         blob.addDoneButtonOnKeyboard()
         blob.layer.cornerRadius = 10
+        onKeyboardShowConstraints = [noExplanationConstraint]
+        onKeyboardHideConstraints = [explanationConstraint]
     }
 }

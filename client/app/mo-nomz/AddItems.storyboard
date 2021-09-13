@@ -136,13 +136,18 @@
                                 <rect key="frame" x="30" y="29" width="364" height="100"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="364" id="29o-kh-ZzY"/>
+                                    <constraint firstAttribute="height" id="BAl-q7-J2g"/>
                                     <constraint firstAttribute="height" constant="100" id="TVZ-DE-dhq"/>
                                 </constraints>
                                 <string key="text">Touch below to type. Separate items with new lines. Nomz will add the items to your grocery list. If these are ingredients from a recipe you make often, check "Save as recipe" below and provide a name and link.</string>
                                 <color key="textColor" systemColor="secondaryLabelColor"/>
                                 <fontDescription key="fontDescription" type="italicSystem" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                <variation key="default">
+                                    <mask key="constraints">
+                                        <exclude reference="BAl-q7-J2g"/>
+                                    </mask>
+                                </variation>
                             </textView>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Recipe link (optional)" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="D3K-3F-4hw">
                                 <rect key="frame" x="20" y="574" width="374" height="34"/>
@@ -184,8 +189,10 @@
                     <connections>
                         <outlet property="blob" destination="zfK-sC-B4g" id="aEU-aA-cDh"/>
                         <outlet property="checkbox" destination="sNi-Aa-240" id="i5k-La-MgC"/>
+                        <outlet property="explanationConstraint" destination="TVZ-DE-dhq" id="Qdt-jv-CPw"/>
                         <outlet property="link" destination="D3K-3F-4hw" id="GD2-98-KPm"/>
                         <outlet property="name" destination="XpS-u2-aJI" id="Ix6-CT-dKl"/>
+                        <outlet property="noExplanationConstraint" destination="BAl-q7-J2g" id="qJg-yn-EMq"/>
                         <outlet property="noRecipeConstraint" destination="QhR-5u-Zkf" id="Q2x-Ww-ew1"/>
                         <outlet property="recipeConstraint" destination="Q5K-pz-RPX" id="HXT-cY-DPv"/>
                     </connections>
@@ -213,11 +220,17 @@
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="100" id="suk-37-Ixz"/>
+                                    <constraint firstAttribute="height" id="vg7-MU-5d9"/>
                                 </constraints>
                                 <string key="text">Add a link to a recipe online. Nomz will import the recipe and add the ingredients to your grocery list. If you'd just like to save the recipe without changing your grocery list, uncheck "Active".</string>
                                 <color key="textColor" systemColor="secondaryLabelColor"/>
                                 <fontDescription key="fontDescription" type="italicSystem" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                <variation key="default">
+                                    <mask key="constraints">
+                                        <exclude reference="vg7-MU-5d9"/>
+                                    </mask>
+                                </variation>
                             </textView>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Recipe link" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Mxj-HG-raG">
                                 <rect key="frame" x="20" y="137" width="374" height="34"/>
@@ -257,7 +270,9 @@
                     <navigationItem key="navigationItem" id="uJU-cu-X0S"/>
                     <connections>
                         <outlet property="checkbox" destination="uxF-fz-ow1" id="VSY-3x-0rA"/>
+                        <outlet property="explanationConstraint" destination="suk-37-Ixz" id="bve-Rg-ell"/>
                         <outlet property="link" destination="Mxj-HG-raG" id="ZMX-8V-kG6"/>
+                        <outlet property="noExplanationConstraint" destination="vg7-MU-5d9" id="cft-pv-hCW"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="kbf-00-Ci5" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

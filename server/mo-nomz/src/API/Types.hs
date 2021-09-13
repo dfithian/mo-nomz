@@ -74,18 +74,6 @@ data GroceryImportBlobRequest = GroceryImportBlobRequest
   }
   deriving (Eq, Ord, Show)
 
-data GroceryImportSingle = GroceryImportSingle
-  { groceryImportSingleName     :: IngredientName
-  , groceryImportSingleQuantity :: ReadableQuantity
-  , groceryImportSingleUnit     :: Maybe ReadableUnit
-  }
-  deriving (Eq, Ord, Show)
-
-data GroceryImportListRequest = GroceryImportListRequest
-  { groceryImportListRequestItems :: [GroceryImportSingle]
-  }
-  deriving (Eq, Ord, Show)
-
 data UpdateRecipeRequest = UpdateRecipeRequest
   { updateRecipeRequestId     :: RecipeId
   , updateRecipeRequestActive :: Bool
@@ -151,6 +139,62 @@ data ListRecipeResponse = ListRecipeResponse
   }
   deriving (Eq, Ord, Show)
 
+data ParseBlobRequest = ParseBlobRequest
+  { parseBlobRequestContent :: Text
+  }
+  deriving (Eq, Ord, Show)
+
+data ParseLinkRequest = ParseLinkRequest
+  { parseLinkRequestLink :: RecipeLink
+  }
+  deriving (Eq, Ord, Show)
+
+data ParseBlobResponse = ParseBlobResponse
+  { parseBlobResponseIngredients :: [ReadableIngredient]
+  }
+  deriving (Eq, Ord, Show)
+
+data ParseLinkResponse = ParseLinkResponse
+  { parseLinkResponseName        :: RecipeName
+  , parseLinkResponseIngredients :: [ReadableIngredient]
+  }
+  deriving (Eq, Ord, Show)
+
+data ExportGroceryItem = ExportGroceryItem
+  { exportGroceryItemName     :: IngredientName
+  , exportGroceryItemQuantity :: ReadableQuantity
+  , exportGroceryItemUnit     :: Maybe ReadableUnit
+  , exportGroceryItemActive   :: Bool
+  , exportGroceryItemOrder    :: Int
+  }
+  deriving (Eq, Ord, Show)
+
+data ExportRecipe = ExportRecipe
+  { exportRecipeName   :: RecipeName
+  , exportRecipeLink   :: Maybe RecipeLink
+  , exportRecipeActive :: Bool
+  , exportRecipeRating :: Int
+  , exportRecipeNotes  :: Text
+  }
+  deriving (Eq, Ord, Show)
+
+data ExportIngredient = ExportIngredient
+  { exportIngredientGroceryItemId :: Maybe GroceryItemId
+  , exportIngredientRecipeId      :: Maybe RecipeId
+  , exportIngredientName          :: IngredientName
+  , exportIngredientQuantity      :: ReadableQuantity
+  , exportIngredientUnit          :: Maybe ReadableUnit
+  , exportIngredientOrder         :: Int
+  }
+  deriving (Eq, Ord, Show)
+
+data ExportResponse = ExportResponse
+  { exportResponseGroceries   :: Map GroceryItemId ExportGroceryItem
+  , exportResponseRecipes     :: Map RecipeId ExportRecipe
+  , exportResponseIngredients :: Map IngredientId ExportIngredient
+  }
+  deriving (Eq, Ord, Show)
+
 deriveJSON (jsonOptions "getHealthResponse") ''GetHealthResponse
 deriveJSON (jsonOptions "userCreateResponse") ''UserCreateResponse
 deriveJSON (jsonOptions "updateGroceryItemRequest") ''UpdateGroceryItemRequest
@@ -159,8 +203,6 @@ deriveJSON (jsonOptions "deleteGroceryItemRequest") ''DeleteGroceryItemRequest
 deriveJSON (jsonOptions "readableGroceryItem") ''ReadableGroceryItem
 deriveJSON (jsonOptions "listGroceryItemResponse") ''ListGroceryItemResponse
 deriveJSON (jsonOptions "recipeImportLinkRequest") ''RecipeImportLinkRequest
-deriveJSON (jsonOptions "groceryImportSingle") ''GroceryImportSingle
-deriveJSON (jsonOptions "groceryImportListRequest") ''GroceryImportListRequest
 deriveJSON (jsonOptions "groceryImportBlobRequest") ''GroceryImportBlobRequest
 deriveJSON (jsonOptions "updateRecipeRequest") ''UpdateRecipeRequest
 deriveJSON (jsonOptions "updateRecipeIngredientsRequest") ''UpdateRecipeIngredientsRequest
@@ -171,3 +213,11 @@ deriveJSON (jsonOptions "readableRecipeV1") ''ReadableRecipeV1
 deriveJSON (jsonOptions "readableRecipe") ''ReadableRecipe
 deriveJSON (jsonOptions "listRecipeResponseV1") ''ListRecipeResponseV1
 deriveJSON (jsonOptions "listRecipeResponse") ''ListRecipeResponse
+deriveJSON (jsonOptions "parseBlobRequest") ''ParseBlobRequest
+deriveJSON (jsonOptions "parseLinkRequest") ''ParseLinkRequest
+deriveJSON (jsonOptions "parseBlobResponse") ''ParseBlobResponse
+deriveJSON (jsonOptions "parseLinkResponse") ''ParseLinkResponse
+deriveJSON (jsonOptions "exportGroceryItem") ''ExportGroceryItem
+deriveJSON (jsonOptions "exportRecipe") ''ExportRecipe
+deriveJSON (jsonOptions "exportIngredient") ''ExportIngredient
+deriveJSON (jsonOptions "exportResponse") ''ExportResponse
