@@ -6,9 +6,6 @@ const pageStyles = {
   padding: 25,
   fontFamily: "-apple-system, Roboto, sans-serif, serif",
 }
-const proseStyles = {
-  textAlign: "left",
-}
 const inlineStyles = {
   marginRight: 25,
   marginLeft: 25,
@@ -25,7 +22,7 @@ const IndexPage = () => {
     <main className="center" style={pageStyles}>
       <title>Nomz</title>
       <div>
-        <a style={inlineStyles} href="https://venmo.com/code?user_id=1305125788319744156">❤️ Donate</a>
+        <a style={inlineStyles} href="https://venmo.com/code?user_id=1305125788319744156"><span role="img" aria-label="Heart">❤</span>️ Donate</a>
         <a style={inlineStyles} href="/privacy-policy">Privacy Policy</a>
         <a style={inlineStyles} href="/support">Support</a>
         <a style={inlineStyles} href="https://dfithian.github.io/2021/06/08/nomz-meal-planner.html">Blog</a>
