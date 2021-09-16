@@ -142,35 +142,8 @@
                                     <outlet property="button" destination="CuG-uT-G0T" id="mw9-Zq-Xge"/>
                                 </connections>
                             </tableViewCell>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="donate" id="XJo-se-QRq" customClass="ButtonItem" customModule="mo_nomz" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="155" width="414" height="43.5"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="XJo-se-QRq" id="S2s-Ae-j57">
-                                    <rect key="frame" x="0.0" y="0.0" width="414" height="43.5"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                    <subviews>
-                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xvp-3Q-Paw">
-                                            <rect key="frame" x="173.5" y="4" width="67.5" height="36"/>
-                                            <constraints>
-                                                <constraint firstAttribute="height" constant="36" id="YOY-ZV-vzJ"/>
-                                            </constraints>
-                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                            <state key="normal" title="Donate" image="heart" catalog="system">
-                                                <color key="titleColor" name="AccentColor"/>
-                                            </state>
-                                        </button>
-                                    </subviews>
-                                    <constraints>
-                                        <constraint firstItem="xvp-3Q-Paw" firstAttribute="centerY" secondItem="S2s-Ae-j57" secondAttribute="centerY" id="AkJ-me-eyg"/>
-                                        <constraint firstItem="xvp-3Q-Paw" firstAttribute="centerX" secondItem="S2s-Ae-j57" secondAttribute="centerX" id="daU-V5-4ob"/>
-                                    </constraints>
-                                </tableViewCellContentView>
-                                <connections>
-                                    <outlet property="button" destination="xvp-3Q-Paw" id="gOg-RW-mF2"/>
-                                </connections>
-                            </tableViewCell>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="purchase" id="Bsq-lS-lek" customClass="PurchaseItem" customModule="mo_nomz" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="198.5" width="414" height="43.5"/>
+                                <rect key="frame" x="0.0" y="155" width="414" height="43.5"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Bsq-lS-lek" id="PSr-fR-QYK">
                                     <rect key="frame" x="0.0" y="0.0" width="414" height="43.5"/>
@@ -1714,7 +1687,6 @@
         <image name="circle.fill" catalog="system" width="128" height="121"/>
         <image name="eye" catalog="system" width="128" height="81"/>
         <image name="eye.slash" catalog="system" width="128" height="86"/>
-        <image name="heart" catalog="system" width="128" height="109"/>
         <image name="info" catalog="system" width="93" height="128"/>
         <image name="list.dash" catalog="system" width="128" height="85"/>
         <image name="lock.fill" catalog="system" width="128" height="128"/>

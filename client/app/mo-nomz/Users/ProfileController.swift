@@ -16,10 +16,9 @@ class ProfileController: UITableViewController {
     let SUPPORT_HEADING = 0
     let THANKS = 1
     let HELP = 2
-    let DONATE = 3
-    let PURCHASE_HEADING = 4
-    let PURCHASES = 5
-    let AVAILABLE_PURCHASES = 6
+    let PURCHASE_HEADING = 3
+    let PURCHASES = 4
+    let AVAILABLE_PURCHASES = 5
     
     private func loadData() {
         let spinner = startLoading()
@@ -33,7 +32,7 @@ class ProfileController: UITableViewController {
                 var bought: [SKProduct] = []
                 var unbought: [SKProduct] = []
                 for product in products {
-                    if let role = ProductRole.fromString(product.productIdentifier), User.purchased(role) {
+                    if let role = ProductRole.fromString(product.productIdentifier), !role.isConsumable, User.purchased(role) {
                         bought.append(product)
                     } else {
                         unbought.append(product)
@@ -52,7 +51,7 @@ class ProfileController: UITableViewController {
     }
     
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 7
+        return 6
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -60,7 +59,6 @@ class ProfileController: UITableViewController {
         case SUPPORT_HEADING: return 1
         case THANKS: return 1
         case HELP: return 1
-        case DONATE: return 1
         case PURCHASE_HEADING: return (boughtProducts.count + unboughtProducts.count) > 0 ? 1 : 0
         case PURCHASES: return boughtProducts.count
         case AVAILABLE_PURCHASES: return unboughtProducts.count
@@ -70,16 +68,6 @@ class ProfileController: UITableViewController {
     
     @objc func didTapNeedHelp(_ sender: Any) {
         needHelp()
-    }
-    
-    @objc func didTapDonate(_ sender: Any) {
-        if let url = URL(string: Configuration.venmoUrl) {
-            if #available(iOS 10.0, *) {
-                UIApplication.shared.open(url)
-            } else {
-                UIApplication.shared.openURL(url)
-            }
-        }
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -93,10 +81,6 @@ class ProfileController: UITableViewController {
         case HELP:
             let cell = tableView.dequeueReusableCell(withIdentifier: "help") as! ButtonItem
             cell.button.addTarget(self, action: #selector(didTapNeedHelp), for: .touchUpInside)
-            return cell
-        case DONATE:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "donate") as! ButtonItem
-            cell.button.addTarget(self, action: #selector(didTapDonate), for: .touchUpInside)
             return cell
         case PURCHASE_HEADING:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SimpleSectionHeader
@@ -144,7 +128,6 @@ class ProfileController: UITableViewController {
                     case .success(()):
                         guard let role = ProductRole.fromString(product.productIdentifier) else { return }
                         User.setDidPurchase(role)
-                        print("Successful purchase")
                         self.loadData()
                         self.onChange?()
                     }

@@ -9,16 +9,26 @@ import StoreKit
 
 enum ProductRole {
     case removeAds
+    case donate
     
     var productIdentifier: String {
         switch self {
         case .removeAds: return "com.monomz.removeads"
+        case .donate: return "com.monomz.donate"
+        }
+    }
+    
+    var isConsumable: Bool {
+        switch self {
+        case .removeAds: return false
+        case .donate: return true
         }
     }
     
     static func fromString(_ x: String) -> ProductRole? {
         switch x {
         case "com.monomz.removeads": return .removeAds
+        case "com.monomz.donate": return .donate
         default: return nil
         }
     }
