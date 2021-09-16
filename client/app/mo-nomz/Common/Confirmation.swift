@@ -18,6 +18,16 @@ extension UIViewController {
             self.present(confirmation, animated: true, completion: nil)
         }
     }
+    func buyPrompt(title: String, message: String, price: String, handler: @escaping ((UIAlertAction) -> Void)) {
+        let ok = UIAlertAction(title: "Buy for \(price)", style: .default, handler: handler)
+        let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        let confirmation = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        confirmation.addAction(ok)
+        confirmation.addAction(cancel)
+        DispatchQueue.main.async {
+            self.present(confirmation, animated: true, completion: nil)
+        }
+    }
     func promptForConfirmationThree(
         title: String,
         message: String,

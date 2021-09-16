@@ -79,4 +79,10 @@ class User {
     static func setDidDismissIngredientMergeWarning() {
         UserDefaults.shared.set(true, forKey: "dismissedIngredientMergeWarning")
     }
+    static func purchased(_ x: ProductRole) -> Bool {
+        return UserDefaults.shared.bool(forKey: x.productIdentifier)
+    }
+    static func setDidPurchase(_ x: ProductRole) {
+        UserDefaults.shared.set(true, forKey: x.productIdentifier)
+    }
 }
