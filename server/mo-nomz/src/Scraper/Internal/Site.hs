@@ -17,7 +17,7 @@ siteScrapers = mapFromList
   , ("geniuskitchen.com", geniusKitchen1)
   , ("tasteofhome.com", geniusKitchen2)
 
-  , ("rachlmansfield.com", tasty1)
+  , ("rachlmansfield.com", tasty2)
   , ("cookieandkate.com", tasty1)
   , ("simpleveganblog.com", tasty1)
   , ("eatyourselfskinny.com", tasty1)
@@ -101,7 +101,7 @@ siteScrapers = mapFromList
 
   , ("thekitchn.com", thekitchn)
 
-  -- , ("eatwell101.com", eatwell101)
+  , ("eatwell101.com", eatwell101)
   ]
 
 -- |Get all site scrapers, ordered by most popular first.
@@ -288,7 +288,7 @@ thekitchn = simpleScraper "thekitchn"
   denyAll
   ("ul" @: [Scalpel.hasClass "Recipe__ingredients"] // "li")
 
--- eatwell101 :: SiteScraper
--- eatwell101 = simpleScraper "eatwell101"
---   denyAll
---   ("div" @: [Scalpel.hasClass "pf-content"] // "li")
+eatwell101 :: SiteScraper
+eatwell101 = simpleScraper "eatwell101"
+  denyAll
+  ("div" @: [Scalpel.hasClass "pf-content"] // "li")

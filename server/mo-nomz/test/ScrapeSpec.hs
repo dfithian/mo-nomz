@@ -182,12 +182,12 @@ spec env = describe "Scrape" $ do
     it "handles deliciouslyella" $ scrapeAndParseConfig defCfg "https://deliciouslyella.com/recipes/sweet-potato-black-bean-shepherds-pie/"
     it "handles deliciouseveryday" $ scrapeAndParseConfig defCfg "https://www.deliciouseveryday.com/thai-pumpkin-soup-recipe/"
     it "handles eatyourselfskinny" $ scrapeAndParseConfig defCfg "https://www.eatyourselfskinny.com/easy-beef-stroganoff-casserole/"
-    -- gh actions can't get to this url
-    xit "handles iamafoodblog" $ scrapeAndParseConfig defCfg "https://iamafoodblog.com/smashed-brussel-sprouts/"
+    it "handles iamafoodblog" $ scrapeAndParseConfig defCfg "https://iamafoodblog.com/smashed-brussel-sprouts/"
     it "handles naturallyella" $ scrapeAndParseConfig defCfg "https://naturallyella.com/roasted-sweet-potato-sorghum-salad/"
     it "handles glutenfreecuppatea" $ scrapeAndParseConfig defCfg "https://glutenfreecuppatea.co.uk/2021/04/13/toblerone-millionaires-shortbread-recipe/"
     it "handles thelastfoodblog" $ scrapeAndParseConfig defCfg "https://www.thelastfoodblog.com/spinach-and-ricotta-cannelloni/"
-    it "handles hemsleyandhemsley" $ scrapeAndParseConfig defCfg "https://hemsleyandhemsley.com/recipe/apple-rocket-and-feta-buckwheat-galettes/"
+    -- this account was suspended
+    xit "handles hemsleyandhemsley" $ scrapeAndParseConfig defCfg "https://hemsleyandhemsley.com/recipe/apple-rocket-and-feta-buckwheat-galettes/"
     it "handles localmilkblog" $ scrapeAndParseConfig defCfg "https://localmilkblog.com/2019/11/turkey-buttermilk-sage-dumpling-soup.html"
     it "handles thefoodblog" $ scrapeAndParseConfig defCfg "https://www.thefoodblog.net/air-fryer-salmon-recipe/"
     it "handles onceuponafoodblog" $ scrapeAndParseConfig defCfg "https://onceuponafoodblog.com/cheesy-bacon-spring-greens/"
@@ -204,10 +204,11 @@ spec env = describe "Scrape" $ do
     it "handles twopeasandtheirpod" $ scrapeAndParseConfig defCfg "https://www.twopeasandtheirpod.com/shaved-brussels-sprouts-salad/"
     it "handles slenderkitchen" $ scrapeAndParseConfig defCfg "https://www.slenderkitchen.com/recipe/sunday-slow-cooker-saag-paneer"
     it "handles everydayannie" $ scrapeAndParseConfig defCfg "https://everydayannie.com/2020/12/28/raspberry-cheesecake-streusel-bars/"
-    it "handles notwithoutsalt" $ scrapeAndParseConfig defCfg "http://notwithoutsalt.com/brussels-sprout-green-apple-slaw-pickled-cranberries/"
+    -- returns a 500 error
+    xit "handles notwithoutsalt" $ scrapeAndParseConfig defCfg "http://notwithoutsalt.com/brussels-sprout-green-apple-slaw-pickled-cranberries/"
     it "handles chefspencil" $ scrapeAndParseConfig defCfg "https://www.chefspencil.com/recipe/carrot-tarte-tatin/"
     it "handles sweetandsavorymeals" $ scrapeAndParseConfig defCfg "https://sweetandsavorymeals.com/air-fryer-eggplant/"
-    -- it "handles eatwell101" $ scrapeAndParseConfig defCfg "https://www.eatwell101.com/garlic-butter-chicken-bites-asparagus-recipe"
+    it "handles eatwell101" $ scrapeAndParseConfig defCfg "https://www.eatwell101.com/garlic-butter-chicken-bites-asparagus-recipe"
 
   describe "Implicit" $ do
     describe "WPRM" $ do
@@ -220,8 +221,7 @@ spec env = describe "Scrape" $ do
       it "handles steamykitchen" $ scrapeAndParseConfig defCfg "https://steamykitchen.com/59396-shrimp-chow-mein.html"
       it "handles sweetashoney" $ scrapeAndParseConfig defCfg "https://www.sweetashoney.co/keto-french-baguette-recipe/"
       it "handles thestayathomechef" $ scrapeAndParseConfig defCfg "https://thestayathomechef.com/taco-casserole/"
-      -- this one returns a 404
-      xit "handles cookilicious" $ scrapeAndParseConfig defCfg "https://cookilicious.com/condiments/andhra-style-peanut-tomato-chutney-recipe-for-idli-dosa/"
+      it "handles cookilicious" $ scrapeAndParseConfig defCfg "https://cookilicious.com/condiments/andhra-style-peanut-tomato-chutney-recipe-for-idli-dosa/"
       it "handles ohmyveggies" $ scrapeAndParseConfig defCfg "https://ohmyveggies.com/vegan-snickerdoodles/"
       it "handles thevanillabeanblog" $ scrapeAndParseConfig defCfg "https://www.thevanillabeanblog.com/2021/03/devils-food-cake-buttercream-chocolate-ganache.html"
       it "handles sugarfreelondoner" $ scrapeAndParseConfig defCfg "https://sugarfreelondoner.com/keto-breakfast-cookies/#wprm-recipe-container-20704"
