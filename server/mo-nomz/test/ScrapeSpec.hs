@@ -126,7 +126,7 @@ spec env = describe "Scrape" $ do
       scrapeAndParse
         env
         "https://sallysbakingaddiction.com/chocolate-lava-cakes/"
-        "How to Make Chocolate Lava Cakes | Sally's Baking Addiction"
+        "How to Make Chocolate Lava Cakes - Sally's Baking Addiction"
         sallysBakingIngredients
 
     it "can parse cafe delites" $
