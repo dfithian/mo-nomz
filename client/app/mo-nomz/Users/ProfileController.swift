@@ -19,9 +19,11 @@ class ProfileController: UITableViewController {
     let PURCHASE_HEADING = 3
     let PURCHASES = 4
     let AVAILABLE_PURCHASES = 5
+    let RESTORE_PURCHASES = 6
     
     private func loadData() {
         let spinner = startLoading()
+        print("loading")
         Purchases.shared.getProducts(withHandler: {
             self.stopLoading(spinner)
             switch $0 {
@@ -34,6 +36,7 @@ class ProfileController: UITableViewController {
                 for product in products {
                     if let role = ProductRole.fromString(product.productIdentifier), !role.isConsumable, User.purchased(role) {
                         bought.append(product)
+                        User.setDidPurchase(role)
                     } else {
                         unbought.append(product)
                     }
@@ -51,7 +54,7 @@ class ProfileController: UITableViewController {
     }
     
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 6
+        return 7
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -59,15 +62,12 @@ class ProfileController: UITableViewController {
         case SUPPORT_HEADING: return 1
         case THANKS: return 1
         case HELP: return 1
-        case PURCHASE_HEADING: return (boughtProducts.count + unboughtProducts.count) > 0 ? 1 : 0
+        case PURCHASE_HEADING: return 1
         case PURCHASES: return boughtProducts.count
         case AVAILABLE_PURCHASES: return unboughtProducts.count
+        case RESTORE_PURCHASES: return 1
         default: return 0
         }
-    }
-    
-    @objc func didTapNeedHelp(_ sender: Any) {
-        needHelp()
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -79,9 +79,7 @@ class ProfileController: UITableViewController {
         case THANKS:
             return tableView.dequeueReusableCell(withIdentifier: "thanks")!
         case HELP:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "help") as! ButtonItem
-            cell.button.addTarget(self, action: #selector(didTapNeedHelp), for: .touchUpInside)
-            return cell
+            return tableView.dequeueReusableCell(withIdentifier: "help")!
         case PURCHASE_HEADING:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SimpleSectionHeader
             cell.label.text = "Purchases"
@@ -103,38 +101,49 @@ class ProfileController: UITableViewController {
             let image = UIImage(systemName: "lock.fill")
             cell.indicator.setImage(image, for: .normal)
             return cell
+        case RESTORE_PURCHASES:
+            return tableView.dequeueReusableCell(withIdentifier: "restore")!
         default:
             return tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SimpleSectionHeader
         }
     }
     
+    private func purchaseHandler(_ result: Result<(), Error>) {
+        switch result {
+        case .failure(let error):
+            switch error as? Purchases.PurchasesError {
+            case .paymentWasCancelled: return
+            default:
+                print(error)
+                self.alertUnsuccessful("Failed to complete purchase. Please try again later.")
+                return
+            }
+        case .success(()):
+            print("success")
+            self.loadData()
+            self.onChange?()
+        }
+    }
+    
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.section {
+        case HELP:
+            needHelp()
+            break
         case AVAILABLE_PURCHASES:
             let product = unboughtProducts[indexPath.row]
             guard let price = Purchases.shared.getPriceFormatted(for: product) else { return }
             guard Purchases.shared.canMakePayments() else { return }
             let handler = { (action: UIAlertAction) -> Void in
-                Purchases.shared.buy(product: product, withHandler: {
-                    switch $0 {
-                    case .failure(let error):
-                        switch error as? Purchases.PurchasesError {
-                        case .paymentWasCancelled: return
-                        default:
-                            print(error)
-                            self.alertUnsuccessful("Failed to complete purchase. Please try again later.")
-                            return
-                        }
-                    case .success(()):
-                        guard let role = ProductRole.fromString(product.productIdentifier) else { return }
-                        User.setDidPurchase(role)
-                        self.loadData()
-                        self.onChange?()
-                    }
-                })
+                Purchases.shared.buy(product: product, withHandler: self.purchaseHandler)
             }
             buyPrompt(title: product.localizedTitle, message: product.localizedDescription, price: price, handler: handler)
-        default: return
+            break
+        case RESTORE_PURCHASES:
+            guard Purchases.shared.canMakePayments() else { return }
+            Purchases.shared.restore(withHandler: self.purchaseHandler)
+            break
+        default: break
         }
     }
     

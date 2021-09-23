@@ -48,6 +48,7 @@ extension Purchases.PurchasesError: LocalizedError {
 class Purchases: NSObject, SKProductsRequestDelegate, SKPaymentTransactionObserver {
     var onReceiveProductsHandler: ((Result<[SKProduct], PurchasesError>) -> Void)?
     var onBuyProductHandler: ((Result<(), Error>) -> Void)?
+    var onRestorePurchasesHandler: ((Result<(), Error>) -> Void)?
     static let shared = Purchases()
  
     private override init() {
@@ -117,10 +118,15 @@ class Purchases: NSObject, SKProductsRequestDelegate, SKPaymentTransactionObserv
         return SKPaymentQueue.canMakePayments()
     }
     
+    func restore(withHandler handler: @escaping ((_ result: Result<(), Error>) -> Void)) {
+        onRestorePurchasesHandler = handler
+        SKPaymentQueue.default().restoreCompletedTransactions()
+    }
+    
     func buy(product: SKProduct, withHandler handler: @escaping ((_ result: Result<(), Error>) -> Void)) {
         let payment = SKPayment(product: product)
-        SKPaymentQueue.default().add(payment)
         onBuyProductHandler = handler
+        SKPaymentQueue.default().add(payment)
     }
     
     func paymentQueue(_ queue: SKPaymentQueue, updatedTransactions transactions: [SKPaymentTransaction]) {
@@ -145,5 +151,13 @@ class Purchases: NSObject, SKProductsRequestDelegate, SKPaymentTransactionObserv
                 break
             }
         })
+    }
+    
+    func paymentQueueRestoreCompletedTransactionsFinished(_ queue: SKPaymentQueue) {
+        onRestorePurchasesHandler?(.success(()))
+    }
+    
+    func paymentQueue(_ queue: SKPaymentQueue, restoreCompletedTransactionsFailedWithError error: Error) {
+        onRestorePurchasesHandler?(.failure(error))
     }
 }

@@ -124,7 +124,7 @@
                                     <rect key="frame" x="0.0" y="0.0" width="414" height="43.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CuG-uT-G0T">
+                                        <button opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CuG-uT-G0T">
                                             <rect key="frame" x="170.5" y="4" width="73" height="36"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="36" id="W78-o5-Syf"/>
@@ -142,8 +142,33 @@
                                     <outlet property="button" destination="CuG-uT-G0T" id="mw9-Zq-Xge"/>
                                 </connections>
                             </tableViewCell>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="purchase" id="Bsq-lS-lek" customClass="PurchaseItem" customModule="mo_nomz" customModuleProvider="target">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="restore" id="TFG-rH-BaK" customClass="ButtonItem" customModule="mo_nomz" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="155" width="414" height="43.5"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="TFG-rH-BaK" id="7Sn-hH-Pza">
+                                    <rect key="frame" x="0.0" y="0.0" width="414" height="43.5"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <button opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ql4-ZV-p4D">
+                                            <rect key="frame" x="146.5" y="4" width="121" height="36"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="36" id="YWo-PQ-gvO"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                            <state key="normal" title="Restore purchases"/>
+                                        </button>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstItem="Ql4-ZV-p4D" firstAttribute="centerY" secondItem="7Sn-hH-Pza" secondAttribute="centerY" id="dCo-dF-9ZE"/>
+                                        <constraint firstItem="Ql4-ZV-p4D" firstAttribute="centerX" secondItem="7Sn-hH-Pza" secondAttribute="centerX" id="hu8-n4-fJc"/>
+                                    </constraints>
+                                </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="button" destination="Ql4-ZV-p4D" id="zDy-rC-f5l"/>
+                                </connections>
+                            </tableViewCell>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="purchase" id="Bsq-lS-lek" customClass="PurchaseItem" customModule="mo_nomz" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="198.5" width="414" height="43.5"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Bsq-lS-lek" id="PSr-fR-QYK">
                                     <rect key="frame" x="0.0" y="0.0" width="414" height="43.5"/>
