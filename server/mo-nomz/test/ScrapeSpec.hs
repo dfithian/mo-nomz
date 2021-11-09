@@ -105,7 +105,7 @@ spec env = describe "Scrape" $ do
       scrapeAndParse
         env
         "https://www.tasteofhome.com/recipes/favorite-chicken-potpie/"
-        "Favorite Chicken Potpie Recipe: How to Make It | Taste of Home"
+        "Favorite Chicken Potpie Recipe: How to Make It"
         tasteOfHomeIngredients
 
     it "can parse rachel mansfield" $
