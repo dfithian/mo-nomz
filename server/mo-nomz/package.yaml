@@ -57,7 +57,6 @@ dependencies:
   - containers
   - cryptonite
   - data-default
-  - ekg
   - ekg-core
   - http-client
   - http-client-tls
@@ -67,7 +66,6 @@ dependencies:
   - monad-logger
   - mtl
   - network-uri
-  - postgresql-config
   - postgresql-simple
   - postgresql-simple-migration
   - random
@@ -99,7 +97,6 @@ tests:
       - file-embed
       - file-path-th
       - hspec
-      - hspec-expectations
       - QuickCheck
       - mo-nomz
 
