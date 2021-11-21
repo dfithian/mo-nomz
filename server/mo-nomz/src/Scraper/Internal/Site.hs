@@ -210,8 +210,8 @@ ingredientLi1 = simpleScraper "ingredientLi1"
 
 ingredientLi2 :: SiteScraper
 ingredientLi2 = simpleScraper "ingredientLi2"
-  (testScrape ("div" @: [Scalpel.hasClass "ingredients-list"]))
-  ("div" @: [Scalpel.hasClass "ingredients-list"] // "li")
+  (testScrape ("div" @: [Scalpel.hasClass "ingredients-section"]))
+  ("div" @: [Scalpel.hasClass "ingredients-section"] // "li")
 
 ingredientLi3 :: SiteScraper
 ingredientLi3 = simpleScraper "ingredientLi3"
