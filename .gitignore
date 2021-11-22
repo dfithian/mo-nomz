@@ -1,6 +1,5 @@
 stack.yaml.lock
 tmp
-*.cabal
 *.log
 project.xcworkspace/
 Pods/
