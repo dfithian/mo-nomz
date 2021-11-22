@@ -1,7 +1,5 @@
-resolver: lts-17.8
+resolver: lts-18.17
 packages:
 - server/mo-nomz
 extra-deps:
-- base64-bytestring-1.0.0.3@sha256:d5027ea6d63eab27cfa34eb1f5a05b6a5ee521dd176a06da3f7d80e117a88259,2352
-- postgresql-config-0.1.0@sha256:5ce9d48cd0f422910a3786d17f5c75331da222bbf8ccba03ba116eded6185db1,1294
-- postgresql-simple-migration-0.1.15.0@sha256:0e24e96908430f5caf9c1c1d9ca7c5c108e4e0409a255e2cbd77e8cd252dbb02,3879
+- postgresql-simple-migration-0.1.15.0
