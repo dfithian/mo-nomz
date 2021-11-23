@@ -130,12 +130,9 @@ rachelMansfieldIngredients =
   , pureIngredient 1 "tbsp" "melted & cooled coconut oil"
   , pureIngredient 0.5 "tsp" "of baking powder"
   , pureIngredient 0.5 "cup" "of dark chocolate chips"
-  , pureIngredient 0.5 "cup" "sunbutter (or your nut butter of choice)"
+  , pureIngredient 0.5 "cup" "creamy nut butter"
   , pureIngredientNoQuantity "sprinkle" "of cinnamon"
   , pureIngredientNoQuantity "splash" "of vanilla extract"
-  , pureIngredientName "Dry ingredients:"
-  , pureIngredientName "Wet ingredients:"
-  , pureIngredientName "Topping:"
   ]
 
 foodNetworkIngredients :: [Ingredient]
