@@ -38,7 +38,7 @@ runServer Env {..} ma = do
 
 wipeDb :: Env -> IO ()
 wipeDb env = runEnv env $ \c ->
-  void $ execute_ c "truncate nomz.ingredient, nomz.recipe, nomz.grocery_item restart identity"
+  void $ execute_ c "truncate nomz.export, nomz.ingredient, nomz.recipe, nomz.grocery_item restart identity"
 
 loadEnv :: IO Env
 loadEnv = do
@@ -46,7 +46,7 @@ loadEnv = do
   (token, bcryptedToken) <- generateToken 4
   userId <- either (fail . show) pure =<< runLoggingT ( runReaderT (
     withDbConn $ \c -> do
-      void $ execute_ c "truncate nomz.ingredient, nomz.recipe, nomz.grocery_item, nomz.user restart identity"
+      void $ execute_ c "truncate nomz.export, nomz.ingredient, nomz.recipe, nomz.grocery_item, nomz.user restart identity"
       insertToken c bcryptedToken ) pool ) mempty
   manager <- createManager
   pure $ Env pool userId token manager

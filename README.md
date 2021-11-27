@@ -24,7 +24,7 @@ pg_ctl -D tmp -l postgres.log start
 psql -d postgres -c "create user postgres"
 psql -d postgres -c "alter user postgres superuser"
 psql -d postgres -c "grant create on database postgres to postgres"
-psql -d postgres -U postgres -f sql/init.sql
+psql -d postgres -U postgres -f server/mo-nomz/sql/init.sql
 ```
 
 ## Use the Scraper
