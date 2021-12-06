@@ -234,7 +234,8 @@ spec env = describe "Scrape" $ do
       it "handles bakerella" $ scrapeAndParseConfig defCfg "https://www.bakerella.com/secret-ingredient-chocolate-chip-cookies/"
       it "handles mybakingaddiction" $ scrapeAndParseConfig defCfg "https://www.mybakingaddiction.com/flank-steak-tacos/"
     describe "ZL" $ do
-      it "handles cnz" $ scrapeAndParseConfig defCfg "https://cnz.to/recipes/meat-charcuterie/instant-pot-ramen-style-pork-belly-recipe/"
+      -- certificate is expired
+      xit "handles cnz" $ scrapeAndParseConfig defCfg "https://cnz.to/recipes/meat-charcuterie/instant-pot-ramen-style-pork-belly-recipe/"
     describe "Tasty 2" $ do
       it "handles joythebaker" $ scrapeAndParseConfig defCfg "https://joythebaker.com/2019/03/chili-and-cheese-buttery-biscuits/"
     describe "Tasty 3" $ do

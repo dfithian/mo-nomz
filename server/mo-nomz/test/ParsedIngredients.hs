@@ -107,7 +107,7 @@ tasteOfHomeIngredients :: [Ingredient]
 tasteOfHomeIngredients =
   [ pureIngredient 2 "cup" "diced peeled potatoes"
   , pureIngredient 1.75 "cup" "sliced carrots"
-  , pureIngredient 1 "cup" "Kerrygold Salted Butter, cubed"
+  , pureIngredient 1 "cup" "butter, cubed"
   , pureIngredient (2 / 3) "cup" "chopped onion"
   , pureIngredient 1 "cup" "all-purpose flour"
   , pureIngredient 1.75 "tsp" "salt"
