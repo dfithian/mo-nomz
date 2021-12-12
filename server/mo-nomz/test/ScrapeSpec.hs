@@ -216,7 +216,8 @@ spec env = describe "Scrape" $ do
       it "handles downshiftology" $ scrapeAndParseConfig defCfg "https://downshiftology.com/recipes/chicken-salad/"
       it "handles altonbrown" $ scrapeAndParseConfig (defCfg { requiredIngredients = 4 }) "https://altonbrown.com/recipes/2-note-mousse/"
       it "handles spoonforkbacon" $ scrapeAndParseConfig (defCfg { allowedDuplicates = 4 }) "https://www.spoonforkbacon.com/chicken-and-dumplings/#wprm-recipe-container-40527"
-      it "handles dinnerthendessert" $ scrapeAndParseConfig defCfg "https://dinnerthendessert.com/ultimate-slow-cooker-pot-roast/"
+      -- uses a captcha
+      xit "handles dinnerthendessert" $ scrapeAndParseConfig defCfg "https://dinnerthendessert.com/ultimate-slow-cooker-pot-roast/"
       it "handles howsweeteats" $ scrapeAndParseConfig defCfg "https://www.howsweeteats.com/2021/04/pimento-cheese-poppers/"
       it "handles browneyedbaker" $ scrapeAndParseConfig defCfg "https://www.browneyedbaker.com/cannoli/"
       it "handles steamykitchen" $ scrapeAndParseConfig defCfg "https://steamykitchen.com/59396-shrimp-chow-mein.html"
