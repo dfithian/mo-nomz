@@ -90,6 +90,7 @@ siteScrapers = mapFromList
   , ("shutterbean.com", ingredientLi11)
   , ("seriouseats.com", ingredientLi12)
   , ("uitpaulineskeuken.nl", ingredientLi13)
+  , ("leukerecepten.nl", ingredientLi14)
 
   , ("delish.com", delish)
   , ("thepioneerwoman.com", delish)
@@ -268,6 +269,11 @@ ingredientLi13 :: SiteScraper
 ingredientLi13 = simpleScraper "ingredientLi13"
   (testScrape ("section" @: [Scalpel.hasClass "ingredients-list"]))
   ("section" @: [Scalpel.hasClass "ingredients-list"] // "li")
+
+ingredientLi14 :: SiteScraper
+ingredientLi14 = simpleScraper "ingredientLi14"
+  (testScrape ("ul" @: [Scalpel.hasClass "page-content__ingredients-list"]))
+  ("ul" @: [Scalpel.hasClass "page-content__ingredients-list"] // "li")
 
 delish :: SiteScraper
 delish = simpleScraper "delish"
