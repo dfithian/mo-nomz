@@ -133,6 +133,9 @@ class Purchases: NSObject, SKProductsRequestDelegate, SKPaymentTransactionObserv
         transactions.forEach({
             switch $0.transactionState {
             case .purchased, .restored:
+                if let role = ProductRole.fromString($0.payment.productIdentifier), !role.isConsumable {
+                    User.setDidPurchase(role)
+                }
                 onBuyProductHandler?(.success(()))
                 SKPaymentQueue.default().finishTransaction($0)
                 break

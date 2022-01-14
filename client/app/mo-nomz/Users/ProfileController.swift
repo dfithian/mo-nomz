@@ -36,7 +36,6 @@ class ProfileController: UITableViewController {
                 for product in products {
                     if let role = ProductRole.fromString(product.productIdentifier), !role.isConsumable, User.purchased(role) {
                         bought.append(product)
-                        User.setDidPurchase(role)
                     } else {
                         unbought.append(product)
                     }
@@ -119,7 +118,6 @@ class ProfileController: UITableViewController {
                 return
             }
         case .success(()):
-            print("success")
             self.loadData()
             self.onChange?()
         }
