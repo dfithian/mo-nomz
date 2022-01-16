@@ -56,33 +56,45 @@ class User {
         UserDefaults.shared.set(true, forKey: "exported")
     }
     static func dismissedReorderMergeTip() -> Bool {
-        return UserDefaults.shared.bool(forKey: "dismissedReorderMergeTip")
+        return UserDefaults.shared.bool(forKey: "dismissedReorderMergeTip") || preference(.noTips)
     }
     static func setDidDismissReorderMergeTip() {
         UserDefaults.shared.set(true, forKey: "dismissedReorderMergeTip")
     }
     static func dismissedIngredientMergeTip() -> Bool {
-        return UserDefaults.shared.bool(forKey: "dismissedIngredientMergeTip")
+        return UserDefaults.shared.bool(forKey: "dismissedIngredientMergeTip") || preference(.noTips)
     }
     static func setDidDismissIngredientMergeTip() {
         UserDefaults.shared.set(true, forKey: "dismissedIngredientMergeTip")
     }
     static func dismissedMergeWarning() -> Bool {
-        return UserDefaults.shared.bool(forKey: "dismissedMergeWarning")
+        return UserDefaults.shared.bool(forKey: "dismissedMergeWarning") || preference(.noTips)
     }
     static func setDidDismissMergeWarning() {
         UserDefaults.shared.set(true, forKey: "dismissedMergeWarning")
     }
     static func dismissedIngredientMergeWarning() -> Bool {
-        return UserDefaults.shared.bool(forKey: "dismissedIngredientMergeWarning")
+        return UserDefaults.shared.bool(forKey: "dismissedIngredientMergeWarning") || preference(.noTips)
     }
     static func setDidDismissIngredientMergeWarning() {
         UserDefaults.shared.set(true, forKey: "dismissedIngredientMergeWarning")
+    }
+    static func dismissedStepReorderTip() -> Bool {
+        return UserDefaults.shared.bool(forKey: "dismissedStepReorderTip") || preference(.noTips)
+    }
+    static func setDidDismissStepReorderTip() {
+        UserDefaults.shared.set(true, forKey: "dismissedStepReorderTip")
     }
     static func purchased(_ x: ProductRole) -> Bool {
         return UserDefaults.shared.bool(forKey: x.productIdentifier)
     }
     static func setDidPurchase(_ x: ProductRole) {
         UserDefaults.shared.set(true, forKey: x.productIdentifier)
+    }
+    static func preference(_ key: PreferenceRole) -> Bool {
+        return UserDefaults.shared.bool(forKey: key.identifier)
+    }
+    static func setPreference(_ key: PreferenceRole, value: Bool) {
+        UserDefaults.shared.set(value, forKey: key.identifier)
     }
 }

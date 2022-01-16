@@ -57,7 +57,7 @@ class RecipeController: UIViewController {
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let vc = segue.destination as? GroceryAddController, segue.identifier == "addGroceries" {
+        if let vc = segue.destination as? AddController, segue.identifier == "addGroceries" {
             vc.onChange = loadData
         }
         if let vc = segue.destination as? RecipeListController, segue.identifier == "embedRecipes" {

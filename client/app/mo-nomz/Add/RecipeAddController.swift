@@ -8,15 +8,12 @@
 import UIKit
 import SafariServices
 
-class RecipeAddController: UIViewController {
+class RecipeAddController: UIViewController, Submit {
     @IBOutlet weak var link: UITextField!
     @IBOutlet weak var checkbox: UIButton!
-    @IBOutlet weak var explanationConstraint: NSLayoutConstraint!
-    @IBOutlet weak var noExplanationConstraint: NSLayoutConstraint!
     var existingLinks: [String] = []
     var active: Bool = true
-    var onKeyboardShowConstraints: [NSLayoutConstraint] = []
-    var onKeyboardHideConstraints: [NSLayoutConstraint] = []
+    var beforeHeight: CGFloat? = nil
     
     @IBAction func didTapIsActive(_ sender: Any?) {
         if active {
@@ -27,8 +24,8 @@ class RecipeAddController: UIViewController {
             checkbox.setImage(UIImage(systemName: "checkmark.square"), for: .normal)
         }
     }
-
-    func save(_ onChange: (() -> Void)?, onCancel: (() -> Void)?) {
+    
+    func submit(_ onChange: (() -> Void)?) {
         let completion = { () -> Void in
             DispatchQueue.main.async {
                 self.dismiss(animated: true, completion: nil)
@@ -38,14 +35,26 @@ class RecipeAddController: UIViewController {
         if let newLink = link.text?.nonEmpty() {
             addLink(link: newLink, active: active, completion: completion)
         } else {
-            onCancel?()
+            alertUnsuccessful("Please add a link.")
         }
+    }
+    
+    @objc func keyboardWillShow(notification: NSNotification) {
+        beforeHeight = keyboardWillShowInternal(subview: link, notification: notification)
+    }
+    
+    @objc func keyboardWillHide(notification: NSNotification) {
+        keyboardWillHideInternal(heightMay: beforeHeight, notification: notification)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardDidShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         link.addDoneButtonOnKeyboard()
-        onKeyboardShowConstraints = [noExplanationConstraint]
-        onKeyboardHideConstraints = [explanationConstraint]
     }
 }

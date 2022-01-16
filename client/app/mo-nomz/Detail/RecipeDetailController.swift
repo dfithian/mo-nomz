@@ -73,7 +73,7 @@ class RecipeDetailController: UIViewController, UITextViewDelegate {
             star5.setImage(filledStar, for: .normal)
         }
         if which != r.recipe.rating && which > 0 {
-            let newRecipe = ReadableRecipe(name: r.recipe.name, link: r.recipe.link, active: r.recipe.active, rating: which, notes: r.recipe.notes, ingredients: r.recipe.ingredients)
+            let newRecipe = ReadableRecipe(name: r.recipe.name, link: r.recipe.link, active: r.recipe.active, rating: which, notes: r.recipe.notes, ingredients: r.recipe.ingredients, steps: r.recipe.steps)
             updateRecipe(id: r.id, recipe: newRecipe)
             loadData()
             onChange?()
@@ -109,6 +109,7 @@ class RecipeDetailController: UIViewController, UITextViewDelegate {
             detailVc = vc
             loadData()
             vc.recipe = r
+            vc.steps = r.recipe.steps.map({ StepWithId(id: $0, step: $1) }).sorted(by: { $0.step.order < $1.step.order })
             vc.ingredients = r.recipe.ingredients.map({ ReadableIngredientWithId(id: $0, ingredient: $1) }).sorted(by: { $0.ingredient.order < $1.ingredient.order })
             vc.onChange = { () -> Void in
                 self.loadData()
@@ -121,6 +122,7 @@ class RecipeDetailController: UIViewController, UITextViewDelegate {
         guard let r = recipe else { return }
         guard let newRecipe = getRecipe(id: r.id) else { return }
         detailVc?.recipe = newRecipe
+        detailVc?.steps = newRecipe.recipe.steps.map({ StepWithId(id: $0, step: $1) }).sorted(by: { ($0.step.order, $0.step.step) < ($1.step.order, $1.step.step) })
         detailVc?.ingredients = newRecipe.recipe.ingredients.map({ ReadableIngredientWithId(id: $0, ingredient: $1) }).sorted(by: { ($0.ingredient.order, $0.ingredient.name) < ($1.ingredient.order, $1.ingredient.name) })
         DispatchQueue.main.async {
             self.detailVc?.tableView.reloadData()

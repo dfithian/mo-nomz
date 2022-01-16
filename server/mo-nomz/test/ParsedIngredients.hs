@@ -3,7 +3,7 @@ module ParsedIngredients where
 import ClassyPrelude
 import qualified Data.CaseInsensitive as CI
 
-import Types (Ingredient(..), IngredientName(..), Quantity(..), Unit(..))
+import Types (Ingredient(..), IngredientName(..), Quantity(..), Step(..), Unit(..))
 
 allParsedIngredients :: [[Ingredient]]
 allParsedIngredients =
@@ -57,6 +57,15 @@ allRecipesIngredients =
   , pureIngredient 1.75 "cup" "chicken broth"
   , pureIngredient (2 / 3) "cup" "milk"
   , pureIngredientNoUnit 2 "(9 inch) unbaked pie crusts"
+  ]
+
+allRecipesSteps :: [Step]
+allRecipesSteps =
+  [ Step "Preheat oven to 425 degrees F (220 degrees C.)"
+  , Step "In a saucepan, combine chicken, carrots, peas, and celery. Add water to cover and boil for 15 minutes. Remove from heat, drain and set aside."
+  , Step "In the saucepan over medium heat, cook onions in butter until soft and translucent. Stir in flour, salt, pepper, and celery seed. Slowly stir in chicken broth and milk. Simmer over medium-low heat until thick. Remove from heat and set aside."
+  , Step "Place the chicken mixture in bottom pie crust. Pour hot liquid mixture over. Cover with top crust, seal edges, and cut away excess dough. Make several small slits in the top to allow steam to escape."
+  , Step "Bake in the preheated oven for 30 to 35 minutes, or until pastry is golden brown and filling is bubbly. Cool for 10 minutes before serving."
   ]
 
 foodIngredients :: [Ingredient]

@@ -11,19 +11,21 @@ import UIKit
 class ProfileController: UITableViewController {
     var boughtProducts: [SKProduct] = []
     var unboughtProducts: [SKProduct] = []
+    var preferences: [PreferenceRole] = [.mealsDefaultTab, .noTips]
     var onChange: (() -> Void)? = nil
     
     let SUPPORT_HEADING = 0
     let THANKS = 1
     let HELP = 2
-    let PURCHASE_HEADING = 3
-    let PURCHASES = 4
-    let AVAILABLE_PURCHASES = 5
-    let RESTORE_PURCHASES = 6
+    let PREFERENCE_HEADING = 3
+    let PREFERENCES = 4
+    let PURCHASE_HEADING = 5
+    let PURCHASES = 6
+    let AVAILABLE_PURCHASES = 7
+    let RESTORE_PURCHASES = 8
     
     private func loadData() {
         let spinner = startLoading()
-        print("loading")
         Purchases.shared.getProducts(withHandler: {
             self.stopLoading(spinner)
             switch $0 {
@@ -52,8 +54,13 @@ class ProfileController: UITableViewController {
         })
     }
     
+    @objc func didTapPreference(_ sender: Any?) {
+        guard let s = sender as? UISwitch else { return }
+        User.setPreference(preferences[s.tag], value: s.isOn)
+    }
+    
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 7
+        return 9
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -65,6 +72,8 @@ class ProfileController: UITableViewController {
         case PURCHASES: return boughtProducts.count
         case AVAILABLE_PURCHASES: return unboughtProducts.count
         case RESTORE_PURCHASES: return 1
+        case PREFERENCE_HEADING: return 1
+        case PREFERENCES: return preferences.count
         default: return 0
         }
     }
@@ -102,6 +111,18 @@ class ProfileController: UITableViewController {
             return cell
         case RESTORE_PURCHASES:
             return tableView.dequeueReusableCell(withIdentifier: "restore")!
+        case PREFERENCE_HEADING:
+            let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SimpleSectionHeader
+            cell.label.text = "Preferences"
+            return cell
+        case PREFERENCES:
+            let cell = tableView.dequeueReusableCell(withIdentifier: "preference") as! PreferenceItem
+            let preference = preferences[indexPath.row]
+            cell.label.text = preference.description
+            cell.indicator.tag = indexPath.row
+            cell.indicator.isOn = User.preference(preference)
+            cell.indicator.addTarget(self, action: #selector(didTapPreference), for: .touchUpInside)
+            return cell
         default:
             return tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SimpleSectionHeader
         }
@@ -147,6 +168,8 @@ class ProfileController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 600
         loadData()
     }
 }

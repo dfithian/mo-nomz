@@ -109,6 +109,9 @@ data RawIngredient = RawIngredient
   }
   deriving (Eq, Ord, Show)
 
+newtype Step = Step { unStep :: Text }
+  deriving (Eq, Ord, Show, FromJSON, ToJSON)
+
 data Recipe = Recipe
   { recipeName   :: RecipeName
   , recipeLink   :: Maybe RecipeLink

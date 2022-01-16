@@ -8,33 +8,76 @@
 import MobileCoreServices
 import UIKit
 
+enum Subentity: Codable {
+    case ingredient(ReadableIngredientWithId)
+    case step(StepWithId)
+}
+
+struct SubentityDragInfo {
+    let indexPath: IndexPath
+}
+
 class RecipeDetailListController: UITableViewController, UITextViewDelegate, UITableViewDragDelegate, UITableViewDropDelegate {
     var recipe: ReadableRecipeWithId? = nil
+    var steps: [StepWithId] = []
     var ingredients: [ReadableIngredientWithId] = []
     var onChange: (() -> Void)? = nil
     var beforeHeight: CGFloat? = nil
     var mergeItems: (ReadableIngredientWithId, ReadableIngredientWithId)? = nil
     var editItem: ReadableIngredientWithId? = nil
     
-    let NOTES_HEADING = 0
-    let NOTES = 1
-    let MERGE_TIP = 2
-    let LIST_HEADING = 3
-    let LIST = 4
-    let ADD = 5
+    let ADD_INGREDIENT_TAG = 0
+    let ADD_STEP_TAG = 1
+
+    let INGREDIENT_LIST_HEADING = 0
+    let MERGE_TIP = 1
+    let INGREDIENT_LIST = 2
+    let ADD_INGREDIENT = 3
+    let STEP_LIST_HEADING = 4
+    let REORDER_STEP_TIP = 5
+    let STEP_LIST = 6
+    let ADD_STEP = 7
+    let NOTES_HEADING = 8
+    let NOTES = 9
     
     @objc func didTapAdd(_ sender: Any?) {
-        performSegue(withIdentifier: "addItem", sender: nil)
+        guard let b = sender as? UIButton else { return }
+        if b.tag == ADD_INGREDIENT_TAG {
+            performSegue(withIdentifier: "addItem", sender: nil)
+        } else {
+            newStep()
+        }
+    }
+    
+    @objc func didEndEditingStep(_ sender: Any?) {
+        guard let t = sender as? UITextField else { return }
+        guard let r = recipe else { return }
+        let step = steps[t.tag]
+        let cell = tableView.cellForRow(at: IndexPath(row: t.tag, section: STEP_LIST)) as! EditableItem
+        cell.write.isEnabled = false
+        cell.write.alpha = 0
+        cell.read.alpha = 1
+        cell.read.text = cell.write.text
+        let new = StepWithId(id: step.id, step: Step(step: cell.write.text!, order: step.step.order))
+        updateRecipeStep(recipeId: r.id, step: new)
+        onChange?()
+    }
+    
+    private func newStep() {
+        guard let r = recipe else { return }
+        let newSteps = addRecipeSteps(recipeId: r.id, rawSteps: [""])
+        steps.append(contentsOf: newSteps)
+        tableView.insertRows(at: [IndexPath(row: steps.count - 1, section: STEP_LIST)], with: .automatic)
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
         guard let r = recipe else { return }
-        updateRecipe(id: r.id, recipe: ReadableRecipe(name: r.recipe.name, link: r.recipe.link, active: r.recipe.active, rating: r.recipe.rating, notes: textView.text ?? r.recipe.notes, ingredients: r.recipe.ingredients))
+        updateRecipe(id: r.id, recipe: ReadableRecipe(name: r.recipe.name, link: r.recipe.link, active: r.recipe.active, rating: r.recipe.rating, notes: textView.text ?? r.recipe.notes, ingredients: r.recipe.ingredients, steps: r.recipe.steps))
         onChange?()
     }
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 6
+        return 10
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -42,9 +85,13 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
         case NOTES_HEADING: return 1
         case NOTES: return 1
         case MERGE_TIP: return !User.dismissedIngredientMergeTip() ? 1 : 0
-        case LIST_HEADING: return 1
-        case LIST: return ingredients.count
-        case ADD: return 1
+        case INGREDIENT_LIST_HEADING: return 1
+        case INGREDIENT_LIST: return ingredients.count
+        case ADD_INGREDIENT: return 1
+        case STEP_LIST_HEADING: return 1
+        case REORDER_STEP_TIP: return !User.dismissedStepReorderTip() ? 1 : 0
+        case STEP_LIST: return steps.count
+        case ADD_STEP: return 1
         default: return 0
         }
     }
@@ -64,17 +111,37 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
             return cell
         case MERGE_TIP:
             return tableView.dequeueReusableCell(withIdentifier: "mergeTip")!
-        case LIST_HEADING:
+        case INGREDIENT_LIST_HEADING:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SimpleSectionHeader
             cell.label.text = "Ingredients"
             return cell
-        case LIST:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "listItem") as! IngredientListItem
+        case INGREDIENT_LIST:
+            let cell = tableView.dequeueReusableCell(withIdentifier: "listItem") as! ListItem
             let item = ingredients[indexPath.row]
             cell.name.text = item.ingredient.render()
             return cell
-        case ADD:
+        case ADD_INGREDIENT:
             let cell = tableView.dequeueReusableCell(withIdentifier: "addItem") as! AddItem
+            cell.add.tag = ADD_INGREDIENT_TAG
+            cell.add.addTarget(self, action: #selector(didTapAdd), for: .touchUpInside)
+            return cell
+        case STEP_LIST_HEADING:
+            let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SimpleSectionHeader
+            cell.label.text = "Steps"
+            return cell
+        case REORDER_STEP_TIP:
+            return tableView.dequeueReusableCell(withIdentifier: "reorderTip")!
+        case STEP_LIST:
+            let cell = tableView.dequeueReusableCell(withIdentifier: "editItem") as! EditableItem
+            cell.read.text = steps[indexPath.row].step.step
+            cell.write.text = steps[indexPath.row].step.step
+            cell.write.tag = indexPath.row
+            cell.write.addDoneButtonOnKeyboard()
+            cell.write.addTarget(self, action: #selector(didEndEditingStep), for: .editingDidEnd)
+            return cell
+        case ADD_STEP:
+            let cell = tableView.dequeueReusableCell(withIdentifier: "addItem") as! AddItem
+            cell.add.tag = ADD_STEP_TAG
             cell.add.addTarget(self, action: #selector(didTapAdd), for: .touchUpInside)
             return cell
         default:
@@ -85,16 +152,26 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
     
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         guard let r = recipe else { return nil }
-        let delete: UUID
+        let delete: Subentity
         switch indexPath.section {
-        case LIST:
-            delete = ingredients[indexPath.row].id
+        case INGREDIENT_LIST:
+            delete = .ingredient(ingredients[indexPath.row])
+            break
+        case STEP_LIST:
+            delete = .step(steps[indexPath.row])
             break
         default:
             return nil
         }
         let action = UIContextualAction(style: .destructive, title: "Delete") { [weak self] (action, view, completionHandler) in
-            self?.updateRecipeIngredients(id: r.id, active: r.recipe.active, deletes: [delete], adds: [])
+            switch delete {
+            case .ingredient(let ingredient):
+                self?.updateRecipeIngredients(id: r.id, active: r.recipe.active, deletes: [ingredient.id], adds: [])
+                break
+            case .step(let step):
+                self?.deleteRecipeStep(id: step.id)
+                break
+            }
             self?.onChange?()
             completionHandler(true)
         }
@@ -104,16 +181,26 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
     
     override func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         guard let r = recipe else { return nil }
-        let delete: UUID
+        let delete: Subentity
         switch indexPath.section {
-        case LIST:
-            delete = ingredients[indexPath.row].id
+        case INGREDIENT_LIST:
+            delete = .ingredient(ingredients[indexPath.row])
+            break
+        case STEP_LIST:
+            delete = .step(steps[indexPath.row])
             break
         default:
             return nil
         }
         let action = UIContextualAction(style: .destructive, title: "Delete") { [weak self] (action, view, completionHandler) in
-            self?.updateRecipeIngredients(id: r.id, active: r.recipe.active, deletes: [delete], adds: [])
+            switch delete {
+            case .ingredient(let ingredient):
+                self?.updateRecipeIngredients(id: r.id, active: r.recipe.active, deletes: [ingredient.id], adds: [])
+                break
+            case .step(let step):
+                self?.deleteRecipeStep(id: step.id)
+                break
+            }
             self?.onChange?()
             completionHandler(true)
         }
@@ -132,12 +219,31 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
             }
             promptForConfirmation(title: "Dismiss this tip", message: "Drag items to merge", handler: handler)
             break
-        case LIST:
+        case INGREDIENT_LIST:
             editItem = ingredients[indexPath.row]
             performSegue(withIdentifier: "editItem", sender: nil)
             break
-        case ADD:
+        case ADD_INGREDIENT:
             performSegue(withIdentifier: "addItem", sender: nil)
+            break
+        case REORDER_STEP_TIP:
+            let handler = { (action: UIAlertAction) -> Void in
+                User.setDidDismissStepReorderTip()
+                DispatchQueue.main.async {
+                    self.tableView.reloadData()
+                }
+            }
+            promptForConfirmation(title: "Dismiss this tip", message: "Drag steps to reorder", handler: handler)
+            break
+        case STEP_LIST:
+            let cell = tableView.cellForRow(at: indexPath) as! EditableItem
+            cell.write.isEnabled = true
+            cell.write.becomeFirstResponder()
+            cell.write.alpha = 1
+            cell.read.alpha = 0
+            break
+        case ADD_STEP:
+            performSegue(withIdentifier: "addStep", sender: nil)
             break
         default:
             break
@@ -145,15 +251,19 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
     }
     
     func tableView(_ tableView: UITableView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
-        let item: ReadableIngredientWithId
+        let item: Subentity
         switch indexPath.section {
-        case LIST:
-            item = ingredients[indexPath.row]
+        case INGREDIENT_LIST:
+            item = .ingredient(ingredients[indexPath.row])
+            break
+        case STEP_LIST:
+            item = .step(steps[indexPath.row])
             break
         default:
             return []
         }
         do {
+            session.localContext = SubentityDragInfo(indexPath: indexPath)
             let data = try JSONEncoder().encode(item)
             return [UIDragItem(itemProvider: NSItemProvider(item: data as NSData, typeIdentifier: kUTTypePlainText as String))]
         } catch {
@@ -167,27 +277,47 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
         guard let indexPath = destinationIndexPath else { return cancel }
         guard session.items.count == 1 else { return cancel }
         switch indexPath.section {
-        case LIST:
-            if indexPath.row < ingredients.count {
-                tableView.scrollToRow(at: indexPath, at: .none, animated: true)
-            } else {
-                tableView.scrollToRow(at: IndexPath(row: ingredients.count - 1, section: indexPath.section), at: .none, animated: true)
-            }
+        case INGREDIENT_LIST:
+            break
+        case STEP_LIST:
             break
         default: return cancel
         }
         if tableView.hasActiveDrag {
-            return UITableViewDropProposal(operation: .move, intent: .insertIntoDestinationIndexPath)
+            if indexPath.section == INGREDIENT_LIST {
+                return UITableViewDropProposal(operation: .move, intent: .insertIntoDestinationIndexPath)
+            }
+            if indexPath.section == STEP_LIST {
+                return UITableViewDropProposal(operation: .move, intent: .insertAtDestinationIndexPath)
+            }
         }
         return cancel
     }
 
     func tableView(_ tableView: UITableView, performDropWith coordinator: UITableViewDropCoordinator) {
         guard let indexPath = coordinator.destinationIndexPath else { return }
-        let existing: ReadableIngredientWithId
+        guard let info = coordinator.session.localDragSession?.localContext as? SubentityDragInfo else { return }
+        let existing: Subentity
+        let newOrder: Int
         switch indexPath.section {
-        case LIST:
-            existing = ingredients[indexPath.row]
+        case INGREDIENT_LIST:
+            existing = .ingredient(ingredients[indexPath.row])
+            newOrder = 0
+            break
+        case STEP_LIST:
+            if info.indexPath.row < indexPath.row {
+                let step = steps[indexPath.row]
+                existing = .step(step)
+                newOrder = step.step.order + 1
+            } else if indexPath.row == 0 {
+                let step = steps[indexPath.row]
+                existing = .step(step)
+                newOrder = step.step.order
+            } else {
+                let step = steps[indexPath.row - 1]
+                existing = .step(step)
+                newOrder = step.step.order + 1
+            }
             break
         default:
             return
@@ -196,10 +326,22 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
             guard let strings = items as? [String] else { return }
             for string in strings {
                 do {
-                    let new = try JSONDecoder().decode(ReadableIngredientWithId.self, from: string.data(using: .utf8)!)
+                    let new = try JSONDecoder().decode(Subentity.self, from: string.data(using: .utf8)!)
                     let run = { () -> Void in
-                        self.mergeItems = (existing, new)
-                        self.performSegue(withIdentifier: "mergeItems", sender: nil)
+                        switch (existing, new) {
+                        case (.ingredient(let x), .ingredient(let y)):
+                            self.mergeItems = (x, y)
+                            self.performSegue(withIdentifier: "mergeItems", sender: nil)
+                            break
+                        case (_, .step(let y)):
+                            guard let r = self.recipe else { break }
+                            let step = StepWithId(id: y.id, step: Step(step: y.step.step, order: newOrder))
+                            self.updateRecipeStep(recipeId: r.id, step: step)
+                            self.onChange?()
+                            break
+                        default:
+                            break
+                        }
                     }
                     let runAndIgnore = { () -> Void in
                         User.setDidDismissIngredientMergeWarning()
@@ -249,5 +391,7 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
         tableView.dragDelegate = self
         tableView.dropDelegate = self
         tableView.dragInteractionEnabled = true
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 600
     }
 }

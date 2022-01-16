@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="18154" systemVersion="20F71" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithCloudKit="YES" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="19574" systemVersion="21C52" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithCloudKit="YES" userDefinedModelVersionIdentifier="">
     <entity name="GroceryItemData" representedClassName="GroceryItemData" syncable="YES" codeGenerationType="class">
         <attribute name="active" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
@@ -25,9 +25,16 @@
         <attribute name="notes" optional="YES" attributeType="String"/>
         <attribute name="rating" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
     </entity>
+    <entity name="StepData" representedClassName="StepData" syncable="YES" codeGenerationType="class">
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="ordering" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="recipe_id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="step" optional="YES" attributeType="String"/>
+    </entity>
     <elements>
         <element name="GroceryItemData" positionX="-36.81640625" positionY="-10.64453125" width="128" height="133"/>
         <element name="IngredientData" positionX="230.01171875" positionY="-52.0859375" width="128" height="148"/>
         <element name="RecipeData" positionX="27" positionY="144" width="128" height="119"/>
+        <element name="StepData" positionX="117" positionY="90" width="128" height="89"/>
     </elements>
 </model>

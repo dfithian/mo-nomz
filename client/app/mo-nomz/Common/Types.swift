@@ -125,6 +125,16 @@ struct ReadableIngredientWithId: Codable {
     }
 }
 
+struct Step: Codable {
+    let step: String
+    let order: Int
+}
+
+struct StepWithId: Codable {
+    let id: UUID
+    let step: Step
+}
+
 struct ReadableRecipe: Codable {
     let name: String
     let link: String?
@@ -132,6 +142,7 @@ struct ReadableRecipe: Codable {
     let rating: Int
     let notes: String
     let ingredients: [UUID:ReadableIngredient]
+    let steps: [UUID:Step]
 }
 
 struct ReadableRecipeWithId: Codable {
@@ -154,6 +165,7 @@ struct ParseBlobResponse: Codable {
 struct ParseLinkResponse: Codable {
     let name: String
     let ingredients: [ReadableIngredient]
+    let steps: [String]
 }
 
 public extension CodingUserInfoKey {
@@ -184,21 +196,35 @@ extension IngredientData {
     }
 }
 
+extension StepData {
+    class func req() -> NSFetchRequest<StepData> {
+        return NSFetchRequest<StepData>(entityName: "StepData")
+    }
+    
+    func toStepWithId() -> StepWithId {
+        return StepWithId(id: id!, step: Step(step: step ?? "", order: Int(ordering)))
+    }
+}
+
 extension RecipeData {
     class func req() -> NSFetchRequest<RecipeData> {
         return NSFetchRequest<RecipeData>(entityName: "RecipeData")
     }
 
-    func toReadableRecipe(ingredientsData: [IngredientData]) -> ReadableRecipe {
+    func toReadableRecipe(ingredientsData: [IngredientData], stepsData: [StepData]) -> ReadableRecipe {
         var ingredients = [UUID:ReadableIngredient]()
         for ingredient in ingredientsData {
             ingredients[ingredient.id!] = ingredient.toReadableIngredientWithId().ingredient
         }
-        return ReadableRecipe(name: name ?? "", link: link, active: active, rating: Int(rating), notes: notes ?? "", ingredients: ingredients)
+        var steps = [UUID:Step]()
+        for step in stepsData {
+            steps[step.id!] = step.toStepWithId().step
+        }
+        return ReadableRecipe(name: name ?? "", link: link, active: active, rating: Int(rating), notes: notes ?? "", ingredients: ingredients, steps: steps)
     }
     
-    func toReadableRecipeWithId(ingredientsData: [IngredientData]) -> ReadableRecipeWithId {
-        return ReadableRecipeWithId(recipe: toReadableRecipe(ingredientsData: ingredientsData), id: id!)
+    func toReadableRecipeWithId(ingredientsData: [IngredientData], stepsData: [StepData]) -> ReadableRecipeWithId {
+        return ReadableRecipeWithId(recipe: toReadableRecipe(ingredientsData: ingredientsData, stepsData: stepsData), id: id!)
     }
 }
 

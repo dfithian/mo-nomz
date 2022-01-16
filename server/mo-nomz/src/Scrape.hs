@@ -11,7 +11,7 @@ import qualified Text.HTML.Scalpel as Scalpel
 
 import Conversion (mkReadableIngredient)
 import Foundation (HasManager, createManager, manager)
-import Parser (parseIngredients)
+import Parser (parseIngredients, parseSteps)
 import Scraper.Internal.Site (allSiteScrapers, siteScrapers)
 import Scraper.Internal.Types (ScrapedRecipe(..), SiteName(..), SiteScraper(..), title)
 import Types (OrderedIngredient(..), RecipeName(..))
@@ -22,10 +22,13 @@ scrapeUrl uri = do
   tags <- liftIO $ Scalpel.fetchTagsWithConfig cfg (show uri)
   let domainMay = SiteName . replace "www." "" . pack . uriRegName <$> uriAuthority uri
       name = fromMaybe (RecipeName "Untitled") $ Scalpel.scrape title tags
-      runParser contents = case parseIngredients contents of
-        Right ingredients | not (null ingredients) -> pure $ ScrapedRecipe name ingredients
-        _ -> Nothing
-      runScraper scraper = runParser =<< Scalpel.scrape scraper tags
+      runParser rawIngredients rawSteps = do
+        ingredients <- parseIngredients rawIngredients
+        steps <- parseSteps rawSteps
+        case null ingredients of
+          True -> Left "No ingredients found"
+          False -> Right $ ScrapedRecipe name ingredients steps
+      runScraper scraper = either (const Nothing) Just . uncurry runParser =<< Scalpel.scrape scraper tags
       go SiteScraper {..} acc = case Scalpel.scrape siteScraperTest tags of
         Just True -> case runScraper siteScraperRun of
           Nothing -> acc
@@ -35,7 +38,7 @@ scrapeUrl uri = do
     Just SiteScraper {..} -> maybe (throwError "Failed to scrape known URL") pure $ runScraper siteScraperRun
     Nothing -> maybe (throwError "Failed to scrape URL from defaults") pure
       . lastMay
-      . sortOn (length . scrapedRecipeIngredients)
+      . sortOn (length . scrapedRecipeIngredients &&& length . scrapedRecipeSteps)
       . foldr go mempty
       $ allSiteScrapers
 

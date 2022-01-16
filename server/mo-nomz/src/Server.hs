@@ -273,6 +273,7 @@ postParseLink token userId ParseLinkRequest {..} = do
   pure ParseLinkResponse
     { parseLinkResponseName = scrapedRecipeName
     , parseLinkResponseIngredients = mkReadableIngredient <$> zipWith OrderedIngredient scrapedRecipeIngredients [1..]
+    , parseLinkResponseSteps = scrapedRecipeSteps
     }
 
 -- export data

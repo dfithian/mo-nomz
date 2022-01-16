@@ -12,12 +12,12 @@ import Test.Hspec
 import qualified Data.CaseInsensitive as CI
 
 import ParsedIngredients
-  ( allRecipesIngredients, bettyCrockerIngredients, cafeDelitesIngredients, eatingWellIngredients
-  , foodIngredients, foodNetworkIngredients, pillsburyIngredients, rachelMansfieldIngredients
-  , sallysBakingIngredients, tasteOfHomeIngredients
+  ( allRecipesIngredients, allRecipesSteps, bettyCrockerIngredients, cafeDelitesIngredients
+  , eatingWellIngredients, foodIngredients, foodNetworkIngredients, pillsburyIngredients
+  , rachelMansfieldIngredients, sallysBakingIngredients, tasteOfHomeIngredients
   )
 import TestEnv (Env(..))
-import Types (Ingredient(..), IngredientName(..), Quantity(..), RecipeName(..), Unit(..))
+import Types (Ingredient(..), IngredientName(..), Quantity(..), RecipeName(..), Step(..), Unit(..))
 
 import Scrape
 
@@ -25,6 +25,7 @@ data TestCfg = TestCfg
   { requireUnit :: Bool
   , allowedDuplicates :: Int
   , requiredIngredients :: Int
+  , requiredSteps :: Int
   , env :: Env
   }
 
@@ -33,15 +34,17 @@ defaultTestCfg env = TestCfg
   { requireUnit = True
   , allowedDuplicates = 3
   , requiredIngredients = 5
+  , requiredSteps = 3
   , env = env
   }
 
-scrapeAndParse :: Env -> String -> String -> [Ingredient] -> Expectation
-scrapeAndParse Env {..} url expectedName expected = do
+scrapeAndParse :: Env -> String -> String -> ([Ingredient], [Step]) -> Expectation
+scrapeAndParse Env {..} url expectedName (expectedIngredients, expectedSteps) = do
   uri <- maybe (fail "Invalid URL") pure $ parseURI url
   ScrapedRecipe {..} <- either (fail . unpack) pure =<< runReaderT (runExceptT (scrapeUrl uri)) envManager
   scrapedRecipeName `shouldBe` RecipeName (pack expectedName)
-  scrapedRecipeIngredients `shouldMatchList` expected
+  scrapedRecipeIngredients `shouldMatchList` expectedIngredients
+  scrapedRecipeSteps `shouldMatchList` expectedSteps
 
 scrapeAndParseConfig :: TestCfg -> String -> Expectation
 scrapeAndParseConfig TestCfg {..} url = do
@@ -53,6 +56,7 @@ scrapeAndParseConfig TestCfg {..} url = do
   scrapedRecipeIngredients `shouldSatisfy` any hasQuantityAndUnit
   scrapedRecipeIngredients `shouldSatisfy` duplicates
   lessThanThreePrefixes scrapedRecipeIngredients
+  scrapedRecipeSteps `shouldSatisfy` (\xs -> length xs >= requiredSteps)
   where
     hasQuantityAndUnit Ingredient {..} = ingredientQuantity /= QuantityMissing && (if requireUnit then ingredientUnit /= UnitMissing else True)
     duplicates = (< allowedDuplicates) . length . filter ((> 1) . length . snd) . mapToList . foldr (\x@Ingredient {..} -> asMap . insertWith (<>) ingredientName [x]) mempty
@@ -78,70 +82,79 @@ spec env = describe "Scrape" $ do
         env
         "https://www.allrecipes.com/recipe/26317/chicken-pot-pie-ix/"
         "Chicken Pot Pie IX Recipe | Allrecipes"
-        allRecipesIngredients
+        (allRecipesIngredients, allRecipesSteps)
 
+    -- FIXME
     it "can parse food" $
       scrapeAndParse
         env
         "https://www.food.com/recipe/hearty-tuscan-white-bean-soup-192495"
         "Hearty Tuscan White Bean Soup Recipe  - Food.com"
-        foodIngredients
+        (foodIngredients, [])
 
+    -- FIXME
     it "can parse pillsbury" $
       scrapeAndParse
         env
         "https://www.pillsbury.com/recipes/classic-chicken-pot-pie/1401d418-ac0b-4b50-ad09-c6f1243fb992"
         "Classic Chicken Pot Pie Recipe - Pillsbury.com"
-        pillsburyIngredients
+        (pillsburyIngredients, [])
 
+    -- FIXME
     it "can parse betty crocker" $
       scrapeAndParse
         env
         "https://www.bettycrocker.com/recipes/mississippi-mud-brownies/dff02c0e-695b-4b01-90fd-7071ddb84457"
         "Mississippi Mud Brownies Recipe - BettyCrocker.com"
-        bettyCrockerIngredients
+        (bettyCrockerIngredients, [])
 
+    -- FIXME
     it "can parse taste of home" $
       scrapeAndParse
         env
         "https://www.tasteofhome.com/recipes/favorite-chicken-potpie/"
         "Favorite Chicken Potpie Recipe: How to Make It"
-        tasteOfHomeIngredients
+        (tasteOfHomeIngredients, [])
 
+    -- FIXME
     it "can parse rachel mansfield" $
       scrapeAndParse
         env
         "https://rachlmansfield.com/paleo-chocolate-chip-banana-bread/"
         "Paleo Chocolate Chip Banana Bread (Nut Free) - rachLmansfield"
-        rachelMansfieldIngredients
+        (rachelMansfieldIngredients, [])
 
+    -- FIXME
     it "can parse food network" $
       scrapeAndParse
         env
         "https://www.foodnetwork.com/recipes/ina-garten/perfect-roast-chicken-recipe-1940592"
         "Perfect Roast Chicken Recipe | Ina Garten | Food Network"
-        foodNetworkIngredients
+        (foodNetworkIngredients, [])
 
+    -- FIXME
     it "can parse sallys baking" $
       scrapeAndParse
         env
         "https://sallysbakingaddiction.com/chocolate-lava-cakes/"
         "How to Make Chocolate Lava Cakes - Sally's Baking Addiction"
-        sallysBakingIngredients
+        (sallysBakingIngredients, [])
 
+    -- FIXME
     it "can parse cafe delites" $
       scrapeAndParse
         env
         "https://cafedelites.com/chicken-tikka-masala/"
         "Chicken Tikka Masala - Cafe Delites"
-        cafeDelitesIngredients
+        (cafeDelitesIngredients, [])
 
+    -- FIXME
     it "can parse eatingwell" $
       scrapeAndParse
         env
         "https://www.eatingwell.com/recipe/7898240/baked-spinach-feta-pasta/"
         "Baked Spinach & Feta Pasta Recipe | EatingWell"
-        eatingWellIngredients
+        (eatingWellIngredients, [])
 
   describe "Smoke Test" $ do
     it "handles nytimes" $ scrapeAndParseConfig defCfg "https://cooking.nytimes.com/recipes/1017256-french-onion-soup"

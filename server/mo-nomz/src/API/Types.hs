@@ -8,7 +8,7 @@ import Auth (Authorization)
 import Json (jsonOptions)
 import Types
   ( GroceryItemId, IngredientId, IngredientName, ReadableQuantity, ReadableUnit, RecipeId
-  , RecipeLink, RecipeName, UserId
+  , RecipeLink, RecipeName, Step, UserId
   )
 
 data GetHealthResponse = GetHealthResponse
@@ -157,6 +157,7 @@ data ParseBlobResponse = ParseBlobResponse
 data ParseLinkResponse = ParseLinkResponse
   { parseLinkResponseName        :: RecipeName
   , parseLinkResponseIngredients :: [ReadableIngredient]
+  , parseLinkResponseSteps       :: [Step]
   }
   deriving (Eq, Ord, Show)
 
