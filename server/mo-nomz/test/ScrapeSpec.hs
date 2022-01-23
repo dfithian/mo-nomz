@@ -4,6 +4,7 @@ import ClassyPrelude
 
 import Control.Monad (fail)
 import Control.Monad.Except (runExceptT)
+import Control.Monad.Logger (runNoLoggingT)
 import Network.URI (parseURI)
 import Test.Hspec
   ( Expectation, Spec, describe, expectationFailure, it, shouldBe, shouldMatchList, shouldSatisfy
@@ -43,7 +44,7 @@ defaultTestCfg env = TestCfg
 scrapeAndParse :: Env -> String -> String -> ([Ingredient], [Step]) -> Expectation
 scrapeAndParse Env {..} url expectedName (expectedIngredients, expectedSteps) = do
   uri <- maybe (fail "Invalid URL") pure $ parseURI url
-  ScrapedRecipe {..} <- either (fail . unpack) pure =<< runReaderT (runExceptT (scrapeUrl uri)) envManager
+  ScrapedRecipe {..} <- either (fail . unpack) pure =<< runNoLoggingT (runReaderT (runExceptT (scrapeUrl uri)) envManager)
   scrapedRecipeName `shouldBe` RecipeName (pack expectedName)
   scrapedRecipeIngredients `shouldMatchList` expectedIngredients
   scrapedRecipeSteps `shouldMatchList` expectedSteps
@@ -52,7 +53,7 @@ scrapeAndParseConfig :: TestCfg -> String -> Expectation
 scrapeAndParseConfig TestCfg {..} url = do
   let Env {..} = env
   uri <- maybe (fail "Invalid URL") pure $ parseURI url
-  ScrapedRecipe {..} <- either (fail . unpack) pure =<< runReaderT (runExceptT (scrapeUrl uri)) envManager
+  ScrapedRecipe {..} <- either (fail . unpack) pure =<< runNoLoggingT (runReaderT (runExceptT (scrapeUrl uri)) envManager)
   unRecipeName scrapedRecipeName `shouldSatisfy` not . null
   scrapedRecipeIngredients `shouldSatisfy` (\xs -> length xs >= requiredIngredients)
   scrapedRecipeIngredients `shouldSatisfy` any hasQuantityAndUnit

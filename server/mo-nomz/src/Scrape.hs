@@ -4,6 +4,7 @@ import ClassyPrelude
 
 import Control.Monad (fail)
 import Control.Monad.Except (MonadError, runExceptT, throwError)
+import Control.Monad.Logger (MonadLogger, logError, runStdoutLoggingT)
 import Data.Aeson.Encode.Pretty (encodePretty)
 import Data.Text (replace)
 import Network.URI (URI, parseURI, uriAuthority, uriRegName)
@@ -20,7 +21,7 @@ import Scraper.Internal.Types
   )
 import Types (OrderedIngredient(..), RecipeName(..))
 
-scrapeUrl :: (HasManager r, MonadIO m, MonadError Text m, MonadReader r m) => URI -> m ScrapedRecipe
+scrapeUrl :: (HasManager r, MonadIO m, MonadError Text m, MonadLogger m, MonadReader r m) => URI -> m ScrapedRecipe
 scrapeUrl uri = do
   cfg <- Scalpel.Config Scalpel.defaultDecoder . Just <$> asks manager
   tags <- liftIO $ Scalpel.fetchTagsWithConfig cfg (show uri)
@@ -59,6 +60,7 @@ scrapeUrl uri = do
       . sortOn length
       . mapMaybe goStep
       $ allStepScrapers
+  when (null steps) $ $logError $ "No steps scraped for " <> tshow uri
   pure $ ScrapedRecipe name ingredients steps
 
 unsafeScrapeUrl :: String -> IO ()
@@ -66,7 +68,7 @@ unsafeScrapeUrl url = do
   uri <- maybe (fail "Invalid link") pure $ parseURI url
   man <- createManager
   ingredients <- either (fail . unpack) (pure . scrapedRecipeIngredients)
-    =<< runExceptT (runReaderT (scrapeUrl uri) man)
+    =<< runStdoutLoggingT (runExceptT (runReaderT (scrapeUrl uri) man))
   putStrLn . toStrict . decodeUtf8 . encodePretty
     . map (mkReadableIngredient . uncurry OrderedIngredient)
     . flip zip [1..]
