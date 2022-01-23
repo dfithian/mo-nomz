@@ -12,9 +12,11 @@ import Test.Hspec
 import qualified Data.CaseInsensitive as CI
 
 import ParsedIngredients
-  ( allRecipesIngredients, allRecipesSteps, bettyCrockerIngredients, cafeDelitesIngredients
-  , eatingWellIngredients, foodIngredients, foodNetworkIngredients, pillsburyIngredients
-  , rachelMansfieldIngredients, sallysBakingIngredients, tasteOfHomeIngredients
+  ( allRecipesIngredients, allRecipesSteps, bettyCrockerIngredients, bettyCrockerSteps
+  , cafeDelitesIngredients, cafeDelitesSteps, eatingWellIngredients, eatingWellSteps
+  , foodIngredients, foodNetworkIngredients, foodNetworkSteps, foodSteps, pillsburyIngredients
+  , pillsburySteps, rachelMansfieldIngredients, rachelMansfieldSteps, sallysBakingIngredients
+  , sallysBakingSteps, tasteOfHomeIngredients, tasteOfHomeSteps
   )
 import TestEnv (Env(..))
 import Types (Ingredient(..), IngredientName(..), Quantity(..), RecipeName(..), Step(..), Unit(..))
@@ -34,7 +36,7 @@ defaultTestCfg env = TestCfg
   { requireUnit = True
   , allowedDuplicates = 3
   , requiredIngredients = 5
-  , requiredSteps = 3
+  , requiredSteps = 1
   , env = env
   }
 
@@ -84,77 +86,68 @@ spec env = describe "Scrape" $ do
         "Chicken Pot Pie IX Recipe | Allrecipes"
         (allRecipesIngredients, allRecipesSteps)
 
-    -- FIXME
     it "can parse food" $
       scrapeAndParse
         env
         "https://www.food.com/recipe/hearty-tuscan-white-bean-soup-192495"
         "Hearty Tuscan White Bean Soup Recipe  - Food.com"
-        (foodIngredients, [])
+        (foodIngredients, foodSteps)
 
-    -- FIXME
     it "can parse pillsbury" $
       scrapeAndParse
         env
         "https://www.pillsbury.com/recipes/classic-chicken-pot-pie/1401d418-ac0b-4b50-ad09-c6f1243fb992"
         "Classic Chicken Pot Pie Recipe - Pillsbury.com"
-        (pillsburyIngredients, [])
+        (pillsburyIngredients, pillsburySteps)
 
-    -- FIXME
     it "can parse betty crocker" $
       scrapeAndParse
         env
         "https://www.bettycrocker.com/recipes/mississippi-mud-brownies/dff02c0e-695b-4b01-90fd-7071ddb84457"
         "Mississippi Mud Brownies Recipe - BettyCrocker.com"
-        (bettyCrockerIngredients, [])
+        (bettyCrockerIngredients, bettyCrockerSteps)
 
-    -- FIXME
     it "can parse taste of home" $
       scrapeAndParse
         env
         "https://www.tasteofhome.com/recipes/favorite-chicken-potpie/"
         "Favorite Chicken Potpie Recipe: How to Make It"
-        (tasteOfHomeIngredients, [])
+        (tasteOfHomeIngredients, tasteOfHomeSteps)
 
-    -- FIXME
     it "can parse rachel mansfield" $
       scrapeAndParse
         env
         "https://rachlmansfield.com/paleo-chocolate-chip-banana-bread/"
         "Paleo Chocolate Chip Banana Bread (Nut Free) - rachLmansfield"
-        (rachelMansfieldIngredients, [])
+        (rachelMansfieldIngredients, rachelMansfieldSteps)
 
-    -- FIXME
     it "can parse food network" $
       scrapeAndParse
         env
         "https://www.foodnetwork.com/recipes/ina-garten/perfect-roast-chicken-recipe-1940592"
         "Perfect Roast Chicken Recipe | Ina Garten | Food Network"
-        (foodNetworkIngredients, [])
+        (foodNetworkIngredients, foodNetworkSteps)
 
-    -- FIXME
     it "can parse sallys baking" $
       scrapeAndParse
         env
         "https://sallysbakingaddiction.com/chocolate-lava-cakes/"
         "How to Make Chocolate Lava Cakes - Sally's Baking Addiction"
-        (sallysBakingIngredients, [])
+        (sallysBakingIngredients, sallysBakingSteps)
 
-    -- FIXME
     it "can parse cafe delites" $
       scrapeAndParse
         env
         "https://cafedelites.com/chicken-tikka-masala/"
         "Chicken Tikka Masala - Cafe Delites"
-        (cafeDelitesIngredients, [])
+        (cafeDelitesIngredients, cafeDelitesSteps)
 
-    -- FIXME
     it "can parse eatingwell" $
       scrapeAndParse
         env
         "https://www.eatingwell.com/recipe/7898240/baked-spinach-feta-pasta/"
         "Baked Spinach & Feta Pasta Recipe | EatingWell"
-        (eatingWellIngredients, [])
+        (eatingWellIngredients, eatingWellSteps)
 
   describe "Smoke Test" $ do
     it "handles nytimes" $ scrapeAndParseConfig defCfg "https://cooking.nytimes.com/recipes/1017256-french-onion-soup"
@@ -164,7 +157,7 @@ spec env = describe "Scrape" $ do
     it "handles tasty" $ scrapeAndParseConfig defCfg "https://tasty.co/recipe/cilantro-lime-chicken-veggie-rice-meal-prep"
     it "handles delish" $ scrapeAndParseConfig defCfg "https://www.delish.com/cooking/recipe-ideas/a27469808/acai-bowl-recipe/"
     it "handles delish" $ scrapeAndParseConfig defCfg "https://www.delish.com/cooking/a36146989/vegan-tofu-grain-bowl/"
-    it "handles spoonacular" $ scrapeAndParseConfig defCfg "https://spoonacular.com/recipes/chocolate-chip-cookie-bars-1518975"
+    it "handles spoonacular" $ scrapeAndParseConfig (defCfg { requiredSteps = 0 }) "https://spoonacular.com/recipes/chocolate-chip-cookie-bars-1518975"
     it "handles cookieandkate" $ scrapeAndParseConfig defCfg "https://cookieandkate.com/cream-of-broccoli-soup-recipe/"
     it "handles budgetbytes" $ scrapeAndParseConfig defCfg "https://www.budgetbytes.com/spaghetti-with-vegetable-meat-sauce/"
     it "handles daringgourmet" $ scrapeAndParseConfig defCfg "https://www.daringgourmet.com/hamburger-gravy/"
@@ -200,8 +193,7 @@ spec env = describe "Scrape" $ do
     it "handles naturallyella" $ scrapeAndParseConfig defCfg "https://naturallyella.com/roasted-sweet-potato-sorghum-salad/"
     it "handles glutenfreecuppatea" $ scrapeAndParseConfig defCfg "https://glutenfreecuppatea.co.uk/2021/04/13/toblerone-millionaires-shortbread-recipe/"
     it "handles thelastfoodblog" $ scrapeAndParseConfig defCfg "https://www.thelastfoodblog.com/spinach-and-ricotta-cannelloni/"
-    -- this account was suspended
-    xit "handles hemsleyandhemsley" $ scrapeAndParseConfig defCfg "https://hemsleyandhemsley.com/recipe/apple-rocket-and-feta-buckwheat-galettes/"
+    it "handles hemsleyandhemsley" $ scrapeAndParseConfig defCfg "https://hemsleyandhemsley.com/recipe/apple-rocket-and-feta-buckwheat-galettes/"
     it "handles localmilkblog" $ scrapeAndParseConfig defCfg "https://localmilkblog.com/2019/11/turkey-buttermilk-sage-dumpling-soup.html"
     it "handles thefoodblog" $ scrapeAndParseConfig defCfg "https://www.thefoodblog.net/air-fryer-salmon-recipe/"
     it "handles onceuponafoodblog" $ scrapeAndParseConfig defCfg "https://onceuponafoodblog.com/cheesy-bacon-spring-greens/"
@@ -218,11 +210,10 @@ spec env = describe "Scrape" $ do
     it "handles twopeasandtheirpod" $ scrapeAndParseConfig defCfg "https://www.twopeasandtheirpod.com/shaved-brussels-sprouts-salad/"
     it "handles slenderkitchen" $ scrapeAndParseConfig defCfg "https://www.slenderkitchen.com/recipe/sunday-slow-cooker-saag-paneer"
     it "handles everydayannie" $ scrapeAndParseConfig defCfg "https://everydayannie.com/2020/12/28/raspberry-cheesecake-streusel-bars/"
-    -- returns a 500 error
-    xit "handles notwithoutsalt" $ scrapeAndParseConfig defCfg "http://notwithoutsalt.com/brussels-sprout-green-apple-slaw-pickled-cranberries/"
-    it "handles chefspencil" $ scrapeAndParseConfig defCfg "https://www.chefspencil.com/recipe/carrot-tarte-tatin/"
+    it "handles notwithoutsalt" $ scrapeAndParseConfig defCfg "http://notwithoutsalt.com/brussels-sprout-green-apple-slaw-pickled-cranberries/"
+    it "handles chefspencil" $ scrapeAndParseConfig (defCfg { requiredSteps = 0 }) "https://www.chefspencil.com/recipe/carrot-tarte-tatin/"
     it "handles sweetandsavorymeals" $ scrapeAndParseConfig defCfg "https://sweetandsavorymeals.com/air-fryer-eggplant/"
-    it "handles eatwell101" $ scrapeAndParseConfig defCfg "https://www.eatwell101.com/garlic-butter-chicken-bites-asparagus-recipe"
+    it "handles eatwell101" $ scrapeAndParseConfig (defCfg { requiredSteps = 0 }) "https://www.eatwell101.com/garlic-butter-chicken-bites-asparagus-recipe"
 
   describe "Implicit" $ do
     describe "WPRM" $ do
@@ -243,13 +234,12 @@ spec env = describe "Scrape" $ do
     describe "Ingredient List" $ do
       it "handles loveandoliveoil" $ scrapeAndParseConfig defCfg "https://www.loveandoliveoil.com/2021/04/stuffed-cherry-amaretti-cookies.html"
       it "handles ohsheglows" $ scrapeAndParseConfig defCfg "https://ohsheglows.com/2020/09/20/perfect-little-pumpkin-cookies-with-spiced-buttercream/"
-      it "handles shutterbean" $ scrapeAndParseConfig defCfg "https://www.shutterbean.com/2019/polenta-cornbread/"
+      it "handles shutterbean" $ scrapeAndParseConfig (defCfg { requiredSteps = 0 }) "https://www.shutterbean.com/2019/polenta-cornbread/"
     describe "MV" $ do
       it "handles bakerella" $ scrapeAndParseConfig defCfg "https://www.bakerella.com/secret-ingredient-chocolate-chip-cookies/"
       it "handles mybakingaddiction" $ scrapeAndParseConfig defCfg "https://www.mybakingaddiction.com/flank-steak-tacos/"
     describe "ZL" $ do
-      -- certificate is expired
-      xit "handles cnz" $ scrapeAndParseConfig defCfg "https://cnz.to/recipes/meat-charcuterie/instant-pot-ramen-style-pork-belly-recipe/"
+      it "handles cnz" $ scrapeAndParseConfig defCfg "https://cnz.to/recipes/meat-charcuterie/instant-pot-ramen-style-pork-belly-recipe/"
     describe "Tasty 2" $ do
       it "handles joythebaker" $ scrapeAndParseConfig defCfg "https://joythebaker.com/2019/03/chili-and-cheese-buttery-biscuits/"
     describe "Tasty 3" $ do

@@ -181,4 +181,4 @@ parseRawIngredients content = do
     traverse (runParser ingredientP) $ filter (not . null) $ lines content
 
 parseSteps :: [UnparsedStep] -> Either Text [Step]
-parseSteps = Right . map (\(UnparsedStep step) -> Step . unwords . filter (not . null) . words $ step)
+parseSteps = Right . map (\(UnparsedStepRaw step) -> Step . unwords . filter (not . null) . words $ step)

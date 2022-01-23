@@ -13,10 +13,16 @@ data ScrapedRecipe = ScrapedRecipe
   , scrapedRecipeSteps       :: [Step]
   } deriving (Eq, Show)
 
-data SiteScraper = SiteScraper
-  { siteScraperName :: Text
-  , siteScraperTest :: Scraper Text Bool
-  , siteScraperRun  :: Scraper Text ([UnparsedIngredient], [UnparsedStep])
+data IngredientScraper = IngredientScraper
+  { ingredientScraperName :: Text
+  , ingredientScraperTest :: Scraper Text Bool
+  , ingredientScraperRun  :: Scraper Text [UnparsedIngredient]
+  }
+
+data StepScraper = StepScraper
+  { stepScraperName :: Text
+  , stepScraperTest :: Scraper Text Bool
+  , stepScraperRun  :: Scraper Text [UnparsedStep]
   }
 
 newtype SiteName = SiteName { unSiteName :: Text }
@@ -25,7 +31,7 @@ newtype SiteName = SiteName { unSiteName :: Text }
 data UnparsedIngredient = UnparsedIngredientRaw Text
   deriving (Eq, Ord, Show)
 
-data UnparsedStep = UnparsedStep Text
+data UnparsedStep = UnparsedStepRaw Text
   deriving (Eq, Ord, Show)
 
 title :: Scraper Text RecipeName

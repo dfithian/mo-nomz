@@ -12,8 +12,12 @@ import qualified Text.HTML.Scalpel as Scalpel
 import Conversion (mkReadableIngredient)
 import Foundation (HasManager, createManager, manager)
 import Parser (parseIngredients, parseSteps)
-import Scraper.Internal.Site (allSiteScrapers, siteScrapers)
-import Scraper.Internal.Types (ScrapedRecipe(..), SiteName(..), SiteScraper(..), title)
+import Scraper.Internal.Site
+  ( allIngredientScrapers, allStepScrapers, ingredientScrapers, stepScrapers
+  )
+import Scraper.Internal.Types
+  ( IngredientScraper(..), ScrapedRecipe(..), SiteName(..), StepScraper(..), title
+  )
 import Types (OrderedIngredient(..), RecipeName(..))
 
 scrapeUrl :: (HasManager r, MonadIO m, MonadError Text m, MonadReader r m) => URI -> m ScrapedRecipe
@@ -22,25 +26,40 @@ scrapeUrl uri = do
   tags <- liftIO $ Scalpel.fetchTagsWithConfig cfg (show uri)
   let domainMay = SiteName . replace "www." "" . pack . uriRegName <$> uriAuthority uri
       name = fromMaybe (RecipeName "Untitled") $ Scalpel.scrape title tags
-      runParser rawIngredients rawSteps = do
-        ingredients <- parseIngredients rawIngredients
-        steps <- parseSteps rawSteps
-        case null ingredients of
-          True -> Left "No ingredients found"
-          False -> Right $ ScrapedRecipe name ingredients steps
-      runScraper scraper = either (const Nothing) Just . uncurry runParser =<< Scalpel.scrape scraper tags
-      go SiteScraper {..} acc = case Scalpel.scrape siteScraperTest tags of
-        Just True -> case runScraper siteScraperRun of
-          Nothing -> acc
-          Just scrapedRecipe -> scrapedRecipe:acc
-        _ -> acc
-  case flip lookup siteScrapers =<< domainMay of
-    Just SiteScraper {..} -> maybe (throwError "Failed to scrape known URL") pure $ runScraper siteScraperRun
+      runIngredientParser rawIngredients =
+        parseIngredients rawIngredients >>= \case
+          [] -> Left "No ingredients found"
+          xs -> Right xs
+      runStepParser rawSteps =
+        parseSteps rawSteps >>= \case
+          [] -> Left "No steps found"
+          xs -> Right xs
+
+      runScraper :: forall a b. ([a] -> Either Text [b]) -> Scalpel.Scraper Text [a] -> Maybe [b]
+      runScraper parser scraper = either (const Nothing) Just . parser =<< Scalpel.scrape scraper tags
+
+      goIngredient IngredientScraper {..} = case Scalpel.scrape ingredientScraperTest tags of
+        Just True -> runScraper runIngredientParser ingredientScraperRun
+        _ -> Nothing
+      goStep StepScraper {..} = case Scalpel.scrape stepScraperTest tags of
+        Just True -> runScraper runStepParser stepScraperRun
+        _ -> Nothing
+  ingredients <- case flip lookup ingredientScrapers =<< domainMay of
+    Just IngredientScraper {..} -> maybe (throwError "Failed to scrape known URL") pure $ runScraper runIngredientParser ingredientScraperRun
     Nothing -> maybe (throwError "Failed to scrape URL from defaults") pure
       . lastMay
-      . sortOn (length . scrapedRecipeIngredients &&& length . scrapedRecipeSteps)
-      . foldr go mempty
-      $ allSiteScrapers
+      . sortOn length
+      . mapMaybe goIngredient
+      $ allIngredientScrapers
+  steps <- case flip lookup stepScrapers =<< domainMay of
+    Just StepScraper {..} -> pure . fromMaybe [] . runScraper runStepParser $ stepScraperRun
+    Nothing -> pure
+      . fromMaybe []
+      . lastMay
+      . sortOn length
+      . mapMaybe goStep
+      $ allStepScrapers
+  pure $ ScrapedRecipe name ingredients steps
 
 unsafeScrapeUrl :: String -> IO ()
 unsafeScrapeUrl url = do
