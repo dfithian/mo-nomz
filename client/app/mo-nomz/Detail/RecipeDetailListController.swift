@@ -53,7 +53,7 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
         guard let t = sender as? UITextField else { return }
         guard let r = recipe else { return }
         let step = steps[t.tag]
-        let cell = tableView.cellForRow(at: IndexPath(row: t.tag, section: STEP_LIST)) as! EditableItem
+        let cell = tableView.cellForRow(at: IndexPath(row: t.tag, section: STEP_LIST)) as! StepItem
         cell.write.isEnabled = false
         cell.write.alpha = 0
         cell.read.alpha = 1
@@ -132,7 +132,8 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
         case REORDER_STEP_TIP:
             return tableView.dequeueReusableCell(withIdentifier: "reorderTip")!
         case STEP_LIST:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "editItem") as! EditableItem
+            let cell = tableView.dequeueReusableCell(withIdentifier: "stepItem") as! StepItem
+            cell.num.text = String(indexPath.row + 1)
             cell.read.text = steps[indexPath.row].step.step
             cell.write.text = steps[indexPath.row].step.step
             cell.write.tag = indexPath.row
@@ -236,7 +237,7 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
             promptForConfirmation(title: "Dismiss this tip", message: "Drag steps to reorder", handler: handler)
             break
         case STEP_LIST:
-            let cell = tableView.cellForRow(at: indexPath) as! EditableItem
+            let cell = tableView.cellForRow(at: indexPath) as! StepItem
             cell.write.isEnabled = true
             cell.write.becomeFirstResponder()
             cell.write.alpha = 1
