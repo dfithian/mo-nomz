@@ -170,7 +170,7 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
         }
     }
     
-    override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+    private func swipe(_ indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         guard let r = recipe else { return nil }
         let delete: Subentity
         switch indexPath.section {
@@ -199,33 +199,12 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
         return UISwipeActionsConfiguration(actions: [action])
     }
     
+    override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        return swipe(indexPath)
+    }
+    
     override func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        guard let r = recipe else { return nil }
-        let delete: Subentity
-        switch indexPath.section {
-        case INGREDIENT_LIST:
-            delete = .ingredient(ingredients[indexPath.row])
-            break
-        case STEP_LIST:
-            delete = .step(steps[indexPath.row])
-            break
-        default:
-            return nil
-        }
-        let action = UIContextualAction(style: .destructive, title: "Delete") { [weak self] (action, view, completionHandler) in
-            switch delete {
-            case .ingredient(let ingredient):
-                self?.updateRecipeIngredients(id: r.id, active: r.recipe.active, deletes: [ingredient.id], adds: [])
-                break
-            case .step(let step):
-                self?.deleteRecipeStep(id: step.id)
-                break
-            }
-            self?.onChange?()
-            completionHandler(true)
-        }
-        action.backgroundColor = .systemRed
-        return UISwipeActionsConfiguration(actions: [action])
+        return swipe(indexPath)
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -384,21 +363,21 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let vc = segue.destination as? IngredientMergeController, segue.identifier == "mergeItems" {
+        if let vc = segue.destination as? IngredientChangeController {
             vc.recipe = recipe
-            vc.existing = mergeItems!.0
-            vc.new = mergeItems!.1
             vc.onChange = onChange
-        }
-        if let vc = segue.destination as? IngredientEditController, segue.identifier == "editItem" {
-            vc.recipe = recipe
-            vc.existing = editItem
-            vc.onChange = onChange
-        }
-        if let vc = segue.destination as? IngredientAddController, segue.identifier == "addItem" {
-            vc.recipe = recipe
-            vc.order = recipe?.recipe.ingredients.map({ $0.value.order }).max().map({ $0 + 1 })
-            vc.onChange = onChange
+            switch segue.identifier {
+            case "mergeItems":
+                vc.change = .merge(mergeItems!.0, mergeItems!.1)
+                break
+            case "editItem":
+                vc.change = .edit(editItem!)
+                break
+            case "addItem":
+                vc.change = .add(recipe?.recipe.ingredients.map({ $0.value.order }).max().map({ $0 + 1}) ?? 1)
+                break
+            default: break
+            }
         }
     }
     
