@@ -36,7 +36,7 @@ class RecipeAddController: UIViewController {
         if let newLink = link.text?.nonEmpty() {
             addLink(link: newLink, active: active, completion: completion)
         } else {
-            alertUnsuccessful("Please add a link.")
+            alertUnsuccessful("Please provide a link.")
         }
     }
     

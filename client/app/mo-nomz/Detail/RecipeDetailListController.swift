@@ -32,7 +32,6 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
     var steps: [StepWithId] = []
     var ingredients: [ReadableIngredientWithId] = []
     var onChange: (() -> Void)? = nil
-    var beforeHeight: CGFloat? = nil
     var mergeItems: (ReadableIngredientWithId, ReadableIngredientWithId)? = nil
     var editItem: ReadableIngredientWithId? = nil
     
@@ -59,20 +58,6 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
         }
     }
     
-    @objc func didEndEditingStep(_ sender: Any?) {
-        guard let t = sender as? UITextField else { return }
-        guard let r = recipe else { return }
-        let step = steps[t.tag]
-        let cell = tableView.cellForRow(at: IndexPath(row: t.tag, section: STEP_LIST)) as! StepItem
-        cell.write.isEnabled = false
-        cell.write.alpha = 0
-        cell.read.alpha = 1
-        cell.read.text = cell.write.text
-        let new = StepWithId(id: step.id, step: Step(step: cell.write.text!, order: step.step.order))
-        updateRecipeStep(recipeId: r.id, step: new)
-        onChange?()
-    }
-    
     private func newStep() {
         guard let r = recipe else { return }
         let newSteps = addRecipeSteps(recipeId: r.id, rawSteps: [""])
@@ -84,7 +69,6 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
     
     private func editStep(_ indexPath: IndexPath) {
         let cell = tableView.cellForRow(at: indexPath) as! StepItem
-        cell.write.isEnabled = true
         cell.write.becomeFirstResponder()
         cell.write.alpha = 1
         cell.read.alpha = 0
@@ -92,7 +76,17 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
     
     func textViewDidEndEditing(_ textView: UITextView) {
         guard let r = recipe else { return }
-        updateRecipe(id: r.id, recipe: ReadableRecipe(name: r.recipe.name, link: r.recipe.link, active: r.recipe.active, rating: r.recipe.rating, notes: textView.text ?? r.recipe.notes, ingredients: r.recipe.ingredients, steps: r.recipe.steps))
+        if textView.tag == Int.max {
+            updateRecipe(id: r.id, recipe: ReadableRecipe(name: r.recipe.name, link: r.recipe.link, active: r.recipe.active, rating: r.recipe.rating, notes: textView.text ?? r.recipe.notes, ingredients: r.recipe.ingredients, steps: r.recipe.steps))
+        } else {
+            let step = steps[textView.tag]
+            let cell = tableView.cellForRow(at: IndexPath(row: textView.tag, section: STEP_LIST)) as! StepItem
+            cell.write.alpha = 0
+            cell.read.alpha = 1
+            cell.read.text = cell.write.text
+            let new = StepWithId(id: step.id, step: Step(step: cell.write.text!, order: step.step.order))
+            updateRecipeStep(recipeId: r.id, step: new)
+        }
         onChange?()
     }
 
@@ -128,6 +122,7 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
             cell.blob.addDoneButtonOnKeyboard()
             cell.blob.layer.cornerRadius = 10
             cell.blob.delegate = self
+            cell.blob.tag = Int.max
             return cell
         case MERGE_TIP:
             return tableView.dequeueReusableCell(withIdentifier: "mergeTip")!
@@ -158,7 +153,7 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
             cell.write.text = steps[indexPath.row].step.step
             cell.write.tag = indexPath.row
             cell.write.addDoneButtonOnKeyboard()
-            cell.write.addTarget(self, action: #selector(didEndEditingStep), for: .editingDidEnd)
+            cell.write.delegate = self
             return cell
         case ADD_STEP:
             let cell = tableView.dequeueReusableCell(withIdentifier: "addItem") as! AddItem

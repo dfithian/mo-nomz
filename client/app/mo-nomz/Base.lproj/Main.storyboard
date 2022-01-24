@@ -1283,11 +1283,6 @@
                                     <rect key="frame" x="0.0" y="0.0" width="414" height="44.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <textField opaque="NO" alpha="0.0" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="Label" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Tay-u3-4Ya">
-                                            <rect key="frame" x="46" y="13" width="348" height="19"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                            <textInputTraits key="textInputTraits"/>
-                                        </textField>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iDo-Hl-m71">
                                             <rect key="frame" x="46" y="13.5" width="348" height="18"/>
                                             <constraints>
@@ -1306,16 +1301,27 @@
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
+                                        <textView clipsSubviews="YES" multipleTouchEnabled="YES" alpha="0.0" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="iLd-yg-uTU">
+                                            <rect key="frame" x="46" y="13.5" width="348" height="18"/>
+                                            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="17.5" id="Vz9-hK-LxJ"/>
+                                            </constraints>
+                                            <color key="textColor" systemColor="labelColor"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                            <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                        </textView>
                                     </subviews>
                                     <constraints>
                                         <constraint firstAttribute="bottomMargin" secondItem="iDo-Hl-m71" secondAttribute="bottom" constant="2" id="8Tv-ka-gR7"/>
+                                        <constraint firstAttribute="trailing" secondItem="iLd-yg-uTU" secondAttribute="trailing" constant="20" symbolic="YES" id="Ai1-Yg-ogF"/>
                                         <constraint firstItem="VfQ-vK-RjD" firstAttribute="leading" secondItem="dDH-Ha-CLV" secondAttribute="leadingMargin" id="HZc-91-edh"/>
                                         <constraint firstItem="iDo-Hl-m71" firstAttribute="trailing" secondItem="dDH-Ha-CLV" secondAttribute="trailingMargin" id="ISf-LD-J5K"/>
-                                        <constraint firstItem="Tay-u3-4Ya" firstAttribute="leading" secondItem="VfQ-vK-RjD" secondAttribute="trailing" constant="8" symbolic="YES" id="Sbc-lT-RA3"/>
-                                        <constraint firstItem="Tay-u3-4Ya" firstAttribute="centerY" secondItem="dDH-Ha-CLV" secondAttribute="centerY" id="fmC-nj-S3s"/>
+                                        <constraint firstItem="iLd-yg-uTU" firstAttribute="top" secondItem="dDH-Ha-CLV" secondAttribute="topMargin" constant="2.5" id="Pve-Jo-uUb"/>
+                                        <constraint firstAttribute="bottomMargin" secondItem="iLd-yg-uTU" secondAttribute="bottom" constant="2" id="VDf-qa-IOe"/>
                                         <constraint firstItem="iDo-Hl-m71" firstAttribute="leading" secondItem="VfQ-vK-RjD" secondAttribute="trailing" constant="8" symbolic="YES" id="gPk-fV-NkH"/>
                                         <constraint firstItem="iDo-Hl-m71" firstAttribute="top" secondItem="dDH-Ha-CLV" secondAttribute="topMargin" constant="2.5" id="hKE-ax-k3f"/>
-                                        <constraint firstAttribute="trailing" secondItem="Tay-u3-4Ya" secondAttribute="trailing" constant="20" symbolic="YES" id="pOq-E4-Wda"/>
+                                        <constraint firstItem="iLd-yg-uTU" firstAttribute="leading" secondItem="VfQ-vK-RjD" secondAttribute="trailing" constant="8" symbolic="YES" id="m8D-ut-4Px"/>
                                         <constraint firstItem="VfQ-vK-RjD" firstAttribute="centerY" secondItem="dDH-Ha-CLV" secondAttribute="centerY" id="x9M-9e-mYg"/>
                                     </constraints>
                                 </tableViewCellContentView>
@@ -1323,7 +1329,7 @@
                                 <connections>
                                     <outlet property="num" destination="VfQ-vK-RjD" id="OOk-DC-fec"/>
                                     <outlet property="read" destination="iDo-Hl-m71" id="bF3-s8-Raw"/>
-                                    <outlet property="write" destination="Tay-u3-4Ya" id="zHs-Pg-h10"/>
+                                    <outlet property="write" destination="iLd-yg-uTU" id="dqL-Bm-gEi"/>
                                 </connections>
                             </tableViewCell>
                             <tableViewCell clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="sectionHeader" id="wWk-Vn-qE8" customClass="SimpleSectionHeader" customModule="mo_nomz" customModuleProvider="target">
@@ -1428,7 +1434,7 @@
                                     <rect key="frame" x="0.0" y="0.0" width="414" height="43.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Drag to reorder." textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9IZ-xp-tme">
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Drag to reorder." textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9IZ-xp-tme">
                                             <rect key="frame" x="156" y="13.5" width="102.5" height="17"/>
                                             <fontDescription key="fontDescription" type="italicSystem" pointSize="14"/>
                                             <nil key="textColor"/>
