@@ -11,6 +11,16 @@ import UIKit
 enum Subentity: Codable {
     case ingredient(ReadableIngredientWithId)
     case step(StepWithId)
+    
+    var type: String {
+        switch self {
+        case .ingredient(_): return Subentity.ingredientType
+        case .step(_): return Subentity.stepType
+        }
+    }
+    
+    static var ingredientType = "ingredient"
+    static var stepType = "step"
 }
 
 struct SubentityDragInfo {
@@ -67,7 +77,17 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
         guard let r = recipe else { return }
         let newSteps = addRecipeSteps(recipeId: r.id, rawSteps: [""])
         steps.append(contentsOf: newSteps)
-        tableView.insertRows(at: [IndexPath(row: steps.count - 1, section: STEP_LIST)], with: .automatic)
+        let indexPath = IndexPath(row: steps.count - 1, section: STEP_LIST)
+        tableView.insertRows(at: [indexPath], with: .automatic)
+        editStep(indexPath)
+    }
+    
+    private func editStep(_ indexPath: IndexPath) {
+        let cell = tableView.cellForRow(at: indexPath) as! StepItem
+        cell.write.isEnabled = true
+        cell.write.becomeFirstResponder()
+        cell.write.alpha = 1
+        cell.read.alpha = 0
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
@@ -237,14 +257,10 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
             promptForConfirmation(title: "Dismiss this tip", message: "Drag steps to reorder", handler: handler)
             break
         case STEP_LIST:
-            let cell = tableView.cellForRow(at: indexPath) as! StepItem
-            cell.write.isEnabled = true
-            cell.write.becomeFirstResponder()
-            cell.write.alpha = 1
-            cell.read.alpha = 0
+            editStep(indexPath)
             break
         case ADD_STEP:
-            performSegue(withIdentifier: "addStep", sender: nil)
+            newStep()
             break
         default:
             break
@@ -348,7 +364,7 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
                         User.setDidDismissIngredientMergeWarning()
                         run()
                     }
-                    if !User.dismissedIngredientMergeWarning() {
+                    if !User.dismissedIngredientMergeWarning() && new.type == Subentity.ingredientType {
                         self.promptForConfirmationThree(
                             title: "Warning",
                             message: "Merging items may result in unexpected grocery list behavior. You may want to deactivate this recipe first.",

@@ -52,7 +52,6 @@
 		37C6714E2627BFB100B5838C /* ErrorHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C6714D2627BFB100B5838C /* ErrorHandler.swift */; };
 		37E103382794EFF90064C193 /* GroceryAddControllers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37E103372794EFF90064C193 /* GroceryAddControllers.swift */; };
 		37E1033A2794F6D80064C193 /* AddController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37E103392794F6D80064C193 /* AddController.swift */; };
-		37E1033C2799A5280064C193 /* Submit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37E1033B2799A5280064C193 /* Submit.swift */; };
 		37E10343279AF6CA0064C193 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37E10342279AF6CA0064C193 /* Preferences.swift */; };
 		37E10345279AF8880064C193 /* PreferenceItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37E10344279AF8880064C193 /* PreferenceItem.swift */; };
 		37E10347279B18C70064C193 /* StepItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37E10346279B18C60064C193 /* StepItem.swift */; };
@@ -127,7 +126,6 @@
 		37C6714D2627BFB100B5838C /* ErrorHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorHandler.swift; sourceTree = "<group>"; };
 		37E103372794EFF90064C193 /* GroceryAddControllers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroceryAddControllers.swift; sourceTree = "<group>"; };
 		37E103392794F6D80064C193 /* AddController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddController.swift; sourceTree = "<group>"; };
-		37E1033B2799A5280064C193 /* Submit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Submit.swift; sourceTree = "<group>"; };
 		37E10342279AF6CA0064C193 /* Preferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
 		37E10344279AF8880064C193 /* PreferenceItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferenceItem.swift; sourceTree = "<group>"; };
 		37E10346279B18C60064C193 /* StepItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepItem.swift; sourceTree = "<group>"; };
@@ -234,7 +232,6 @@
 				3774A5A72624769F0029E35D /* User.swift */,
 				37E1DC1C2631B7C000330C5B /* UserDefaults.swift */,
 				37B979F426EEB9FC002B677F /* String.swift */,
-				37E1033B2799A5280064C193 /* Submit.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -424,7 +421,6 @@
 				376095E0262138720015B6F0 /* GroceryListItem.swift in Sources */,
 				37AEE6382623D5710052304F /* Api.swift in Sources */,
 				37B979AB269BB3C6002B677F /* RecipeDetailListController.swift in Sources */,
-				37E1033C2799A5280064C193 /* Submit.swift in Sources */,
 				372DDC1E262B1BE200CA83A8 /* Confirmation.swift in Sources */,
 				378EBD5126214A41008FF6C4 /* Types.swift in Sources */,
 				37B979BB26CC92F1002B677F /* AddItem.swift in Sources */,
@@ -614,7 +610,7 @@
 				CODE_SIGN_ENTITLEMENTS = "mo-nomz/mo-nomzDebug.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = 5A6Y383S44;
 				INFOPLIST_FILE = "mo-nomz/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -697,7 +693,7 @@
 				CODE_SIGN_ENTITLEMENTS = "mo-nomz/mo-nomzRelease.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = 5A6Y383S44;
 				INFOPLIST_FILE = "mo-nomz/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
