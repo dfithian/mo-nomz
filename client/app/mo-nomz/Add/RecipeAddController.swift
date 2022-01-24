@@ -11,6 +11,7 @@ import SafariServices
 class RecipeAddController: UIViewController {
     @IBOutlet weak var link: UITextField!
     @IBOutlet weak var checkbox: UIButton!
+    @IBOutlet weak var switcher: UIButton!
     var existingLinks: [String] = []
     var active: Bool = true
     var navigationVc: AddController? = nil
@@ -20,10 +21,6 @@ class RecipeAddController: UIViewController {
         DispatchQueue.main.async {
             self.dismiss(animated: true, completion: nil)
         }
-    }
-    
-    @IBAction func didTapSwitch(_ sender: Any?) {
-        navigationVc?.switchToManual()
     }
     
     @IBAction func didTapSubmit(_ sender: Any?) {
@@ -58,6 +55,14 @@ class RecipeAddController: UIViewController {
         keyboardWillHideInternal(heightMay: beforeHeight, notification: notification)
     }
     
+    private func setupSwitcher() {
+        switcher.menu = UIMenu(title: "Try another way", options: .displayInline, children: [
+            UIAction(title: "Add link", image: UIImage(systemName: "link"), state: .on, handler: { _ in self.navigationVc?.switchToLink() }),
+            UIAction(title: "Add manual", image: UIImage(systemName: "pencil"), state: .off, handler: { _ in self.navigationVc?.switchToManual() })
+        ])
+        switcher.showsMenuAsPrimaryAction = true
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardDidShowNotification, object: nil)
@@ -67,5 +72,6 @@ class RecipeAddController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         link.addDoneButtonOnKeyboard()
+        setupSwitcher()
     }
 }

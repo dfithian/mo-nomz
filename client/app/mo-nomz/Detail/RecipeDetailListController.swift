@@ -84,8 +84,12 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
             cell.write.alpha = 0
             cell.read.alpha = 1
             cell.read.text = cell.write.text
-            let new = StepWithId(id: step.id, step: Step(step: cell.write.text!, order: step.step.order))
-            updateRecipeStep(recipeId: r.id, step: new)
+            if let newStep = cell.write.text?.trimmingCharacters(in: .whitespacesAndNewlines).nonEmpty() {
+                let new = StepWithId(id: step.id, step: Step(step: newStep, order: step.step.order))
+                updateRecipeStep(recipeId: r.id, step: new)
+            } else {
+                deleteRecipeStep(id: step.id)
+            }
         }
         onChange?()
     }

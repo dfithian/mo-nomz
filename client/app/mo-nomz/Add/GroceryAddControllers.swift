@@ -11,6 +11,7 @@ class GroceryAddBlobController: UIViewController {
     @IBOutlet weak var blob: UITextView!
     @IBOutlet weak var checkbox: UIButton!
     @IBOutlet weak var submit: UIBarButtonItem!
+    @IBOutlet weak var switcher: UIButton!
     var isRecipe: Bool = false
     var navigationVc: AddController? = nil
     var beforeHeight: CGFloat? = nil
@@ -63,6 +64,14 @@ class GroceryAddBlobController: UIViewController {
         keyboardWillHideInternal(heightMay: beforeHeight, notification: notification)
     }
     
+    private func setupSwitcher() {
+        switcher.menu = UIMenu(title: "Try another way", options: .displayInline, children: [
+            UIAction(title: "Add link", image: UIImage(systemName: "link"), state: .off, handler: { _ in self.navigationVc?.switchToLink() }),
+            UIAction(title: "Add manual", image: UIImage(systemName: "pencil"), state: .on, handler: { _ in self.navigationVc?.switchToManual() })
+        ])
+        switcher.showsMenuAsPrimaryAction = true
+    }
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let vc = segue.destination as? GroceryAddRecipeController, segue.identifier == "pushManualRecipe" {
             vc.blob = blob.text
@@ -79,6 +88,7 @@ class GroceryAddBlobController: UIViewController {
         super.viewDidLoad()
         blob.addDoneButtonOnKeyboard()
         blob.layer.cornerRadius = 10
+        setupSwitcher()
     }
 }
 
@@ -87,6 +97,7 @@ class GroceryAddRecipeController: UIViewController {
     @IBOutlet weak var link: UITextField!
     @IBOutlet weak var active: UIButton!
     @IBOutlet weak var steps: UITextView!
+    @IBOutlet weak var switcher: UIButton!
     var blob: String? = nil
     var isActive: Bool = true
     var navigationVc: AddController? = nil
@@ -96,10 +107,6 @@ class GroceryAddRecipeController: UIViewController {
         DispatchQueue.main.async {
             self.dismiss(animated: true, completion: nil)
         }
-    }
-    
-    @IBAction func didTapSwitch(_ sender: Any?) {
-        navigationVc?.switchToLink()
     }
     
     @IBAction func didTapSubmit(_ sender: Any?) {
@@ -136,6 +143,14 @@ class GroceryAddRecipeController: UIViewController {
         keyboardWillHideInternal(heightMay: beforeHeight, notification: notification)
     }
     
+    private func setupSwitcher() {
+        switcher.menu = UIMenu(title: "Try another way", options: .displayInline, children: [
+            UIAction(title: "Add link", image: UIImage(systemName: "link"), state: .off, handler: { _ in self.navigationVc?.switchToLink() }),
+            UIAction(title: "Add manual", image: UIImage(systemName: "pencil"), state: .on, handler: { _ in self.navigationVc?.switchToManual() })
+        ])
+        switcher.showsMenuAsPrimaryAction = true
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardDidShowNotification, object: nil)
@@ -148,5 +163,6 @@ class GroceryAddRecipeController: UIViewController {
         steps.layer.cornerRadius = 10
         name.addDoneButtonOnKeyboard()
         link.addDoneButtonOnKeyboard()
+        setupSwitcher()
     }
 }
