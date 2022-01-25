@@ -18,6 +18,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         mainVc.selectedIndex = User.preference(.mealsDefaultTab) ? 1 : 0
 
         if User.loadState() == nil {
+            User.setDidExport()
+            User.setDidPullSteps()
             window?.rootViewController = launchVc
             let completion = { (resp: CreateUserResponse) -> Void in
                 DispatchQueue.main.async {
@@ -27,12 +29,20 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             }
             window?.rootViewController?.loadUser(completion: completion)
         } else if !User.exported() {
+            User.setDidPullSteps()
             let completion = {
                 DispatchQueue.main.async {
                     self.window?.rootViewController = mainVc
                 }
             }
             window?.rootViewController?.loadExport(completion: completion)
+        } else if !User.stepsPulled() {
+            let completion = {
+                DispatchQueue.main.async {
+                    self.window?.rootViewController = mainVc
+                }
+            }
+            window?.rootViewController?.pullSteps(completion: completion)
         } else {
             window?.rootViewController = mainVc
         }
