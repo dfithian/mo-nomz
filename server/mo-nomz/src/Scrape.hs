@@ -19,7 +19,7 @@ import Scraper.Internal.Site
 import Scraper.Internal.Types
   ( IngredientScraper(..), ScrapedRecipe(..), SiteName(..), StepScraper(..), title
   )
-import Types (OrderedIngredient(..), RecipeName(..))
+import Types (OrderedIngredient(..), RecipeName(..), Step(..))
 
 scrapeUrl :: (HasManager r, MonadIO m, MonadError Text m, MonadLogger m, MonadReader r m) => URI -> m ScrapedRecipe
 scrapeUrl uri = do
@@ -67,9 +67,11 @@ unsafeScrapeUrl :: String -> IO ()
 unsafeScrapeUrl url = do
   uri <- maybe (fail "Invalid link") pure $ parseURI url
   man <- createManager
-  ingredients <- either (fail . unpack) (pure . scrapedRecipeIngredients)
+  recipe <- either (fail . unpack) pure
     =<< runStdoutLoggingT (runExceptT (runReaderT (scrapeUrl uri) man))
   putStrLn . toStrict . decodeUtf8 . encodePretty
     . map (mkReadableIngredient . uncurry OrderedIngredient)
     . flip zip [1..]
-    $ ingredients
+    . scrapedRecipeIngredients
+    $ recipe
+  putStrLn . toStrict . decodeUtf8 . encodePretty . map unStep . scrapedRecipeSteps $ recipe

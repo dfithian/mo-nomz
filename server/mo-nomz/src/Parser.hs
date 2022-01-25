@@ -6,6 +6,7 @@ import Control.Arrow (left)
 import Control.Monad (fail)
 import Data.CaseInsensitive (CI)
 import Data.Char (isAlpha, isDigit, isSpace)
+import Data.Function (fix)
 import Data.Text (replace, split, strip)
 import qualified Data.Attoparsec.Text as Atto
 import qualified Data.CaseInsensitive as CI
@@ -181,4 +182,15 @@ parseRawIngredients content = do
     traverse (runParser ingredientP) $ filter (not . null) $ lines content
 
 parseSteps :: [UnparsedStep] -> Either Text [Step]
-parseSteps = Right . map (\(UnparsedStepRaw step) -> Step . unwords . filter (not . null) . words $ step)
+parseSteps = \case
+  [UnparsedStepRaw single] | "1." `isPrefixOf` single -> flip fix (filter (not . null) . words . drop 2 $ single, (1 :: Int), []) $ \f -> \case
+    ([], _, parsed) -> Right $ reverse parsed
+    (toParse, ordinal, parsed) ->
+      let nextOrdinal = tshow (ordinal + 1) <> "."
+          (next, rest) = span (not . isSuffixOf nextOrdinal) toParse
+      in case rest of
+        x:xs -> case stripSuffix nextOrdinal x of
+          Just y -> f (xs, ordinal + 1, (Step (unwords (next <> [y]))):parsed)
+          Nothing -> f (xs, ordinal + 1, (Step (unwords next)):parsed)
+        [] -> f ([], ordinal + 1, (Step (unwords next)):parsed)
+  xs -> Right $ concatMap (\(UnparsedStepRaw step) -> map (Step . unwords . filter (not . null) . words) . filter (not . null) . lines $ step) xs
