@@ -352,5 +352,7 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
         tableView.dragDelegate = self
         tableView.dropDelegate = self
         tableView.dragInteractionEnabled = true
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 600
     }
 }

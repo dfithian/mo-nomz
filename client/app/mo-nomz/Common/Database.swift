@@ -39,6 +39,18 @@ extension UIViewController {
         newRecipe.active = recipe.recipe.active
         newRecipe.rating = Int32(recipe.recipe.rating)
         newRecipe.notes = recipe.recipe.notes
+        
+        for (id, step) in recipe.recipe.steps {
+            insertStepRaw(ctx, step: StepWithId(id: id, step: step), recipeId: recipe.id)
+        }
+    }
+    
+    func insertStepRaw(_ ctx: NSManagedObjectContext, step: StepWithId, recipeId: UUID) {
+        let newStep = NSEntityDescription.insertNewObject(forEntityName: "StepData", into: ctx) as! StepData
+        newStep.id = step.id
+        newStep.recipe_id = recipeId
+        newStep.step = step.step.step
+        newStep.ordering = Int32(step.step.order)
     }
 
     func selectGroceries() -> [ReadableGroceryItemWithId] {
@@ -58,6 +70,18 @@ extension UIViewController {
     
     func selectMaxOrderRaw(_ ctx: NSManagedObjectContext) throws -> Int {
         let req = GroceryItemData.req()
+        req.sortDescriptors = [NSSortDescriptor(key: "ordering", ascending: false)]
+        req.fetchLimit = 1
+        if let row = try ctx.fetch(req).first {
+            return row.value(forKey: "ordering") as! Int + 1
+        } else {
+            return 1
+        }
+    }
+    
+    func selectMaxStepOrderRaw(_ ctx: NSManagedObjectContext, recipeId: UUID) throws -> Int {
+        let req = StepData.req()
+        req.predicate = NSPredicate(format: "recipe_id = %@", recipeId as CVarArg)
         req.sortDescriptors = [NSSortDescriptor(key: "ordering", ascending: false)]
         req.fetchLimit = 1
         if let row = try ctx.fetch(req).first {
@@ -176,7 +200,7 @@ extension UIViewController {
                 NSSortDescriptor(key: "rating", ascending: false),
                 NSSortDescriptor(key: "name", ascending: true)
             ]
-            return try ctx.fetch(req).map({ $0.toReadableRecipeWithId(ingredientsData: []) })
+            return try ctx.fetch(req).map({ $0.toReadableRecipeWithId(ingredientsData: [], stepsData: []) })
         } catch let error as NSError {
             defaultOnError(error)
         }
@@ -193,10 +217,19 @@ extension UIViewController {
                 NSSortDescriptor(key: "name", ascending: true)
             ]
             let ingredients = try ctx.fetch(ingredientReq)
+            
+            let stepReq = StepData.req()
+            stepReq.predicate = NSPredicate(format: "recipe_id = %@", id as CVarArg)
+            stepReq.sortDescriptors = [
+                NSSortDescriptor(key: "ordering", ascending: true),
+                NSSortDescriptor(key: "step", ascending: true)
+            ]
+            let steps = try ctx.fetch(stepReq)
+            
             let recipeReq = RecipeData.req()
             recipeReq.predicate = NSPredicate(format: "id = %@", id as CVarArg)
             recipeReq.fetchLimit = 1
-            return try ctx.fetch(recipeReq).first?.toReadableRecipeWithId(ingredientsData: ingredients)
+            return try ctx.fetch(recipeReq).first?.toReadableRecipeWithId(ingredientsData: ingredients, stepsData: steps)
         } catch let error as NSError {
             defaultOnError(error)
         }
@@ -220,7 +253,7 @@ extension UIViewController {
                 insertGroceryRaw(ctx, grocery: groceryWithId)
                 insertIngredientRaw(ctx, ingredient: ingredientWithId, recipeId: recipeWithId.id, groceryId: groceryWithId.id)
             }
-            
+
             // automerge
             try automergeGroceriesRaw(ctx)
 
@@ -313,6 +346,68 @@ extension UIViewController {
             
             // automerge
             try automergeGroceriesRaw(ctx)
+            
+            try ctx.save()
+        } catch let error as NSError {
+            defaultOnError(error)
+        }
+    }
+    
+    func addRecipeSteps(recipeId: UUID, rawSteps: [String]) -> [StepWithId] {
+        do {
+            let ctx = DataAccess.shared.managedObjectContext
+            var ordering = try selectMaxStepOrderRaw(ctx, recipeId: recipeId)
+            var steps = [StepWithId]()
+            for rawStep in rawSteps {
+                let step = StepWithId(id: UUID(), step: Step(step: rawStep, order: ordering))
+                insertStepRaw(ctx, step: step, recipeId: recipeId)
+                steps.append(step)
+                ordering += 1
+            }
+            try ctx.save()
+            
+            return steps
+        } catch let error as NSError {
+            defaultOnError(error)
+        }
+        return []
+    }
+    
+    func deleteRecipeStep(id: UUID) {
+        do {
+            let ctx = DataAccess.shared.managedObjectContext
+            let req = StepData.req()
+            req.predicate = NSPredicate(format: "id = %@", id as CVarArg)
+            for step in try ctx.fetch(req) {
+                ctx.delete(step)
+            }
+            try ctx.save()
+        } catch let error as NSError {
+            defaultOnError(error)
+        }
+    }
+    
+    func updateRecipeStep(recipeId: UUID, step: StepWithId) {
+        do {
+            let ctx = DataAccess.shared.managedObjectContext
+            let req = StepData.req()
+            req.predicate = NSPredicate(format: "id = %@", step.id as CVarArg)
+            req.fetchLimit = 1
+            
+            if let fetched = try ctx.fetch(req).first {
+                if fetched.ordering != Int32(step.step.order) {
+                    let reorderReq = StepData.req()
+                    let notThisId = NSPredicate(format: "id <> %@", step.id as CVarArg)
+                    let thisRecipe = NSPredicate(format: "recipe_id = %@", recipeId as CVarArg)
+                    let largerOrder = NSPredicate(format: "ordering >= %@", step.step.order as NSNumber)
+                    reorderReq.predicate = NSCompoundPredicate(type: .and, subpredicates: [notThisId, thisRecipe, largerOrder])
+                    for other in try ctx.fetch(reorderReq) {
+                        other.ordering += 1
+                    }
+                }
+                fetched.step = step.step.step
+                fetched.ordering = Int32(step.step.order)
+            }
             
             try ctx.save()
         } catch let error as NSError {
@@ -479,7 +574,7 @@ extension UIViewController {
             // insert recipes
             var recipeIds = [Int:UUID]()
             for (recipeKey, recipe) in export.recipes {
-                let recipeWithId = ReadableRecipeWithId(recipe: ReadableRecipe(name: recipe.name, link: recipe.link, active: recipe.active, rating: recipe.rating, notes: recipe.notes, ingredients: [:]), id: UUID())
+                let recipeWithId = ReadableRecipeWithId(recipe: ReadableRecipe(name: recipe.name, link: recipe.link, active: recipe.active, rating: recipe.rating, notes: recipe.notes, ingredients: [:], steps: [:]), id: UUID())
                 insertRecipeRaw(ctx, recipe: recipeWithId)
                 recipeIds[recipeKey] = recipeWithId.id
             }

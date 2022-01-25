@@ -10,11 +10,11 @@ import Data.Text (replace, split, strip)
 import qualified Data.Attoparsec.Text as Atto
 import qualified Data.CaseInsensitive as CI
 
-import Scraper.Internal.Types (UnparsedIngredient(..))
+import Scraper.Internal.Types (UnparsedIngredient(..), UnparsedStep(..))
 import Types
   ( Ingredient(..), IngredientName(..), Quantity(..), RawIngredient(..), RawQuantity(..)
-  , RawUnit(..), Unit(..), Ingredient, box, cup, gram, liter, milligram, milliliter, ounce, pinch
-  , pound, splash, sprinkle, tablespoon, teaspoon, whole
+  , RawUnit(..), Step(..), Unit(..), Ingredient, box, cup, gram, liter, milligram, milliliter, ounce
+  , pinch, pound, splash, sprinkle, tablespoon, teaspoon, whole
   )
 
 unitAliasTable :: Map (CI Text) Unit
@@ -179,3 +179,6 @@ parseRawIngredients :: Text -> Either Text [Ingredient]
 parseRawIngredients content = do
   either (const $ Left "Failed to parse ingredients") (pure . map scrubIngredient) $
     traverse (runParser ingredientP) $ filter (not . null) $ lines content
+
+parseSteps :: [UnparsedStep] -> Either Text [Step]
+parseSteps = Right . map (\(UnparsedStepRaw step) -> Step . unwords . filter (not . null) . words $ step)

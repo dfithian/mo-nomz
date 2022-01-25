@@ -77,7 +77,7 @@ extension UIViewController {
         task.resume()
     }
     
-    func addBlob(content: String, name: String, link: String?, completion: (() -> Void)?) {
+    func addBlob(content: String, name: String, link: String?, rawSteps: [String], active: Bool, completion: (() -> Void)?) {
         let spinner = startLoading()
         guard let state = User.loadState() else { return }
         var req = URLRequest(url: URL(string: Configuration.baseURL + "api/v2/user/" + String(state.userId) + "/blob")!)
@@ -96,7 +96,13 @@ extension UIViewController {
                     for ingredient in output.ingredients {
                         ingredients[UUID()] = ingredient
                     }
-                    let recipe = ReadableRecipe(name: name, link: link, active: true, rating: 0, notes: "", ingredients: ingredients)
+                    var order = 0
+                    var steps = [UUID:Step]()
+                    for step in rawSteps {
+                        steps[UUID()] = Step(step: step, order: order)
+                        order += 1
+                    }
+                    let recipe = ReadableRecipe(name: name, link: link, active: active, rating: 0, notes: "", ingredients: ingredients, steps: steps)
                     self.insertRecipe(recipe: recipe)
                     completion?()
                 } catch {
@@ -127,7 +133,13 @@ extension UIViewController {
                     for ingredient in output.ingredients {
                         ingredients[UUID()] = ingredient
                     }
-                    let recipe = ReadableRecipe(name: output.name, link: link, active: active, rating: 0, notes: "", ingredients: ingredients)
+                    var order = 0
+                    var steps = [UUID:Step]()
+                    for step in output.steps {
+                        steps[UUID()] = Step(step: step, order: order)
+                        order += 1
+                    }
+                    let recipe = ReadableRecipe(name: output.name, link: link, active: active, rating: 0, notes: "", ingredients: ingredients, steps: steps)
                     self.insertRecipe(recipe: recipe)
                     completion?()
                 } catch {

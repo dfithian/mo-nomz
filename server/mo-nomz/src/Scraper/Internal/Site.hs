@@ -5,75 +5,78 @@ import Text.HTML.Scalpel ((//), (@:), (@=), Scraper, Selector)
 import qualified Data.HashMap.Strict as HashMap
 import qualified Text.HTML.Scalpel as Scalpel
 
-import Scraper.Internal.Types (SiteName(..), SiteScraper(..), UnparsedIngredient(..))
+import Scraper.Internal.Types
+  ( IngredientScraper(..), SiteName(..), StepScraper(..), UnparsedIngredient(..), UnparsedStep(..)
+  )
 
-siteScrapers :: HashMap SiteName SiteScraper
-siteScrapers = mapFromList
-  [ ("allrecipes.com", allrecipes)
+ingredientScrapers :: HashMap SiteName IngredientScraper
+ingredientScrapers = mapFromList
+  [ ("allrecipes.com", allrecipesI)
 
-  , ("cooking.nytimes.com", nytimes)
+  , ("cooking.nytimes.com", nytimesI)
 
-  , ("food.com", geniusKitchen1)
-  , ("geniuskitchen.com", geniusKitchen1)
-  , ("tasteofhome.com", geniusKitchen2)
+  , ("food.com", geniusKitchenI)
+  , ("geniuskitchen.com", geniusKitchenI)
+  , ("tasteofhome.com", geniusKitchenI)
 
-  , ("rachlmansfield.com", tasty2)
-  , ("cookieandkate.com", tasty1)
-  , ("simpleveganblog.com", tasty1)
-  , ("eatyourselfskinny.com", tasty1)
-  , ("lexiscleankitchen.com", tasty2)
-  , ("sallysbakingaddiction.com", tasty2)
-  , ("gimmesomeoven.com", tasty2)
-  , ("pinchofyum.com", tasty2)
-  , ("alexandracooks.com", tasty3)
-  , ("naturallyella.com", tasty3)
-  , ("brownedbutterblondie.com", tasty3)
+  , ("rachlmansfield.com", tastyI2)
+  , ("cookieandkate.com", tastyI1)
+  , ("simpleveganblog.com", tastyI1)
+  , ("eatyourselfskinny.com", tastyI1)
+  , ("lexiscleankitchen.com", tastyI2)
+  , ("sallysbakingaddiction.com", tastyI2)
+  , ("gimmesomeoven.com", tastyI2)
+  , ("pinchofyum.com", tastyI2)
+  , ("alexandracooks.com", tastyI3)
+  , ("naturallyella.com", tastyI3)
+  , ("brownedbutterblondie.com", tastyI3)
 
-  , ("foodnetwork.com", foodNetwork)
+  , ("foodnetwork.com", foodNetworkI)
 
-  , ("cafedelites.com", wprm)
-  , ("budgetbytes.com", wprm)
-  , ("daringgourmet.com", wprm)
-  , ("recipetineats.com", wprm)
-  , ("cookingclassy.com", wprm)
-  , ("natashaskitchen.com", wprm)
-  , ("justonecookbook.com", wprm)
-  , ("loveandlemons.com", wprm)
-  , ("foodiecrush.com", wprm)
-  , ("therecipecritic.com", wprm)
-  , ("ambitiouskitchen.com", wprm)
-  , ("halfbakedharvest.com", wprm)
-  , ("101cookbooks.com", wprm)
-  , ("ohsweetbasil.com", wprm)
-  , ("myfoodstory.com", wprm)
-  , ("easypeasyfoodie.com", wprm)
-  , ("veganricha.com", wprm)
-  , ("simplydeliciousfood.com", wprm)
-  , ("deliciouseveryday.com", wprm)
-  , ("iamafoodblog.com", wprm)
-  , ("thelastfoodblog.com", wprm)
-  , ("thefoodblog.net", wprm)
-  , ("onceuponafoodblog.com", wprm)
-  , ("anotherfoodblogger.com", wprm)
-  , ("minimalistbaker.com", wprm)
-  , ("davidlebovitz.com", wprm)
-  , ("skinnytaste.com", wprm)
-  , ("twopeasandtheirpod.com", wprm)
-  , ("sweetandsavorymeals.com", wprm)
-  , ("melskitchencafe.com", wprm)
+  , ("cafedelites.com", wprmI)
+  , ("budgetbytes.com", wprmI)
+  , ("daringgourmet.com", wprmI)
+  , ("recipetineats.com", wprmI)
+  , ("cookingclassy.com", wprmI)
+  , ("natashaskitchen.com", wprmI)
+  , ("justonecookbook.com", wprmI)
+  , ("loveandlemons.com", wprmI)
+  , ("foodiecrush.com", wprmI)
+  , ("therecipecritic.com", wprmI)
+  , ("ambitiouskitchen.com", wprmI)
+  , ("halfbakedharvest.com", wprmI)
+  , ("101cookbooks.com", wprmI)
+  , ("ohsweetbasil.com", wprmI)
+  , ("myfoodstory.com", wprmI)
+  , ("easypeasyfoodie.com", wprmI)
+  , ("veganricha.com", wprmI)
+  , ("simplydeliciousfood.com", wprmI)
+  , ("deliciouseveryday.com", wprmI)
+  , ("iamafoodblog.com", wprmI)
+  , ("thelastfoodblog.com", wprmI)
+  , ("thefoodblog.net", wprmI)
+  , ("onceuponafoodblog.com", wprmI)
+  , ("anotherfoodblogger.com", wprmI)
+  , ("minimalistbaker.com", wprmI)
+  , ("davidlebovitz.com", wprmI)
+  , ("skinnytaste.com", wprmI)
+  , ("twopeasandtheirpod.com", wprmI)
+  , ("sweetandsavorymeals.com", wprmI)
+  , ("melskitchencafe.com", wprmI)
 
-  , ("glutenfreecuppatea.co.uk", mv)
+  , ("glutenfreecuppatea.co.uk", mvI)
 
-  , ("localmilkblog.com", zl)
+  , ("localmilkblog.com", zlI)
 
-  , ("smittenkitchen.com", jetpack)
+  , ("smittenkitchen.com", jetpackI)
 
-  , ("eatingwell.com", eatingWell)
-  , ("bhg.com", eatingWell)
+  , ("eatingwell.com", eatingWellI)
+  , ("bhg.com", eatingWellI)
 
-  , ("yummly.com", yummly)
+  , ("yummly.com", yummlyI)
 
-  , ("simplyrecipes.com", simplyRecipes)
+  , ("simplyrecipes.com", simplyRecipesI)
+  , ("seriouseats.com", simplyRecipesI)
 
   , ("bettycrocker.com", ingredientLi1)
   , ("pillsbury.com", ingredientLi1)
@@ -88,27 +91,121 @@ siteScrapers = mapFromList
   , ("notwithoutsalt.com", ingredientLi9)
   , ("chefspencil.com", ingredientLi10)
   , ("shutterbean.com", ingredientLi11)
-  , ("seriouseats.com", ingredientLi12)
   , ("uitpaulineskeuken.nl", ingredientLi13)
   , ("leukerecepten.nl", ingredientLi14)
 
-  , ("delish.com", delish)
-  , ("thepioneerwoman.com", delish)
+  , ("delish.com", delishI)
+  , ("thepioneerwoman.com", delishI)
 
-  -- , ("epicurious.com", epicurious)
+  -- , ("epicurious.com", epicuriousI)
 
-  , ("spoonacular.com", spoonacular)
+  , ("spoonacular.com", spoonacularI)
 
-  , ("food52.com", food52)
+  , ("food52.com", food52I)
 
-  , ("thekitchn.com", thekitchn)
+  , ("thekitchn.com", thekitchnI)
 
-  , ("eatwell101.com", eatwell101)
+  , ("eatwell101.com", eatwell101I)
   ]
 
--- |Get all site scrapers, ordered by most popular first.
-allSiteScrapers :: [SiteScraper]
-allSiteScrapers = map unsafeHead . reverse . sortOn length  . groupBy ((==) `on` siteScraperName) . sortOn siteScraperName . HashMap.elems $ siteScrapers
+stepScrapers :: HashMap SiteName StepScraper
+stepScrapers = mapFromList
+  [ ("allrecipes.com", allrecipesS)
+
+  , ("cooking.nytimes.com", nytimesS)
+
+  , ("food.com", geniusKitchenS)
+  , ("geniuskitchen.com", geniusKitchenS)
+  , ("tasteofhome.com", geniusKitchenS)
+
+  , ("rachlmansfield.com", tastyS1)
+  , ("cookieandkate.com", tastyS1)
+  , ("simpleveganblog.com", tastyS1)
+  , ("eatyourselfskinny.com", tastyS1)
+  , ("lexiscleankitchen.com", tastyS1)
+  , ("sallysbakingaddiction.com", tastyS2)
+  , ("gimmesomeoven.com", tastyS2)
+  , ("pinchofyum.com", tastyS2)
+  , ("alexandracooks.com", tastyS2)
+  , ("naturallyella.com", tastyS2)
+  , ("brownedbutterblondie.com", tastyS3)
+
+  , ("foodnetwork.com", foodNetworkS)
+
+  , ("cafedelites.com", wprmS)
+  , ("budgetbytes.com", wprmS)
+  , ("daringgourmet.com", wprmS)
+  , ("recipetineats.com", wprmS)
+  , ("cookingclassy.com", wprmS)
+  , ("natashaskitchen.com", wprmS)
+  , ("justonecookbook.com", wprmS)
+  , ("loveandlemons.com", wprmS)
+  , ("foodiecrush.com", wprmS)
+  , ("therecipecritic.com", wprmS)
+  , ("ambitiouskitchen.com", wprmS)
+  , ("halfbakedharvest.com", wprmS)
+  , ("101cookbooks.com", wprmS)
+  , ("ohsweetbasil.com", wprmS)
+  , ("myfoodstory.com", wprmS)
+  , ("easypeasyfoodie.com", wprmS)
+  , ("veganricha.com", wprmS)
+  , ("simplydeliciousfood.com", wprmS)
+  , ("deliciouseveryday.com", wprmS)
+  , ("iamafoodblog.com", wprmS)
+  , ("thelastfoodblog.com", wprmS)
+  , ("thefoodblog.net", wprmS)
+  , ("onceuponafoodblog.com", wprmS)
+  , ("anotherfoodblogger.com", wprmS)
+  , ("minimalistbaker.com", wprmS)
+  , ("davidlebovitz.com", wprmS)
+  , ("skinnytaste.com", wprmS)
+  , ("twopeasandtheirpod.com", wprmS)
+  , ("sweetandsavorymeals.com", wprmS)
+  , ("melskitchencafe.com", wprmS)
+
+  , ("glutenfreecuppatea.co.uk", mvS)
+
+  , ("localmilkblog.com", zlS)
+
+  , ("smittenkitchen.com", jetpackS)
+
+  , ("eatingwell.com", eatingWellS)
+  , ("bhg.com", eatingWellS)
+
+  , ("yummly.com", yummlyS)
+
+  , ("simplyrecipes.com", simplyRecipesS)
+  , ("seriouseats.com", simplyRecipesS)
+
+  , ("bettycrocker.com", stepLi1)
+  , ("pillsbury.com", stepLi1)
+  , ("tasty.co", stepLi2)
+  , ("damndelicious.net", stepLi3)
+  , ("lazycatkitchen.com", stepLi4)
+  , ("deliciouslyella.com", stepLi5)
+  , ("slenderkitchen.com", stepLi6)
+  , ("everydayannie.com", stepLi7)
+  , ("hemsleyandhemsley.com", stepLi8)
+  , ("notwithoutsalt.com", stepLi9)
+  , ("cookingandcooking.com", stepLi10)
+  , ("uitpaulineskeuken.nl", stepLi11)
+  , ("leukerecepten.nl", stepLi12)
+
+  , ("delish.com", delishS)
+  , ("thepioneerwoman.com", delishS)
+
+  , ("food52.com", food52S)
+
+  , ("thekitchn.com", thekitchnS)
+  ]
+
+-- |Get all ingredient scrapers, ordered by most popular first.
+allIngredientScrapers :: [IngredientScraper]
+allIngredientScrapers = map unsafeHead . reverse . sortOn length  . groupBy ((==) `on` ingredientScraperName) . sortOn ingredientScraperName . HashMap.elems $ ingredientScrapers
+
+-- |Get all step scrapers, ordered by most popular first.
+allStepScrapers :: [StepScraper]
+allStepScrapers = map unsafeHead . reverse . sortOn length  . groupBy ((==) `on` stepScraperName) . sortOn stepScraperName . HashMap.elems $ stepScrapers
 
 testScrape :: Selector -> Scraper Text Bool
 testScrape test = not . null <$> Scalpel.html test
@@ -117,190 +214,339 @@ acceptAll :: Scraper Text Bool
 acceptAll = pure True
 
 denyAll :: Scraper Text Bool
-denyAll = pure False
+denyAll = pure True
 
-simpleScraper :: Text -> Scraper Text Bool -> Selector -> SiteScraper
-simpleScraper sName test select = SiteScraper sName test scrape
+simpleIngredientScraper :: Text -> Scraper Text Bool -> Selector -> IngredientScraper
+simpleIngredientScraper sName test select = IngredientScraper sName test scrape
   where
     scrape = Scalpel.chroots select (
       UnparsedIngredientRaw
         <$> Scalpel.text Scalpel.anySelector
       )
 
-debug :: SiteScraper
-debug = simpleScraper "debug" (testScrape "div") "div"
+simpleStepScraper :: Text -> Scraper Text Bool -> Selector -> StepScraper
+simpleStepScraper sName test select = StepScraper sName test scrape
+  where
+    scrape = Scalpel.chroots select (
+      UnparsedStepRaw
+        <$> Scalpel.text Scalpel.anySelector
+      )
 
-allrecipes :: SiteScraper
-allrecipes = simpleScraper "allrecipes"
+debugI :: IngredientScraper
+debugI = simpleIngredientScraper "debug" (testScrape "div") "div"
+
+debugS :: StepScraper
+debugS = simpleStepScraper "debug" (testScrape "div") "div"
+
+allrecipesI :: IngredientScraper
+allrecipesI = simpleIngredientScraper "allrecipes"
   (testScrape ("meta" @: ["content" @= "Allrecipes"]))
   ("span" @: [Scalpel.hasClass "ingredients-item-name"])
 
-nytimes :: SiteScraper
-nytimes = simpleScraper "nytimes"
+allrecipesS :: StepScraper
+allrecipesS = simpleStepScraper "allrecipes"
+  (testScrape ("meta" @: ["content" @= "Allrecipes"]))
+  ("ul" @: [Scalpel.hasClass "instructions-section"] // "div" @: [Scalpel.hasClass "section-body"])
+
+nytimesI :: IngredientScraper
+nytimesI = simpleIngredientScraper "nytimes"
   (testScrape ("meta" @: ["content" @= "NYT Cooking"]))
   ("ul" @: [Scalpel.hasClass "recipe-ingredients"] // "li")
 
-geniusKitchen1 :: SiteScraper
-geniusKitchen1 = simpleScraper "geniusKitchen1"
+nytimesS :: StepScraper
+nytimesS = simpleStepScraper "nytimes"
+  (testScrape ("meta" @: ["content" @= "NYT Cooking"]))
+  ("ol" @: [Scalpel.hasClass "recipe-steps"] // "li")
+
+geniusKitchenI :: IngredientScraper
+geniusKitchenI = simpleIngredientScraper "geniusKitchen"
   (testScrape ("div" @: [Scalpel.hasClass "recipe-ingredients"]))
   ("div" @: [Scalpel.hasClass "recipe-ingredients"] // "li")
 
-geniusKitchen2 :: SiteScraper
-geniusKitchen2 = simpleScraper "geniusKitchen2"
-  (testScrape ("div" @: [Scalpel.hasClass "recipe-ingredients"]))
-  ("div" @: [Scalpel.hasClass "recipe-ingredients"] // "li")
+geniusKitchenS :: StepScraper
+geniusKitchenS = simpleStepScraper "geniusKitchen"
+  (testScrape ("div" @: [Scalpel.hasClass "recipe-directions"]))
+  ("div" @: [Scalpel.hasClass "recipe-directions"] // "li")
 
-tasty1 :: SiteScraper
-tasty1 = simpleScraper "tasty1"
+tastyI1 :: IngredientScraper
+tastyI1 = simpleIngredientScraper "tasty1"
   (testScrape ("div" @: [Scalpel.hasClass "tasty-recipe-ingredients"]))
   ("div" @: [Scalpel.hasClass "tasty-recipe-ingredients"] // "li")
 
-tasty2 :: SiteScraper
-tasty2 = simpleScraper "tasty2"
+tastyI2 :: IngredientScraper
+tastyI2 = simpleIngredientScraper "tasty2"
   (testScrape ("div" @: [Scalpel.hasClass "tasty-recipes-ingredients"]))
   ("div" @: [Scalpel.hasClass "tasty-recipes-ingredients"] // "li")
 
-tasty3 :: SiteScraper
-tasty3 = simpleScraper "tasty3"
+tastyI3 :: IngredientScraper
+tastyI3 = simpleIngredientScraper "tasty3"
   (testScrape ("div" @: [Scalpel.hasClass "tasty-recipes-ingredients"]))
   ("div" @: [Scalpel.hasClass "tasty-recipes-ingredients"] // "p")
 
-foodNetwork :: SiteScraper
-foodNetwork = SiteScraper "foodNetwork"
-  denyAll
-  (map UnparsedIngredientRaw . filter (not . (==) "Deselect All") <$> Scalpel.chroots ("div" @: [Scalpel.hasClass "o-Ingredients__m-Body"] // "span") (Scalpel.text Scalpel.anySelector))
+tastyS1 :: StepScraper
+tastyS1 = simpleStepScraper "tasty1"
+  (testScrape ("div" @: [Scalpel.hasClass "tasty-recipe-instructions"]))
+  ("div" @: [Scalpel.hasClass "tasty-recipe-instructions"] // "li")
 
-wprm :: SiteScraper
-wprm = simpleScraper "wprm"
+tastyS2 :: StepScraper
+tastyS2 = simpleStepScraper "tasty2"
+  (testScrape ("div" @: [Scalpel.hasClass "tasty-recipes-instructions"]))
+  ("div" @: [Scalpel.hasClass "tasty-recipes-instructions"] // "li")
+
+tastyS3 :: StepScraper
+tastyS3 = simpleStepScraper "tasty3"
+  (testScrape ("div" @: [Scalpel.hasClass "tasty-recipes-instructions"]))
+  ("div" @: [Scalpel.hasClass "tasty-recipes-instructions"] // "div" @: [Scalpel.hasClass "tasty-recipes-instructions-body"])
+
+foodNetworkI :: IngredientScraper
+foodNetworkI = IngredientScraper "foodNetwork" denyAll $
+  map UnparsedIngredientRaw . filter (not . (==) "Deselect All") <$> Scalpel.chroots ("div" @: [Scalpel.hasClass "o-Ingredients__m-Body"] // "span") (Scalpel.text Scalpel.anySelector)
+
+foodNetworkS :: StepScraper
+foodNetworkS = StepScraper "foodNetwork" denyAll $ do
+  map UnparsedStepRaw <$> Scalpel.chroots ("div" @: [Scalpel.hasClass "o-Method__m-Body"] // "li") (Scalpel.text Scalpel.anySelector)
+
+wprmI :: IngredientScraper
+wprmI = simpleIngredientScraper "wprm"
   (testScrape ("div" @: [Scalpel.hasClass "wprm-recipe"]))
   ("li" @: [Scalpel.hasClass "wprm-recipe-ingredient"])
 
-mv :: SiteScraper
-mv = simpleScraper "mv"
+wprmS :: StepScraper
+wprmS = simpleStepScraper "wprm"
+  (testScrape ("div" @: [Scalpel.hasClass "wprm-recipe"]))
+  ("li" @: [Scalpel.hasClass "wprm-recipe-instruction"])
+
+mvI :: IngredientScraper
+mvI = simpleIngredientScraper "mv"
   (testScrape ("div" @: [Scalpel.hasClass "mv-create-ingredients"]))
   ("div" @: [Scalpel.hasClass "mv-create-ingredients"] // "li")
 
-zl :: SiteScraper
-zl = simpleScraper "zl"
+mvS :: StepScraper
+mvS = simpleStepScraper "mv"
+  (testScrape ("div" @: [Scalpel.hasClass "mv-create-instructions"]))
+  ("div" @: [Scalpel.hasClass "mv-create-instructions"] // "li")
+
+zlI :: IngredientScraper
+zlI = simpleIngredientScraper "zl"
   (testScrape ("ul" @: ["id" @= "zlrecipe-ingredients-list"]))
   ("ul" @: ["id" @= "zlrecipe-ingredients-list"] // "li")
 
-jetpack :: SiteScraper
-jetpack = simpleScraper "jetpack"
+zlS :: StepScraper
+zlS = simpleStepScraper "zl"
+  (testScrape ("ol" @: ["id" @= "zlrecipe-instructions-list"]))
+  ("ol" @: ["id" @= "zlrecipe-instructions-list"] // "li")
+
+jetpackI :: IngredientScraper
+jetpackI = simpleIngredientScraper "jetpack"
   (testScrape ("div" @: [Scalpel.hasClass "jetpack-recipe"]))
   ("div" @: [Scalpel.hasClass "jetpack-recipe-ingredients"] // "li")
 
-eatingWell :: SiteScraper
-eatingWell = simpleScraper "eatingWell"
+jetpackS :: StepScraper
+jetpackS = simpleStepScraper "jetpack"
+  (testScrape ("div" @: [Scalpel.hasClass "jetpack-recipe"]))
+  ("div" @: [Scalpel.hasClass "jetpack-recipe-directions"])
+
+eatingWellI :: IngredientScraper
+eatingWellI = simpleIngredientScraper "eatingWell"
   (testScrape ("ul" @: [Scalpel.hasClass "ingredients-section"]))
   ("ul" @: [Scalpel.hasClass "ingredients-section"] // "li")
 
-yummly :: SiteScraper
-yummly = simpleScraper "yummly"
+eatingWellS :: StepScraper
+eatingWellS = simpleStepScraper "eatingWell"
+  (testScrape ("ul" @: [Scalpel.hasClass "instructions-section"]))
+  ("ul" @: [Scalpel.hasClass "instructions-section"] // "li" // "p")
+
+yummlyI :: IngredientScraper
+yummlyI = simpleIngredientScraper "yummly"
   denyAll
   ("li" @: [Scalpel.hasClass "IngredientLine"])
 
-simplyRecipes :: SiteScraper
-simplyRecipes = simpleScraper "simplyrecipes"
+yummlyS :: StepScraper
+yummlyS = simpleStepScraper "yummly"
+  denyAll
+  ("li" @: [Scalpel.hasClass "prep-step"])
+
+simplyRecipesI :: IngredientScraper
+simplyRecipesI = simpleIngredientScraper "simplyrecipes"
   denyAll
   ("section" @: ["id" @= "section--ingredients_1-0"] // "li")
 
-ingredientLi1 :: SiteScraper
-ingredientLi1 = simpleScraper "ingredientLi1"
+simplyRecipesS :: StepScraper
+simplyRecipesS = simpleStepScraper "simplyrecipes"
+  denyAll
+  ("section" @: ["id" @= "section--instructions_1-0"] // "li")
+
+ingredientLi1 :: IngredientScraper
+ingredientLi1 = simpleIngredientScraper "ingredientLi1"
   (testScrape ("li" @: [Scalpel.hasClass "ingredient"]))
   ("li" @: [Scalpel.hasClass "ingredient"])
 
-ingredientLi2 :: SiteScraper
-ingredientLi2 = simpleScraper "ingredientLi2"
+ingredientLi2 :: IngredientScraper
+ingredientLi2 = simpleIngredientScraper "ingredientLi2"
   (testScrape ("div" @: [Scalpel.hasClass "ingredients-section"]))
   ("div" @: [Scalpel.hasClass "ingredients-section"] // "li")
 
-ingredientLi3 :: SiteScraper
-ingredientLi3 = simpleScraper "ingredientLi3"
+ingredientLi3 :: IngredientScraper
+ingredientLi3 = simpleIngredientScraper "ingredientLi3"
   (testScrape ("li" @: ["itemprop" @= "recipeIngredient"]))
   ("li" @: ["itemprop" @= "recipeIngredient"])
 
-ingredientLi4 :: SiteScraper
-ingredientLi4 = simpleScraper "ingredientLi4"
+ingredientLi4 :: IngredientScraper
+ingredientLi4 = simpleIngredientScraper "ingredientLi4"
   (testScrape ("div" @: [Scalpel.hasClass "ingredients"]))
   ("div" @: [Scalpel.hasClass "ingredients"] // "li")
 
-ingredientLi5 :: SiteScraper
-ingredientLi5 = simpleScraper "ingredientLi5"
+ingredientLi5 :: IngredientScraper
+ingredientLi5 = simpleIngredientScraper "ingredientLi5"
   (testScrape ("div" @: [Scalpel.hasClass "listIngredient"]))
   ("div" @: [Scalpel.hasClass "listIngredient"] // "li")
 
-ingredientLi6 :: SiteScraper
-ingredientLi6 = simpleScraper "ingredientLi6"
+ingredientLi6 :: IngredientScraper
+ingredientLi6 = simpleIngredientScraper "ingredientLi6"
   (testScrape ("li" @: ["itemprop" @= "ingredients"]))
   ("li" @: ["itemprop" @= "ingredients"])
 
-ingredientLi7 :: SiteScraper
-ingredientLi7 = simpleScraper "ingredientLi7"
+ingredientLi7 :: IngredientScraper
+ingredientLi7 = simpleIngredientScraper "ingredientLi7"
   (testScrape ("ul" @: [Scalpel.hasClass "ingredients"]))
   ("ul" @: [Scalpel.hasClass "ingredients"] // "li")
 
-ingredientLi8 :: SiteScraper
-ingredientLi8 = simpleScraper "ingredientLi8"
+ingredientLi8 :: IngredientScraper
+ingredientLi8 = simpleIngredientScraper "ingredientLi8"
   (testScrape ("div" @: [Scalpel.hasClass "ingredient-text"]))
   ("div" @: [Scalpel.hasClass "ingredient-text"] // "ul" // "li")
 
-ingredientLi9 :: SiteScraper
-ingredientLi9 = simpleScraper "ingredientLi9"
+ingredientLi9 :: IngredientScraper
+ingredientLi9 = simpleIngredientScraper "ingredientLi9"
   (testScrape ("div" @: [Scalpel.hasClass "cookbook-container-ingredients"]))
   ("p" @: [Scalpel.hasClass "cookbook-ingredient-item"])
 
-ingredientLi10 :: SiteScraper
-ingredientLi10 = simpleScraper "ingredientLi10"
+ingredientLi10 :: IngredientScraper
+ingredientLi10 = simpleIngredientScraper "ingredientLi10"
   (testScrape ("table" @: [Scalpel.hasClass "ingredients-table"]))
   ("table" @: [Scalpel.hasClass "ingredients-table"] // "tr")
 
-ingredientLi11 :: SiteScraper
-ingredientLi11 = simpleScraper "ingredientLi11"
+ingredientLi11 :: IngredientScraper
+ingredientLi11 = simpleIngredientScraper "ingredientLi11"
   (testScrape ("blockquote" @: [Scalpel.hasClass "recipe-block"]))
   ("blockquote" @: [Scalpel.hasClass "recipe-block"] // "li")
 
-ingredientLi12 :: SiteScraper
-ingredientLi12 = simpleScraper "ingredientLi12"
+ingredientLi12 :: IngredientScraper
+ingredientLi12 = simpleIngredientScraper "ingredientLi12"
   (testScrape ("li" @: [Scalpel.hasClass "structured-ingredients__list-item"]))
   ("li" @: [Scalpel.hasClass "structured-ingredients__list-item"])
 
-ingredientLi13 :: SiteScraper
-ingredientLi13 = simpleScraper "ingredientLi13"
+ingredientLi13 :: IngredientScraper
+ingredientLi13 = simpleIngredientScraper "ingredientLi13"
   (testScrape ("section" @: [Scalpel.hasClass "ingredients-list"]))
   ("section" @: [Scalpel.hasClass "ingredients-list"] // "li")
 
-ingredientLi14 :: SiteScraper
-ingredientLi14 = simpleScraper "ingredientLi14"
+ingredientLi14 :: IngredientScraper
+ingredientLi14 = simpleIngredientScraper "ingredientLi14"
   (testScrape ("ul" @: [Scalpel.hasClass "page-content__ingredients-list"]))
   ("ul" @: [Scalpel.hasClass "page-content__ingredients-list"] // "li")
 
-delish :: SiteScraper
-delish = simpleScraper "delish"
+stepLi1 :: StepScraper
+stepLi1 = simpleStepScraper "stepLi1"
+  (testScrape ("ul" @: [Scalpel.hasClass "recipeSteps"]))
+  ("ul" @: [Scalpel.hasClass "recipeSteps"] // "li")
+
+stepLi2 :: StepScraper
+stepLi2 = simpleStepScraper "stepLi2"
+  (testScrape ("ol" @: [Scalpel.hasClass "prep-steps"]))
+  ("ol" @: [Scalpel.hasClass "prep-steps"] // "li")
+
+stepLi3 :: StepScraper
+stepLi3 = simpleStepScraper "stepLi3"
+  (testScrape ("div" @: [Scalpel.hasClass "instructions"]))
+  ("div" @: [Scalpel.hasClass "instructions"] // "li")
+
+stepLi4 :: StepScraper
+stepLi4 = simpleStepScraper "stepLi4"
+  (testScrape ("div" @: [Scalpel.hasClass "method-section"]))
+  ("div" @: [Scalpel.hasClass "method-section"] // "li")
+
+stepLi5 :: StepScraper
+stepLi5 = simpleStepScraper "stepLi5"
+  (testScrape ("section" @: [Scalpel.hasClass "recipe__section"]))
+  ("section" @: [Scalpel.hasClass "recipe__section"] // "li")
+
+stepLi6 :: StepScraper
+stepLi6 = simpleStepScraper "stepLi6"
+  (testScrape ("div" @: [Scalpel.hasClass "step-instructions"]))
+  ("div" @: [Scalpel.hasClass "step-instructions"] // "div" @: [Scalpel.hasClass "step"])
+
+stepLi7 :: StepScraper
+stepLi7 = simpleStepScraper "stepLi7"
+  (testScrape ("div" @: ["id" @= "directions"]))
+  ("div" @: ["id" @= "directions"] // "li")
+
+stepLi8 :: StepScraper
+stepLi8 = simpleStepScraper "stepLi8"
+  (testScrape ("div" @: [Scalpel.hasClass "recipe-main-copy"]))
+  ("div" @: [Scalpel.hasClass "recipe-main-copy"])
+
+stepLi9 :: StepScraper
+stepLi9 = simpleStepScraper "stepLi9"
+  (testScrape ("p" @: [Scalpel.hasClass "cookbook-instruction-item"]))
+  ("p" @: [Scalpel.hasClass "cookbook-instruction-item"])
+
+stepLi10 :: StepScraper
+stepLi10 = simpleStepScraper "stepLi10"
+  (testScrape ("p" @: [Scalpel.hasClass "recipeText"]))
+  ("p" @: [Scalpel.hasClass "recipeText"])
+
+stepLi11 :: StepScraper
+stepLi11 = simpleStepScraper "stepLi11"
+  (testScrape ("div" @: [Scalpel.hasClass "preparation-list"]))
+  ("div" @: [Scalpel.hasClass "preparation-list"] // "li")
+
+stepLi12 :: StepScraper
+stepLi12 = simpleStepScraper "stepLi12"
+  (testScrape ("div" @: [Scalpel.hasClass "page-content__recipe"]))
+  ("div" @: [Scalpel.hasClass "page-content__recipe"] // "div" @: [Scalpel.hasClass "step"])
+
+delishI :: IngredientScraper
+delishI = simpleIngredientScraper "delish"
   acceptAll
   ("div" @: [Scalpel.hasClass "ingredient-item"])
 
-spoonacular :: SiteScraper
-spoonacular = simpleScraper "spoontacular"
+delishS :: StepScraper
+delishS = simpleStepScraper "delish"
+  acceptAll
+  ("div" @: [Scalpel.hasClass "direction-lists"] // "li")
+
+spoonacularI :: IngredientScraper
+spoonacularI = simpleIngredientScraper "spoontacular"
   denyAll
   ("div" @: [Scalpel.hasClass "spoonacular-ingredient"])
 
-food52 :: SiteScraper
-food52 = simpleScraper "food52"
+food52I :: IngredientScraper
+food52I = simpleIngredientScraper "food52"
   denyAll
   ("div" @: [Scalpel.hasClass "recipe__list--ingredients"] // "li")
 
--- epicurious :: SiteScraper
--- epicurious = simpleScraper "epicurious"
+food52S :: StepScraper
+food52S = simpleStepScraper "food52"
+  denyAll
+  ("div" @: [Scalpel.hasClass "recipe__list--steps"] // "li")
+
+-- epicuriousI :: IngredientScraper
+-- epicuriousI = simpleIngredientScraper "epicurious"
 --   denyAll
 --   ("div" @: [Scalpel.hasClass "recipe__ingredient-list"])
 
-thekitchn :: SiteScraper
-thekitchn = simpleScraper "thekitchn"
+thekitchnI :: IngredientScraper
+thekitchnI = simpleIngredientScraper "thekitchn"
   denyAll
   ("ul" @: [Scalpel.hasClass "Recipe__ingredients"] // "li")
 
-eatwell101 :: SiteScraper
-eatwell101 = simpleScraper "eatwell101"
+thekitchnS :: StepScraper
+thekitchnS = simpleStepScraper "thekitchn"
+  denyAll
+  ("ol" @: [Scalpel.hasClass "Recipe__instructions"] // "li")
+
+eatwell101I :: IngredientScraper
+eatwell101I = simpleIngredientScraper "eatwell101"
   denyAll
   ("div" @: [Scalpel.hasClass "pf-content"] // "li")

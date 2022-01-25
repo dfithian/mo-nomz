@@ -37,7 +37,9 @@ unwrapDb :: AppM m => m (Either SomeException a) -> m a
 unwrapDb ma = ma >>= \case
   Right x -> pure x
   Left se -> case fromException se of
-    Just (x :: ServerError) -> throwError x
+    Just (x :: ServerError) -> do
+      $logError $ tshow x
+      throwError x
     Nothing -> throwError err500
 
 getHealth :: AppM m => m GetHealthResponse
@@ -66,9 +68,11 @@ validateUserToken token userId = do
       Right True -> pure ()
       Right False -> throwError err403
       Left err -> do
-        $logError $ "User token validation failed due to " <> pack err
+        $logError $ "User token validation failed for " <> tshow userId <> " due to " <> pack err
         throwError err403
-    _ -> throwError err403
+    _ -> do
+      $logError $ "No user token for " <> tshow userId
+      throwError err403
 
 getGroceryItems :: AppM m => Authorization -> UserId -> m ListGroceryItemResponse
 getGroceryItems token userId = do
@@ -273,6 +277,7 @@ postParseLink token userId ParseLinkRequest {..} = do
   pure ParseLinkResponse
     { parseLinkResponseName = scrapedRecipeName
     , parseLinkResponseIngredients = mkReadableIngredient <$> zipWith OrderedIngredient scrapedRecipeIngredients [1..]
+    , parseLinkResponseSteps = scrapedRecipeSteps
     }
 
 -- export data

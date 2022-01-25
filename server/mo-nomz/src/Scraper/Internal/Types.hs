@@ -5,23 +5,33 @@ import Data.Text (strip)
 import Text.HTML.Scalpel (Scraper)
 import qualified Text.HTML.Scalpel as Scalpel
 
-import Types (RecipeName(..), Ingredient)
+import Types (RecipeName(..), Ingredient, Step)
 
 data ScrapedRecipe = ScrapedRecipe
   { scrapedRecipeName        :: RecipeName
   , scrapedRecipeIngredients :: [Ingredient]
+  , scrapedRecipeSteps       :: [Step]
   } deriving (Eq, Show)
 
-data SiteScraper = SiteScraper
-  { siteScraperName :: Text
-  , siteScraperTest :: Scraper Text Bool
-  , siteScraperRun  :: Scraper Text [UnparsedIngredient]
+data IngredientScraper = IngredientScraper
+  { ingredientScraperName :: Text
+  , ingredientScraperTest :: Scraper Text Bool
+  , ingredientScraperRun  :: Scraper Text [UnparsedIngredient]
+  }
+
+data StepScraper = StepScraper
+  { stepScraperName :: Text
+  , stepScraperTest :: Scraper Text Bool
+  , stepScraperRun  :: Scraper Text [UnparsedStep]
   }
 
 newtype SiteName = SiteName { unSiteName :: Text }
   deriving (Eq, Ord, Show, IsString, Hashable)
 
 data UnparsedIngredient = UnparsedIngredientRaw Text
+  deriving (Eq, Ord, Show)
+
+data UnparsedStep = UnparsedStepRaw Text
   deriving (Eq, Ord, Show)
 
 title :: Scraper Text RecipeName

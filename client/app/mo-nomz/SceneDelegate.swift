@@ -14,7 +14,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let launchSb = UIStoryboard(name: "LaunchScreen", bundle: nil)
         let launchVc = launchSb.instantiateInitialViewController()
         let mainSb = UIStoryboard(name: "Main", bundle: nil)
-        let mainVc = mainSb.instantiateInitialViewController()
+        let mainVc = mainSb.instantiateInitialViewController() as! UITabBarController
+        mainVc.selectedIndex = User.preference(.mealsDefaultTab) ? 1 : 0
 
         if User.loadState() == nil {
             window?.rootViewController = launchVc
