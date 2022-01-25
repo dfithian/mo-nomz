@@ -193,4 +193,5 @@ parseSteps = \case
           Just y -> f (xs, ordinal + 1, (Step (unwords (next <> [y]))):parsed)
           Nothing -> f (xs, ordinal + 1, (Step (unwords next)):parsed)
         [] -> f ([], ordinal + 1, (Step (unwords next)):parsed)
-  xs -> Right $ concatMap (\(UnparsedStepRaw step) -> map (Step . unwords . filter (not . null) . words) . filter (not . null) . lines $ step) xs
+  [UnparsedStepRaw single] -> Right $ map (Step . unwords . filter (not . null) . words) . filter (not . null) . map strip . lines $ single
+  xs -> Right $ map (\(UnparsedStepRaw step) -> Step . unwords . filter (not . null) . words $ step) xs
