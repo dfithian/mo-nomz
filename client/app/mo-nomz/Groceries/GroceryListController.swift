@@ -17,7 +17,7 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
     var toBuy: [ReadableGroceryItemWithId] = []
     var bought: [ReadableGroceryItemWithId] = []
     var onChange: (() -> Void)? = nil
-    var mergeItems: (ReadableGroceryItem, ReadableGroceryItem, [UUID])? = nil
+    var mergeItems: (ReadableGroceryItemWithId, ReadableGroceryItemWithId)? = nil
     var editItem: ReadableGroceryItemWithId? = nil
     var collapsed: [Bool] = [false, true]
     
@@ -127,7 +127,17 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
         performSegue(withIdentifier: "editItem", sender: nil)
     }
     
-    private func deleteRowSwipe(_ id: UUID) -> UISwipeActionsConfiguration {
+    private func swipe(_ indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let id: UUID
+        switch indexPath.section {
+        case TO_BUY:
+            id = toBuy[indexPath.row].id
+            break
+        case BOUGHT:
+            id = bought[indexPath.row].id
+            break
+        default: return nil
+        }
         let action = UIContextualAction(style: .destructive, title: "Delete") { [weak self] (action, view, completionHandler) in
             self?.deleteRow(id)
             completionHandler(true)
@@ -137,27 +147,11 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
     }
     
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        switch indexPath.section {
-        case TO_BUY:
-            return deleteRowSwipe(toBuy[indexPath.row].id)
-        case BOUGHT:
-            return deleteRowSwipe(bought[indexPath.row].id)
-        default:
-            break
-        }
-        return nil
+        return swipe(indexPath)
     }
     
     override func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        switch indexPath.section {
-        case TO_BUY:
-            return deleteRowSwipe(toBuy[indexPath.row].id)
-        case BOUGHT:
-            return deleteRowSwipe(bought[indexPath.row].id)
-        default:
-            break
-        }
-        return nil
+        return swipe(indexPath)
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -303,7 +297,7 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
                     let new = try JSONDecoder().decode(ReadableGroceryItemWithId.self, from: string.data(using: .utf8)!)
                     if isMerge {
                         let run = { () -> Void in
-                            self.mergeItems = (existing.item, new.item, [existing.id, new.id])
+                            self.mergeItems = (existing, new)
                             self.performSegue(withIdentifier: "mergeItems", sender: nil)
                         }
                         let runAndIgnore = { () -> Void in
@@ -335,15 +329,17 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let vc = segue.destination as? GroceryMergeController, segue.identifier == "mergeItems" {
-            vc.existing = mergeItems!.0
-            vc.new = mergeItems!.1
-            vc.ids = mergeItems!.2
+        if let vc = segue.destination as? GroceryChangeController {
             vc.onChange = onChange
-        }
-        if let vc = segue.destination as? GroceryEditController, segue.identifier == "editItem" {
-            vc.existing = editItem!
-            vc.onChange = onChange
+            switch segue.identifier {
+            case "mergeItems":
+                vc.change = .merge(mergeItems!.0, mergeItems!.1)
+                break
+            case "editItem":
+                vc.change = .edit(editItem!)
+                break
+            default: break
+            }
         }
     }
     

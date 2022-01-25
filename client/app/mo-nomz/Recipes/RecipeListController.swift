@@ -94,7 +94,7 @@ class RecipeListController: UITableViewController {
         onChange?()
     }
     
-    override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+    private func swipe(_ indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let id: UUID
         switch indexPath.section {
         case ACTIVE:
@@ -114,24 +114,12 @@ class RecipeListController: UITableViewController {
         return UISwipeActionsConfiguration(actions: [action])
     }
     
+    override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        return swipe(indexPath)
+    }
+    
     override func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        let id: UUID
-        switch indexPath.section {
-        case ACTIVE:
-            id = active[indexPath.row].id
-            break
-        case SAVED:
-            id = saved[indexPath.row].id
-            break
-        default:
-            return nil
-        }
-        let action = UIContextualAction(style: .destructive, title: "Delete") { [weak self] (action, view, completionHandler) in
-            self?.deleteRow(id)
-            completionHandler(true)
-        }
-        action.backgroundColor = .systemRed
-        return UISwipeActionsConfiguration(actions: [action])
+        return swipe(indexPath)
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

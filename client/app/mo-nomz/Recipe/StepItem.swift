@@ -10,6 +10,6 @@ import UIKit
 class StepItem: UITableViewCell, UITextFieldDelegate {
     @IBOutlet weak var num: UILabel!
     @IBOutlet weak var read: UILabel!
-    @IBOutlet weak var write: UITextField!
+    @IBOutlet weak var write: UITextView!
 }
 
