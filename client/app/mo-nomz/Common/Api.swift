@@ -51,6 +51,39 @@ extension UIViewController {
         task.resume()
     }
     
+    func pullSteps(completion: (() -> Void)?) {
+        let spinner = startLoading()
+        guard let state = User.loadState() else { return }
+        let recipes = selectRecipes()
+        let group = DispatchGroup()
+        for recipe in recipes {
+            if let link = recipe.recipe.link, recipe.recipe.steps.isEmpty {
+                group.enter()
+                var req = URLRequest(url: URL(string: Configuration.baseURL + "api/v2/user/" + String(state.userId) + "/link")!)
+                req.addValue(state.apiToken, forHTTPHeaderField: "X-Mo-Nomz-API-Token")
+                req.addValue("application/json", forHTTPHeaderField: "Content-Type")
+                req.httpMethod = "POST"
+                req.httpBody = try? JSONEncoder().encode(ParseLinkRequest(link: link))
+                let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
+                    let onSuccess = {
+                        do {
+                            let output = try JSONDecoder().decode(ParseLinkResponse.self, from: data!)
+                            let _ = self.addRecipeSteps(recipeId: recipe.id, rawSteps: output.steps)
+                        } catch { }
+                        group.leave()
+                    }
+                    self.withCompletion(data: data, resp: resp, error: error, completion: onSuccess, onUnsuccessfulStatus: { _ in group.leave() }, onError: { _ in group.leave() })
+                })
+                task.resume()
+            }
+        }
+        group.notify(queue: .main) {
+            self.stopLoading(spinner)
+            User.setDidPullSteps()
+            completion?()
+        }
+    }
+    
     func addBlob(content: String, completion: (() -> Void)?) {
         let spinner = startLoading()
         guard let state = User.loadState() else { return }
