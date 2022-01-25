@@ -22,10 +22,6 @@ class GroceryAddBlobController: UIViewController {
         }
     }
     
-    @IBAction func didTapSwitch(_ sender: Any?) {
-        navigationVc?.switchToLink()
-    }
-    
     @IBAction func didTapSubmit(_ sender: Any?) {
         if let content = blob.text, !content.isEmpty {
             if isRecipe {
@@ -107,6 +103,10 @@ class GroceryAddRecipeController: UIViewController {
         DispatchQueue.main.async {
             self.dismiss(animated: true, completion: nil)
         }
+    }
+    
+    @IBAction func didTapBack(_ sender: Any?) {
+        navigationVc?.popViewController(animated: true)
     }
     
     @IBAction func didTapSubmit(_ sender: Any?) {
