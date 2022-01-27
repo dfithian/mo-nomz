@@ -6,21 +6,23 @@ import Control.Monad.Except (ExceptT, MonadError, runExceptT, throwError)
 import Data.Aeson (FromJSON, FromJSONKey, ToJSON, ToJSONKey)
 import Data.Aeson.TH (deriveJSON)
 import Data.CaseInsensitive (CI)
+import Data.Serialize (Serialize)
 import Database.PostgreSQL.Simple.FromField (FromField, fromField)
 import Database.PostgreSQL.Simple.ToField (ToField, toField)
 import Servant.API (FromHttpApiData, ToHttpApiData)
 
 import CI.Orphans ()
 import Json (jsonOptions)
+import Serialize.Orphans ()
 
 newtype UserId = UserId { unUserId :: Int }
   deriving (Eq, Ord, Show, FromJSON, FromJSONKey, ToJSON, ToJSONKey, FromField, ToField, FromHttpApiData, ToHttpApiData)
 
 newtype IngredientName = IngredientName { unIngredientName :: CI Text }
-  deriving (Eq, Ord, Show, FromJSON, ToJSON, FromField, ToField)
+  deriving (Eq, Ord, Show, Generic, FromJSON, ToJSON, FromField, ToField)
 
 newtype RecipeName = RecipeName { unRecipeName :: Text }
-  deriving (Eq, Ord, Show, FromJSON, ToJSON, FromField, ToField)
+  deriving (Eq, Ord, Show, Generic, FromJSON, ToJSON, FromField, ToField)
 
 data RawQuantity
   = RawQuantity Double
@@ -31,7 +33,7 @@ data RawQuantity
 data Quantity
   = Quantity Double
   | QuantityMissing
-  deriving (Eq, Ord, Show)
+  deriving (Eq, Ord, Show, Generic)
 
 quantityToValue :: Quantity -> Double
 quantityToValue = \case
@@ -49,7 +51,7 @@ data RawUnit
 data Unit
   = Unit (CI Text)
   | UnitMissing
-  deriving (Eq, Ord, Show)
+  deriving (Eq, Ord, Show, Generic)
 
 newtype GroceryItemId = GroceryItemId { unGroceryItemId :: Int }
   deriving (Eq, Ord, Show, FromJSON, FromJSONKey, ToJSON, ToJSONKey, FromField, ToField, FromHttpApiData, ToHttpApiData)
@@ -94,7 +96,7 @@ data Ingredient = Ingredient
   , ingredientQuantity :: Quantity
   , ingredientUnit     :: Unit
   }
-  deriving (Eq, Ord, Show)
+  deriving (Eq, Ord, Show, Generic)
 
 data OrderedIngredient = OrderedIngredient
   { orderedIngredientIngredient :: Ingredient
@@ -110,7 +112,7 @@ data RawIngredient = RawIngredient
   deriving (Eq, Ord, Show)
 
 newtype Step = Step { unStep :: Text }
-  deriving (Eq, Ord, Show, FromJSON, ToJSON)
+  deriving (Eq, Ord, Show, Generic, FromJSON, ToJSON)
 
 data Recipe = Recipe
   { recipeName   :: RecipeName
@@ -207,3 +209,10 @@ instance Fractional Quantity where
 
   QuantityMissing / QuantityMissing = QuantityMissing
   x / y = Quantity $ quantityToValue x / quantityToValue y
+
+instance Serialize RecipeName
+instance Serialize IngredientName
+instance Serialize Quantity
+instance Serialize Unit
+instance Serialize Ingredient
+instance Serialize Step

@@ -38,7 +38,7 @@ runServer Env {..} ma = do
 
 wipeDb :: Env -> IO ()
 wipeDb env = runEnv env $ \c ->
-  void $ execute_ c "truncate nomz.export, nomz.ingredient, nomz.recipe, nomz.grocery_item restart identity"
+  void $ execute_ c "truncate nomz.export, nomz.ingredient, nomz.recipe, nomz.grocery_item, nomz.recipe_cache restart identity"
 
 loadEnv :: IO Env
 loadEnv = do

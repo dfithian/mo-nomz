@@ -4,6 +4,7 @@ import Test.Hspec (before_, hspec)
 
 import TestEnv (loadEnv, loadEnvNoDb, wipeDb)
 
+import qualified CacheSpec
 import qualified ConversionSpec
 import qualified DatabaseSpec
 import qualified ParserSpec
@@ -24,6 +25,7 @@ main = do
       hspec $ before_ (wipeDb env) $ do
         ServerSpec.spec env
         DatabaseSpec.spec env
+        CacheSpec.spec env
         ConversionSpec.spec
         ParserSpec.spec
         ScrapeSpec.spec env

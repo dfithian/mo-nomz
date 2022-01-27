@@ -2,8 +2,8 @@ module Server where
 
 import ClassyPrelude
 
-import Control.Monad.Except (throwError)
-import Control.Monad.Logger (logError)
+import Control.Monad.Except (runExceptT, throwError)
+import Control.Monad.Logger (logError, runLoggingT)
 import Network.URI (parseURI)
 import Servant.API (NoContent(NoContent))
 import Servant.Server (ServerError, err400, err401, err403, err404, err500, errReasonPhrase)
@@ -23,7 +23,7 @@ import Conversion
   ( mkOrderedIngredient, mkQuantity, mkReadableGroceryItem, mkReadableIngredient, mkReadableQuantity
   , mkReadableRecipe, mkReadableRecipeV1, mkReadableUnit, mkUnit
   )
-import Foundation (AppM, settings, withDbConn)
+import Foundation (AppM, appLogFunc, settings, withDbConn)
 import Parser (parseRawIngredients)
 import Scrape (ScrapedRecipe(..), scrapeUrl)
 import Settings (AppSettings(..))
@@ -31,6 +31,7 @@ import Types
   ( GroceryItem(..), Ingredient(..), OrderedGroceryItem(..), OrderedIngredient(..), Recipe(..)
   , RecipeLink(..), RecipeId, UserId, ingredientToGroceryItem, mapError
   )
+import qualified Cache
 import qualified Database
 
 unwrapDb :: AppM m => m (Either SomeException a) -> m a
@@ -270,15 +271,21 @@ postParseBlob token userId ParseBlobRequest {..} = do
 
 postParseLink :: AppM m => Authorization -> UserId -> ParseLinkRequest -> m ParseLinkResponse
 postParseLink token userId ParseLinkRequest {..} = do
+  app <- ask
   validateUserToken token userId
-  uri <- maybe (throwError err400 { errReasonPhrase = "Invalid link" }) pure $ parseURI (unpack $ unRecipeLink parseLinkRequestLink)
-  ScrapedRecipe {..} <- mapError (\e -> err500 { errReasonPhrase = unpack e }) $ scrapeUrl uri
-  when (null scrapedRecipeIngredients) $ throwError err400 { errReasonPhrase = "Failed to parse ingredients" }
-  pure ParseLinkResponse
-    { parseLinkResponseName = scrapedRecipeName
-    , parseLinkResponseIngredients = mkReadableIngredient <$> zipWith OrderedIngredient scrapedRecipeIngredients [1..]
-    , parseLinkResponseSteps = scrapedRecipeSteps
-    }
+  cacheSettings <- appCache <$> asks settings
+  let mkCached = do
+        uri <- maybe (throwIO err400 { errReasonPhrase = "Invalid link" }) pure $ parseURI (unpack $ unRecipeLink parseLinkRequestLink)
+        recipe@ScrapedRecipe {..} <- either (\e -> throwIO err500 { errReasonPhrase = unpack e }) pure
+          =<< runExceptT (runLoggingT (runReaderT (scrapeUrl uri) app) (appLogFunc app))
+        when (null scrapedRecipeIngredients) $ throwIO err400 { errReasonPhrase = "Failed to parse ingredients" }
+        pure recipe
+      respond ScrapedRecipe {..} = pure ParseLinkResponse
+        { parseLinkResponseName = scrapedRecipeName
+        , parseLinkResponseIngredients = mkReadableIngredient <$> zipWith OrderedIngredient scrapedRecipeIngredients [1..]
+        , parseLinkResponseSteps = scrapedRecipeSteps
+        }
+  unwrapDb $ withDbConn $ \c -> Cache.withCachedRecipe cacheSettings c parseLinkRequestLink mkCached respond
 
 -- export data
 getExport :: AppM m => Authorization -> UserId -> m ExportResponse

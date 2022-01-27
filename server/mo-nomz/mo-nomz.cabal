@@ -52,6 +52,7 @@ common options
     , blaze-markup
     , bytestring
     , case-insensitive
+    , cereal
     , classy-prelude
     , containers
     , cryptonite
@@ -94,6 +95,7 @@ library
       API.Types
       Application
       Auth
+      Cache
       CI.Orphans
       Combinable
       Conversion
@@ -104,6 +106,7 @@ library
       Scrape
       Scraper.Internal.Site
       Scraper.Internal.Types
+      Serialize.Orphans
       Servant
       Server
       Settings
@@ -128,6 +131,7 @@ test-suite tests
   type: exitcode-stdio-1.0
   main-is: main.hs
   other-modules:
+      CacheSpec
       ConversionSpec
       DatabaseSpec
       Gen

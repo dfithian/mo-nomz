@@ -2,13 +2,17 @@ module Database where
 
 import ClassyPrelude hiding (link)
 
+import Data.Serialize (decode, encode)
+import Data.Time.Clock (addUTCTime)
 import Database.PostgreSQL.Simple
-  ( In(In), Only(Only), Connection, execute, executeMany, fromOnly, query, query_, returning
+  ( Binary(Binary), In(In), Only(Only), Connection, execute, executeMany, fromOnly, query, query_
+  , returning
   )
 import qualified Data.Map as Map
 
 import Auth (BcryptedAuthorization)
 import Conversion (combineItems)
+import Scraper.Internal.Types (ScrapedRecipe)
 import Types
   ( GroceryItem(..), Ingredient(..), OrderedGroceryItem(..), OrderedIngredient(..), Recipe(..)
   , GroceryItemId, IngredientId, RecipeId, RecipeLink, UserId, ingredientToGroceryItem
@@ -265,3 +269,16 @@ exportConfirm :: Connection -> UserId -> IO ()
 exportConfirm conn userId = do
   now <- getCurrentTime
   void $ execute conn "insert into nomz.export (user_id, confirmed_at) values (?, ?)" (userId, now)
+
+selectCachedRecipe :: Connection -> RecipeLink -> Int -> IO (Maybe ScrapedRecipe)
+selectCachedRecipe conn link validityWindow = do
+  validTime <- addUTCTime (negate (fromIntegral validityWindow)) <$> getCurrentTime
+  query conn "select data from nomz.recipe_cache where link = ? and updated >= ?" (link, validTime) >>= \case
+    [Only (Binary data_)] -> pure . either (const Nothing) Just . decode $ data_
+    _ -> pure Nothing
+
+repsertCachedRecipe :: Connection -> RecipeLink -> ScrapedRecipe -> IO ()
+repsertCachedRecipe conn link recipe = do
+  now <- getCurrentTime
+  void $ execute conn "delete from nomz.recipe_cache where link = ?" (Only link)
+  void $ execute conn "insert into nomz.recipe_cache (link, data, updated) values (?, ?, ?)" (link, Binary (encode recipe), now)
