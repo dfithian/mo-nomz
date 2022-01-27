@@ -1,6 +1,7 @@
 module ParsedIngredients where
 
 import ClassyPrelude
+
 import qualified Data.CaseInsensitive as CI
 
 import Types (Ingredient(..), IngredientName(..), Quantity(..), Step(..), Unit(..))

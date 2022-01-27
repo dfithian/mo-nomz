@@ -12,7 +12,7 @@ import qualified Data.Map as Map
 
 import Auth (BcryptedAuthorization)
 import Conversion (combineItems)
-import Scraper.Internal.Types (ScrapedRecipe)
+import Scraper.Types (ScrapeInfo(..), ScrapedInfo(..), ScrapeName, ScrapeVersion, ScrapedRecipe)
 import Types
   ( GroceryItem(..), Ingredient(..), OrderedGroceryItem(..), OrderedIngredient(..), Recipe(..)
   , GroceryItemId, IngredientId, RecipeId, RecipeLink, UserId, ingredientToGroceryItem
@@ -277,8 +277,32 @@ selectCachedRecipe conn link validityWindow = do
     [Only (Binary data_)] -> pure . either (const Nothing) Just . decode $ data_
     _ -> pure Nothing
 
-repsertCachedRecipe :: Connection -> RecipeLink -> ScrapedRecipe -> IO ()
-repsertCachedRecipe conn link recipe = do
+repsertCachedRecipe :: Connection -> RecipeLink -> ScrapedRecipe -> ScrapedInfo -> IO ()
+repsertCachedRecipe conn link recipe info = do
   now <- getCurrentTime
   void $ execute conn "delete from nomz.recipe_cache where link = ?" (Only link)
-  void $ execute conn "insert into nomz.recipe_cache (link, data, updated) values (?, ?, ?)" (link, Binary (encode recipe), now)
+  case info of
+    ScrapedInfoIngredient ingredient ->
+      void $ execute conn
+        "insert into nomz.recipe_cache (link, data, updated, ingredient_scrape_name, ingredient_scrape_version) values (?, ?, ?, ?, ?)"
+        (link, Binary (encode recipe), now, scrapeInfoName ingredient, scrapeInfoVersion ingredient)
+    ScrapedInfoIngredientStep ingredient step ->
+      void $ execute conn
+        "insert into nomz.recipe_cache (link, data, updated, ingredient_scrape_name, ingredient_scrape_version, step_scrape_name, step_scrape_version) values (?, ?, ?, ?, ?, ?, ?)"
+        (link, Binary (encode recipe), now, scrapeInfoName ingredient, scrapeInfoVersion ingredient, scrapeInfoName step, scrapeInfoVersion step)
+
+refreshCachedRecipes :: Connection -> Int -> Int -> IO ()
+refreshCachedRecipes conn validityWindow maxSize = do
+  validTime <- addUTCTime (negate (fromIntegral validityWindow)) <$> getCurrentTime
+  void $ execute conn "delete from nomz.recipe_cache where updated < ?" (Only validTime)
+  void $ execute conn "delete from nomz.recipe_cache where link in (select link from nomz.recipe_cache order by updated desc offset ?)" (Only maxSize)
+
+invalidateCachedRecipes :: Connection -> (ScrapedInfo -> Bool) -> IO ()
+invalidateCachedRecipes conn isInvalid = do
+  let getInvalid :: (RecipeLink, Maybe ScrapeName, Maybe ScrapeVersion, Maybe ScrapeName, Maybe ScrapeVersion) -> Maybe RecipeLink
+      getInvalid = \case
+        (link, Just ingredientName, Just ingredientVersion, Nothing, Nothing) -> if isInvalid (ScrapedInfoIngredient (ScrapeInfo ingredientName ingredientVersion)) then Just link else Nothing
+        (link, Just ingredientName, Just ingredientVersion, Just stepName, Just stepVersion) -> if isInvalid (ScrapedInfoIngredientStep (ScrapeInfo ingredientName ingredientVersion) (ScrapeInfo stepName stepVersion)) then Just link else Nothing
+        (link, _, _, _, _) -> Just link
+  links <- mapMaybe getInvalid <$> query_ conn "select link, ingredient_scrape_name, ingredient_scrape_version, step_scrape_name, step_scrape_version from nomz.recipe_cache"
+  void $ execute conn "delete from nomz.recipe_cache where link in ?" (Only (In links))

@@ -1,6 +1,7 @@
 module Gen where
 
 import ClassyPrelude
+
 import Data.CaseInsensitive (CI)
 import Test.QuickCheck (Gen, arbitrary, elements, oneof)
 import qualified Data.CaseInsensitive as CI
@@ -60,6 +61,10 @@ arbitraryIngredient = Ingredient
   <$> arbitraryIngredientName
   <*> arbitraryQuantity
   <*> arbitraryUnit
+
+arbitraryStep :: Gen Step
+arbitraryStep = Step
+  <$> arbitraryAlphaNumStr
 
 arbitraryRecipe :: Gen Recipe
 arbitraryRecipe = Recipe

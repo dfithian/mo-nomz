@@ -2,7 +2,6 @@ module Types where
 
 import ClassyPrelude
 
-import Control.Monad.Except (ExceptT, MonadError, runExceptT, throwError)
 import Data.Aeson (FromJSON, FromJSONKey, ToJSON, ToJSONKey)
 import Data.Aeson.TH (deriveJSON)
 import Data.CaseInsensitive (CI)
@@ -147,9 +146,6 @@ uncurry3 f (x, y, z) = f x y z
 
 uncurry4 :: (a -> b -> c -> d -> e) -> (a, b, c, d) -> e
 uncurry4 f (x, y, z, w) = f x y z w
-
-mapError :: (MonadError e2 m) => (e1 -> e2) -> ExceptT e1 m a -> m a
-mapError f = either (throwError . f) pure <=< runExceptT
 
 pinch, teaspoon, tablespoon, cup, ounce, box, pound, splash, sprinkle, whole
   , milliliter, liter, milligram, gram :: Unit

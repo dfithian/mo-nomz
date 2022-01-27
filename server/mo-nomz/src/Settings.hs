@@ -10,7 +10,9 @@ data DatabaseSettings = DatabaseSettings
   }
 
 data CacheSettings = CacheSettings
-  { cacheSettingsValidSeconds :: Int
+  { cacheSettingsValidSeconds   :: Int
+  , cacheSettingsMaxSize        :: Int
+  , cacheSettingsRefreshSeconds :: Int
   }
 
 data AppSettings = AppSettings
@@ -38,10 +40,14 @@ instance FromJSON CacheSettings where
   parseJSON = withObject "CacheSettings" $ \obj ->
     CacheSettings
       <$> obj .: "valid-seconds"
+      <*> obj .: "max-size"
+      <*> obj .: "refresh-seconds"
 
 instance ToJSON CacheSettings where
   toJSON CacheSettings {..} = object
     [ "valid-seconds" .= cacheSettingsValidSeconds
+    , "max-size" .= cacheSettingsMaxSize
+    , "refresh-seconds" .= cacheSettingsRefreshSeconds
     ]
 
 instance FromJSON AppSettings where
@@ -76,6 +82,8 @@ staticSettings = AppSettings
   , appBcryptCost = 4
   , appCache = CacheSettings
     { cacheSettingsValidSeconds = 60 * 60 * 24 * 7
+    , cacheSettingsMaxSize = 10000
+    , cacheSettingsRefreshSeconds = 60 * 60 * 24
     }
   }
 

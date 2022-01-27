@@ -2,6 +2,7 @@
 module Serialize.Orphans where
 
 import ClassyPrelude
+
 import Data.CaseInsensitive (CI)
 import Data.Serialize (Serialize, get, put)
 import qualified Data.CaseInsensitive as CI

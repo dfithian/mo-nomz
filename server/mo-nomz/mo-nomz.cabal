@@ -75,6 +75,7 @@ common options
     , servant-server
     , text
     , time
+    , unbounded-delays
     , unordered-containers
     , wai
     , wai-app-static
@@ -95,7 +96,6 @@ library
       API.Types
       Application
       Auth
-      Cache
       CI.Orphans
       Combinable
       Conversion
@@ -104,8 +104,8 @@ library
       Json
       Parser
       Scrape
-      Scraper.Internal.Site
-      Scraper.Internal.Types
+      Scraper.Site
+      Scraper.Types
       Serialize.Orphans
       Servant
       Server
@@ -131,7 +131,6 @@ test-suite tests
   type: exitcode-stdio-1.0
   main-is: main.hs
   other-modules:
-      CacheSpec
       ConversionSpec
       DatabaseSpec
       Gen

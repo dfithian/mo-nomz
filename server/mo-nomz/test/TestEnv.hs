@@ -2,6 +2,7 @@ module TestEnv where
 
 import ClassyPrelude
 
+import Control.Concurrent (myThreadId)
 import Control.Monad (fail)
 import Control.Monad.Except (runExceptT)
 import Control.Monad.Logger (runLoggingT)
@@ -34,6 +35,7 @@ runServer Env {..} ma = do
   app <- App staticSettings envConnectionPool mempty envManager
     <$> makeAppMetrics
     <*> getCurrentTime
+    <*> myThreadId
   either (fail . show) pure =<< runLoggingT (runReaderT (runExceptT ma) app) mempty
 
 wipeDb :: Env -> IO ()

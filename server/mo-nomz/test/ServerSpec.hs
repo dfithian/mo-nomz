@@ -1,8 +1,12 @@
 module ServerSpec where
 
-import ClassyPrelude
+import ClassyPrelude hiding (link)
 
-import Test.Hspec (Spec, before, describe, it, shouldMatchList)
+import Control.Monad.Reader (local)
+import Data.Serialize (encode)
+import Data.Time.Clock (addUTCTime)
+import Database.PostgreSQL.Simple (Binary(Binary), execute)
+import Test.Hspec (Spec, before, describe, it, shouldBe, shouldMatchList)
 import Test.QuickCheck (generate)
 import qualified Data.Map as Map
 
@@ -11,9 +15,16 @@ import API.Types
   , MergeGroceryItemRequest(..), UpdateRecipeRequest(..)
   )
 import Conversion (mkReadableGroceryItem, mkReadableQuantity, mkReadableUnit)
+import Foundation (App(..), cacheSettings)
 import Gen (arbitraryIngredient, arbitraryRecipe)
+import ParsedIngredients (allRecipesIngredients, allRecipesSteps)
+import Scraper.Types (ScrapedRecipe(..))
+import Settings (AppSettings(..), CacheSettings(..))
 import TestEnv (Env(..), runEnv, runServer)
-import Types (Ingredient(..), OrderedGroceryItem(..), Quantity(..), ingredientToGroceryItem)
+import Types
+  ( Ingredient(..), IngredientName(..), OrderedGroceryItem(..), Quantity(..), RecipeLink(..)
+  , RecipeName(..), Step(..), Unit(..), ingredientToGroceryItem
+  )
 import qualified Database
 
 import Server
@@ -202,3 +213,39 @@ spec env@Env {..} = describe "Server" $ do
             , (5, ingredient5)
             ]
       Map.elems items `shouldMatchList` expected
+
+cacheSpec :: Env -> Spec
+cacheSpec env = describe "Cache" $ do
+  let emptyCache = CacheSettings 0 0 0
+      link = RecipeLink "https://www.allrecipes.com/recipe/26317/chicken-pot-pie-ix/"
+      allrecipes = ScrapedRecipe
+        { scrapedRecipeName = RecipeName "Chicken Pot Pie IX Recipe | Allrecipes"
+        , scrapedRecipeIngredients = allRecipesIngredients
+        , scrapedRecipeSteps = allRecipesSteps
+        }
+      fake = ScrapedRecipe
+        { scrapedRecipeName = RecipeName "fake"
+        , scrapedRecipeIngredients = [Ingredient (IngredientName "fake") (Quantity 1.0) (Unit "cup")]
+        , scrapedRecipeSteps = [Step "fake"]
+        }
+
+  it "fetches from the cache" $ do
+    runEnv env $ \c -> do
+      now <- getCurrentTime
+      void $ execute c "insert into nomz.recipe_cache (link, data, updated) values (?, ?, ?)" (link, Binary (encode fake), now)
+    actual <- runServer env $ scrapeUrlCached link
+    actual `shouldBe` fake
+
+  it "creates if it doesn't exist" $ do
+    CacheSettings {..} <- runServer env $ do
+      void $ scrapeUrlCached link
+      asks cacheSettings
+    actual <- runEnv env $ \c -> Database.selectCachedRecipe c link cacheSettingsValidSeconds
+    actual `shouldBe` Just allrecipes
+
+  it "creates if it is expired" $ do
+    CacheSettings {..} <- runServer env $ asks cacheSettings
+    expired <- addUTCTime (negate (fromIntegral (cacheSettingsValidSeconds + 1))) <$> getCurrentTime
+    runEnv env $ \c -> void $ execute c "insert into nomz.recipe_cache (link, data, updated) values (?, ?, ?)" (link, Binary (encode fake), expired)
+    actual <- runServer env $ local (\app -> app { appSettings = (appSettings app) { appCache = emptyCache }}) $ scrapeUrlCached link
+    actual `shouldBe` allrecipes

@@ -2,15 +2,17 @@ module Application where
 
 import ClassyPrelude
 
+import Control.Concurrent (forkIO)
+import Control.Concurrent.Thread.Delay (delay)
 import Control.Monad (fail)
-import Control.Monad.Logger (defaultOutput, runLoggingT)
+import Control.Monad.Logger (defaultOutput, logError, runLoggingT)
 import Data.Default (def)
-import Data.Pool (createPool)
+import Data.Pool (Pool, createPool)
 import Data.Time.Clock (diffUTCTime)
 import Data.Time.Format (iso8601DateFormat)
 import Data.Version (showVersion)
 import Data.Yaml.Config (loadYamlSettingsArgs, useEnv)
-import Database.PostgreSQL.Simple (close, connectPostgreSQL)
+import Database.PostgreSQL.Simple (Connection, close, connectPostgreSQL)
 import Database.PostgreSQL.Simple.Migration
   ( MigrationCommand(..), MigrationResult(..), runMigrations
   )
@@ -30,9 +32,10 @@ import qualified Text.Blaze.Html5 as Html
 import qualified Text.Blaze.Html5.Attributes as HtmlAttr
 
 import Foundation
-  ( App(..), AppMetrics(..), AppM, NomzServer, createManager, runNomzServer, withDbConn
+  ( App(..), AppMetrics(..), AppM, LogFunc, NomzServer, createManager, runNomzServer, withDbConn
   )
 import Paths_mo_nomz (version)
+import Scrape (isInvalidScraper)
 import Servant (NomzApi, nomzApi, wholeApi)
 import Server
   ( deleteGroceryItem, deleteRecipes, getExport, getGroceryItems, getHealth, getRecentUsers
@@ -40,7 +43,8 @@ import Server
   , postGroceryImportBlob, postMergeGroceryItem, postParseBlob, postParseLink, postRecipeImportLink
   , postUpdateGroceryItem, postUpdateRecipe, postUpdateRecipeIngredients
   )
-import Settings (AppSettings(..), DatabaseSettings(..), staticSettingsValue)
+import Settings (AppSettings(..), CacheSettings(..), DatabaseSettings(..), staticSettingsValue)
+import qualified Database
 
 getMetrics :: AppM m => m Markup
 getMetrics = do
@@ -88,12 +92,15 @@ nomzServer =
     :<|> postParseLink
     :<|> getExport
 
-migrateDatabase :: App -> IO ()
-migrateDatabase app = do
-  result <- flip runLoggingT (appLogFunc app) $ flip runReaderT app $ withDbConn $ \c -> runMigrations True c $
-    [ MigrationInitialization
-    , MigrationDirectory (appMigrationDir (appSettings app))
-    ]
+migrateDatabase :: Pool Connection -> LogFunc -> AppSettings -> IO ()
+migrateDatabase pool logFunc settings = do
+  result <- flip runLoggingT logFunc $ flip runReaderT pool $ withDbConn $ \c -> do
+    inner <- runMigrations True c $
+      [ MigrationInitialization
+      , MigrationDirectory (appMigrationDir settings)
+      ]
+    Database.invalidateCachedRecipes c isInvalidScraper
+    pure inner
   case result of
     Left err -> fail $ "Failed to run migrations due to database exception " <> show err
     Right (MigrationError str) -> fail $ "Failed to run migrations due to " <> str
@@ -109,11 +116,19 @@ makeAppMetrics = do
 makeFoundation :: AppSettings -> IO App
 makeFoundation appSettings@AppSettings {..} = do
   let DatabaseSettings {..} = appDatabase
+      CacheSettings {..} = appCache
       appLogFunc = defaultOutput stdout
   appConnectionPool <- createPool (connectPostgreSQL $ encodeUtf8 databaseSettingsConnStr) close databaseSettingsPoolsize 15 1
+  migrateDatabase appConnectionPool appLogFunc appSettings
   appManager <- createManager
   appMetrics <- makeAppMetrics
   appStarted <- getCurrentTime
+  appCacheExpire <- forkIO $ flip runLoggingT appLogFunc $ flip runReaderT appConnectionPool $ forever $ do
+    liftIO $ delay (1000000 * fromIntegral cacheSettingsRefreshSeconds)
+    result <- withDbConn $ \c -> Database.refreshCachedRecipes c cacheSettingsValidSeconds cacheSettingsMaxSize
+    case result of
+      Left se -> $logError $ "Failed to refresh cashed recipes due to " <> tshow se
+      Right () -> pure ()
   pure App {..}
 
 warpSettings :: App -> Settings
@@ -138,7 +153,6 @@ appMain :: IO ()
 appMain = do
   settings <- loadYamlSettingsArgs [staticSettingsValue] useEnv
   app <- makeFoundation settings
-  migrateDatabase app
   let staticFileSettings = (defaultFileServerSettings $ appStaticDir $ appSettings app)
         { ssListing = Nothing
         }

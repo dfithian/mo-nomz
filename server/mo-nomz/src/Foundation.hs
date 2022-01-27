@@ -2,6 +2,7 @@ module Foundation where
 
 import ClassyPrelude hiding (Handler)
 
+import Control.Concurrent (ThreadId)
 import Control.Monad.Except (ExceptT, MonadError, mapExceptT)
 import Control.Monad.Logger
   ( Loc, LogLevel, LogSource, LogStr, LoggingT, MonadLoggerIO, askLoggerIO, logError, runLoggingT
@@ -16,7 +17,7 @@ import System.Metrics (Store)
 import System.Metrics.Counter (Counter)
 import System.Metrics.Distribution (Distribution)
 
-import Settings (AppSettings)
+import Settings (AppSettings, CacheSettings, appCache)
 
 type AppM m = (MonadError ServerError m, MonadIO m, MonadLoggerIO m, MonadReader App m)
 
@@ -31,6 +32,7 @@ data App = App
   , appManager        :: Manager -- ^ The manager for our scrape client.
   , appMetrics        :: AppMetrics -- ^ The metrics for the app.
   , appStarted        :: UTCTime -- ^ The time the app was started.
+  , appCacheExpire    :: ThreadId
   }
 
 data AppMetrics = AppMetrics
@@ -65,6 +67,18 @@ instance HasSettings App where
 
 instance HasSettings AppSettings where
   settings = id
+
+class HasCacheSettings a where
+  cacheSettings :: a -> CacheSettings
+
+instance HasCacheSettings App where
+  cacheSettings = cacheSettings . settings
+
+instance HasCacheSettings AppSettings where
+  cacheSettings = appCache
+
+instance HasCacheSettings CacheSettings where
+  cacheSettings = id
 
 withDbConn :: (HasDatabase r, MonadIO m, MonadLoggerIO m, MonadReader r m) => (Connection -> IO a) -> m (Either SomeException a)
 withDbConn f = do
