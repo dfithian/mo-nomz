@@ -58,36 +58,39 @@ extension UIViewController {
         let queue = DispatchQueue(label: "mo-nomz.pull-steps")
         let group = DispatchGroup()
         var numPulled = 0
-        for id in ids {
-            let recipe = getRecipe(id: id)!
-            if let link = recipe.recipe.link, recipe.recipe.steps.isEmpty {
-                group.enter()
-                var req = URLRequest(url: URL(string: Configuration.baseURL + "api/v2/user/" + String(state.userId) + "/link")!)
-                req.addValue(state.apiToken, forHTTPHeaderField: "X-Mo-Nomz-API-Token")
-                req.addValue("application/json", forHTTPHeaderField: "Content-Type")
-                req.httpMethod = "POST"
-                req.httpBody = try? JSONEncoder().encode(ParseLinkRequest(link: link))
-                let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
-                    let onComplete = {
-                        numPulled += 1
-                        DispatchQueue.main.async {
-                            progress.setProgress(Float(numPulled) / Float(ids.count), animated: true)
-                        }
-                        group.leave()
+        let links = ids.compactMap({ (id) -> (UUID, String)? in
+            if let recipe = getRecipe(id: id), let link = recipe.recipe.link, recipe.recipe.steps.isEmpty {
+                return (recipe.id, link)
+            }
+            return nil
+        })
+        for (id, link) in links {
+            group.enter()
+            var req = URLRequest(url: URL(string: Configuration.baseURL + "api/v2/user/" + String(state.userId) + "/link")!)
+            req.addValue(state.apiToken, forHTTPHeaderField: "X-Mo-Nomz-API-Token")
+            req.addValue("application/json", forHTTPHeaderField: "Content-Type")
+            req.httpMethod = "POST"
+            req.httpBody = try? JSONEncoder().encode(ParseLinkRequest(link: link))
+            let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
+                let onComplete = {
+                    numPulled += 1
+                    DispatchQueue.main.async {
+                        progress.setProgress(Float(numPulled) / Float(links.count), animated: true)
                     }
-                    let onSuccess = { (data: Data) -> Void in
-                        do {
-                            let output = try JSONDecoder().decode(ParseLinkResponse.self, from: data)
-                            let _ = self.addRecipeSteps(recipeId: recipe.id, rawSteps: output.steps)
-                        } catch { }
-                        onComplete()
-                    }
-                    self.withCompletion(data: data, resp: resp, error: error, completion: onSuccess, onUnsuccessfulStatus: { _ in onComplete() }, onError: { _ in onComplete() })
-                })
-                let delay = Double.random(in: 0...(Double(ids.count) / 2))
-                queue.asyncAfter(deadline: .now() + delay) {
-                    task.resume()
+                    group.leave()
                 }
+                let onSuccess = { (data: Data) -> Void in
+                    do {
+                        let output = try JSONDecoder().decode(ParseLinkResponse.self, from: data)
+                        let _ = self.addRecipeSteps(recipeId: id, rawSteps: output.steps)
+                    } catch { }
+                    onComplete()
+                }
+                self.withCompletion(data: data, resp: resp, error: error, completion: onSuccess, onUnsuccessfulStatus: { _ in onComplete() }, onError: { _ in onComplete() })
+            })
+            let delay = Double.random(in: 0...(Double(links.count) / 2))
+            queue.asyncAfter(deadline: .now() + delay) {
+                task.resume()
             }
         }
         group.notify(queue: .main) {
@@ -95,6 +98,23 @@ extension UIViewController {
             User.setDidPullSteps()
             completion?()
         }
+    }
+    
+    func cleanSteps(completion: (() -> Void)?) {
+        let progress = startProgress()
+        let ids = selectRecipeIds()
+        for id in ids {
+            if let recipe = getRecipe(id: id) {
+                var steps = Set<String>()
+                for (stepId, step) in recipe.recipe.steps.sorted(by: { $0.value.order < $1.value.order }) {
+                    if !steps.insert(step.step).inserted {
+                        deleteRecipeStep(id: stepId)
+                    }
+                }
+            }
+        }
+        stopLoading(progress)
+        completion?()
     }
     
     func addBlob(content: String, completion: (() -> Void)?) {
