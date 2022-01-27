@@ -16,11 +16,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let mainSb = UIStoryboard(name: "Main", bundle: nil)
         let mainVc = mainSb.instantiateInitialViewController() as! UITabBarController
         mainVc.selectedIndex = User.preference(.mealsDefaultTab) ? 1 : 0
+        window?.rootViewController = launchVc
 
         if User.loadState() == nil {
             User.setDidExport()
             User.setDidPullSteps()
-            window?.rootViewController = launchVc
             let completion = { (resp: CreateUserResponse) -> Void in
                 DispatchQueue.main.async {
                     User.setState(State(userId: resp.userId, apiToken: resp.apiToken))

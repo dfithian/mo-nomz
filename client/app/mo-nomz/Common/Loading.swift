@@ -27,4 +27,24 @@ extension UIViewController {
             progress.removeFromSuperview()
         }
     }
+    
+    func startProgress() -> UIProgressView {
+        let progress = UIProgressView(progressViewStyle: .bar)
+        progress.translatesAutoresizingMaskIntoConstraints = true
+        DispatchQueue.main.async {
+            self.view.isUserInteractionEnabled = false
+            progress.trackTintColor = UIColor.lightGray
+            progress.tintColor = UIColor.systemBlue
+            progress.center = CGPoint(x: self.view.center.x, y: 2 * self.view.frame.size.height / 3)
+            self.view.addSubview(progress)
+        }
+        return progress
+    }
+    
+    func stopLoading(_ progress: UIProgressView) {
+        DispatchQueue.main.async {
+            self.view.isUserInteractionEnabled = true
+            progress.removeFromSuperview()
+        }
+    }
 }

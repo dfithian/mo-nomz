@@ -192,6 +192,17 @@ extension UIViewController {
         }
     }
     
+    func selectRecipeIds() -> [UUID] {
+        do {
+            let ctx = DataAccess.shared.managedObjectContext
+            let req = RecipeData.req()
+            return try ctx.fetch(req).compactMap({ $0.id })
+        } catch let error as NSError {
+            defaultOnError(error)
+        }
+        return []
+    }
+    
     func selectRecipes() -> [ReadableRecipeWithId] {
         do {
             let ctx = DataAccess.shared.managedObjectContext
