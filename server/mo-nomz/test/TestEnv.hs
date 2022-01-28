@@ -9,7 +9,6 @@ import Data.Pool (Pool, createPool)
 import Database.PostgreSQL.Simple (Connection, close, connectPostgreSQL, execute_)
 import Network.HTTP.Client (Manager)
 
-import Application (makeAppMetrics)
 import Auth (Authorization, generateToken)
 import Database (insertToken)
 import Foundation (App(..), HasDatabase, NomzServer, connectionPool, createManager, withDbConn)
@@ -32,8 +31,7 @@ runEnv env ma = either (fail . show) pure =<< runLoggingT (runReaderT (withDbCon
 runServer :: Env -> NomzServer a -> IO a
 runServer Env {..} ma = do
   app <- App staticSettings envConnectionPool mempty envManager
-    <$> makeAppMetrics
-    <*> getCurrentTime
+    <$> getCurrentTime
   either (fail . show) pure =<< runLoggingT (runReaderT (runExceptT ma) app) mempty
 
 wipeDb :: Env -> IO ()

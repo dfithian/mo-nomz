@@ -12,9 +12,6 @@ import Network.HTTP.Client (Manager, managerModifyRequest, requestHeaders)
 import Network.HTTP.Client.TLS (newTlsManagerWith, tlsManagerSettings)
 import Network.HTTP.Types (hUserAgent)
 import Servant.Server (Handler(Handler), ServerError)
-import System.Metrics (Store)
-import System.Metrics.Counter (Counter)
-import System.Metrics.Distribution (Distribution)
 
 import Settings (AppSettings)
 
@@ -29,14 +26,7 @@ data App = App
   , appConnectionPool :: Pool Connection -- ^ The database connection pool.
   , appLogFunc        :: LogFunc -- ^ The logging function.
   , appManager        :: Manager -- ^ The manager for our scrape client.
-  , appMetrics        :: AppMetrics -- ^ The metrics for the app.
   , appStarted        :: UTCTime -- ^ The time the app was started.
-  }
-
-data AppMetrics = AppMetrics
-  { appMetricsStore          :: Store
-  , appMetricsTotalRequests  :: Counter
-  , appMetricsResponseTiming :: Distribution
   }
 
 class HasDatabase a where
