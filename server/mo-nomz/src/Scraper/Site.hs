@@ -247,7 +247,7 @@ debugS :: StepScraper
 debugS = simpleStepScraper "debug" (testScrape "div") "div"
 
 allrecipesI :: IngredientScraper
-allrecipesI = simpleIngredientScraper "allrecipes"
+allrecipesI = setIngredientVersion 2 $ simpleIngredientScraper "allrecipes"
   (testScrape ("meta" @: ["content" @= "Allrecipes"]))
   ("span" @: [Scalpel.hasClass "ingredients-item-name"])
 
