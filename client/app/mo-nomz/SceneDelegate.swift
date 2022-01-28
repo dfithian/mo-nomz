@@ -43,6 +43,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 }
             }
             window?.rootViewController?.pullSteps(completion: completion)
+        } else if !User.stepsCleaned() {
+            let completion = {
+                DispatchQueue.main.async {
+                    self.window?.rootViewController = mainVc
+                }
+            }
+            window?.rootViewController?.cleanSteps(completion: completion)
         } else {
             window?.rootViewController = mainVc
         }
