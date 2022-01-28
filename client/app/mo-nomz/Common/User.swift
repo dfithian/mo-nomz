@@ -56,10 +56,16 @@ class User {
         UserDefaults.shared.set(true, forKey: "exported")
     }
     static func stepsPulled() -> Bool {
-        return UserDefaults.shared.bool(forKey: "stepsPulled")
+        return UserDefaults.shared.bool(forKey: "pulledSteps")
     }
     static func setDidPullSteps() {
-        UserDefaults.shared.set(true, forKey: "stepsPulled")
+        UserDefaults.shared.set(true, forKey: "pulledSteps")
+    }
+    static func stepsCleaned() -> Bool {
+        return UserDefaults.shared.bool(forKey: "cleanedSteps")
+    }
+    static func setDidCleanSteps() {
+        UserDefaults.shared.set(true, forKey: "cleanedSteps")
     }
     static func dismissedReorderMergeTip() -> Bool {
         return UserDefaults.shared.bool(forKey: "dismissedReorderMergeTip") || preference(.noTips)

@@ -16,9 +16,9 @@ extension UIViewController {
         req.httpMethod = "POST"
         let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
             self.stopLoading(spinner)
-            self.defaultWithCompletion(data: data, resp: resp, error: error, completion: {
+            self.defaultWithCompletion(data: data, resp: resp, error: error, completion: { (d) -> Void in
                 do {
-                    let output = try JSONDecoder().decode(CreateUserResponse.self, from: data!)
+                    let output = try JSONDecoder().decode(CreateUserResponse.self, from: d)
                     completion?(output)
                 } catch {
                     self.defaultOnError(error)
@@ -37,9 +37,9 @@ extension UIViewController {
         req.httpMethod = "GET"
         let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
             self.stopLoading(spinner)
-            self.defaultWithCompletion(data: data, resp: resp, error: error, completion: {
+            self.defaultWithCompletion(data: data, resp: resp, error: error, completion: { (d) -> Void in
                 do {
-                    let output = try JSONDecoder().decode(ExportResponse.self, from: data!)
+                    let output = try JSONDecoder().decode(ExportResponse.self, from: d)
                     self.overwrite(export: output)
                     User.setDidExport()
                     completion?()
@@ -52,36 +52,69 @@ extension UIViewController {
     }
     
     func pullSteps(completion: (() -> Void)?) {
-        let spinner = startLoading()
+        let progress = startProgress()
         guard let state = User.loadState() else { return }
-        let recipes = selectRecipes()
+        let ids = selectRecipeIds()
+        let queue = DispatchQueue(label: "mo-nomz.pull-steps")
         let group = DispatchGroup()
-        for recipe in recipes {
-            if let link = recipe.recipe.link, recipe.recipe.steps.isEmpty {
-                group.enter()
-                var req = URLRequest(url: URL(string: Configuration.baseURL + "api/v2/user/" + String(state.userId) + "/link")!)
-                req.addValue(state.apiToken, forHTTPHeaderField: "X-Mo-Nomz-API-Token")
-                req.addValue("application/json", forHTTPHeaderField: "Content-Type")
-                req.httpMethod = "POST"
-                req.httpBody = try? JSONEncoder().encode(ParseLinkRequest(link: link))
-                let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
-                    let onSuccess = {
-                        do {
-                            let output = try JSONDecoder().decode(ParseLinkResponse.self, from: data!)
-                            let _ = self.addRecipeSteps(recipeId: recipe.id, rawSteps: output.steps)
-                        } catch { }
-                        group.leave()
+        var numPulled = 0
+        let links = ids.compactMap({ (id) -> (UUID, String)? in
+            if let recipe = getRecipe(id: id), let link = recipe.recipe.link, recipe.recipe.steps.isEmpty {
+                return (recipe.id, link)
+            }
+            return nil
+        })
+        for (id, link) in links {
+            group.enter()
+            var req = URLRequest(url: URL(string: Configuration.baseURL + "api/v2/user/" + String(state.userId) + "/link")!)
+            req.addValue(state.apiToken, forHTTPHeaderField: "X-Mo-Nomz-API-Token")
+            req.addValue("application/json", forHTTPHeaderField: "Content-Type")
+            req.httpMethod = "POST"
+            req.httpBody = try? JSONEncoder().encode(ParseLinkRequest(link: link))
+            let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
+                let onComplete = {
+                    numPulled += 1
+                    DispatchQueue.main.async {
+                        progress.setProgress(Float(numPulled) / Float(links.count), animated: true)
                     }
-                    self.withCompletion(data: data, resp: resp, error: error, completion: onSuccess, onUnsuccessfulStatus: { _ in group.leave() }, onError: { _ in group.leave() })
-                })
+                    group.leave()
+                }
+                let onSuccess = { (data: Data) -> Void in
+                    do {
+                        let output = try JSONDecoder().decode(ParseLinkResponse.self, from: data)
+                        let _ = self.addRecipeSteps(recipeId: id, rawSteps: output.steps)
+                    } catch { }
+                    onComplete()
+                }
+                self.withCompletion(data: data, resp: resp, error: error, completion: onSuccess, onUnsuccessfulStatus: { _ in onComplete() }, onError: { _ in onComplete() })
+            })
+            let delay = Double.random(in: 0...(Double(links.count) / 2))
+            queue.asyncAfter(deadline: .now() + delay) {
                 task.resume()
             }
         }
         group.notify(queue: .main) {
-            self.stopLoading(spinner)
+            self.stopLoading(progress)
             User.setDidPullSteps()
             completion?()
         }
+    }
+    
+    func cleanSteps(completion: (() -> Void)?) {
+        let progress = startProgress()
+        let ids = selectRecipeIds()
+        for id in ids {
+            if let recipe = getRecipe(id: id) {
+                var steps = Set<String>()
+                for (stepId, step) in recipe.recipe.steps.sorted(by: { $0.value.order < $1.value.order }) {
+                    if !steps.insert(step.step).inserted {
+                        deleteRecipeStep(id: stepId)
+                    }
+                }
+            }
+        }
+        stopLoading(progress)
+        completion?()
     }
     
     func addBlob(content: String, completion: (() -> Void)?) {
@@ -96,9 +129,9 @@ extension UIViewController {
             self.stopLoading(spinner)
             let onUnsuccessfulStatus = { (resp: URLResponse?) -> Void in self.alertUnsuccessful("Couldn't parse items. Please use one line per item, leading with the quantity.")
             }
-            let onSuccess = {
+            let onSuccess = { (d: Data) -> Void in
                 do {
-                    let output = try JSONDecoder().decode(ParseBlobResponse.self, from: data!)
+                    let output = try JSONDecoder().decode(ParseBlobResponse.self, from: d)
                     self.insertGroceries(ingredients: output.ingredients)
                     completion?()
                 } catch {
@@ -122,9 +155,9 @@ extension UIViewController {
             self.stopLoading(spinner)
             let onUnsuccessfulStatus = { (resp: URLResponse?) -> Void in self.alertUnsuccessful("Couldn't parse items. Please use one line per item, leading with the quantity.")
             }
-            let onSuccess = {
+            let onSuccess = { (d: Data) -> Void in
                 do {
-                    let output = try JSONDecoder().decode(ParseBlobResponse.self, from: data!)
+                    let output = try JSONDecoder().decode(ParseBlobResponse.self, from: d)
                     var ingredients = [UUID:ReadableIngredient]()
                     for ingredient in output.ingredients {
                         ingredients[UUID()] = ingredient
@@ -159,9 +192,9 @@ extension UIViewController {
             self.stopLoading(spinner)
             let onUnsuccessfulStatus = { (resp: URLResponse?) -> Void in self.alertUnsuccessful("Unable to import recipe. Please enter ingredients manually.")
             }
-            let onSuccess = {
+            let onSuccess = { (d: Data) -> Void in
                 do {
-                    let output = try JSONDecoder().decode(ParseLinkResponse.self, from: data!)
+                    let output = try JSONDecoder().decode(ParseLinkResponse.self, from: d)
                     var ingredients = [UUID:ReadableIngredient]()
                     for ingredient in output.ingredients {
                         ingredients[UUID()] = ingredient
