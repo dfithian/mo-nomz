@@ -59,7 +59,7 @@ getMetrics = do
   let uptimeHtml = Html.div (Html.span (Html.text $ "Started at " <> pack (formatTime defaultTimeLocale (iso8601DateFormat $ Just "%H:%M:%S") appStarted <> " UTC")))
       refreshHtml = Html.div (Html.span (Html.text $ "Last refreshed at " <> pack (formatTime defaultTimeLocale (iso8601DateFormat $ Just "%H:%M:%S") now <> " UTC")))
       versionHtml = Html.div (Html.span (Html.text $ "Version " <> pack (showVersion version)))
-      metricsHtml = mconcat . map renderMetric . sortOn fst $
+      metricsHtml = mconcat . map renderMetric $
         mapToList current
           <> [ ("recent_users_day", Gauge dayUsers)
              , ("recent_users_week", Gauge weekUsers)
