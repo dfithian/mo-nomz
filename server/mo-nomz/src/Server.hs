@@ -44,13 +44,16 @@ scrapeUrlCached link = do
           =<< runExceptT (runLoggingT (runReaderT (scrapeUrl uri) app) (appLogFunc app))
         when (null scrapedRecipeIngredients) $ throwIO err400 { errReasonPhrase = "Failed to parse ingredients" }
         pure recipeWithInfo
-  unwrapDb $ withDbConn $ \c -> do
-    Database.selectCachedRecipe c link cacheSettingsValidSeconds >>= \case
-      Just cached -> pure cached
-      Nothing -> do
-        (cached, scrapeInfo) <- scrape
-        Database.repsertCachedRecipe c link cached scrapeInfo
-        pure cached
+  case cacheSettingsEnabled of
+    False -> fst <$> liftIO scrape
+    True -> unwrapDb $ withDbConn $ \c -> do
+      Database.refreshCachedRecipes c cacheSettingsValidSeconds cacheSettingsMaxSize
+      Database.selectCachedRecipe c link >>= \case
+        Just cached -> pure cached
+        Nothing -> do
+          (cached, scrapeInfo) <- scrape
+          Database.repsertCachedRecipe c link cached scrapeInfo
+          pure cached
 
 unwrapDb :: AppM m => m (Either SomeException a) -> m a
 unwrapDb ma = ma >>= \case

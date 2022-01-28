@@ -216,7 +216,7 @@ spec env@Env {..} = describe "Server" $ do
 
 cacheSpec :: Env -> Spec
 cacheSpec env = describe "Cache" $ do
-  let emptyCache = CacheSettings 0 0 0
+  let emptyCache = CacheSettings True 0 0
       link = RecipeLink "https://www.allrecipes.com/recipe/26317/chicken-pot-pie-ix/"
       allrecipes = ScrapedRecipe
         { scrapedRecipeName = RecipeName "Chicken Pot Pie IX Recipe | Allrecipes"
@@ -237,10 +237,8 @@ cacheSpec env = describe "Cache" $ do
     actual `shouldBe` fake
 
   it "creates if it doesn't exist" $ do
-    CacheSettings {..} <- runServer env $ do
-      void $ scrapeUrlCached link
-      asks cacheSettings
-    actual <- runEnv env $ \c -> Database.selectCachedRecipe c link cacheSettingsValidSeconds
+    runServer env $ void $ scrapeUrlCached link
+    actual <- runEnv env $ \c -> Database.selectCachedRecipe c link
     actual `shouldBe` Just allrecipes
 
   it "creates if it is expired" $ do

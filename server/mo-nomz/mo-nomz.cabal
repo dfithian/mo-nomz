@@ -75,7 +75,6 @@ common options
     , servant-server
     , text
     , time
-    , unbounded-delays
     , unordered-containers
     , wai
     , wai-app-static

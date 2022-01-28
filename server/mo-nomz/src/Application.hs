@@ -2,10 +2,8 @@ module Application where
 
 import ClassyPrelude
 
-import Control.Concurrent (forkIO)
-import Control.Concurrent.Thread.Delay (delay)
 import Control.Monad (fail)
-import Control.Monad.Logger (defaultOutput, logError, runLoggingT)
+import Control.Monad.Logger (defaultOutput, runLoggingT)
 import Data.Default (def)
 import Data.Pool (Pool, createPool)
 import Data.Time.Clock (diffUTCTime)
@@ -43,7 +41,7 @@ import Server
   , postGroceryImportBlob, postMergeGroceryItem, postParseBlob, postParseLink, postRecipeImportLink
   , postUpdateGroceryItem, postUpdateRecipe, postUpdateRecipeIngredients
   )
-import Settings (AppSettings(..), CacheSettings(..), DatabaseSettings(..), staticSettingsValue)
+import Settings (AppSettings(..), DatabaseSettings(..), staticSettingsValue)
 import qualified Database
 
 getMetrics :: AppM m => m Markup
@@ -122,19 +120,12 @@ makeAppMetrics = do
 makeFoundation :: AppSettings -> IO App
 makeFoundation appSettings@AppSettings {..} = do
   let DatabaseSettings {..} = appDatabase
-      CacheSettings {..} = appCache
       appLogFunc = defaultOutput stdout
   appConnectionPool <- createPool (connectPostgreSQL $ encodeUtf8 databaseSettingsConnStr) close databaseSettingsPoolsize 15 1
   migrateDatabase appConnectionPool appLogFunc appSettings
   appManager <- createManager
   appMetrics <- makeAppMetrics
   appStarted <- getCurrentTime
-  appCacheExpire <- forkIO $ flip runLoggingT appLogFunc $ flip runReaderT appConnectionPool $ forever $ do
-    liftIO $ delay (1000000 * fromIntegral cacheSettingsRefreshSeconds)
-    result <- withDbConn $ \c -> Database.refreshCachedRecipes c cacheSettingsValidSeconds cacheSettingsMaxSize
-    case result of
-      Left se -> $logError $ "Failed to refresh cashed recipes due to " <> tshow se
-      Right () -> pure ()
   pure App {..}
 
 warpSettings :: App -> Settings

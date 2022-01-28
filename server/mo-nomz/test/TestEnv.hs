@@ -2,7 +2,6 @@ module TestEnv where
 
 import ClassyPrelude
 
-import Control.Concurrent (myThreadId)
 import Control.Monad (fail)
 import Control.Monad.Except (runExceptT)
 import Control.Monad.Logger (runLoggingT)
@@ -14,7 +13,7 @@ import Application (makeAppMetrics)
 import Auth (Authorization, generateToken)
 import Database (insertToken)
 import Foundation (App(..), HasDatabase, NomzServer, connectionPool, createManager, withDbConn)
-import Settings (staticSettings)
+import Settings (testSettings)
 import Types (UserId)
 
 data Env = Env
@@ -32,10 +31,9 @@ runEnv env ma = either (fail . show) pure =<< runLoggingT (runReaderT (withDbCon
 
 runServer :: Env -> NomzServer a -> IO a
 runServer Env {..} ma = do
-  app <- App staticSettings envConnectionPool mempty envManager
+  app <- App testSettings envConnectionPool mempty envManager
     <$> makeAppMetrics
     <*> getCurrentTime
-    <*> myThreadId
   either (fail . show) pure =<< runLoggingT (runReaderT (runExceptT ma) app) mempty
 
 wipeDb :: Env -> IO ()

@@ -10,9 +10,9 @@ data DatabaseSettings = DatabaseSettings
   }
 
 data CacheSettings = CacheSettings
-  { cacheSettingsValidSeconds   :: Int
-  , cacheSettingsMaxSize        :: Int
-  , cacheSettingsRefreshSeconds :: Int
+  { cacheSettingsEnabled      :: Bool
+  , cacheSettingsValidSeconds :: Int
+  , cacheSettingsMaxSize      :: Int
   }
 
 data AppSettings = AppSettings
@@ -39,15 +39,15 @@ instance ToJSON DatabaseSettings where
 instance FromJSON CacheSettings where
   parseJSON = withObject "CacheSettings" $ \obj ->
     CacheSettings
-      <$> obj .: "valid-seconds"
+      <$> obj .: "enabled"
+      <*> obj .: "valid-seconds"
       <*> obj .: "max-size"
-      <*> obj .: "refresh-seconds"
 
 instance ToJSON CacheSettings where
   toJSON CacheSettings {..} = object
-    [ "valid-seconds" .= cacheSettingsValidSeconds
+    [ "enabled" .= cacheSettingsEnabled
+    , "valid-seconds" .= cacheSettingsValidSeconds
     , "max-size" .= cacheSettingsMaxSize
-    , "refresh-seconds" .= cacheSettingsRefreshSeconds
     ]
 
 instance FromJSON AppSettings where
@@ -81,10 +81,17 @@ staticSettings = AppSettings
   , appStaticDir = "server/mo-nomz/assets"
   , appBcryptCost = 4
   , appCache = CacheSettings
-    { cacheSettingsValidSeconds = 60 * 60 * 24 * 7
+    { cacheSettingsEnabled = False
+    , cacheSettingsValidSeconds = 60 * 60 * 24 * 7
     , cacheSettingsMaxSize = 10000
-    , cacheSettingsRefreshSeconds = 60 * 60 * 24
     }
+  }
+
+testSettings :: AppSettings
+testSettings = staticSettings
+  { appCache = (appCache staticSettings)
+      { cacheSettingsEnabled = True
+      }
   }
 
 staticSettingsValue :: Value

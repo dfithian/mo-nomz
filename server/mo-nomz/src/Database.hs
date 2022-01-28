@@ -275,10 +275,9 @@ exportConfirm conn userId = do
   now <- getCurrentTime
   void $ execute conn "insert into nomz.export (user_id, confirmed_at) values (?, ?)" (userId, now)
 
-selectCachedRecipe :: Connection -> RecipeLink -> Int -> IO (Maybe ScrapedRecipe)
-selectCachedRecipe conn link validityWindow = do
-  validTime <- addUTCTime (negate (fromIntegral validityWindow)) <$> getCurrentTime
-  query conn "select data from nomz.recipe_cache where link = ? and updated >= ?" (link, validTime) >>= \case
+selectCachedRecipe :: Connection -> RecipeLink -> IO (Maybe ScrapedRecipe)
+selectCachedRecipe conn link = do
+  query conn "select data from nomz.recipe_cache where link = ?" (Only link) >>= \case
     [Only (Binary data_)] -> pure . either (const Nothing) Just . decode $ data_
     _ -> pure Nothing
 

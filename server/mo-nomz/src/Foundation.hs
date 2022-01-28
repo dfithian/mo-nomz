@@ -2,7 +2,6 @@ module Foundation where
 
 import ClassyPrelude hiding (Handler)
 
-import Control.Concurrent (ThreadId)
 import Control.Monad.Except (ExceptT, MonadError, mapExceptT)
 import Control.Monad.Logger
   ( Loc, LogLevel, LogSource, LogStr, LoggingT, MonadLoggerIO, askLoggerIO, logError, runLoggingT
@@ -32,7 +31,6 @@ data App = App
   , appManager        :: Manager -- ^ The manager for our scrape client.
   , appMetrics        :: AppMetrics -- ^ The metrics for the app.
   , appStarted        :: UTCTime -- ^ The time the app was started.
-  , appCacheExpire    :: ThreadId
   }
 
 data AppMetrics = AppMetrics

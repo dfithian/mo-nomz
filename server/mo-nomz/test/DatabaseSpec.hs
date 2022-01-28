@@ -140,7 +140,7 @@ spec env@Env {..} = describe "Database" $ do
         info = ScrapedInfoIngredientStep ingredientInfo stepInfo
     actual <- runEnv env $ \c -> do
       repsertCachedRecipe c link recipe info
-      selectCachedRecipe c link 1000
+      selectCachedRecipe c link
     actual `shouldBe` Just recipe
 
   it "repsertCachedRecipe" $ do
@@ -172,11 +172,11 @@ spec env@Env {..} = describe "Database" $ do
       repsertCachedRecipe c link1 recipe info
       repsertCachedRecipe c link2 recipe info
       refreshCachedRecipes c 0 1000
-      invalidTime <- selectCachedRecipe c link1 1000
+      invalidTime <- selectCachedRecipe c link1
       repsertCachedRecipe c link1 recipe info
       refreshCachedRecipes c 1000 1
-      tooBig <- selectCachedRecipe c link2 1000
-      valid <- selectCachedRecipe c link1 1000
+      tooBig <- selectCachedRecipe c link2
+      valid <- selectCachedRecipe c link1
       pure (invalidTime, tooBig, valid)
     actualInvalidTime `shouldBe` Nothing
     actualTooBig `shouldBe` Nothing
@@ -196,7 +196,7 @@ spec env@Env {..} = describe "Database" $ do
       repsertCachedRecipe c link2 recipe info2
       invalidateCachedRecipes c ((==) info1)
       (,)
-        <$> selectCachedRecipe c link1 1000
-        <*> selectCachedRecipe c link2 1000
+        <$> selectCachedRecipe c link1
+        <*> selectCachedRecipe c link2
     actualInvalid `shouldBe` Nothing
     actualValid `shouldBe` Just recipe
