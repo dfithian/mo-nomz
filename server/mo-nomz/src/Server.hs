@@ -49,7 +49,7 @@ getHealth = do
     { getHealthResponseStatus = "ok"
     }
 
-getRecentUsers :: AppM m => m Int64
+getRecentUsers :: AppM m => m (Int64, Int64, Int64, Int64)
 getRecentUsers =
   unwrapDb $ withDbConn Database.selectRecentUsers
 

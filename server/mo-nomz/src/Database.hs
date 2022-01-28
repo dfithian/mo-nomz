@@ -37,9 +37,14 @@ fetchToken conn userId = do
   void $ execute conn "update nomz.user set last_active = now() where id = ?" (Only userId)
   pure token
 
-selectRecentUsers :: Connection -> IO Int64
-selectRecentUsers conn = maybe 0 fromOnly . headMay
-  <$> query_ conn "select count(id) from nomz.user where last_active >= now() - interval '1 day'"
+selectRecentUsers :: Connection -> IO (Int64, Int64, Int64, Int64)
+selectRecentUsers conn = do
+  let q interval = maybe 0 fromOnly . headMay <$> query_ conn ("select count(id) from nomz.user where last_active >= now () - interval '" <> interval <> "'")
+  (,,,)
+    <$> q "1 day"
+    <*> q "7 day"
+    <*> q "28 day"
+    <*> q "365 day"
 
 selectGroceryItems :: Connection -> UserId -> [GroceryItemId] -> IO (Map GroceryItemId OrderedGroceryItem)
 selectGroceryItems conn userId groceryItemIds = do
