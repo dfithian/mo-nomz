@@ -57,13 +57,19 @@ getMetrics = do
         in Html.div (Html.span (Html.toHtml (unwords [key, valueStr])))
   App {..} <- ask
   now <- liftIO getCurrentTime
-  userCount <- getRecentUsers
+  (dayUsers, weekUsers, monthUsers, yearUsers) <- getRecentUsers
   current <- liftIO $ sampleAll (appMetricsStore appMetrics)
   healthHtml <- Html.div (Html.span (Html.text "Health OK")) <$ getHealth
   let uptimeHtml = Html.div (Html.span (Html.text $ "Started at " <> pack (formatTime defaultTimeLocale (iso8601DateFormat $ Just "%H:%M:%S") appStarted <> " UTC")))
       refreshHtml = Html.div (Html.span (Html.text $ "Last refreshed at " <> pack (formatTime defaultTimeLocale (iso8601DateFormat $ Just "%H:%M:%S") now <> " UTC")))
       versionHtml = Html.div (Html.span (Html.text $ "Version " <> pack (showVersion version)))
-      metricsHtml = mconcat . map renderMetric . sortOn fst $ mapToList current <> [("recent_users", Gauge userCount)]
+      metricsHtml = mconcat . map renderMetric . sortOn fst $
+        mapToList current
+          <> [ ("recent_users_day", Gauge dayUsers)
+             , ("recent_users_week", Gauge weekUsers)
+             , ("recent_users_month", Gauge monthUsers)
+             , ("recent_users_year", Gauge yearUsers)
+             ]
   pure $ Html.html $ do
     Html.head $ do
       Html.meta ! HtmlAttr.httpEquiv "Refresh" ! HtmlAttr.content "300"
