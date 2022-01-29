@@ -1,9 +1,9 @@
 module Server where
 
-import ClassyPrelude
+import ClassyPrelude hiding (link)
 
-import Control.Monad.Except (throwError)
-import Control.Monad.Logger (logError)
+import Control.Monad.Except (runExceptT, throwError)
+import Control.Monad.Logger (logError, runLoggingT)
 import Network.URI (parseURI)
 import Servant.API (NoContent(NoContent))
 import Servant.Server (ServerError, err400, err401, err403, err404, err500, errReasonPhrase)
@@ -23,15 +23,37 @@ import Conversion
   ( mkOrderedIngredient, mkQuantity, mkReadableGroceryItem, mkReadableIngredient, mkReadableQuantity
   , mkReadableRecipe, mkReadableRecipeV1, mkReadableUnit, mkUnit
   )
-import Foundation (AppM, settings, withDbConn)
+import Foundation (AppM, appLogFunc, cacheSettings, settings, withDbConn)
 import Parser (parseRawIngredients)
-import Scrape (ScrapedRecipe(..), scrapeUrl)
-import Settings (AppSettings(..))
+import Scrape (scrapeUrl)
+import Scraper.Types (ScrapedRecipe(..))
+import Settings (AppSettings(..), CacheSettings(..))
 import Types
   ( GroceryItem(..), Ingredient(..), OrderedGroceryItem(..), OrderedIngredient(..), Recipe(..)
-  , RecipeLink(..), RecipeId, UserId, ingredientToGroceryItem, mapError
+  , RecipeLink(..), RecipeId, UserId, ingredientToGroceryItem
   )
 import qualified Database
+
+scrapeUrlCached :: AppM m => RecipeLink -> m ScrapedRecipe
+scrapeUrlCached link = do
+  app <- ask
+  let CacheSettings {..} = cacheSettings app
+      scrape = do
+        uri <- maybe (throwIO err400 { errReasonPhrase = "Invalid link" }) pure $ parseURI (unpack $ unRecipeLink link)
+        recipeWithInfo@(ScrapedRecipe {..}, _) <- either (\e -> throwIO err500 { errReasonPhrase = unpack e }) pure
+          =<< runExceptT (runLoggingT (runReaderT (scrapeUrl uri) app) (appLogFunc app))
+        when (null scrapedRecipeIngredients) $ throwIO err400 { errReasonPhrase = "Failed to parse ingredients" }
+        pure recipeWithInfo
+  case cacheSettingsEnabled of
+    False -> fst <$> liftIO scrape
+    True -> unwrapDb $ withDbConn $ \c -> do
+      Database.refreshCachedRecipes c cacheSettingsValidSeconds cacheSettingsMaxSize
+      Database.selectCachedRecipe c link >>= \case
+        Just cached -> pure cached
+        Nothing -> do
+          (cached, scrapeInfo) <- scrape
+          Database.repsertCachedRecipe c link cached scrapeInfo
+          pure cached
 
 unwrapDb :: AppM m => m (Either SomeException a) -> m a
 unwrapDb ma = ma >>= \case
@@ -144,9 +166,7 @@ postRecipeImportLink token userId RecipeImportLinkRequest {..} = do
         (True, False) -> unwrapDb $ withDbConn $ \c -> Database.activateRecipe c userId recipeId
         (False, False) -> pure ()
     Nothing -> do
-      uri <- maybe (throwError err400 { errReasonPhrase = "Invalid link" }) pure $ parseURI (unpack $ unRecipeLink recipeImportLinkRequestLink)
-      ScrapedRecipe {..} <- mapError (\e -> err500 { errReasonPhrase = unpack e }) $ scrapeUrl uri
-      when (null scrapedRecipeIngredients) $ throwError err400 { errReasonPhrase = "Failed to parse ingredients" }
+      ScrapedRecipe {..} <- scrapeUrlCached recipeImportLinkRequestLink
       let recipe = Recipe
             { recipeName = scrapedRecipeName
             , recipeLink = Just recipeImportLinkRequestLink
@@ -271,9 +291,7 @@ postParseBlob token userId ParseBlobRequest {..} = do
 postParseLink :: AppM m => Authorization -> UserId -> ParseLinkRequest -> m ParseLinkResponse
 postParseLink token userId ParseLinkRequest {..} = do
   validateUserToken token userId
-  uri <- maybe (throwError err400 { errReasonPhrase = "Invalid link" }) pure $ parseURI (unpack $ unRecipeLink parseLinkRequestLink)
-  ScrapedRecipe {..} <- mapError (\e -> err500 { errReasonPhrase = unpack e }) $ scrapeUrl uri
-  when (null scrapedRecipeIngredients) $ throwError err400 { errReasonPhrase = "Failed to parse ingredients" }
+  ScrapedRecipe {..} <- scrapeUrlCached parseLinkRequestLink
   pure ParseLinkResponse
     { parseLinkResponseName = scrapedRecipeName
     , parseLinkResponseIngredients = mkReadableIngredient <$> zipWith OrderedIngredient scrapedRecipeIngredients [1..]

@@ -5,11 +5,11 @@ import ClassyPrelude
 import Control.Monad (fail)
 import Control.Monad.Logger (defaultOutput, runLoggingT)
 import Data.Default (def)
-import Data.Pool (createPool)
+import Data.Pool (Pool, createPool)
 import Data.Time.Format (iso8601DateFormat)
 import Data.Version (showVersion)
 import Data.Yaml.Config (loadYamlSettingsArgs, useEnv)
-import Database.PostgreSQL.Simple (close, connectPostgreSQL)
+import Database.PostgreSQL.Simple (Connection, close, connectPostgreSQL)
 import Database.PostgreSQL.Simple.Migration
   ( MigrationCommand(..), MigrationResult(..), runMigrations
   )
@@ -24,8 +24,9 @@ import WaiAppStatic.Types (ssListing)
 import qualified Text.Blaze.Html5 as Html
 import qualified Text.Blaze.Html5.Attributes as HtmlAttr
 
-import Foundation (App(..), AppM, NomzServer, createManager, runNomzServer, withDbConn)
+import Foundation (App(..), AppM, LogFunc, NomzServer, createManager, runNomzServer, withDbConn)
 import Paths_mo_nomz (version)
+import Scrape (isInvalidScraper)
 import Servant (NomzApi, nomzApi, wholeApi)
 import Server
   ( deleteGroceryItem, deleteRecipes, getExport, getGroceryItems, getHealth, getRecentUsers
@@ -34,6 +35,7 @@ import Server
   , postUpdateGroceryItem, postUpdateRecipe, postUpdateRecipeIngredients
   )
 import Settings (AppSettings(..), DatabaseSettings(..), staticSettingsValue)
+import qualified Database
 
 getMetrics :: AppM m => m Markup
 getMetrics = do
@@ -79,12 +81,15 @@ nomzServer =
     :<|> postParseLink
     :<|> getExport
 
-migrateDatabase :: App -> IO ()
-migrateDatabase app = do
-  result <- flip runLoggingT (appLogFunc app) $ flip runReaderT app $ withDbConn $ \c -> runMigrations True c $
-    [ MigrationInitialization
-    , MigrationDirectory (appMigrationDir (appSettings app))
-    ]
+migrateDatabase :: Pool Connection -> LogFunc -> AppSettings -> IO ()
+migrateDatabase pool logFunc settings = do
+  result <- flip runLoggingT logFunc $ flip runReaderT pool $ withDbConn $ \c -> do
+    inner <- runMigrations True c $
+      [ MigrationInitialization
+      , MigrationDirectory (appMigrationDir settings)
+      ]
+    Database.invalidateCachedRecipes c isInvalidScraper
+    pure inner
   case result of
     Left err -> fail $ "Failed to run migrations due to database exception " <> show err
     Right (MigrationError str) -> fail $ "Failed to run migrations due to " <> str
@@ -95,6 +100,7 @@ makeFoundation appSettings@AppSettings {..} = do
   let DatabaseSettings {..} = appDatabase
       appLogFunc = defaultOutput stdout
   appConnectionPool <- createPool (connectPostgreSQL $ encodeUtf8 databaseSettingsConnStr) close databaseSettingsPoolsize 15 1
+  migrateDatabase appConnectionPool appLogFunc appSettings
   appManager <- createManager
   appStarted <- getCurrentTime
   pure App {..}
@@ -108,7 +114,6 @@ appMain :: IO ()
 appMain = do
   settings <- loadYamlSettingsArgs [staticSettingsValue] useEnv
   app <- makeFoundation settings
-  migrateDatabase app
   let staticFileSettings = (defaultFileServerSettings $ appStaticDir $ appSettings app)
         { ssListing = Nothing
         }

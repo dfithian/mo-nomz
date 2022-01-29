@@ -52,6 +52,7 @@ common options
     , blaze-markup
     , bytestring
     , case-insensitive
+    , cereal
     , classy-prelude
     , containers
     , cryptonite
@@ -101,8 +102,9 @@ library
       Json
       Parser
       Scrape
-      Scraper.Internal.Site
-      Scraper.Internal.Types
+      Scraper.Site
+      Scraper.Types
+      Serialize.Orphans
       Servant
       Server
       Settings

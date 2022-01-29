@@ -12,7 +12,7 @@ import Network.HTTP.Client (Manager)
 import Auth (Authorization, generateToken)
 import Database (insertToken)
 import Foundation (App(..), HasDatabase, NomzServer, connectionPool, createManager, withDbConn)
-import Settings (staticSettings)
+import Settings (testSettings)
 import Types (UserId)
 
 data Env = Env
@@ -30,13 +30,13 @@ runEnv env ma = either (fail . show) pure =<< runLoggingT (runReaderT (withDbCon
 
 runServer :: Env -> NomzServer a -> IO a
 runServer Env {..} ma = do
-  app <- App staticSettings envConnectionPool mempty envManager
+  app <- App testSettings envConnectionPool mempty envManager
     <$> getCurrentTime
   either (fail . show) pure =<< runLoggingT (runReaderT (runExceptT ma) app) mempty
 
 wipeDb :: Env -> IO ()
 wipeDb env = runEnv env $ \c ->
-  void $ execute_ c "truncate nomz.export, nomz.ingredient, nomz.recipe, nomz.grocery_item restart identity"
+  void $ execute_ c "truncate nomz.export, nomz.ingredient, nomz.recipe, nomz.grocery_item, nomz.recipe_cache restart identity"
 
 loadEnv :: IO Env
 loadEnv = do

@@ -19,6 +19,7 @@ import ParsedIngredients
   , pillsburySteps, rachelMansfieldIngredients, rachelMansfieldSteps, sallysBakingIngredients
   , sallysBakingSteps, tasteOfHomeIngredients, tasteOfHomeSteps
   )
+import Scraper.Types (ScrapedRecipe(..))
 import TestEnv (Env(..))
 import Types (Ingredient(..), IngredientName(..), Quantity(..), RecipeName(..), Step(..), Unit(..))
 
@@ -44,7 +45,7 @@ defaultTestCfg env = TestCfg
 scrapeAndParse :: Env -> String -> String -> ([Ingredient], [Step]) -> Expectation
 scrapeAndParse Env {..} url expectedName (expectedIngredients, expectedSteps) = do
   uri <- maybe (fail "Invalid URL") pure $ parseURI url
-  ScrapedRecipe {..} <- either (fail . unpack) pure =<< runNoLoggingT (runReaderT (runExceptT (scrapeUrl uri)) envManager)
+  ScrapedRecipe {..} <- either (fail . unpack) (pure . fst) =<< runNoLoggingT (runReaderT (runExceptT (scrapeUrl uri)) envManager)
   scrapedRecipeName `shouldBe` RecipeName (pack expectedName)
   scrapedRecipeIngredients `shouldMatchList` expectedIngredients
   scrapedRecipeSteps `shouldMatchList` expectedSteps
@@ -53,7 +54,7 @@ scrapeAndParseConfig :: TestCfg -> String -> Expectation
 scrapeAndParseConfig TestCfg {..} url = do
   let Env {..} = env
   uri <- maybe (fail "Invalid URL") pure $ parseURI url
-  ScrapedRecipe {..} <- either (fail . unpack) pure =<< runNoLoggingT (runReaderT (runExceptT (scrapeUrl uri)) envManager)
+  ScrapedRecipe {..} <- either (fail . unpack) (pure . fst) =<< runNoLoggingT (runReaderT (runExceptT (scrapeUrl uri)) envManager)
   unRecipeName scrapedRecipeName `shouldSatisfy` not . null
   scrapedRecipeIngredients `shouldSatisfy` (\xs -> length xs >= requiredIngredients)
   scrapedRecipeIngredients `shouldSatisfy` any hasQuantityAndUnit

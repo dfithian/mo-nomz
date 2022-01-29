@@ -1,4 +1,5 @@
 import ClassyPrelude
+
 import System.Environment (lookupEnv)
 import Test.Hspec (before_, hspec)
 
@@ -23,6 +24,7 @@ main = do
       env <- loadEnv
       hspec $ before_ (wipeDb env) $ do
         ServerSpec.spec env
+        ServerSpec.cacheSpec env
         DatabaseSpec.spec env
         ConversionSpec.spec
         ParserSpec.spec

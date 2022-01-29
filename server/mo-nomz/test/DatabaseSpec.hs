@@ -1,15 +1,19 @@
 module DatabaseSpec where
 
-import ClassyPrelude
+import ClassyPrelude hiding (link, link2)
 
 import Test.Hspec (Spec, describe, it, shouldBe, shouldMatchList)
 import Test.QuickCheck (generate, listOf1)
 import qualified Data.Map as Map
 
 import Auth (BcryptedAuthorization(..))
-import Gen (arbitraryGroceryItem, arbitraryIngredient, arbitraryOrderedGroceryItem, arbitraryRecipe)
+import Gen
+  ( arbitraryGroceryItem, arbitraryIngredient, arbitraryOrderedGroceryItem, arbitraryRecipe
+  , arbitraryRecipeName, arbitraryStep
+  )
+import Scraper.Types (ScrapeInfo(..), ScrapeName(..), ScrapedInfo(..), ScrapedRecipe(..), inception)
 import TestEnv (Env(..), runEnv)
-import Types (OrderedGroceryItem(..), OrderedIngredient(..), ingredientToGroceryItem)
+import Types (OrderedGroceryItem(..), OrderedIngredient(..), RecipeLink(..), ingredientToGroceryItem)
 
 import Database
 
@@ -124,3 +128,75 @@ spec env@Env {..} = describe "Database" $ do
       groceryItemIds <- insertGroceryItems c envUser items
       void $ insertRecipe c envUser recipe (zip groceryItemIds ingredients)
       deactivateEverything c envUser
+
+  it "selectCachedRecipe" $ do
+    name <- generate $ arbitraryRecipeName
+    ingredients <- generate $ listOf1 arbitraryIngredient
+    steps <- generate $ listOf1 arbitraryStep
+    let link = RecipeLink "foo"
+        ingredientInfo = ScrapeInfo (ScrapeName "fooI") inception
+        stepInfo = ScrapeInfo (ScrapeName "fooS") inception
+        recipe = ScrapedRecipe name ingredients steps
+        info = ScrapedInfoIngredientStep ingredientInfo stepInfo
+    actual <- runEnv env $ \c -> do
+      repsertCachedRecipe c link recipe info
+      selectCachedRecipe c link
+    actual `shouldBe` Just recipe
+
+  it "repsertCachedRecipe" $ do
+    name <- generate $ arbitraryRecipeName
+    ingredients <- generate $ listOf1 arbitraryIngredient
+    steps <- generate $ listOf1 arbitraryStep
+    let link1 = RecipeLink "foo"
+        link2 = RecipeLink "bar"
+        ingredientInfo = ScrapeInfo (ScrapeName "fooI") inception
+        stepInfo = ScrapeInfo (ScrapeName "fooS") inception
+        recipe = ScrapedRecipe name ingredients steps
+        info1 = ScrapedInfoIngredient ingredientInfo
+        info2 = ScrapedInfoIngredientStep ingredientInfo stepInfo
+    runEnv env $ \c -> do
+      repsertCachedRecipe c link1 recipe info1
+      repsertCachedRecipe c link2 recipe info2
+
+  it "refreshCachedRecipes" $ do
+    name <- generate $ arbitraryRecipeName
+    ingredients <- generate $ listOf1 arbitraryIngredient
+    steps <- generate $ listOf1 arbitraryStep
+    let link1 = RecipeLink "foo"
+        link2 = RecipeLink "bar"
+        ingredientInfo = ScrapeInfo (ScrapeName "fooI") inception
+        stepInfo = ScrapeInfo (ScrapeName "fooS") inception
+        recipe = ScrapedRecipe name ingredients steps
+        info = ScrapedInfoIngredientStep ingredientInfo stepInfo
+    (actualInvalidTime, actualTooBig, actualValid) <- runEnv env $ \c -> do
+      repsertCachedRecipe c link1 recipe info
+      repsertCachedRecipe c link2 recipe info
+      refreshCachedRecipes c 0 1000
+      invalidTime <- selectCachedRecipe c link1
+      repsertCachedRecipe c link1 recipe info
+      refreshCachedRecipes c 1000 1
+      tooBig <- selectCachedRecipe c link2
+      valid <- selectCachedRecipe c link1
+      pure (invalidTime, tooBig, valid)
+    actualInvalidTime `shouldBe` Nothing
+    actualTooBig `shouldBe` Nothing
+    actualValid `shouldBe` Just recipe
+
+  it "invalidateCachedRecipes" $ do
+    name <- generate $ arbitraryRecipeName
+    ingredients <- generate $ listOf1 arbitraryIngredient
+    steps <- generate $ listOf1 arbitraryStep
+    let link1 = RecipeLink "foo"
+        link2 = RecipeLink "bar"
+        info1 = ScrapedInfoIngredient (ScrapeInfo (ScrapeName "foo") inception)
+        info2 = ScrapedInfoIngredient (ScrapeInfo (ScrapeName "bar") inception)
+        recipe = ScrapedRecipe name ingredients steps
+    (actualInvalid, actualValid) <- runEnv env $ \c -> do
+      repsertCachedRecipe c link1 recipe info1
+      repsertCachedRecipe c link2 recipe info2
+      invalidateCachedRecipes c ((==) info1)
+      (,)
+        <$> selectCachedRecipe c link1
+        <*> selectCachedRecipe c link2
+    actualInvalid `shouldBe` Nothing
+    actualValid `shouldBe` Just recipe

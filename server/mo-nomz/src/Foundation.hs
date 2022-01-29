@@ -13,7 +13,7 @@ import Network.HTTP.Client.TLS (newTlsManagerWith, tlsManagerSettings)
 import Network.HTTP.Types (hUserAgent)
 import Servant.Server (Handler(Handler), ServerError)
 
-import Settings (AppSettings)
+import Settings (AppSettings, CacheSettings, appCache)
 
 type AppM m = (MonadError ServerError m, MonadIO m, MonadLoggerIO m, MonadReader App m)
 
@@ -55,6 +55,18 @@ instance HasSettings App where
 
 instance HasSettings AppSettings where
   settings = id
+
+class HasCacheSettings a where
+  cacheSettings :: a -> CacheSettings
+
+instance HasCacheSettings App where
+  cacheSettings = cacheSettings . settings
+
+instance HasCacheSettings AppSettings where
+  cacheSettings = appCache
+
+instance HasCacheSettings CacheSettings where
+  cacheSettings = id
 
 withDbConn :: (HasDatabase r, MonadIO m, MonadLoggerIO m, MonadReader r m) => (Connection -> IO a) -> m (Either SomeException a)
 withDbConn f = do

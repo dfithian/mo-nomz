@@ -1,12 +1,14 @@
-module Scraper.Internal.Site where
+module Scraper.Site where
 
 import ClassyPrelude
+
 import Text.HTML.Scalpel ((//), (@:), (@=), Scraper, Selector)
 import qualified Data.HashMap.Strict as HashMap
 import qualified Text.HTML.Scalpel as Scalpel
 
-import Scraper.Internal.Types
-  ( IngredientScraper(..), SiteName(..), StepScraper(..), UnparsedIngredient(..), UnparsedStep(..)
+import Scraper.Types
+  ( IngredientScraper(..), ScrapeInfo(..), ScrapeName(..), ScrapeVersion(..), SiteName(..)
+  , StepScraper(..), UnparsedIngredient(..), UnparsedStep(..), inception
   )
 
 ingredientScrapers :: HashMap SiteName IngredientScraper
@@ -201,11 +203,11 @@ stepScrapers = mapFromList
 
 -- |Get all ingredient scrapers, ordered by most popular first.
 allIngredientScrapers :: [IngredientScraper]
-allIngredientScrapers = map unsafeHead . reverse . sortOn length  . groupBy ((==) `on` ingredientScraperName) . sortOn ingredientScraperName . HashMap.elems $ ingredientScrapers
+allIngredientScrapers = map unsafeHead . reverse . sortOn length  . groupBy ((==) `on` (scrapeInfoName . ingredientScraperInfo)) . sortOn (scrapeInfoName . ingredientScraperInfo) . HashMap.elems $ ingredientScrapers
 
 -- |Get all step scrapers, ordered by most popular first.
 allStepScrapers :: [StepScraper]
-allStepScrapers = map unsafeHead . reverse . sortOn length  . groupBy ((==) `on` stepScraperName) . sortOn stepScraperName . HashMap.elems $ stepScrapers
+allStepScrapers = map unsafeHead . reverse . sortOn length  . groupBy ((==) `on` (scrapeInfoName . stepScraperInfo)) . sortOn (scrapeInfoName . stepScraperInfo) . HashMap.elems $ stepScrapers
 
 testScrape :: Selector -> Scraper Text Bool
 testScrape test = not . null <$> Scalpel.html test
@@ -216,8 +218,14 @@ acceptAll = pure True
 denyAll :: Scraper Text Bool
 denyAll = pure True
 
+setIngredientVersion :: Int -> IngredientScraper -> IngredientScraper
+setIngredientVersion v scraper = scraper { ingredientScraperInfo = (ingredientScraperInfo scraper) { scrapeInfoVersion = ScrapeVersion v } }
+
+setStepVersion :: Int -> StepScraper -> StepScraper
+setStepVersion v scraper = scraper { stepScraperInfo = (stepScraperInfo scraper) { scrapeInfoVersion = ScrapeVersion v } }
+
 simpleIngredientScraper :: Text -> Scraper Text Bool -> Selector -> IngredientScraper
-simpleIngredientScraper sName test select = IngredientScraper sName test scrape
+simpleIngredientScraper sName test select = IngredientScraper (ScrapeInfo (ScrapeName sName) inception) test scrape
   where
     scrape = Scalpel.chroots select (
       UnparsedIngredientRaw
@@ -225,7 +233,7 @@ simpleIngredientScraper sName test select = IngredientScraper sName test scrape
       )
 
 simpleStepScraper :: Text -> Scraper Text Bool -> Selector -> StepScraper
-simpleStepScraper sName test select = StepScraper sName test scrape
+simpleStepScraper sName test select = StepScraper (ScrapeInfo (ScrapeName sName) inception) test scrape
   where
     scrape = Scalpel.chroots select (
       UnparsedStepRaw
@@ -239,7 +247,7 @@ debugS :: StepScraper
 debugS = simpleStepScraper "debug" (testScrape "div") "div"
 
 allrecipesI :: IngredientScraper
-allrecipesI = simpleIngredientScraper "allrecipes"
+allrecipesI = setIngredientVersion 2 $ simpleIngredientScraper "allrecipes"
   (testScrape ("meta" @: ["content" @= "Allrecipes"]))
   ("span" @: [Scalpel.hasClass "ingredients-item-name"])
 
@@ -299,11 +307,11 @@ tastyS3 = simpleStepScraper "tasty3"
   ("div" @: [Scalpel.hasClass "tasty-recipes-instructions"] // "div" @: [Scalpel.hasClass "tasty-recipes-instructions-body"])
 
 foodNetworkI :: IngredientScraper
-foodNetworkI = IngredientScraper "foodNetwork" denyAll $
+foodNetworkI = IngredientScraper (ScrapeInfo (ScrapeName "foodNetwork") inception) denyAll $
   map UnparsedIngredientRaw . filter (not . (==) "Deselect All") <$> Scalpel.chroots ("div" @: [Scalpel.hasClass "o-Ingredients__m-Body"] // "span") (Scalpel.text Scalpel.anySelector)
 
 foodNetworkS :: StepScraper
-foodNetworkS = StepScraper "foodNetwork" denyAll $ do
+foodNetworkS = StepScraper (ScrapeInfo (ScrapeName "foodNetwork") inception) denyAll $ do
   map UnparsedStepRaw <$> Scalpel.chroots ("div" @: [Scalpel.hasClass "o-Method__m-Body"] // "li") (Scalpel.text Scalpel.anySelector)
 
 wprmI :: IngredientScraper

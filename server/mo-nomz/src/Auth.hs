@@ -1,6 +1,7 @@
 module Auth where
 
 import ClassyPrelude
+
 import Crypto.KDF.BCrypt (bcrypt, validatePassword)
 import Data.Aeson (FromJSON, ToJSON)
 import Data.ByteArray.Encoding (Base(Base64), convertFromBase, convertToBase)

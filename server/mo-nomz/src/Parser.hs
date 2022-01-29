@@ -11,7 +11,7 @@ import Data.Text (replace, split, strip)
 import qualified Data.Attoparsec.Text as Atto
 import qualified Data.CaseInsensitive as CI
 
-import Scraper.Internal.Types (UnparsedIngredient(..), UnparsedStep(..))
+import Scraper.Types (UnparsedIngredient(..), UnparsedStep(..))
 import Types
   ( Ingredient(..), IngredientName(..), Quantity(..), RawIngredient(..), RawQuantity(..)
   , RawUnit(..), Step(..), Unit(..), Ingredient, box, cup, gram, liter, milligram, milliliter, ounce
