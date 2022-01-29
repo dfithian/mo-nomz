@@ -57,7 +57,6 @@ common options
     , containers
     , cryptonite
     , data-default
-    , ekg-core
     , http-client
     , http-client-tls
     , http-media
