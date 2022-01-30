@@ -81,7 +81,7 @@ class ProfileController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch indexPath.section {
         case SUPPORT_HEADING:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SimpleSectionHeader
+            let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! OneLabel
             cell.label.text = "Support"
             return cell
         case THANKS:
@@ -89,7 +89,7 @@ class ProfileController: UITableViewController {
         case HELP:
             return tableView.dequeueReusableCell(withIdentifier: "help")!
         case PURCHASE_HEADING:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SimpleSectionHeader
+            let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! OneLabel
             cell.label.text = "Purchases"
             return cell
         case PURCHASES:
@@ -112,7 +112,7 @@ class ProfileController: UITableViewController {
         case RESTORE_PURCHASES:
             return tableView.dequeueReusableCell(withIdentifier: "restore")!
         case PREFERENCE_HEADING:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SimpleSectionHeader
+            let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! OneLabel
             cell.label.text = "Preferences"
             return cell
         case PREFERENCES:
@@ -124,7 +124,7 @@ class ProfileController: UITableViewController {
             cell.indicator.addTarget(self, action: #selector(didTapPreference), for: .touchUpInside)
             return cell
         default:
-            return tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SimpleSectionHeader
+            return tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! OneLabel
         }
     }
     
