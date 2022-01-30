@@ -16,13 +16,14 @@ class ProfileController: UITableViewController {
     
     let SUPPORT_HEADING = 0
     let THANKS = 1
-    let HELP = 2
-    let PREFERENCE_HEADING = 3
-    let PREFERENCES = 4
-    let PURCHASE_HEADING = 5
-    let PURCHASES = 6
-    let AVAILABLE_PURCHASES = 7
-    let RESTORE_PURCHASES = 8
+    let VERSION = 2
+    let HELP = 3
+    let PREFERENCE_HEADING = 4
+    let PREFERENCES = 5
+    let PURCHASE_HEADING = 6
+    let PURCHASES = 7
+    let AVAILABLE_PURCHASES = 8
+    let RESTORE_PURCHASES = 9
     
     private func loadData() {
         let spinner = startLoading()
@@ -60,13 +61,14 @@ class ProfileController: UITableViewController {
     }
     
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 9
+        return 10
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
         case SUPPORT_HEADING: return 1
         case THANKS: return 1
+        case VERSION: return 1
         case HELP: return 1
         case PURCHASE_HEADING: return 1
         case PURCHASES: return boughtProducts.count
@@ -86,6 +88,12 @@ class ProfileController: UITableViewController {
             return cell
         case THANKS:
             return tableView.dequeueReusableCell(withIdentifier: "thanks")!
+        case VERSION:
+            let cell = tableView.dequeueReusableCell(withIdentifier: "version") as! OneLabel
+            let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as! String
+            let bundle = Bundle.main.infoDictionary?["CFBundleVersion"] as! String
+            cell.label.text = "\(version).\(bundle)"
+            return cell
         case HELP:
             return tableView.dequeueReusableCell(withIdentifier: "help")!
         case PURCHASE_HEADING:
