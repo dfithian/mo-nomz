@@ -45,12 +45,32 @@ extension UIViewController {
         }
     }
     
-    func insertStepRaw(_ ctx: NSManagedObjectContext, step: StepWithId, recipeId: UUID) {
+    private func insertStepRaw(_ ctx: NSManagedObjectContext, step: StepWithId, recipeId: UUID) {
         let newStep = NSEntityDescription.insertNewObject(forEntityName: "StepData", into: ctx) as! StepData
         newStep.id = step.id
         newStep.recipe_id = recipeId
         newStep.step = step.step.step
         newStep.ordering = Int32(step.step.order)
+    }
+    
+    private func selectRecipeIngredientsRaw(_ ctx: NSManagedObjectContext, recipeId: UUID) throws -> [IngredientData] {
+        let ingredientReq = IngredientData.req()
+        ingredientReq.predicate = NSPredicate(format: "recipe_id = %@", recipeId as CVarArg)
+        ingredientReq.sortDescriptors = [
+            NSSortDescriptor(key: "ordering", ascending: true),
+            NSSortDescriptor(key: "name", ascending: true)
+        ]
+        return try ctx.fetch(ingredientReq)
+    }
+    
+    private func selectRecipeStepsRaw(_ ctx: NSManagedObjectContext, recipeId: UUID) throws -> [StepData] {
+        let stepReq = StepData.req()
+        stepReq.predicate = NSPredicate(format: "recipe_id = %@", recipeId as CVarArg)
+        stepReq.sortDescriptors = [
+            NSSortDescriptor(key: "ordering", ascending: true),
+            NSSortDescriptor(key: "step", ascending: true)
+        ]
+        return try ctx.fetch(stepReq)
     }
 
     func selectGroceries() -> [ReadableGroceryItemWithId] {
@@ -192,17 +212,6 @@ extension UIViewController {
         }
     }
     
-    func selectRecipeIds() -> [UUID] {
-        do {
-            let ctx = DataAccess.shared.managedObjectContext
-            let req = RecipeData.req()
-            return try ctx.fetch(req).compactMap({ $0.id })
-        } catch let error as NSError {
-            defaultOnError(error)
-        }
-        return []
-    }
-    
     func selectRecipes() -> [ReadableRecipeWithId] {
         do {
             let ctx = DataAccess.shared.managedObjectContext
@@ -211,7 +220,11 @@ extension UIViewController {
                 NSSortDescriptor(key: "rating", ascending: false),
                 NSSortDescriptor(key: "name", ascending: true)
             ]
-            return try ctx.fetch(req).map({ $0.toReadableRecipeWithId(ingredientsData: [], stepsData: []) })
+            return try ctx.fetch(req).map({ (recipe) in
+                let ingredients = try selectRecipeIngredientsRaw(ctx, recipeId: recipe.id!)
+                let steps = try selectRecipeStepsRaw(ctx, recipeId: recipe.id!)
+                return recipe.toReadableRecipeWithId(ingredientsData: ingredients, stepsData: steps)
+            })
         } catch let error as NSError {
             defaultOnError(error)
         }
@@ -221,21 +234,8 @@ extension UIViewController {
     func getRecipe(id: UUID) -> ReadableRecipeWithId? {
         do {
             let ctx = DataAccess.shared.managedObjectContext
-            let ingredientReq = IngredientData.req()
-            ingredientReq.predicate = NSPredicate(format: "recipe_id = %@", id as CVarArg)
-            ingredientReq.sortDescriptors = [
-                NSSortDescriptor(key: "ordering", ascending: true),
-                NSSortDescriptor(key: "name", ascending: true)
-            ]
-            let ingredients = try ctx.fetch(ingredientReq)
-            
-            let stepReq = StepData.req()
-            stepReq.predicate = NSPredicate(format: "recipe_id = %@", id as CVarArg)
-            stepReq.sortDescriptors = [
-                NSSortDescriptor(key: "ordering", ascending: true),
-                NSSortDescriptor(key: "step", ascending: true)
-            ]
-            let steps = try ctx.fetch(stepReq)
+            let ingredients = try selectRecipeIngredientsRaw(ctx, recipeId: id)
+            let steps = try selectRecipeStepsRaw(ctx, recipeId: id)
             
             let recipeReq = RecipeData.req()
             recipeReq.predicate = NSPredicate(format: "id = %@", id as CVarArg)

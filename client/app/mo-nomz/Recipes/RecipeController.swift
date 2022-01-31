@@ -7,13 +7,14 @@
 
 import UIKit
 
-class RecipeController: UIViewController {
+class RecipeController: UIViewController, UISearchBarDelegate {
     @IBOutlet weak var banner: UIView!
     @IBOutlet weak var toolbar: Toolbar!
     @IBOutlet weak var clear: UIButton!
     @IBOutlet weak var export: UIButton!
     @IBOutlet weak var help: UIButton!
     @IBOutlet weak var add: UIButton!
+    @IBOutlet weak var search: UISearchBar!
 
     var recipeVc: RecipeListController? = nil
     
@@ -49,8 +50,9 @@ class RecipeController: UIViewController {
 
     @objc func loadData() {
         let recipes = selectRecipes()
-        recipeVc?.active = recipes.filter({ $0.recipe.active })
-        recipeVc?.saved = recipes.filter({ !$0.recipe.active })
+        recipeVc?.allActive = recipes.filter({ $0.recipe.active })
+        recipeVc?.allSaved = recipes.filter({ !$0.recipe.active })
+        recipeVc?.onSearch()
         DispatchQueue.main.async {
             self.recipeVc?.tableView.reloadData()
         }
@@ -64,6 +66,7 @@ class RecipeController: UIViewController {
             recipeVc = vc
             loadData()
             vc.onChange = loadData
+            search.delegate = vc
         }
         if let vc = segue.destination as? BannerController, segue.identifier == "embedBanner" {
             vc.height = banner.constraints.filter({ $0.identifier == "height" }).first
@@ -80,6 +83,8 @@ class RecipeController: UIViewController {
         help.alignTextUnderImage()
         add.frame = CGRect(x: add.frame.minX, y: add.frame.minY, width: add.frame.width, height: toolbar.frame.height)
         add.alignTextUnderImage()
+        search.searchTextField.addDoneButtonOnKeyboard()
+        search.searchTextField.font = UIFont.systemFont(ofSize: 14)
         NotificationCenter.default.addObserver(self, selector: #selector(loadData), name: UIApplication.willEnterForegroundNotification, object: nil)
     }
     

@@ -8,7 +8,15 @@
 import MobileCoreServices
 import UIKit
 
-class RecipeListController: UITableViewController {
+enum RecipeMode {
+    case normal
+    case search(String)
+}
+
+class RecipeListController: UITableViewController, UISearchBarDelegate {
+    var mode: RecipeMode = .normal
+    var allActive: [ReadableRecipeWithId] = []
+    var allSaved: [ReadableRecipeWithId] = []
     var active: [ReadableRecipeWithId] = []
     var saved: [ReadableRecipeWithId] = []
     var onChange: (() -> Void)?
@@ -21,31 +29,37 @@ class RecipeListController: UITableViewController {
     let SAVED = 4
     
     private func hasData() -> Bool {
-        return (active.count + saved.count) > 0
+        return (allActive.count + allSaved.count) > 0
+    }
+    
+    private func collapsed(_ i: Int) -> Bool {
+        switch mode {
+        case .normal: return collapsed[i]
+        case .search(_): return false
+        }
+    }
+    
+    private func setCollapsed(_ i: Int) {
+        switch mode {
+        case .normal:
+            collapsed[i] = !collapsed[i]
+            break
+        case .search(_):
+            break
+        }
     }
 
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 5
     }
     
-    private func collapsedSection(_ section: Int) -> Int? {
-        switch section {
-        case ACTIVE: return 0
-        case SAVED: return 1
-        default: return nil
-        }
-    }
-    
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if let c = collapsedSection(section) {
-            if collapsed[c] { return 0 }
-        }
         switch section {
         case EMPTY: return hasData() ? 0 : 1
         case ACTIVE_HEADING: return hasData() ? 1 : 0
-        case ACTIVE: return active.count
+        case ACTIVE: return collapsed(0) ? 0 : active.count
         case SAVED_HEADING: return hasData() ? 1 : 0
-        case SAVED: return saved.count
+        case SAVED: return collapsed(1) ? 0 : saved.count
         default: return 0
         }
     }
@@ -53,21 +67,22 @@ class RecipeListController: UITableViewController {
     @objc func didTapActive(_ sender: Any?) {
         let b = sender as! UIButton
         let r = active[b.tag]
-        updateRecipe(id: r.id, recipe: ReadableRecipe(name: r.recipe.name, link: r.recipe.link, active: false, rating: r.recipe.rating, notes: r.recipe.notes, ingredients: [:], steps: [:]))
+        updateRecipe(id: r.id, recipe: ReadableRecipe(name: r.recipe.name, link: r.recipe.link, active: false, rating: r.recipe.rating, notes: r.recipe.notes, ingredients: r.recipe.ingredients, steps: r.recipe.steps))
         onChange?()
     }
     
     @objc func didTapSavedForLater(_ sender: Any?) {
         let b = sender as! UIButton
         let r = saved[b.tag]
-        updateRecipe(id: r.id, recipe: ReadableRecipe(name: r.recipe.name, link: r.recipe.link, active: true, rating: r.recipe.rating, notes: r.recipe.notes, ingredients: [:], steps: [:]))
+        updateRecipe(id: r.id, recipe: ReadableRecipe(name: r.recipe.name, link: r.recipe.link, active: true, rating: r.recipe.rating, notes: r.recipe.notes, ingredients: r.recipe.ingredients, steps: r.recipe.steps))
         onChange?()
+        tableView.reloadData()
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.section {
         case ACTIVE_HEADING:
-            collapsed[0] = !collapsed[0]
+            setCollapsed(0)
             DispatchQueue.main.async {
                 self.tableView.reloadData()
             }
@@ -76,7 +91,7 @@ class RecipeListController: UITableViewController {
             performSegue(withIdentifier: "showRecipe", sender: indexPath)
             break
         case SAVED_HEADING:
-            collapsed[1] = !collapsed[1]
+            setCollapsed(1)
             DispatchQueue.main.async {
                 self.tableView.reloadData()
             }
@@ -129,7 +144,7 @@ class RecipeListController: UITableViewController {
             return cell
         case ACTIVE_HEADING:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SectionHeader
-            let image = collapsed[0] ? UIImage(systemName: "chevron.forward.circle.fill") : UIImage(systemName: "chevron.down.circle.fill")
+            let image = collapsed(0) ? UIImage(systemName: "chevron.forward.circle.fill") : UIImage(systemName: "chevron.down.circle.fill")
             cell.indicator.setImage(image, for: .normal)
             cell.label.text = "Active (\(active.count))"
             return cell
@@ -143,7 +158,7 @@ class RecipeListController: UITableViewController {
             return cell
         case SAVED_HEADING:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SectionHeader
-            let image = collapsed[1] ? UIImage(systemName: "chevron.forward.circle.fill") : UIImage(systemName: "chevron.down.circle.fill")
+            let image = collapsed(1) ? UIImage(systemName: "chevron.forward.circle.fill") : UIImage(systemName: "chevron.down.circle.fill")
             cell.indicator.setImage(image, for: .normal)
             cell.label.text = "Saved for later (\(saved.count))"
             return cell
@@ -159,6 +174,27 @@ class RecipeListController: UITableViewController {
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SectionHeader
             return cell
         }
+    }
+    
+    func onSearch() {
+        switch mode {
+        case .normal:
+            active = allActive
+            saved = allSaved
+            break
+        case .search(let searchText):
+            let words = searchText.components(separatedBy: .whitespacesAndNewlines).filter({ !$0.isEmpty }).map({ $0.lowercased() })
+            let activeIds = search(items: allActive, tokens: words)
+            let savedIds = search(items: allSaved, tokens: words)
+            active = allActive.filter({ activeIds.contains($0.id) })
+            saved = allSaved.filter({ savedIds.contains($0.id) })
+        }
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        mode = searchText.isEmpty ? .normal : .search(searchText)
+        onSearch()
+        tableView.reloadData()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
