@@ -14,7 +14,7 @@ import Database.PostgreSQL.Simple.Migration
   ( MigrationCommand(..), MigrationResult(..), runMigrations
   )
 import Network.Wai.Handler.Warp (Settings, defaultSettings, runSettings, setPort)
-import Network.Wai.Middleware.RequestLogger (mkRequestLogger)
+import Network.Wai.Middleware.RequestLogger (OutputFormat(Detailed), mkRequestLogger, outputFormat)
 import Servant.API ((:<|>)(..))
 import Servant.Server (ServerT, hoistServer, serve)
 import Servant.Server.StaticFiles (serveDirectoryWith)
@@ -120,5 +120,5 @@ appMain = do
       appl = serve wholeApi $
         hoistServer nomzApi (runNomzServer app) nomzServer
           :<|> serveDirectoryWith staticFileSettings
-  requestLogger <- mkRequestLogger def
+  requestLogger <- mkRequestLogger def { outputFormat = Detailed False }
   runSettings (warpSettings app) $ requestLogger appl
