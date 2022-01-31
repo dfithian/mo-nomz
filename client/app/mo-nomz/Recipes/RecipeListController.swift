@@ -186,8 +186,8 @@ class RecipeListController: UITableViewController, UISearchBarDelegate {
             let words = searchText.components(separatedBy: .whitespacesAndNewlines).filter({ !$0.isEmpty }).map({ $0.lowercased() })
             let activeIds = search(items: allActive, tokens: words)
             let savedIds = search(items: allSaved, tokens: words)
-            active = allActive.filter({ activeIds.contains($0.id) })
-            saved = allSaved.filter({ savedIds.contains($0.id) })
+            active = activeIds.compactMap({ (id) in allActive.first(where: { (recipe) in id == recipe.id }) })
+            saved = savedIds.compactMap({ (id) in allSaved.first(where: { (recipe) in id == recipe.id }) })
         }
     }
     

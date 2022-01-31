@@ -7,7 +7,7 @@
 
 import UIKit
 
-class RecipeController: UIViewController, UISearchBarDelegate {
+class RecipeController: UIViewController {
     @IBOutlet weak var banner: UIView!
     @IBOutlet weak var toolbar: Toolbar!
     @IBOutlet weak var clear: UIButton!
