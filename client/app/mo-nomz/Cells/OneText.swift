@@ -9,4 +9,6 @@ import UIKit
 
 class OneText: UITableViewCell {
     @IBOutlet weak var text_: UITextView!
+    @IBOutlet weak var single: NSLayoutConstraint!
+    @IBOutlet weak var multiple: NSLayoutConstraint!
 }

@@ -1,5 +1,5 @@
 //
-//  RecipeAddController.swift
+//  AddLinkController.swift
 //  mo-nomz
 //
 //  Created by Dan Fithian on 4/12/21.
@@ -8,11 +8,10 @@
 import UIKit
 import SafariServices
 
-class RecipeAddController: UIViewController {
+class AddLinkController: UIViewController {
     @IBOutlet weak var link: UITextField!
     @IBOutlet weak var checkbox: UIButton!
-    @IBOutlet weak var switcher: UIButton!
-    var existingLinks: [String] = []
+    @IBOutlet weak var switcher: UIBarButtonItem!
     var active: Bool = true
     var navigationVc: AddController? = nil
     var beforeHeight: CGFloat? = nil
@@ -56,11 +55,11 @@ class RecipeAddController: UIViewController {
     }
     
     private func setupSwitcher() {
-        switcher.menu = UIMenu(title: "Try another way", options: .displayInline, children: [
+        switcher.menu = UIMenu(options: .displayInline, children: [
             UIAction(title: "Add link", image: UIImage(systemName: "link"), state: .on, handler: { _ in self.navigationVc?.switchToLink() }),
-            UIAction(title: "Add manual", image: UIImage(systemName: "pencil"), state: .off, handler: { _ in self.navigationVc?.switchToManual() })
+            UIAction(title: "Add manual", image: UIImage(systemName: "pencil"), state: .off, handler: { _ in self.navigationVc?.switchToManual() }),
+            UIAction(title: "Add photo", image: UIImage(systemName: "photo.on.rectangle"), state: .off, handler: { _ in self.navigationVc?.switchToPhoto() })
         ])
-        switcher.showsMenuAsPrimaryAction = true
     }
     
     override func viewWillAppear(_ animated: Bool) {

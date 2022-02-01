@@ -165,8 +165,7 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
             cell.button.addTarget(self, action: #selector(didTapAdd), for: .touchUpInside)
             return cell
         default:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! OneLabel
-            return cell
+            return tableView.dequeueReusableCell(withIdentifier: "sectionHeader")!
         }
     }
     
