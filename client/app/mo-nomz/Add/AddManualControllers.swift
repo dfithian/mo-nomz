@@ -73,13 +73,13 @@ class AddManualController: UIViewController {
             switcher.menu = UIMenu(options: .displayInline, children: [
                 UIAction(title: "Add link", image: UIImage(systemName: "link"), state: .off, handler: { _ in self.navigationVc?.switchToLink() }),
                 UIAction(title: "Add manual", image: UIImage(systemName: "pencil"), state: .off, handler: { _ in self.navigationVc?.switchToManual() }),
-                UIAction(title: "Add photo", image: UIImage(systemName: "photo.on.rectangle"), state: .on, handler: { _ in self.navigationVc?.switchToPhoto() })
+                UIAction(title: "Add photos", image: UIImage(systemName: "photo.on.rectangle"), state: .on, handler: { _ in self.navigationVc?.switchToPhoto() })
             ])
         default:
             switcher.menu = UIMenu(options: .displayInline, children: [
                 UIAction(title: "Add link", image: UIImage(systemName: "link"), state: .off, handler: { _ in self.navigationVc?.switchToLink() }),
                 UIAction(title: "Add manual", image: UIImage(systemName: "pencil"), state: .on, handler: { _ in self.navigationVc?.switchToManual() }),
-                UIAction(title: "Add photo", image: UIImage(systemName: "photo.on.rectangle"), state: .off, handler: { _ in self.navigationVc?.switchToPhoto() })
+                UIAction(title: "Add photos", image: UIImage(systemName: "photo.on.rectangle"), state: .off, handler: { _ in self.navigationVc?.switchToPhoto() })
             ])
             break
         }
@@ -213,15 +213,6 @@ class AddManualTableController: UITableViewController, UITextViewDelegate, UITex
             cell.text_.delegate = self
             cell.text_.addDoneButtonOnKeyboard()
             cell.text_.layer.cornerRadius = 10
-            if parentVc?.isRecipe ?? false {
-                cell.frame.size = CGSize(width: cell.frame.width, height: cell.multiple.constant)
-                cell.single.isActive = false
-                cell.multiple.isActive = true
-            } else {
-                cell.frame.size = CGSize(width: cell.frame.width, height: cell.single.constant)
-                cell.single.isActive = true
-                cell.multiple.isActive = false
-            }
             cell.text_.text = parentVc?.ingredients
             return cell
         case STEP_HEADING:

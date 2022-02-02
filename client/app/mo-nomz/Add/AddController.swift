@@ -20,6 +20,9 @@ class AddController: UINavigationController, UINavigationControllerDelegate {
         if let vc = viewController as? AddPhotoController {
             vc.navigationVc = self
         }
+        if let vc = viewController as? ReviewPhotoController {
+            vc.navigationVc = self
+        }
     }
     
     func switchToLink() {

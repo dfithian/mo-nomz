@@ -296,5 +296,7 @@
 			<dict/>
 		</dict>
 	</array>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app needs access to photos in order to create recipes.</string>
 </dict>
 </plist>

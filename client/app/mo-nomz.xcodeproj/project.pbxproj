@@ -18,6 +18,7 @@
 		3724EFD927A8BDDE0094574E /* AddManualControllers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3724EFD827A8BDDE0094574E /* AddManualControllers.swift */; };
 		3724EFDB27A8C3CC0094574E /* OneTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3724EFDA27A8C3CC0094574E /* OneTextField.swift */; };
 		3724EFDD27A8D70F0094574E /* TwoButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3724EFDC27A8D70F0094574E /* TwoButton.swift */; };
+		3724EFE427AACE4E0094574E /* CollectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3724EFE327AACE4E0094574E /* CollectionHeader.swift */; };
 		3728B0982633AA240055D2E1 /* GoogleMobileAds.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3728B0972633AA240055D2E1 /* GoogleMobileAds.xcframework */; };
 		3728B0A42633B40D0055D2E1 /* BannerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3728B0A32633B40D0055D2E1 /* BannerController.swift */; };
 		3728B0CD2635BCF00055D2E1 /* AddItems.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3728B0CC2635BCF00055D2E1 /* AddItems.storyboard */; };
@@ -92,6 +93,7 @@
 		3724EFD827A8BDDE0094574E /* AddManualControllers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddManualControllers.swift; sourceTree = "<group>"; };
 		3724EFDA27A8C3CC0094574E /* OneTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OneTextField.swift; sourceTree = "<group>"; };
 		3724EFDC27A8D70F0094574E /* TwoButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoButton.swift; sourceTree = "<group>"; };
+		3724EFE327AACE4E0094574E /* CollectionHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionHeader.swift; sourceTree = "<group>"; };
 		3728B0972633AA240055D2E1 /* GoogleMobileAds.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = GoogleMobileAds.xcframework; path = "Pods/Google-Mobile-Ads-SDK/Frameworks/GoogleMobileAdsFramework-Current/GoogleMobileAds.xcframework"; sourceTree = "<group>"; };
 		3728B0A32633B40D0055D2E1 /* BannerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerController.swift; sourceTree = "<group>"; };
 		3728B0CC2635BCF00055D2E1 /* AddItems.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = AddItems.storyboard; sourceTree = "<group>"; };
@@ -181,6 +183,7 @@
 				379D47892625E22A003DD2C6 /* SectionHeader.swift */,
 				37E10346279B18C60064C193 /* StepItem.swift */,
 				3724EFDC27A8D70F0094574E /* TwoButton.swift */,
+				3724EFE327AACE4E0094574E /* CollectionHeader.swift */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -466,6 +469,7 @@
 				37C6714E2627BFB100B5838C /* ErrorHandler.swift in Sources */,
 				3724EFCF27A82F360094574E /* AddPhotoControllers.swift in Sources */,
 				3724EFC527A62DFD0094574E /* OneLabel.swift in Sources */,
+				3724EFE427AACE4E0094574E /* CollectionHeader.swift in Sources */,
 				3728B0A42633B40D0055D2E1 /* BannerController.swift in Sources */,
 				37B979A32693DB0D002B677F /* RecipeDetailController.swift in Sources */,
 				37E10347279B18C70064C193 /* StepItem.swift in Sources */,

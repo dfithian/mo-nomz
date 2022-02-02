@@ -58,7 +58,7 @@ class AddLinkController: UIViewController {
         switcher.menu = UIMenu(options: .displayInline, children: [
             UIAction(title: "Add link", image: UIImage(systemName: "link"), state: .on, handler: { _ in self.navigationVc?.switchToLink() }),
             UIAction(title: "Add manual", image: UIImage(systemName: "pencil"), state: .off, handler: { _ in self.navigationVc?.switchToManual() }),
-            UIAction(title: "Add photo", image: UIImage(systemName: "photo.on.rectangle"), state: .off, handler: { _ in self.navigationVc?.switchToPhoto() })
+            UIAction(title: "Add photos", image: UIImage(systemName: "photo.on.rectangle"), state: .off, handler: { _ in self.navigationVc?.switchToPhoto() })
         ])
     }
     
