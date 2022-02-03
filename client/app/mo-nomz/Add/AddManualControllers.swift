@@ -106,13 +106,14 @@ class AddManualTableController: UITableViewController, UITextViewDelegate, UITex
     let NAME_TAG = 0
     let LINK_TAG = 1
     
-    let IS_RECIPE__IS_ACTIVE = 0
-    let NAME = 1
-    let LINK = 2
-    let INGREDIENT_HEADING = 3
-    let INGREDIENTS = 4
-    let STEP_HEADING = 5
-    let STEPS = 6
+    let INFO_HEADING = 0
+    let IS_RECIPE__IS_ACTIVE = 1
+    let NAME = 2
+    let LINK = 3
+    let INGREDIENT_HEADING = 4
+    let INGREDIENTS = 5
+    let STEP_HEADING = 6
+    let STEPS = 7
     
     @objc func didTapIsRecipe(_ sender: Any?) {
         let b = sender as! UIButton
@@ -162,11 +163,12 @@ class AddManualTableController: UITableViewController, UITextViewDelegate, UITex
     }
     
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 7
+        return 8
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
+        case INFO_HEADING: return 1
         case IS_RECIPE__IS_ACTIVE: return 1
         case NAME: return (parentVc?.isRecipe ?? false) ? 1 : 0
         case LINK: return (parentVc?.isRecipe ?? false) ? 1 : 0
@@ -180,6 +182,10 @@ class AddManualTableController: UITableViewController, UITextViewDelegate, UITex
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch indexPath.section {
+        case INFO_HEADING:
+            let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! OneLabel
+            cell.label.text = "Info"
+            return cell
         case IS_RECIPE__IS_ACTIVE:
             let cell = tableView.dequeueReusableCell(withIdentifier: "checkboxItem") as! TwoButton
             cell.one.setImage(UIImage(systemName: (parentVc?.isActive ?? true) ? "checkmark.square" : "square"), for: .normal)

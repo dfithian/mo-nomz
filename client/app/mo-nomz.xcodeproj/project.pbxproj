@@ -13,8 +13,8 @@
 		3724EFCB27A62E830094574E /* OneButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3724EFCA27A62E830094574E /* OneButton.swift */; };
 		3724EFCD27A6F8930094574E /* Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3724EFCC27A6F8930094574E /* Search.swift */; };
 		3724EFCF27A82F360094574E /* AddPhotoControllers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3724EFCE27A82F360094574E /* AddPhotoControllers.swift */; };
-		3724EFD127A85EFF0094574E /* OneImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3724EFD027A85EFF0094574E /* OneImage.swift */; };
-		3724EFD327A85F670094574E /* OneImageButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3724EFD227A85F670094574E /* OneImageButton.swift */; };
+		3724EFD127A85EFF0094574E /* OneCellImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3724EFD027A85EFF0094574E /* OneCellImage.swift */; };
+		3724EFD327A85F670094574E /* OneCellButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3724EFD227A85F670094574E /* OneCellButton.swift */; };
 		3724EFD927A8BDDE0094574E /* AddManualControllers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3724EFD827A8BDDE0094574E /* AddManualControllers.swift */; };
 		3724EFDB27A8C3CC0094574E /* OneTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3724EFDA27A8C3CC0094574E /* OneTextField.swift */; };
 		3724EFDD27A8D70F0094574E /* TwoButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3724EFDC27A8D70F0094574E /* TwoButton.swift */; };
@@ -88,8 +88,8 @@
 		3724EFCA27A62E830094574E /* OneButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OneButton.swift; sourceTree = "<group>"; };
 		3724EFCC27A6F8930094574E /* Search.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Search.swift; sourceTree = "<group>"; };
 		3724EFCE27A82F360094574E /* AddPhotoControllers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPhotoControllers.swift; sourceTree = "<group>"; };
-		3724EFD027A85EFF0094574E /* OneImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OneImage.swift; sourceTree = "<group>"; };
-		3724EFD227A85F670094574E /* OneImageButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OneImageButton.swift; sourceTree = "<group>"; };
+		3724EFD027A85EFF0094574E /* OneCellImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OneCellImage.swift; sourceTree = "<group>"; };
+		3724EFD227A85F670094574E /* OneCellButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OneCellButton.swift; sourceTree = "<group>"; };
 		3724EFD827A8BDDE0094574E /* AddManualControllers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddManualControllers.swift; sourceTree = "<group>"; };
 		3724EFDA27A8C3CC0094574E /* OneTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OneTextField.swift; sourceTree = "<group>"; };
 		3724EFDC27A8D70F0094574E /* TwoButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoButton.swift; sourceTree = "<group>"; };
@@ -175,8 +175,8 @@
 			isa = PBXGroup;
 			children = (
 				3724EFCA27A62E830094574E /* OneButton.swift */,
-				3724EFD027A85EFF0094574E /* OneImage.swift */,
-				3724EFD227A85F670094574E /* OneImageButton.swift */,
+				3724EFD027A85EFF0094574E /* OneCellImage.swift */,
+				3724EFD227A85F670094574E /* OneCellButton.swift */,
 				3724EFC427A62DFD0094574E /* OneLabel.swift */,
 				3724EFC827A62E400094574E /* OneText.swift */,
 				3724EFDA27A8C3CC0094574E /* OneTextField.swift */,
@@ -458,7 +458,7 @@
 				3724EFD927A8BDDE0094574E /* AddManualControllers.swift in Sources */,
 				37E1034B279EE8FE0064C193 /* IngredientChangeController.swift in Sources */,
 				376095C0262125C10015B6F0 /* AppDelegate.swift in Sources */,
-				3724EFD327A85F670094574E /* OneImageButton.swift in Sources */,
+				3724EFD327A85F670094574E /* OneCellButton.swift in Sources */,
 				37E1DC1D2631B7C000330C5B /* UserDefaults.swift in Sources */,
 				372DDC43262B43CB00CA83A8 /* Loading.swift in Sources */,
 				37E10343279AF6CA0064C193 /* Preferences.swift in Sources */,
@@ -474,7 +474,7 @@
 				37B979A32693DB0D002B677F /* RecipeDetailController.swift in Sources */,
 				37E10347279B18C70064C193 /* StepItem.swift in Sources */,
 				3774A5C92624B3E90029E35D /* AddLinkController.swift in Sources */,
-				3724EFD127A85EFF0094574E /* OneImage.swift in Sources */,
+				3724EFD127A85EFF0094574E /* OneCellImage.swift in Sources */,
 				379D478A2625E22A003DD2C6 /* SectionHeader.swift in Sources */,
 				37E55B5226F2CDB700207FFE /* Purchases.swift in Sources */,
 				37FE86EF2648CC7200E0B85F /* InfoController.swift in Sources */,
@@ -626,7 +626,7 @@
 				CODE_SIGN_ENTITLEMENTS = "mo-nomz/mo-nomzDebug.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 5A6Y383S44;
 				INFOPLIST_FILE = "mo-nomz/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -709,7 +709,7 @@
 				CODE_SIGN_ENTITLEMENTS = "mo-nomz/mo-nomzRelease.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 5A6Y383S44;
 				INFOPLIST_FILE = "mo-nomz/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
