@@ -13,13 +13,12 @@ enum IngredientChange {
     case merge(ReadableIngredientWithId, ReadableIngredientWithId)
 }
 
-class IngredientChangeController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate {
+class IngredientChangeController: SimpleController, UIPickerViewDataSource, UIPickerViewDelegate {
     var recipe: ReadableRecipeWithId? = nil
     var change: IngredientChange? = nil
     var onChange: (() -> Void)? = nil
     var currentWholeQuantity: Int? = nil
     var currentFractionQuantity: ReadableFraction? = nil
-    var beforeHeight: CGFloat? = nil
     
     @IBOutlet weak var heading: UILabel!
     @IBOutlet weak var synopsis: UILabel!
@@ -28,12 +27,6 @@ class IngredientChangeController: UIViewController, UIPickerViewDataSource, UIPi
     @IBOutlet weak var name: UITextField!
     @IBOutlet weak var existingInfo: UILabel!
     @IBOutlet weak var newInfo: UILabel!
-    
-    @IBAction func didTapCancel(_ sender: Any?) {
-        DispatchQueue.main.async {
-            self.dismiss(animated: true, completion: nil)
-        }
-    }
     
     @IBAction func didTapSave(_ sender: Any?) {
         guard let r = recipe else { return }
@@ -87,14 +80,6 @@ class IngredientChangeController: UIViewController, UIPickerViewDataSource, UIPi
         }
     }
     
-    @objc func keyboardWillShow(notification: NSNotification) {
-        beforeHeight = keyboardWillShowInternal(subview: name, notification: notification)
-    }
-    
-    @objc func keyboardWillHide(notification: NSNotification) {
-        keyboardWillHideInternal(heightMay: beforeHeight, notification: notification)
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         switch change {
@@ -136,7 +121,5 @@ class IngredientChangeController: UIViewController, UIPickerViewDataSource, UIPi
         }
         unit.addDoneButtonOnKeyboard()
         name.addDoneButtonOnKeyboard()
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardDidShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
 }

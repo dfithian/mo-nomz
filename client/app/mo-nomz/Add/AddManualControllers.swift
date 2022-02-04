@@ -12,9 +12,8 @@ enum ManualChange {
     case photoReview
 }
 
-class AddManualController: UIViewController {
+class AddManualController: AddDetailController {
     @IBOutlet weak var back: UIButton!
-    @IBOutlet weak var switcher: UIBarButtonItem!
 
     var change: ManualChange? = nil
     var name: String? = nil
@@ -23,18 +22,11 @@ class AddManualController: UIViewController {
     var steps: String? = nil
     var isRecipe: Bool = false
     var isActive: Bool = true
-    var navigationVc: AddController? = nil
     var manualVc: AddManualTableController? = nil
     
     @IBAction func didTapBack(_ sender: Any?) {
         DispatchQueue.main.async {
             self.navigationVc?.popViewController(animated: true)
-        }
-    }
-    
-    @IBAction func didTapCancel(_ sender: Any?) {
-        DispatchQueue.main.async {
-            self.dismiss(animated: true, completion: nil)
         }
     }
     
@@ -60,6 +52,10 @@ class AddManualController: UIViewController {
         }
     }
     
+    override func addType() -> AddType {
+        return change == .photoReview ? .photo : .manual
+    }
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let vc = segue.destination as? AddManualTableController, segue.identifier == "embedManual" {
             manualVc = vc
@@ -67,27 +63,8 @@ class AddManualController: UIViewController {
         }
     }
     
-    private func setupSwitcher() {
-        switch change {
-        case .photoReview:
-            switcher.menu = UIMenu(options: .displayInline, children: [
-                UIAction(title: "Add link", image: UIImage(systemName: "link"), state: .off, handler: { _ in self.navigationVc?.switchToLink() }),
-                UIAction(title: "Add manual", image: UIImage(systemName: "pencil"), state: .off, handler: { _ in self.navigationVc?.switchToManual() }),
-                UIAction(title: "Add photos", image: UIImage(systemName: "photo.on.rectangle"), state: .on, handler: { _ in self.navigationVc?.switchToPhoto() })
-            ])
-        default:
-            switcher.menu = UIMenu(options: .displayInline, children: [
-                UIAction(title: "Add link", image: UIImage(systemName: "link"), state: .off, handler: { _ in self.navigationVc?.switchToLink() }),
-                UIAction(title: "Add manual", image: UIImage(systemName: "pencil"), state: .on, handler: { _ in self.navigationVc?.switchToManual() }),
-                UIAction(title: "Add photos", image: UIImage(systemName: "photo.on.rectangle"), state: .off, handler: { _ in self.navigationVc?.switchToPhoto() })
-            ])
-            break
-        }
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupSwitcher()
         switch change {
         case .photoReview:
             back.alpha = 1

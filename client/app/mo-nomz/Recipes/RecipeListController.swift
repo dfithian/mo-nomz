@@ -143,36 +143,34 @@ class RecipeListController: UITableViewController, UISearchBarDelegate {
             let cell = tableView.dequeueReusableCell(withIdentifier: "emptyItem")!
             return cell
         case ACTIVE_HEADING:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SectionHeader
+            let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! LabelButton
             let image = collapsed(0) ? UIImage(systemName: "chevron.forward.circle.fill") : UIImage(systemName: "chevron.down.circle.fill")
-            cell.indicator.setImage(image, for: .normal)
+            cell.button.setImage(image, for: .normal)
             cell.label.text = "Active (\(active.count))"
             return cell
         case ACTIVE:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "recipeListItem") as! RecipeListItem
+            let cell = tableView.dequeueReusableCell(withIdentifier: "recipeListItem") as! TwoLabelOneButton
             let recipe = active[indexPath.row].recipe
-            cell.name.text = recipe.name
-            cell.select.tag = indexPath.row
-            cell.select.addTarget(self, action: #selector(didTapActive), for: .touchUpInside)
-            cell.rating.text = String(recipe.rating)
+            cell.oneLabel.text = recipe.name
+            cell.button.tag = indexPath.row
+            cell.button.addTarget(self, action: #selector(didTapActive), for: .touchUpInside)
+            cell.twoLabel.text = String(recipe.rating)
             return cell
         case SAVED_HEADING:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SectionHeader
+            let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! LabelButton
             let image = collapsed(1) ? UIImage(systemName: "chevron.forward.circle.fill") : UIImage(systemName: "chevron.down.circle.fill")
-            cell.indicator.setImage(image, for: .normal)
+            cell.button.setImage(image, for: .normal)
             cell.label.text = "Saved for later (\(saved.count))"
             return cell
         case SAVED:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "savedListItem") as! RecipeListItem
+            let cell = tableView.dequeueReusableCell(withIdentifier: "savedListItem") as! TwoLabelOneButton
             let recipe = saved[indexPath.row].recipe
-            cell.name.text = recipe.name
-            cell.select.tag = indexPath.row
-            cell.select.addTarget(self, action: #selector(didTapSavedForLater), for: .touchUpInside)
-            cell.rating.text = String(recipe.rating)
+            cell.oneLabel.text = recipe.name
+            cell.button.tag = indexPath.row
+            cell.button.addTarget(self, action: #selector(didTapSavedForLater), for: .touchUpInside)
+            cell.twoLabel.text = String(recipe.rating)
             return cell
-        default:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SectionHeader
-            return cell
+        default: return UITableViewCell()
         }
     }
     

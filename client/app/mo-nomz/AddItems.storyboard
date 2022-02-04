@@ -49,7 +49,7 @@
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="M8E-m0-fUw"/>
                                     <barButtonItem title="Try another way" id="Lco-xu-ph6"/>
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="qki-TK-K3q"/>
-                                    <barButtonItem title="Submit" id="dm0-2O-9rA">
+                                    <barButtonItem title="Save" id="dm0-2O-9rA">
                                         <connections>
                                             <action selector="didTapSubmit:" destination="PPy-YC-O80" id="27h-P2-7Sz"/>
                                         </connections>
@@ -163,7 +163,7 @@
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="gbc-4e-YHG"/>
                                     <barButtonItem title="Try another way" id="yut-7d-zab"/>
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="4s8-Ur-XNm"/>
-                                    <barButtonItem title="Submit" id="XFi-oG-Pl4">
+                                    <barButtonItem title="Save" id="XFi-oG-Pl4">
                                         <connections>
                                             <action selector="didTapSubmit:" destination="E2R-Sx-ND8" id="jNp-jk-MQo"/>
                                         </connections>
@@ -201,6 +201,7 @@
                     <navigationItem key="navigationItem" id="uJU-cu-X0S"/>
                     <connections>
                         <outlet property="checkbox" destination="uxF-fz-ow1" id="VSY-3x-0rA"/>
+                        <outlet property="keyboardView" destination="Mxj-HG-raG" id="1ZA-MS-0HT"/>
                         <outlet property="link" destination="Mxj-HG-raG" id="ZMX-8V-kG6"/>
                         <outlet property="switcher" destination="yut-7d-zab" id="6F6-46-lB1"/>
                     </connections>
@@ -262,7 +263,7 @@
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="amo-Mn-Cdr"/>
                                     <barButtonItem title="Try another way" id="qTD-Up-IQK"/>
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="R7B-Ng-cDR"/>
-                                    <barButtonItem title="Next" id="YUZ-oc-mdd">
+                                    <barButtonItem title="Review" id="YUZ-oc-mdd">
                                         <connections>
                                             <action selector="didTapSubmit:" destination="Kqn-SF-xFc" id="2Ks-Lt-lxN"/>
                                         </connections>
@@ -402,6 +403,7 @@
                     <connections>
                         <outlet property="help" destination="b6r-fY-1t4" id="JEV-vy-3Ng"/>
                         <outlet property="image" destination="ITN-ec-POO" id="QSG-Zw-857"/>
+                        <outlet property="keyboardView" destination="ja8-9m-ECK" id="ESe-aI-y6a"/>
                         <outlet property="text" destination="ja8-9m-ECK" id="VAh-5c-Nyf"/>
                     </connections>
                 </viewController>

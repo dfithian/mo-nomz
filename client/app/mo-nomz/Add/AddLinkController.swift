@@ -8,19 +8,11 @@
 import UIKit
 import SafariServices
 
-class AddLinkController: UIViewController {
+class AddLinkController: AddDetailController {
     @IBOutlet weak var link: UITextField!
     @IBOutlet weak var checkbox: UIButton!
-    @IBOutlet weak var switcher: UIBarButtonItem!
+
     var active: Bool = true
-    var navigationVc: AddController? = nil
-    var beforeHeight: CGFloat? = nil
-    
-    @IBAction func didTapCancel(_ sender: Any?) {
-        DispatchQueue.main.async {
-            self.dismiss(animated: true, completion: nil)
-        }
-    }
     
     @IBAction func didTapSubmit(_ sender: Any?) {
         let completion = { () -> Void in
@@ -46,31 +38,12 @@ class AddLinkController: UIViewController {
         }
     }
     
-    @objc func keyboardWillShow(notification: NSNotification) {
-        beforeHeight = keyboardWillShowInternal(subview: link, notification: notification)
-    }
-    
-    @objc func keyboardWillHide(notification: NSNotification) {
-        keyboardWillHideInternal(heightMay: beforeHeight, notification: notification)
-    }
-    
-    private func setupSwitcher() {
-        switcher.menu = UIMenu(options: .displayInline, children: [
-            UIAction(title: "Add link", image: UIImage(systemName: "link"), state: .on, handler: { _ in self.navigationVc?.switchToLink() }),
-            UIAction(title: "Add manual", image: UIImage(systemName: "pencil"), state: .off, handler: { _ in self.navigationVc?.switchToManual() }),
-            UIAction(title: "Add photos", image: UIImage(systemName: "photo.on.rectangle"), state: .off, handler: { _ in self.navigationVc?.switchToPhoto() })
-        ])
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardDidShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+    override func addType() -> AddType {
+        return .link
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         link.addDoneButtonOnKeyboard()
-        setupSwitcher()
     }
 }

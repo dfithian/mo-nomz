@@ -1,14 +1,38 @@
 //
-//  ProfileController.swift
+//  InfoControllers.swift
 //  mo-nomz
 //
-//  Created by Dan Fithian on 4/12/21.
+//  Created by Dan Fithian on 5/9/21.
 //
 
 import StoreKit
 import UIKit
 
-class ProfileController: UITableViewController {
+class InfoController: UIViewController {
+    @IBOutlet weak var banner: UIView!
+    
+    var bannerVc: BannerController? = nil
+    var profileVc: InfoTableController? = nil
+    
+    override func reloadInputViews() {
+        super.reloadInputViews()
+        bannerVc?.reloadInputViews()
+        profileVc?.reloadInputViews()
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let vc = segue.destination as? BannerController, segue.identifier == "embedBanner" {
+            vc.height = banner.constraints.filter({ $0.identifier == "height" }).first
+            bannerVc = vc
+        }
+        if let vc = segue.destination as? InfoTableController, segue.identifier == "embedProfile" {
+            profileVc = vc
+            vc.onChange = reloadInputViews
+        }
+    }
+}
+
+class InfoTableController: UITableViewController {
     var boughtProducts: [SKProduct] = []
     var unboughtProducts: [SKProduct] = []
     var preferences: [PreferenceRole] = [.mealsDefaultTab, .noTips]
@@ -103,19 +127,19 @@ class ProfileController: UITableViewController {
         case PURCHASES:
             let product = boughtProducts[indexPath.row]
             let price = Purchases.shared.getPriceFormatted(for: product) ?? ""
-            let cell = tableView.dequeueReusableCell(withIdentifier: "purchase") as! PurchaseItem
+            let cell = tableView.dequeueReusableCell(withIdentifier: "purchase") as! LabelButton
             cell.label.text = "\(product.localizedTitle) - \(price)"
             cell.label.isEnabled = false
             let image = UIImage(systemName: "lock.open.fill")
-            cell.indicator.setImage(image, for: .normal)
+            cell.button.setImage(image, for: .normal)
             return cell
         case AVAILABLE_PURCHASES:
             let product = unboughtProducts[indexPath.row]
             let price = Purchases.shared.getPriceFormatted(for: product) ?? ""
-            let cell = tableView.dequeueReusableCell(withIdentifier: "purchase") as! PurchaseItem
+            let cell = tableView.dequeueReusableCell(withIdentifier: "purchase") as! LabelButton
             cell.label.text = "\(product.localizedTitle) - \(price)"
             let image = UIImage(systemName: "lock.fill")
-            cell.indicator.setImage(image, for: .normal)
+            cell.button.setImage(image, for: .normal)
             return cell
         case RESTORE_PURCHASES:
             return tableView.dequeueReusableCell(withIdentifier: "restore")!
@@ -124,12 +148,12 @@ class ProfileController: UITableViewController {
             cell.label.text = "Preferences"
             return cell
         case PREFERENCES:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "preference") as! PreferenceItem
+            let cell = tableView.dequeueReusableCell(withIdentifier: "preference") as! LabelSwitch
             let preference = preferences[indexPath.row]
             cell.label.text = preference.description
-            cell.indicator.tag = indexPath.row
-            cell.indicator.isOn = User.preference(preference)
-            cell.indicator.addTarget(self, action: #selector(didTapPreference), for: .touchUpInside)
+            cell.switch_.tag = indexPath.row
+            cell.switch_.isOn = User.preference(preference)
+            cell.switch_.addTarget(self, action: #selector(didTapPreference), for: .touchUpInside)
             return cell
         default:
             return tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! OneLabel

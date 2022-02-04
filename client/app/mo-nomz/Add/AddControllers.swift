@@ -1,5 +1,5 @@
 //
-//  AddController.swift
+//  AddControllers.swift
 //  mo-nomz
 //
 //  Created by Dan Fithian on 1/16/22.
@@ -47,5 +47,37 @@ class AddController: UINavigationController, UINavigationControllerDelegate {
         super.viewDidLoad()
         self.delegate = self
         switchToLink()
+    }
+}
+
+enum AddType {
+    case link
+    case manual
+    case photo
+}
+
+class AddDetailController: SimpleController {
+    @IBOutlet weak var switcher: UIBarButtonItem!
+    
+    var navigationVc: AddController? = nil
+    
+    func addType() -> AddType {
+        preconditionFailure("Must override addType()")
+    }
+
+    private func setupSwitcher() {
+        let f = { (type: AddType) -> UIMenuElement.State in
+            self.addType() == type ? .on : .off
+        }
+        switcher.menu = UIMenu(options: .displayInline, children: [
+            UIAction(title: "Add link", image: UIImage(systemName: "link"), state: f(.link), handler: { _ in self.navigationVc?.switchToLink() }),
+            UIAction(title: "Add manual", image: UIImage(systemName: "pencil"), state: f(.manual), handler: { _ in self.navigationVc?.switchToManual() }),
+            UIAction(title: "Add photos", image: UIImage(systemName: "photo.on.rectangle"), state: f(.photo), handler: { _ in self.navigationVc?.switchToPhoto() })
+        ])
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setupSwitcher()
     }
 }

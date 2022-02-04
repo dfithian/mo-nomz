@@ -12,12 +12,11 @@ enum GroceryChange {
     case merge(ReadableGroceryItemWithId, ReadableGroceryItemWithId)
 }
 
-class GroceryChangeController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate {
+class GroceryChangeController: SimpleController, UIPickerViewDataSource, UIPickerViewDelegate {
     var change: GroceryChange? = nil
     var onChange: (() -> Void)? = nil
     var currentWholeQuantity: Int? = nil
     var currentFractionQuantity: ReadableFraction? = nil
-    var beforeHeight: CGFloat? = nil
     
     @IBOutlet weak var heading: UILabel!
     @IBOutlet weak var synopsis: UILabel!
@@ -26,12 +25,6 @@ class GroceryChangeController: UIViewController, UIPickerViewDataSource, UIPicke
     @IBOutlet weak var name: UITextField!
     @IBOutlet weak var existingInfo: UILabel!
     @IBOutlet weak var newInfo: UILabel!
-    
-    @IBAction func didTapCancel(_ sender: Any?) {
-        DispatchQueue.main.async {
-            self.dismiss(animated: true, completion: nil)
-        }
-    }
     
     @IBAction func didTapSave(_ sender: Any?) {
         switch change {
@@ -80,14 +73,6 @@ class GroceryChangeController: UIViewController, UIPickerViewDataSource, UIPicke
         }
     }
     
-    @objc func keyboardWillShow(notification: NSNotification) {
-        beforeHeight = keyboardWillShowInternal(subview: name, notification: notification)
-    }
-    
-    @objc func keyboardWillHide(notification: NSNotification) {
-        keyboardWillHideInternal(heightMay: beforeHeight, notification: notification)
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         switch change {
@@ -120,7 +105,5 @@ class GroceryChangeController: UIViewController, UIPickerViewDataSource, UIPicke
         }
         unit.addDoneButtonOnKeyboard()
         name.addDoneButtonOnKeyboard()
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardDidShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
 }

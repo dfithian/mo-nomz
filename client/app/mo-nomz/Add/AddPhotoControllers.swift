@@ -26,30 +26,13 @@ struct Scrape {
     var steps: [ScrapeInfo]
 }
 
-class AddPhotoController: UIViewController {
-    @IBOutlet weak var switcher: UIBarButtonItem!
-
+class AddPhotoController: AddDetailController {
     var scrape: Scrape = Scrape(ingredients: [], steps: [])
     var current: ScrapeInfo? = nil
-    var navigationVc: AddController? = nil
     var pickVc: PickPhotoController? = nil
-    
-    @IBAction func didTapCancel(_ sender: Any?) {
-        DispatchQueue.main.async {
-            self.dismiss(animated: true, completion: nil)
-        }
-    }
     
     @IBAction func didTapSubmit(_ sender: Any?) {
         performSegue(withIdentifier: "pushManualRecipe", sender: nil)
-    }
-    
-    private func setupSwitcher() {
-        switcher.menu = UIMenu(options: .displayInline, children: [
-            UIAction(title: "Add link", image: UIImage(systemName: "link"), state: .off, handler: { _ in self.navigationVc?.switchToLink() }),
-            UIAction(title: "Add manual", image: UIImage(systemName: "pencil"), state: .off, handler: { _ in self.navigationVc?.switchToManual() }),
-            UIAction(title: "Add photos", image: UIImage(systemName: "photo.on.rectangle"), state: .on, handler: { _ in self.navigationVc?.switchToPhoto() })
-        ])
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -74,9 +57,8 @@ class AddPhotoController: UIViewController {
         }
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        setupSwitcher()
+    override func addType() -> AddType {
+        return .photo
     }
 }
 
@@ -116,36 +98,36 @@ class PickPhotoController: UICollectionViewController, UICollectionViewDelegateF
         }
     }
     
+    private func imageCell(_ collectionView: UICollectionView, indexPath: IndexPath, scrapeInfos: [ScrapeInfo]) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "imageItem", for: indexPath) as! OneCellImage
+        cell.layer.cornerRadius = 10
+        cell.image.image = scrapeInfos[indexPath.row].image
+        return cell
+    }
+    
+    private func addCell(_ collectionView: UICollectionView, indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "addImage", for: indexPath) as! OneCellButton
+        cell.layer.cornerRadius = 10
+        cell.button.tag = indexPath.section
+        cell.button.addTarget(self, action: #selector(didTapAddPhoto), for: .touchUpInside)
+        return cell
+    }
+    
+    private func isIngredient(_ indexPath: IndexPath) -> Bool {
+        return indexPath.section == INGREDIENTS && indexPath.row < addVc!.scrape.ingredients.count
+    }
+    
+    private func isStep(_ indexPath: IndexPath) -> Bool {
+        return indexPath.section == STEPS && indexPath.row < addVc!.scrape.steps.count
+    }
+    
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        switch indexPath.section {
-        case INGREDIENTS:
-            if indexPath.row < addVc!.scrape.ingredients.count {
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "imageItem", for: indexPath) as! OneCellImage
-                cell.layer.cornerRadius = 10
-                cell.image.image = addVc!.scrape.ingredients[indexPath.row].image
-                return cell
-            } else {
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "addImage", for: indexPath) as! OneCellButton
-                cell.layer.cornerRadius = 10
-                cell.button.tag = INGREDIENTS
-                cell.button.addTarget(self, action: #selector(didTapAddPhoto), for: .touchUpInside)
-                return cell
-            }
-        case STEPS:
-            if indexPath.row < addVc!.scrape.steps.count {
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "imageItem", for: indexPath) as! OneCellImage
-                cell.layer.cornerRadius = 10
-                cell.image.image = addVc!.scrape.steps[indexPath.row].image
-                return cell
-            } else {
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "addImage", for: indexPath) as! OneCellButton
-                cell.layer.cornerRadius = 10
-                cell.button.tag = STEPS
-                cell.button.addTarget(self, action: #selector(didTapAddPhoto), for: .touchUpInside)
-                return cell
-            }
-        default: return UICollectionViewCell()
+        if isIngredient(indexPath) {
+            return imageCell(collectionView, indexPath: indexPath, scrapeInfos: addVc!.scrape.ingredients)
+        } else if isStep(indexPath) {
+            return imageCell(collectionView, indexPath: indexPath, scrapeInfos: addVc!.scrape.steps)
         }
+        return addCell(collectionView, indexPath: indexPath)
     }
     
     override func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
@@ -177,26 +159,15 @@ class PickPhotoController: UICollectionViewController, UICollectionViewDelegateF
     }
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        switch indexPath.section {
-        case INGREDIENTS:
-            if indexPath.row < addVc!.scrape.ingredients.count {
-                self.addVc?.current = addVc?.scrape.ingredients[indexPath.row]
-                self.addVc?.performSegue(withIdentifier: "reviewScrape", sender: nil)
-            } else {
-                let cell = collectionView.cellForItem(at: indexPath) as! OneCellButton
-                didTapAddPhoto(cell.button)
-            }
-            break
-        case STEPS:
-            if indexPath.row < addVc!.scrape.steps.count {
-                self.addVc?.current = addVc?.scrape.steps[indexPath.row]
-                self.addVc?.performSegue(withIdentifier: "reviewScrape", sender: nil)
-            } else {
-                let cell = collectionView.cellForItem(at: indexPath) as! OneCellButton
-                didTapAddPhoto(cell.button)
-            }
-            break
-        default: break
+        if isIngredient(indexPath) {
+            self.addVc?.current = addVc?.scrape.ingredients[indexPath.row]
+            self.addVc?.performSegue(withIdentifier: "reviewScrape", sender: nil)
+        } else if isStep(indexPath) {
+            self.addVc?.current = addVc?.scrape.steps[indexPath.row]
+            self.addVc?.performSegue(withIdentifier: "reviewScrape", sender: nil)
+        } else {
+            let cell = collectionView.cellForItem(at: indexPath) as! OneCellButton
+            didTapAddPhoto(cell.button)
         }
     }
     
@@ -245,7 +216,7 @@ class PickPhotoController: UICollectionViewController, UICollectionViewDelegateF
     }
 }
 
-class ReviewPhotoController: UIViewController, UITextViewDelegate, UIContextMenuInteractionDelegate {
+class ReviewPhotoController: SimpleController, UITextViewDelegate, UIContextMenuInteractionDelegate {
     @IBOutlet weak var help: UILabel!
     @IBOutlet weak var image: UIImageView!
     @IBOutlet weak var text: UITextView!
@@ -253,7 +224,6 @@ class ReviewPhotoController: UIViewController, UITextViewDelegate, UIContextMenu
     var scrapeInfo: ScrapeInfo? = nil
     var navigationVc: AddController? = nil
     var addVc: AddPhotoController? = nil
-    var beforeHeight: CGFloat? = nil
     
     @IBAction func didTapBack(_ sender: Any?) {
         DispatchQueue.main.async {
@@ -289,14 +259,6 @@ class ReviewPhotoController: UIViewController, UITextViewDelegate, UIContextMenu
         scrapeInfo?.value = textView.text
     }
     
-    @objc func keyboardWillShow(notification: NSNotification) {
-        beforeHeight = keyboardWillShowInternal(subview: text, notification: notification)
-    }
-    
-    @objc func keyboardWillHide(notification: NSNotification) {
-        keyboardWillHideInternal(heightMay: beforeHeight, notification: notification)
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         switch scrapeInfo?.type {
@@ -314,8 +276,6 @@ class ReviewPhotoController: UIViewController, UITextViewDelegate, UIContextMenu
         image.addInteraction(UIContextMenuInteraction(delegate: self))
         image.image = scrapeInfo?.image
         image.layer.cornerRadius = 10
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardDidShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
 }
 

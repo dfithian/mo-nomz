@@ -162,36 +162,34 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
         case REORDER_MERGE_TIP:
             return tableView.dequeueReusableCell(withIdentifier: "reorderMergeTip")!
         case TO_BUY_HEADING:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SectionHeader
+            let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! LabelButton
             let image = collapsed[0] ? UIImage(systemName: "chevron.forward.circle.fill") : UIImage(systemName: "chevron.down.circle.fill")
-            cell.indicator.setImage(image, for: .normal)
+            cell.button.setImage(image, for: .normal)
             cell.label.text = "To buy (\(toBuy.count))"
             return cell
         case TO_BUY:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "toBuyListItem") as! GroceryListItem
+            let cell = tableView.dequeueReusableCell(withIdentifier: "toBuyListItem") as! LabelButton
             let item = toBuy[indexPath.row].item
             cell.tag = indexPath.row
-            cell.name.text = item.render()
-            cell.select.tag = indexPath.row
-            cell.select.addTarget(self, action: #selector(didTapToBuy), for: .touchUpInside)
+            cell.label.text = item.render()
+            cell.button.tag = indexPath.row
+            cell.button.addTarget(self, action: #selector(didTapToBuy), for: .touchUpInside)
             return cell
         case BOUGHT_HEADING:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SectionHeader
+            let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! LabelButton
             let image = collapsed[1] ? UIImage(systemName: "chevron.forward.circle.fill") : UIImage(systemName: "chevron.down.circle.fill")
-            cell.indicator.setImage(image, for: .normal)
+            cell.button.setImage(image, for: .normal)
             cell.label.text = "Bought (\(bought.count))"
             return cell
         case BOUGHT:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "boughtListItem") as! GroceryListItem
+            let cell = tableView.dequeueReusableCell(withIdentifier: "boughtListItem") as! LabelButton
             let item = bought[indexPath.row].item
             cell.tag = indexPath.row
-            cell.name.text = item.render()
-            cell.select.tag = indexPath.row
-            cell.select.addTarget(self, action: #selector(didTapBought), for: .touchUpInside)
+            cell.label.text = item.render()
+            cell.button.tag = indexPath.row
+            cell.button.addTarget(self, action: #selector(didTapBought), for: .touchUpInside)
             return cell
-        default:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SectionHeader
-            return cell
+        default: return UITableViewCell()
         }
     }
     
