@@ -8,6 +8,7 @@
 import MobileCoreServices
 import UIKit
 import Vision
+import PhotosUI
 
 enum ScrapeType {
     case ingredient
@@ -94,7 +95,12 @@ class PickPhotoController: UICollectionViewController, UICollectionViewDelegateF
         default: return
         }
         let picker = UIImagePickerController()
+        picker.sourceType = .photoLibrary
+        picker.mediaTypes = [kUTTypeImage as String]
         picker.delegate = self
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            picker.modalPresentationStyle = .popover
+        }
         present(picker, animated: true)
     }
     
@@ -273,7 +279,7 @@ class ReviewPhotoController: UIViewController, UITextViewDelegate, UIContextMenu
     }
     
     func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
-        guard let image = self.scrapeInfo?.image else { return nil }
+        guard let image = scrapeInfo?.image else { return nil }
         return UIContextMenuConfiguration(identifier: nil, previewProvider: {
             return PreviewPhotoController(image: image)
         }, actionProvider: nil)
