@@ -279,7 +279,7 @@
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="CzB-9K-qHO">
                                 <rect key="frame" x="0.0" y="233" width="414" height="580"/>
                                 <connections>
-                                    <segue destination="8yY-5H-YJI" kind="embed" identifier="embedPhotos" id="93L-vd-ajP"/>
+                                    <segue destination="8yY-5H-YJI" kind="embed" identifier="embedPhotos" id="ehc-Y1-27H"/>
                                 </connections>
                             </containerView>
                         </subviews>
@@ -344,7 +344,7 @@
                             <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="iYy-QL-l3Y">
                                 <rect key="frame" x="0.0" y="759" width="414" height="49"/>
                                 <items>
-                                    <barButtonItem title="Back" id="Uye-rt-Wh2">
+                                    <barButtonItem title="Cancel" id="Uye-rt-Wh2">
                                         <color key="tintColor" systemColor="systemRedColor"/>
                                         <connections>
                                             <action selector="didTapBack:" destination="fSD-ow-YI0" id="OFD-95-98A"/>
@@ -521,7 +521,7 @@
                                             <rect key="frame" x="10" y="7.5" width="394" height="40"/>
                                             <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                            <textInputTraits key="textInputTraits"/>
+                                            <textInputTraits key="textInputTraits" autocapitalizationType="words"/>
                                         </textField>
                                     </subviews>
                                     <constraints>

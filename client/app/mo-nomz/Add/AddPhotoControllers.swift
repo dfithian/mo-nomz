@@ -9,6 +9,7 @@ import MobileCoreServices
 import UIKit
 import Vision
 import PhotosUI
+import QCropper
 
 enum ScrapeType {
     case ingredient
@@ -62,7 +63,7 @@ class AddPhotoController: AddDetailController {
     }
 }
 
-class PickPhotoController: UICollectionViewController, UICollectionViewDelegateFlowLayout, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+class PickPhotoController: UICollectionViewController, UICollectionViewDelegateFlowLayout, UIImagePickerControllerDelegate, UINavigationControllerDelegate, CropperViewControllerDelegate {
     var scrapeType: ScrapeType? = nil
     var addVc: AddPhotoController? = nil
     
@@ -195,24 +196,33 @@ class PickPhotoController: UICollectionViewController, UICollectionViewDelegateF
     }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        let progress = startLoading()
-        picker.dismiss(animated: true, completion: nil)
-        if let image = info[.originalImage] as? UIImage {
-            let textHandler = { (req: VNRequest, error: Error?) in
-                self.stopLoading(progress)
-                guard let observations = req.results as? [VNRecognizedTextObservation] else { return }
-                let recognized = observations.compactMap { $0.topCandidates(1).first?.string }
-                self.addVc?.current = ScrapeInfo(image: image, value: recognized.joined(separator: "\n"), type: self.scrapeType ?? .ingredient)
-                self.addVc?.performSegue(withIdentifier: "reviewScrape", sender: nil)
-            }
-            let handler = VNImageRequestHandler(cgImage: image.cgImage!)
-            let req = VNRecognizeTextRequest(completionHandler: textHandler)
-            do {
-                try handler.perform([req])
-            } catch {
-                defaultOnError(error)
-            }
+        guard let image = info[.originalImage] as? UIImage else { return }
+        let cropper = CropperViewController(originalImage: image)
+        cropper.delegate = self
+        picker.dismiss(animated: true) {
+            self.present(cropper, animated: true, completion: nil)
         }
+    }
+
+    func cropperDidConfirm(_ cropper: CropperViewController, state: CropperState?) {
+        cropper.dismiss(animated: true, completion: nil)
+        let progress = startLoading()
+        let cropped = cropper.originalImage.cropped(withCropperState: state!)!
+        let textHandler = { (req: VNRequest, error: Error?) in
+            self.stopLoading(progress)
+            guard let observations = req.results as? [VNRecognizedTextObservation] else { return }
+            let recognized = observations.compactMap({ $0.topCandidates(1).first?.string }).joined(separator: "\n")
+            self.addVc?.current = ScrapeInfo(image: cropped, value: recognized, type: self.scrapeType ?? .ingredient)
+            self.addVc?.performSegue(withIdentifier: "reviewScrape", sender: nil)
+        }
+        let handler = VNImageRequestHandler(cgImage: cropped.cgImage!)
+        let req = VNRecognizeTextRequest(completionHandler: textHandler)
+        do {
+            try handler.perform([req])
+        } catch {
+            defaultOnError(error)
+        }
+        cropper.dismiss(animated: true, completion: nil)
     }
 }
 
