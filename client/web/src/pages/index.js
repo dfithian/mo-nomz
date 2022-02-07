@@ -1,68 +1,74 @@
 import * as React from "react"
 import appStore from "../images/app-store.svg"
+import Layout from "../components/layout.js"
+import { Img, ImgLink, H2, H3, PlainImg, Msg } from "../components/util"
+import icon from "../images/icon.png"
+import addLink from "../images/add-link.gif"
+import addManual from "../images/add-manual.gif"
+import addRecipe from "../images/add-recipe.gif"
+import addNotes from "../images/add-notes.gif"
+import reorder from "../images/reorder.gif"
+import { Col, Col4, ContentCol, ContentRow, Row } from "../components/row"
 
-const pageStyles = {
-  color: "#232129",
-  padding: 25,
-  fontFamily: "-apple-system, Roboto, sans-serif, serif",
-}
-const inlineStyles = {
-  marginRight: 25,
-  marginLeft: 25,
-}
-const centerStyles = {
-  textAlign: "center",
-}
 const imgStyles = {
-  padding: 5,
+  width: 150,
 }
 
 const IndexPage = () => {
   return (
-    <main className="center" style={pageStyles}>
-      <title>Nomz</title>
-      <div>
-        <a style={inlineStyles} href="https://venmo.com/code?user_id=1305125788319744156"><span role="img" aria-label="Heart">❤</span>️ Donate</a>
-        <a style={inlineStyles} href="/privacy-policy">Privacy Policy</a>
-        <a style={inlineStyles} href="/support">Support</a>
-        <a style={inlineStyles} href="https://dfithian.github.io/2021/06/08/nomz-meal-planner.html">Blog</a>
-      </div>
-      <h1>Nomz</h1>
-      <h2>Meal Planner & Grocery List</h2>
-      <p>Nomz transforms the manual process of searching, saving, and transcribing recipes into just a few quick steps.</p>
-      <div>
-        <a href="https://apps.apple.com/us/app/grocer-ez/id1563273742">
-          <img style={imgStyles} src={appStore} alt="Download on the App Store" />
-        </a>
-      </div>
+    <Layout pageTitle={"Nomz"}>
+      <Row>
+        <Col />
+        <Col>
+          <Img image={icon} size={"is-128x128"} alt={"Nomz"} />
+        </Col>
+        <ContentCol>
+          <H2 text={"Skip the ads and life story."} />
+          <H3 text={"Save recipes and instantly create a grocery list."} />
+        </ContentCol>
+      </Row>
+      <Row>
+        <Col />
+        <Col>
+          <ImgLink href={"https://apps.apple.com/us/app/grocer-ez/id1563273742"} size={"is-128x128"} image={appStore} alt={"Download on the App Store"} />
+        </Col>
+      </Row>
+      {/** FIXME screenshots */}
       <div className="how-it-works" id="how-it-works">
-        <h3>How it works</h3>
-        <p>Add links to online recipes or define your own.</p>
-        <div className="container" style={centerStyles}>
-          <div className="item">
-            <img style={imgStyles} src="/add-link.gif" alt="Add Link" width="150"/>
-          </div>
-          <div className="item">
-            <img style={imgStyles} src="/add-recipe.gif" alt="Add Recipe" width="150"/>
-          </div>
-        </div>
-        <p>Nomz adds the ingredients to your grocery list. You can add to, edit, merge, and reorder your list based on your local grocery store.</p>
-        <div className="container" style={centerStyles}>
-          <div className="item">
-            <img style={imgStyles} src="/reorder.gif" alt="Reorder" width="150"/>
-          </div>
-          <div className="item">
-            <img style={imgStyles} src="/add-manual.gif" alt="Add Groceries" width="150"/>
-          </div>
-        </div>
-        <p>Nomz stores each recipe and shares across multiple devices, so when you're ready to cook, tap on the saved link. Add a rating and notes for the next time you make it!</p>
-        <div className="container" style={centerStyles}>
-          <div className="item">
-            <img style={imgStyles} src="/add-notes.gif" alt="Add notes" width="150"/>
-          </div>
-        </div>
+        <ContentRow>
+          <H3 text={"How it works"} />
+        </ContentRow>
+        <Msg>
+          <p>Nomz transforms the manual process of searching, saving, and transcribing recipes into a few quick steps.</p>
+        </Msg>
+        <Msg>
+          <Row>
+            <Col4>
+              <p>Add links to online recipes or define your own</p>
+            </Col4>
+            <Col4><div style={imgStyles}><PlainImg image={addLink} size={"is-9by16"} alt={"Add Link"} /></div></Col4>
+            <Col4><div style={imgStyles}><PlainImg image={addRecipe} size={"is-9by16"} alt={"Add Recipe"} /></div></Col4>
+          </Row>
+        </Msg>
+        <Msg>
+          <Row>
+            <Col4>
+              <p>Nomz adds the ingredients to your grocery list. Youc an add to, edit, merge, and reorder your list based on your local grocery store.</p>
+            </Col4>
+            <Col4><div style={imgStyles}><PlainImg image={reorder} size={"is-9by16"} alt={"Reorder"} /></div></Col4>
+            <Col4><div style={imgStyles}><PlainImg image={addManual} size={"is-9by16"} alt={"Add Manual"} /></div></Col4>
+          </Row>
+        </Msg>
+        <Msg>
+          <Row>
+            <Col4>
+              <p>Nomz stores each recipe and shares across multiple devices. When you're ready to cook, just tap on the item. Add a rating and notes for the next time you make it!</p>
+            </Col4>
+            <Col4><div style={imgStyles}><PlainImg image={addNotes} size={"is-9by16"} alt={"Add Notes"} /></div></Col4>
+          </Row>
+        </Msg>
       </div>
-    </main>
+    </Layout>
   )
 }
 
