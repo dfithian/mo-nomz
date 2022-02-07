@@ -1,5 +1,4 @@
 import * as React from "react"
-import { ContentRow } from "./row"
 
 const Title = ({ text }) => {
   return (
@@ -39,29 +38,19 @@ const PlainImg = ({ image, size, alt }) => {
   )
 }
 
-const Img = ({ image, size, alt }) => {
-  return (
-    <div className="container">
-      <PlainImg image={image} size={size} alt={alt} />
-    </div>
-  )
-}
-
 const ImgLink = ({ href, image, size, alt }) => {
   return (
     <a href={href}>
-      <Img image={image} size={size} alt={alt} />
+      <PlainImg image={image} size={size} alt={alt} />
     </a>
   )
 }
 
-const Msg = ({ children }) => {
+const Centered = ({ children }) => {
   return (
-    <ContentRow>
-      <div className="box">
-        {children}
-      </div>
-    </ContentRow>
+    <div className="container">
+      {children}
+    </div>
   )
 }
 
@@ -72,7 +61,6 @@ export {
   H3,
   H4,
   PlainImg,
-  Img,
   ImgLink,
-  Msg,
+  Centered,
 }

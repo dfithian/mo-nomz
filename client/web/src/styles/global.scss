@@ -1,0 +1,29 @@
+.center {
+    text-align: center;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.item {
+    flex: 1;
+}
+
+.scrolling-wrapper {
+    overflow-x: scroll;
+    overflow-y: hidden;
+    white-space: nowrap;
+
+    .scroll {
+      display: inline-block;
+    }
+}
+
+.scroll {
+    img {
+        border-radius: 10px;
+    }
+}

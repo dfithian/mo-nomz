@@ -35,18 +35,9 @@ const ContentRow = ({ children }) => {
   )
 }
 
-const Col4 = ({ children }) => {
-  return (
-    <div className="column is-4">
-      {children}
-    </div>
-  )
-}
-
 export {
   Row,
   Col,
   ContentCol,
   ContentRow,
-  Col4,
 }
