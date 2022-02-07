@@ -83,6 +83,7 @@ class PickPhotoController: UICollectionViewController, UICollectionViewDelegateF
         picker.delegate = self
         if UIDevice.current.userInterfaceIdiom == .pad {
             picker.modalPresentationStyle = .popover
+            picker.popoverPresentationController?.sourceView = b
         }
         present(picker, animated: true)
     }
