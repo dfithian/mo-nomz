@@ -22,6 +22,7 @@ data AppSettings = AppSettings
   , appStaticDir    :: FilePath -- ^ Where the static files are located.
   , appBcryptCost   :: Int -- ^ Bcrypt cost.
   , appCache        :: CacheSettings -- ^ Settings for caching.
+  , appForceSsl     :: Bool -- ^ Whether to force SSL.
   }
 
 instance FromJSON DatabaseSettings where
@@ -59,6 +60,7 @@ instance FromJSON AppSettings where
       <*> obj .: "static-dir"
       <*> obj .: "bcrypt-cost"
       <*> obj .: "cache"
+      <*> obj .: "force-ssl"
 
 instance ToJSON AppSettings where
   toJSON AppSettings {..} = object
@@ -68,6 +70,7 @@ instance ToJSON AppSettings where
     , "static-dir" .= appStaticDir
     , "bcrypt-cost" .= appBcryptCost
     , "cache" .= appCache
+    , "force-ssl" .= appForceSsl
     ]
 
 staticSettings :: AppSettings
@@ -85,6 +88,7 @@ staticSettings = AppSettings
     , cacheSettingsValidSeconds = 60 * 60 * 24 * 7
     , cacheSettingsMaxSize = 10000
     }
+  , appForceSsl = False
   }
 
 testSettings :: AppSettings

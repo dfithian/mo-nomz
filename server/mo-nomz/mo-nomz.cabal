@@ -77,6 +77,7 @@ common options
     , unordered-containers
     , wai
     , wai-app-static
+    , wai-enforce-https
     , wai-extra
     , warp
     , yaml
