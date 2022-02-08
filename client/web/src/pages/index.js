@@ -3,11 +3,12 @@ import appStore from "../images/app-store.svg"
 import Layout from "../components/layout.js"
 import { ImgLink, H2, H3, PlainImg, Centered } from "../components/util"
 import icon from "../images/icon.png"
-import add from "../images/screenshots/add-small.png"
-import groceryList from "../images/screenshots/grocery-list-small.png"
-import recipeDetail from "../images/screenshots/recipe-detail-small.png"
-import recipeList from "../images/screenshots/recipe-list-small.png"
 import { Col, ContentCol, ContentRow, Row } from "../components/row"
+
+const add = "/screenshots/add-small.png"
+const groceryList = "/screenshots/grocery-list-small.png"
+const recipeDetail = "/screenshots/recipe-detail-small.png"
+const recipeList = "/screenshots/recipe-list-small.png"
 
 const imgStyles = {
   width: 150,
