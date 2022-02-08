@@ -1,1 +1,1 @@
-web: /app/.local/bin/mo-nomz /app/.local/bin/settings.yml
+web: /app/.local/bin/mo-nomz /app/server/mo-nomz/config/settings.yml

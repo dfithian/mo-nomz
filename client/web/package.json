@@ -4,9 +4,6 @@
   "private": true,
   "description": "Nomz",
   "author": "Dan Fithian",
-  "keywords": [
-    "gatsby"
-  ],
   "scripts": {
     "develop": "gatsby develop",
     "start": "gatsby develop",

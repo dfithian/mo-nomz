@@ -81,7 +81,7 @@ staticSettings = AppSettings
     , databaseSettingsPoolsize = 3
     }
   , appMigrationDir = "server/mo-nomz/sql/migrations/"
-  , appStaticDir = "server/mo-nomz/assets"
+  , appStaticDir = "client/web/public"
   , appBcryptCost = 4
   , appCache = CacheSettings
     { cacheSettingsEnabled = False
