@@ -7,12 +7,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/cache@v2
-        with:
-          path: |
-            node_modules
-            client/web/node_modules
-          key: yarn-${{ hashFiles('yarn.lock') }}-${{ hashFiles('package.json') }}-${{ hashFiles('client/web/yarn.lock') }}-${{ hashFiles('client/web/package.json') }}
       - uses: borales/actions-yarn@v2.3.0
         with:
           cmd: install
