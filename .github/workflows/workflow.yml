@@ -3,19 +3,33 @@ on:
   schedule:
     - cron: "0 5 * * *"
 jobs:
-  build:
+  build-client:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: haskell/actions/setup@v1
+      - uses: borales/actions-yarn@v2.3.0
         with:
-          ghc-version: '8.10.4'
-          enable-stack: true
-          stack-version: '2.7.3'
+          cmd: install
+      - uses: borales/actions-yarn@v2.3.0
+        with:
+          cmd: build
+  build-server:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
       - uses: actions/cache@v2
         with:
           path: |
             ~/.stack
             .stack-work
-          key: stack-${{ hashFiles('stack.yaml') }}
+          key: stack-${{ hashFiles('stack.yaml') }}-${{ hashFiles('server/mo-nomz/mo-nomz.cabal') }}
+          restore-keys: |
+            stack-${{ hashFiles('stack.yaml') }}-${{ hashFiles('server/mo-nomz/mo-nomz.cabal') }}
+            stack-${{ hashFiles('stack.yaml') }}-
+            stack-
+      - uses: haskell/actions/setup@v1
+        with:
+          ghc-version: '8.10.4'
+          enable-stack: true
+          stack-version: '2.7.3'
       - run: NO_DB=1 stack test
