@@ -7,31 +7,31 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: borales/actions-yarn@v2.3.0
-        with:
-          cmd: install
-      - uses: borales/actions-yarn@v2.3.0
-        with:
-          cmd: build
       - uses: actions/cache@v2
         with:
           path: |
             node_modules
             client/web/node_modules
           key: yarn-${{ hashFiles('yarn.lock') }}-${{ hashFiles('package.json') }}-${{ hashFiles('client/web/yarn.lock') }}-${{ hashFiles('client/web/package.json') }}
+      - uses: borales/actions-yarn@v2.3.0
+        with:
+          cmd: install
+      - uses: borales/actions-yarn@v2.3.0
+        with:
+          cmd: build
   build-server:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: haskell/actions/setup@v1
-        with:
-          ghc-version: '8.10.4'
-          enable-stack: true
-          stack-version: '2.7.3'
       - uses: actions/cache@v2
         with:
           path: |
             ~/.stack
             .stack-work
           key: stack-${{ hashFiles('stack.yaml') }}
+      - uses: haskell/actions/setup@v1
+        with:
+          ghc-version: '8.10.4'
+          enable-stack: true
+          stack-version: '2.7.3'
       - run: NO_DB=1 stack test
