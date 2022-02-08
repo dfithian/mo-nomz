@@ -3,7 +3,7 @@ on:
   schedule:
     - cron: "0 5 * * *"
 jobs:
-  build:
+  build-client:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -19,6 +19,10 @@ jobs:
             node_modules
             client/web/node_modules
           key: yarn-${{ hashFiles('yarn.lock') }}-${{ hashFiles('package.json') }}-${{ hashFiles('client/web/yarn.lock') }}-${{ hashFiles('client/web/package.json') }}
+  build-server:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
       - uses: haskell/actions/setup@v1
         with:
           ghc-version: '8.10.4'
