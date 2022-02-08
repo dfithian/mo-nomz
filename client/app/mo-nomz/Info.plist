@@ -96,6 +96,8 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app needs access to photos in order to create recipes.</string>
 	<key>SKAdNetworkItems</key>
 	<array>
 		<dict>

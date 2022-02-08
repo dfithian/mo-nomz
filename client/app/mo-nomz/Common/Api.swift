@@ -54,12 +54,12 @@ extension UIViewController {
     func pullSteps(completion: (() -> Void)?) {
         let progress = startProgress()
         guard let state = User.loadState() else { return }
-        let ids = selectRecipeIds()
+        let recipes = selectRecipes()
         let queue = DispatchQueue(label: "mo-nomz.pull-steps")
         let group = DispatchGroup()
         var numPulled = 0
-        let links = ids.compactMap({ (id) -> (UUID, String)? in
-            if let recipe = getRecipe(id: id), let link = recipe.recipe.link, recipe.recipe.steps.isEmpty {
+        let links = recipes.compactMap({ (recipe) -> (UUID, String)? in
+            if let link = recipe.recipe.link {
                 return (recipe.id, link)
             }
             return nil
@@ -102,14 +102,12 @@ extension UIViewController {
     
     func cleanSteps(completion: (() -> Void)?) {
         let progress = startProgress()
-        let ids = selectRecipeIds()
-        for id in ids {
-            if let recipe = getRecipe(id: id) {
-                var steps = Set<String>()
-                for (stepId, step) in recipe.recipe.steps.sorted(by: { $0.value.order < $1.value.order }) {
-                    if !steps.insert(step.step).inserted {
-                        deleteRecipeStep(id: stepId)
-                    }
+        let recipes = selectRecipes()
+        for recipe in recipes {
+            var steps = Set<String>()
+            for (stepId, step) in recipe.recipe.steps.sorted(by: { $0.value.order < $1.value.order }) {
+                if !steps.insert(step.step).inserted {
+                    deleteRecipeStep(id: stepId)
                 }
             }
         }
@@ -190,7 +188,7 @@ extension UIViewController {
         req.httpBody = try? JSONEncoder().encode(ParseLinkRequest(link: link))
         let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
             self.stopLoading(spinner)
-            let onUnsuccessfulStatus = { (resp: URLResponse?) -> Void in self.alertUnsuccessful("Unable to import recipe. Please enter ingredients manually.")
+            let onUnsuccessfulStatus = { (resp: URLResponse?) -> Void in self.alertUnsuccessful("Unable to import recipe. Please select photos or enter ingredients manually.")
             }
             let onSuccess = { (d: Data) -> Void in
                 do {

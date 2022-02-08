@@ -1,0 +1,8 @@
+@charset "utf-8";
+$blue: #183672;
+$green: #335d17;
+$primary: $blue;
+$blue-invert: findColorInvert($blue);
+$green-invert: findColorInvert($green);
+$custom-colors: ("green": ($green, $green-invert), "blue": ($blue, $blue-invert));
+@import "~bulma/bulma.sass";

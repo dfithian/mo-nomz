@@ -116,12 +116,23 @@ struct ReadableIngredient: Codable {
     }
 }
 
-struct ReadableIngredientWithId: Codable {
+struct ReadableIngredientWithId: Codable, Indexable {
     let id: UUID
     let ingredient: ReadableIngredient
     
     func toGroceryItemWithId(active: Bool, order: Int) -> ReadableGroceryItemWithId {
         return ReadableGroceryItemWithId(item: ReadableGroceryItem(name: ingredient.name, quantity: ingredient.quantity, unit: ingredient.unit, active: active, order: order), id: UUID())
+    }
+    
+    func index() -> [Index] {
+        return [
+            Index(value: ingredient.name, priority: .high),
+            ingredient.unit.map({ Index(value: $0, priority: .medium) })
+        ].compactMap({ $0 })
+    }
+    
+    func identifier() -> UUID {
+        return id
     }
 }
 
@@ -130,9 +141,19 @@ struct Step: Codable {
     let order: Int
 }
 
-struct StepWithId: Codable {
+struct StepWithId: Codable, Indexable {
     let id: UUID
     let step: Step
+    
+    func index() -> [Index] {
+        return [
+            Index(value: step.step, priority: .high)
+        ]
+    }
+    
+    func identifier() -> UUID {
+        return id
+    }
 }
 
 struct ReadableRecipe: Codable {
@@ -145,9 +166,23 @@ struct ReadableRecipe: Codable {
     let steps: [UUID:Step]
 }
 
-struct ReadableRecipeWithId: Codable {
+struct ReadableRecipeWithId: Codable, Indexable {
     let recipe: ReadableRecipe
     let id: UUID
+    
+    func index() -> [Index] {
+        let index = [
+            Index(value: recipe.name, priority: .high),
+            Index(value: recipe.notes, priority: .medium)
+        ]
+        let ingredientsIndex = recipe.ingredients.map({ ReadableIngredientWithId(id: $0.0, ingredient: $0.1) }).flatMap({ $0.index().map({ $0.decPriority() }) })
+        let stepsIndex = recipe.steps.map({ StepWithId(id: $0.0, step: $0.1) }).flatMap({ $0.index().map({ $0.decPriority() }) })
+        return index + ingredientsIndex + stepsIndex
+    }
+    
+    func identifier() -> UUID {
+        return id
+    }
 }
 
 struct ParseBlobRequest: Codable {

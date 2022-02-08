@@ -68,10 +68,10 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
     }
     
     private func editStep(_ indexPath: IndexPath) {
-        let cell = tableView.cellForRow(at: indexPath) as! StepItem
-        cell.write.becomeFirstResponder()
-        cell.write.alpha = 1
-        cell.read.alpha = 0
+        let cell = tableView.cellForRow(at: indexPath) as! TwoLabelOneText
+        cell.text_.becomeFirstResponder()
+        cell.text_.alpha = 1
+        cell.twoLabel.alpha = 0
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
@@ -80,11 +80,11 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
             updateRecipe(id: r.id, recipe: ReadableRecipe(name: r.recipe.name, link: r.recipe.link, active: r.recipe.active, rating: r.recipe.rating, notes: textView.text ?? r.recipe.notes, ingredients: r.recipe.ingredients, steps: r.recipe.steps))
         } else {
             let step = steps[textView.tag]
-            let cell = tableView.cellForRow(at: IndexPath(row: textView.tag, section: STEP_LIST)) as! StepItem
-            cell.write.alpha = 0
-            cell.read.alpha = 1
-            cell.read.text = cell.write.text
-            if let newStep = cell.write.text?.trimmingCharacters(in: .whitespacesAndNewlines).nonEmpty() {
+            let cell = tableView.cellForRow(at: IndexPath(row: textView.tag, section: STEP_LIST)) as! TwoLabelOneText
+            cell.text_.alpha = 0
+            cell.twoLabel.alpha = 1
+            cell.twoLabel.text = cell.text_.text
+            if let newStep = cell.text_.text?.trimmingCharacters(in: .whitespacesAndNewlines).nonEmpty() {
                 let new = StepWithId(id: step.id, step: Step(step: newStep, order: step.step.order))
                 updateRecipeStep(recipeId: r.id, step: new)
             } else {
@@ -117,56 +117,55 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch indexPath.section {
         case NOTES_HEADING:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SimpleSectionHeader
+            let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! OneLabel
             cell.label.text = "Notes"
             return cell
         case NOTES:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "noteItem") as! NoteItem
-            cell.blob.text = recipe?.recipe.notes ?? ""
-            cell.blob.addDoneButtonOnKeyboard()
-            cell.blob.layer.cornerRadius = 10
-            cell.blob.delegate = self
-            cell.blob.tag = Int.max
+            let cell = tableView.dequeueReusableCell(withIdentifier: "noteItem") as! OneText
+            cell.text_.text = recipe?.recipe.notes ?? ""
+            cell.text_.addDoneButtonOnKeyboard()
+            cell.text_.layer.cornerRadius = 10
+            cell.text_.delegate = self
+            cell.text_.tag = Int.max
             return cell
         case MERGE_TIP:
             return tableView.dequeueReusableCell(withIdentifier: "mergeTip")!
         case INGREDIENT_LIST_HEADING:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SimpleSectionHeader
+            let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! OneLabel
             cell.label.text = "Ingredients"
             return cell
         case INGREDIENT_LIST:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "listItem") as! ListItem
+            let cell = tableView.dequeueReusableCell(withIdentifier: "listItem") as! OneLabel
             let item = ingredients[indexPath.row]
-            cell.name.text = item.ingredient.render()
+            cell.label.text = item.ingredient.render()
             return cell
         case ADD_INGREDIENT:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "addItem") as! AddItem
-            cell.add.tag = ADD_INGREDIENT_TAG
-            cell.add.addTarget(self, action: #selector(didTapAdd), for: .touchUpInside)
+            let cell = tableView.dequeueReusableCell(withIdentifier: "addItem") as! OneButton
+            cell.button.tag = ADD_INGREDIENT_TAG
+            cell.button.addTarget(self, action: #selector(didTapAdd), for: .touchUpInside)
             return cell
         case STEP_LIST_HEADING:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SimpleSectionHeader
+            let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! OneLabel
             cell.label.text = "Steps"
             return cell
         case REORDER_STEP_TIP:
             return tableView.dequeueReusableCell(withIdentifier: "reorderTip")!
         case STEP_LIST:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "stepItem") as! StepItem
-            cell.num.text = String(indexPath.row + 1)
-            cell.read.text = steps[indexPath.row].step.step
-            cell.write.text = steps[indexPath.row].step.step
-            cell.write.tag = indexPath.row
-            cell.write.addDoneButtonOnKeyboard()
-            cell.write.delegate = self
+            let cell = tableView.dequeueReusableCell(withIdentifier: "stepItem") as! TwoLabelOneText
+            cell.oneLabel.text = String(indexPath.row + 1)
+            cell.twoLabel.text = steps[indexPath.row].step.step
+            cell.text_.text = steps[indexPath.row].step.step
+            cell.text_.tag = indexPath.row
+            cell.text_.addDoneButtonOnKeyboard()
+            cell.text_.delegate = self
             return cell
         case ADD_STEP:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "addItem") as! AddItem
-            cell.add.tag = ADD_STEP_TAG
-            cell.add.addTarget(self, action: #selector(didTapAdd), for: .touchUpInside)
+            let cell = tableView.dequeueReusableCell(withIdentifier: "addItem") as! OneButton
+            cell.button.tag = ADD_STEP_TAG
+            cell.button.addTarget(self, action: #selector(didTapAdd), for: .touchUpInside)
             return cell
         default:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! SimpleSectionHeader
-            return cell
+            return tableView.dequeueReusableCell(withIdentifier: "sectionHeader")!
         }
     }
     

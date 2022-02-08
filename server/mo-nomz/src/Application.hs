@@ -21,6 +21,7 @@ import Servant.Server.StaticFiles (serveDirectoryWith)
 import Text.Blaze ((!), Markup)
 import WaiAppStatic.Storage.Filesystem (defaultFileServerSettings)
 import WaiAppStatic.Types (ssListing)
+import qualified Network.Wai.Middleware.EnforceHTTPS as EnforceHTTPS
 import qualified Text.Blaze.Html5 as Html
 import qualified Text.Blaze.Html5.Attributes as HtmlAttr
 
@@ -117,8 +118,11 @@ appMain = do
   let staticFileSettings = (defaultFileServerSettings $ appStaticDir $ appSettings app)
         { ssListing = Nothing
         }
+      ssl = case appForceSsl settings of
+        True -> EnforceHTTPS.withResolver EnforceHTTPS.xForwardedProto
+        False -> id
       appl = serve wholeApi $
         hoistServer nomzApi (runNomzServer app) nomzServer
           :<|> serveDirectoryWith staticFileSettings
   requestLogger <- mkRequestLogger def { outputFormat = Detailed False }
-  runSettings (warpSettings app) $ requestLogger appl
+  runSettings (warpSettings app) $ requestLogger $ ssl appl

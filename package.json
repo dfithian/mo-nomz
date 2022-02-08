@@ -1,0 +1,11 @@
+{
+  "name": "nomz-wrapper",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Nomz Wrapper",
+  "author": "Dan Fithian",
+  "scripts": {
+    "postinstall": "yarn --cwd client/web --production=false install",
+    "build": "yarn --cwd client/web build"
+  }
+}

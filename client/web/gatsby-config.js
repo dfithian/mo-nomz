@@ -14,5 +14,6 @@ module.exports = {
       __key: "pages",
     },
     "gatsby-plugin-sitemap",
+    "gatsby-plugin-sass",
   ],
 };

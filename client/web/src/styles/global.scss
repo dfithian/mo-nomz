@@ -1,0 +1,28 @@
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.scrolling-wrapper {
+    overflow-x: scroll;
+    overflow-y: hidden;
+    white-space: nowrap;
+
+    .scroll {
+      display: inline-block;
+    }
+}
+
+.scroll {
+    img {
+        border-radius: 10px;
+    }
+}
+
+#icon {
+    img {
+        border: 2px solid #335d17;
+        border-radius: 10px;
+    }
+}
