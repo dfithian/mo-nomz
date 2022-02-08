@@ -8,36 +8,17 @@ const Row = ({ children }) => {
   )
 }
 
-const Col = ({ children }) => {
-  return (
-    <div className="column is-2">
-      {children}
-    </div>
-  )
-}
-
-const ContentCol = ({ children }) => {
-  return (
-    <div className="column is-8">
-      {children}
-    </div>
-  )
-}
-
 const ContentRow = ({ children }) => {
   return (
     <Row>
-      <Col />
-      <ContentCol>
+      <div className="column is-8 is-offset-2">
         {children}
-      </ContentCol>
+      </div>
     </Row>
   )
 }
 
 export {
   Row,
-  Col,
-  ContentCol,
   ContentRow,
 }

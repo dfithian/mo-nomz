@@ -1,23 +1,31 @@
 import * as React from "react"
 import "../styles/mystyles.scss"
-import { Col, Row } from "./row"
+import { Row } from "./row"
 
 const Layout = ({ pageTitle, children }) => {
+  const [navExpanded, setNavExpanded] = React.useState()
   return (
     <div>
       <title>{pageTitle}</title>
       <Row>
-        <Col />
+        <div className="column is-2" />
         <nav class="navbar" role="navigation" aria-label="main navigation">
-          <div class="navbar-menu is-active">
-            <div class="navbar-start">
-              <div className="navbar-item">
-                <div className="buttons">
-                  <a className="button is-primary" href="/">
-                    Home
-                  </a>
-                </div>
+          <div className="navbar-brand">
+            <div className="navbar-item">
+              <div className="buttons">
+                <a className="button is-primary" href="/">
+                  Home
+                </a>
               </div>
+            </div>
+            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" onClick={() => setNavExpanded(!navExpanded)}>
+              <span aria-hidden="true"></span>
+              <span aria-hidden="true"></span>
+              <span aria-hidden="true"></span>
+            </a>
+          </div>
+          <div class={navExpanded ? "navbar-menu is-active" : "navbar-menu"}>
+            <div class="navbar-start">
               <a class="navbar-item" href="/support">
                 Support
               </a>

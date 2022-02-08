@@ -6,8 +6,7 @@ A Haskell / Swift app which will scrape provided recipe URLs ingredients and agg
 
 ```bash
 cd client/web
-npx gatsby build
-cp -R public/* ../../server/mo-nomz/assets
+yarn develop
 ```
 
 ## Start the server

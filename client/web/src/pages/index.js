@@ -1,9 +1,9 @@
 import * as React from "react"
 import appStore from "../images/app-store.svg"
 import Layout from "../components/layout.js"
-import { ImgLink, H2, H3, PlainImg, Centered } from "../components/util"
+import { ImgLink, H3, H4, PlainImg, Centered } from "../components/util"
 import icon from "../images/icon.png"
-import { Col, ContentCol, ContentRow, Row } from "../components/row"
+import { ContentRow, Row } from "../components/row"
 
 const add = "/screenshots/add-small.png"
 const groceryList = "/screenshots/grocery-list-small.png"
@@ -18,31 +18,29 @@ const imgStyles = {
 
 const IndexPage = () => {
   return (
-    <Layout pageTitle={"Nomz"}>
+    <Layout pageTitle="Nomz">
       <Row>
-        <Col />
-        <Col>
+        <div className="column is-4 is-offset-2">
           <Centered>
-            <PlainImg image={icon} size={"is-128x128"} alt={"Nomz"} />
+            <div id="icon">
+              <PlainImg image={icon} size="is-128x128" alt="Nomz" />
+            </div>
           </Centered>
-        </Col>
-        <ContentCol>
-          <H2 text={"Skip the ads and life story."} />
-          <H3 text={"Save recipes and instantly create grocery lists."} />
-        </ContentCol>
+        </div>
+        <div className="column is-4">
+          <H3 text="Skip the ads and life story." />
+          <H4 text="Save recipes and instantly create grocery lists. Simple, easy, and fun!" />
+        </div>
       </Row>
-      <Row>
-        <Col />
-        <Col>
-          <Centered>
-            <ImgLink href={"https://apps.apple.com/us/app/grocer-ez/id1563273742"} size={"is-128x128"} image={appStore} alt={"Download on the App Store"} />
-          </Centered>
-        </Col>
-      </Row>
+      <div className="column is-4 is-offset-6">
+        <Centered>
+          <ImgLink href="https://apps.apple.com/us/app/grocer-ez/id1563273742" size="is-128x128" image={appStore} alt="Download on the App Store" />
+        </Centered>
+      </div>
+      <ContentRow>
+        <H4 text="Screenshots" />
+      </ContentRow>
       <div className="scrolling-wrapper" id="how-it-works">
-        <ContentRow>
-          <H3 text={"Screenshots"} />
-        </ContentRow>
         <ContentRow>
           <div className="scroll" style={imgStyles}><ImgLink href={recipeDetail} image={recipeDetail} size="is-9by16" alt="Recipe" /></div>
           <div className="scroll" style={imgStyles}><ImgLink href={recipeList} image={recipeList} size="is-9by16" alt="Recipes" /></div>

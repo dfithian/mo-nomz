@@ -1,15 +1,7 @@
-.center {
-    text-align: center;
-}
-
 .container {
     display: flex;
     justify-content: center;
     align-items: center;
-}
-
-.item {
-    flex: 1;
 }
 
 .scrolling-wrapper {
@@ -24,6 +16,13 @@
 
 .scroll {
     img {
+        border-radius: 10px;
+    }
+}
+
+#icon {
+    img {
+        border: 2px solid #335d17;
         border-radius: 10px;
     }
 }

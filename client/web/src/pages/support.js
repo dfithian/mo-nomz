@@ -4,7 +4,7 @@ import { ContentRow } from "../components/row"
 
 const Support = () => {
   return (
-    <Layout pageTitle={"Support"}>
+    <Layout pageTitle="Support">
       <ContentRow>
         <p>
           We'd love to get your feedback.
