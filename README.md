@@ -57,7 +57,6 @@ Non food related tags:
 - https://givemesomespice.com/
 - http://eatmeerecipes.co.za/
 - http://mynameisyeh.com/
-- https://greenkitchenstories.com/recipe-index/
 - http://www.sproutedkitchen.com/
 
 ## Test plan
@@ -92,3 +91,9 @@ Non food related tags:
     * Add notes
     * Rating
     * Go to link
+
+## Keywords
+
+Name and subtitle: `recipe,organizer,simple,meals,groceries`
+
+Keywords: `easy,best,top,meal,planner,grocery,tracker,list,track,plan,health,healthy,fun,5,10,shopping,cooking`
