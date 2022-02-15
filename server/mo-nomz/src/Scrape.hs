@@ -8,13 +8,14 @@ import Control.Monad.Logger (MonadLogger, logError, runStdoutLoggingT)
 import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad.Trans.Reader (runReaderT)
 import Data.Aeson.Encode.Pretty (encodePretty)
-import Data.ByteString.Lazy (toStrict)
 import Data.List (find, sortOn)
 import Data.Maybe (fromMaybe, mapMaybe)
-import Data.Text (Text, pack, replace, unpack)
-import Data.Text.Encoding (decodeUtf8)
+import Data.Text (Text)
 import Network.URI (URI, parseURI, uriAuthority, uriRegName)
+import qualified Data.ByteString.Lazy as BSL
 import qualified Data.HashMap.Strict as HashMap
+import qualified Data.Text as Text
+import qualified Data.Text.Encoding as Text
 import qualified Text.HTML.Scalpel as Scalpel
 
 import Conversion (mkReadableIngredient)
@@ -25,13 +26,14 @@ import Scraper.Types
   ( IngredientScraper(..), ScrapeInfo(..), ScrapedInfo(..), ScrapedRecipe(..), SiteName(..)
   , StepScraper(..), title
   )
-import Types (OrderedIngredient(..), RecipeName(..), Step(..), lastMay, tshow)
+import Types (OrderedIngredient(..), RecipeName(..), Step(..))
+import Utils (lastMay, tshow)
 
 scrapeUrl :: (HasManager r, MonadIO m, MonadError Text m, MonadLogger m, MonadReader r m) => URI -> m (ScrapedRecipe, ScrapedInfo)
 scrapeUrl uri = do
   cfg <- Scalpel.Config Scalpel.defaultDecoder . Just <$> asks manager
   tags <- liftIO $ Scalpel.fetchTagsWithConfig cfg (show uri)
-  let domainMay = SiteName . replace "www." "" . pack . uriRegName <$> uriAuthority uri
+  let domainMay = SiteName . Text.replace "www." "" . Text.pack . uriRegName <$> uriAuthority uri
       name = fromMaybe (RecipeName "Untitled") $ Scalpel.scrape title tags
       runIngredientParser rawIngredients =
         parseIngredients rawIngredients >>= \case
@@ -91,11 +93,11 @@ unsafeScrapeUrl :: String -> IO ()
 unsafeScrapeUrl url = do
   uri <- maybe (fail "Invalid link") pure $ parseURI url
   man <- createManager
-  recipe <- either (fail . unpack) (pure . fst)
+  recipe <- either (fail . Text.unpack) (pure . fst)
     =<< runStdoutLoggingT (runExceptT (runReaderT (scrapeUrl uri) man))
-  putStrLn . unpack . decodeUtf8 . toStrict . encodePretty
+  putStrLn . Text.unpack . Text.decodeUtf8 . BSL.toStrict . encodePretty
     . fmap (mkReadableIngredient . uncurry OrderedIngredient)
     . flip zip [1..]
     . scrapedRecipeIngredients
     $ recipe
-  putStrLn . unpack . decodeUtf8 . toStrict . encodePretty . fmap unStep . scrapedRecipeSteps $ recipe
+  putStrLn . Text.unpack . Text.decodeUtf8 . BSL.toStrict . encodePretty . fmap unStep . scrapedRecipeSteps $ recipe

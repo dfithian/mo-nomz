@@ -8,8 +8,6 @@ import Control.Monad.Reader (ask)
 import Control.Monad.Trans.Reader (runReaderT)
 import Data.Default (def)
 import Data.Pool (Pool, createPool)
-import Data.Text (pack)
-import Data.Text.Encoding (encodeUtf8)
 import Data.Time.Clock (getCurrentTime)
 import Data.Time.Format (defaultTimeLocale, formatTime, iso8601DateFormat)
 import Data.Version (showVersion)
@@ -28,6 +26,7 @@ import Text.Blaze ((!), Markup)
 import WaiAppStatic.Storage.Filesystem (defaultFileServerSettings)
 import WaiAppStatic.Types (ssListing)
 import qualified Data.Text as Text
+import qualified Data.Text.Encoding as Text
 import qualified Network.Wai.Middleware.EnforceHTTPS as EnforceHTTPS
 import qualified Text.Blaze.Html5 as Html
 import qualified Text.Blaze.Html5.Attributes as HtmlAttr
@@ -43,7 +42,7 @@ import Server
   , postUpdateGroceryItem, postUpdateRecipe, postUpdateRecipeIngredients
   )
 import Settings (AppSettings(..), DatabaseSettings(..), staticSettingsValue)
-import Types (tshow)
+import Utils (tshow)
 import qualified Database
 
 getMetrics :: AppM m => m Markup
@@ -53,9 +52,9 @@ getMetrics = do
   now <- liftIO getCurrentTime
   (dayUsers, weekUsers, monthUsers, yearUsers) <- getRecentUsers
   healthHtml <- Html.div (Html.span (Html.text "Health OK")) <$ getHealth
-  let uptimeHtml = Html.div (Html.span (Html.text $ "Started at " <> pack (formatTime defaultTimeLocale (iso8601DateFormat $ Just "%H:%M:%S") appStarted <> " UTC")))
-      refreshHtml = Html.div (Html.span (Html.text $ "Last refreshed at " <> pack (formatTime defaultTimeLocale (iso8601DateFormat $ Just "%H:%M:%S") now <> " UTC")))
-      versionHtml = Html.div (Html.span (Html.text $ "Version " <> pack (showVersion version)))
+  let uptimeHtml = Html.div (Html.span (Html.text $ "Started at " <> Text.pack (formatTime defaultTimeLocale (iso8601DateFormat $ Just "%H:%M:%S") appStarted <> " UTC")))
+      refreshHtml = Html.div (Html.span (Html.text $ "Last refreshed at " <> Text.pack (formatTime defaultTimeLocale (iso8601DateFormat $ Just "%H:%M:%S") now <> " UTC")))
+      versionHtml = Html.div (Html.span (Html.text $ "Version " <> Text.pack (showVersion version)))
       metricsHtml = mconcat . fmap renderMetric $
         [ ("recent_users_day", dayUsers)
         , ("recent_users_week", weekUsers)
@@ -108,7 +107,7 @@ makeFoundation :: AppSettings -> IO App
 makeFoundation appSettings@AppSettings {..} = do
   let DatabaseSettings {..} = appDatabase
       appLogFunc = defaultOutput stdout
-  appConnectionPool <- createPool (connectPostgreSQL $ encodeUtf8 databaseSettingsConnStr) close databaseSettingsPoolsize 15 1
+  appConnectionPool <- createPool (connectPostgreSQL $ Text.encodeUtf8 databaseSettingsConnStr) close databaseSettingsPoolsize 15 1
   migrateDatabase appConnectionPool appLogFunc appSettings
   appManager <- createManager
   appStarted <- getCurrentTime

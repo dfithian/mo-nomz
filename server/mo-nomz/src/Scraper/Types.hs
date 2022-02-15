@@ -5,11 +5,12 @@ import Prelude
 import Data.Hashable (Hashable)
 import Data.Serialize (Serialize)
 import Data.String (IsString)
-import Data.Text (Text, strip)
+import Data.Text (Text)
 import Database.PostgreSQL.Simple.FromField (FromField)
 import Database.PostgreSQL.Simple.ToField (ToField)
 import GHC.Generics (Generic)
 import Text.HTML.Scalpel (Scraper)
+import qualified Data.Text as Text
 import qualified Text.HTML.Scalpel as Scalpel
 
 import Types (RecipeName(..), Ingredient, Step)
@@ -59,7 +60,7 @@ data UnparsedStep = UnparsedStepRaw Text
   deriving (Eq, Ord, Show)
 
 title :: Scraper Text RecipeName
-title = RecipeName . strip <$> Scalpel.text "title"
+title = RecipeName . Text.strip <$> Scalpel.text "title"
 
 instance Serialize ScrapedRecipe
 

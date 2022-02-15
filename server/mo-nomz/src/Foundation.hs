@@ -20,7 +20,7 @@ import Network.HTTP.Types (hUserAgent)
 import Servant.Server (Handler(Handler), ServerError)
 
 import Settings (AppSettings, CacheSettings, appCache)
-import Types (tshow)
+import Utils (tshow)
 
 type AppM m = (MonadError ServerError m, MonadIO m, MonadLoggerIO m, MonadReader App m)
 

@@ -10,7 +10,6 @@ import Control.Monad.Logger (logError, runLoggingT)
 import Control.Monad.Reader (ask, asks)
 import Control.Monad.Trans.Reader (runReaderT)
 import Data.Maybe (fromMaybe)
-import Data.Text (pack, unpack)
 import Network.URI (parseURI)
 import Servant.API (NoContent(NoContent))
 import Servant.Server (ServerError, err400, err401, err403, err404, err500, errReasonPhrase)
@@ -41,8 +40,9 @@ import Settings (AppSettings(..), CacheSettings(..))
 import Types
   ( GroceryItem(..), Ingredient(..), IngredientName(..), OrderedGroceryItem(..)
   , OrderedIngredient(..), Quantity(..), Recipe(..), RecipeLink(..), Unit(..), RecipeId, UserId
-  , headMay, ingredientToGroceryItem, tshow
+  , ingredientToGroceryItem
   )
+import Utils (headMay, tshow)
 import qualified Database
 
 scrapeUrlCached :: AppM m => RecipeLink -> m ScrapedRecipe
@@ -50,8 +50,8 @@ scrapeUrlCached link = do
   app <- ask
   let CacheSettings {..} = cacheSettings app
       scrape = do
-        uri <- maybe (throwIO err400 { errReasonPhrase = "Invalid link" }) pure $ parseURI (unpack $ unRecipeLink link)
-        recipeWithInfo@(ScrapedRecipe {..}, _) <- either (\e -> throwIO err500 { errReasonPhrase = unpack e }) pure
+        uri <- maybe (throwIO err400 { errReasonPhrase = "Invalid link" }) pure $ parseURI (Text.unpack $ unRecipeLink link)
+        recipeWithInfo@(ScrapedRecipe {..}, _) <- either (\e -> throwIO err500 { errReasonPhrase = Text.unpack e }) pure
           =<< runExceptT (runLoggingT (runReaderT (scrapeUrl uri) app) (appLogFunc app))
         when (null scrapedRecipeIngredients) $ throwIO err400 { errReasonPhrase = "Failed to parse ingredients" }
         pure recipeWithInfo
@@ -101,7 +101,7 @@ validateUserToken token userId = do
       Right True -> pure ()
       Right False -> throwError err403
       Left err -> do
-        $logError $ "User token validation failed for " <> tshow userId <> " due to " <> pack err
+        $logError $ "User token validation failed for " <> tshow userId <> " due to " <> Text.pack err
         throwError err403
     _ -> do
       $logError $ "No user token for " <> tshow userId
@@ -194,7 +194,7 @@ postRecipeImportLink token userId RecipeImportLinkRequest {..} = do
 postGroceryImportBlob :: AppM m => Authorization -> UserId -> GroceryImportBlobRequest -> m NoContent
 postGroceryImportBlob token userId GroceryImportBlobRequest {..} = do
   validateUserToken token userId
-  ingredients <- either (\e -> throwError err500 { errReasonPhrase = unpack e }) pure $ parseRawIngredients groceryImportBlobRequestContent
+  ingredients <- either (\e -> throwError err500 { errReasonPhrase = Text.unpack e }) pure $ parseRawIngredients groceryImportBlobRequestContent
   unwrapDb $ withDbConn $ \c -> do
     groceryItemIds <- Database.insertGroceryItems c userId (ingredientToGroceryItem True <$> ingredients)
     case groceryImportBlobRequestName of

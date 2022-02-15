@@ -22,8 +22,9 @@ import Conversion (combineItems)
 import Scraper.Types (ScrapeInfo(..), ScrapedInfo(..), ScrapeName, ScrapeVersion, ScrapedRecipe)
 import Types
   ( GroceryItem(..), Ingredient(..), OrderedGroceryItem(..), OrderedIngredient(..), Recipe(..)
-  , GroceryItemId, IngredientId, RecipeId, RecipeLink, UserId, headMay, ingredientToGroceryItem
+  , GroceryItemId, IngredientId, RecipeId, RecipeLink, UserId, ingredientToGroceryItem
   )
+import Utils (headMay)
 
 data DatabaseException = DatabaseException Text
   deriving (Eq, Show)

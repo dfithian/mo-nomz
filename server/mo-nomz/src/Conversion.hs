@@ -17,8 +17,9 @@ import Combinable (Constant(..), Combinable)
 import Types
   ( GroceryItem(..), Ingredient(..), OrderedGroceryItem(..), OrderedIngredient(..), Quantity(..)
   , ReadableFraction(..), ReadableQuantity(..), ReadableUnit(..), Recipe(..), Unit(..), IngredientId
-  , cup, gram, headMay, liter, milligram, milliliter, ounce, pinch, tablespoon, teaspoon
+  , cup, gram, liter, milligram, milliliter, ounce, pinch, tablespoon, teaspoon
   )
+import Utils (headMay)
 import qualified Combinable as C
 
 data UnitHierarchy

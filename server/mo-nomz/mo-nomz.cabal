@@ -111,6 +111,7 @@ library
       Server
       Settings
       Types
+      Utils
   other-modules:
       Paths_mo_nomz
   hs-source-dirs:

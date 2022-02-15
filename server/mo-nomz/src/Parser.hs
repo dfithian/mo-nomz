@@ -11,7 +11,7 @@ import Data.Containers.ListUtils (nubOrd)
 import Data.Function (fix)
 import Data.Map.Strict (Map)
 import Data.Maybe (catMaybes)
-import Data.Text (Text, isPrefixOf, isSuffixOf, replace, split, strip, stripSuffix, unpack)
+import Data.Text (Text)
 import Data.Traversable (for)
 import Text.Read (readMaybe)
 import qualified Data.Attoparsec.Text as Atto
@@ -23,8 +23,9 @@ import Scraper.Types (UnparsedIngredient(..), UnparsedStep(..))
 import Types
   ( Ingredient(..), IngredientName(..), Quantity(..), RawIngredient(..), RawQuantity(..)
   , RawUnit(..), Step(..), Unit(..), Ingredient, box, cup, gram, liter, milligram, milliliter, ounce
-  , pinch, pound, splash, sprinkle, tablespoon, teaspoon, tshow, whole
+  , pinch, pound, splash, sprinkle, tablespoon, teaspoon, whole
   )
+import Utils (tshow)
 
 unitAliasTable :: Map (CI Text) Unit
 unitAliasTable = Map.fromList
@@ -109,33 +110,33 @@ quantityP = quantityExpression <|> quantityWord <|> quantityMissing
     isIgnoredC c = elem c ['Â']
     isQuantityC c = isDigit c || isSpace c || elem c ['/', '.', '-', '⁄', '¼', '½', '¾', '⅓', '⅔'] || isIgnoredC c
     quantityParser p = p . Text.filter (not . isIgnoredC) =<< Atto.takeWhile isQuantityC
-    strictQuantityParser p = p . strip . Text.filter (not . isIgnoredC) =<< Atto.takeWhile1 isQuantityC
+    strictQuantityParser p = p . Text.strip . Text.filter (not . isIgnoredC) =<< Atto.takeWhile1 isQuantityC
 
-    quantitySingle str = maybe (fail $ unpack str <> " is not a single quantity") pure . readMaybe . unpack . Text.filter (not . isSpace) $ str
+    quantitySingle str = maybe (fail $ Text.unpack str <> " is not a single quantity") pure . readMaybe . Text.unpack . Text.filter (not . isSpace) $ str
     quantityUnicode = \case
       "¼" -> pure 0.25
       "½" -> pure 0.5
       "¾" -> pure 0.75
       "⅓" -> pure $ 1 / 3
       "⅔" -> pure $ 2 / 3
-      str -> fail $ unpack str <> " is not a unicode quantity"
-    quantityDecimal str = case split ((==) '.') str of
-      [x, y] -> maybe (fail $ unpack str <> " is not a decimal quantity") pure $ do
-        x' <- fromInteger <$> readMaybe (unpack x)
-        y' <- fromInteger <$> readMaybe (unpack y)
+      str -> fail $ Text.unpack str <> " is not a unicode quantity"
+    quantityDecimal str = case Text.split ((==) '.') str of
+      [x, y] -> maybe (fail $ Text.unpack str <> " is not a decimal quantity") pure $ do
+        x' <- fromInteger <$> readMaybe (Text.unpack x)
+        y' <- fromInteger <$> readMaybe (Text.unpack y)
         pure $ x' + (y' / (fromIntegral $ 10 * Text.length y))
-      _ -> fail $ unpack str <> " is not a decimal quantity"
-    quantityFraction str = case split ((==) '/') $ replace "⁄" "/" str of
-      [x, y] -> maybe (fail $ unpack str <> " is not a fractional quantity") pure $
-        (/) <$> readMaybe (unpack x) <*> readMaybe (unpack y)
-      _ -> fail $ unpack str <> " is not a fractional quantity"
+      _ -> fail $ Text.unpack str <> " is not a decimal quantity"
+    quantityFraction str = case Text.split ((==) '/') $ Text.replace "⁄" "/" str of
+      [x, y] -> maybe (fail $ Text.unpack str <> " is not a fractional quantity") pure $
+        (/) <$> readMaybe (Text.unpack x) <*> readMaybe (Text.unpack y)
+      _ -> fail $ Text.unpack str <> " is not a fractional quantity"
 
-    quantityImproper = quantityParser $ \str -> case filter (not . Text.null) . mconcat . fmap (split isSpace) . split ((==) '-') $ str of
+    quantityImproper = quantityParser $ \str -> case filter (not . Text.null) . mconcat . fmap (Text.split isSpace) . Text.split ((==) '-') $ str of
       [x, y] -> do
         x' <- quantitySimple x
         y' <- quantitySimple y
         pure $ if x' < y' then (x' + y') / 2 else x' + y'
-      _ -> fail $ unpack str <> " is not an improper quantity"
+      _ -> fail $ Text.unpack str <> " is not an improper quantity"
 
     quantitySimple str =
       quantitySingle str
@@ -144,10 +145,10 @@ quantityP = quantityExpression <|> quantityWord <|> quantityMissing
         <|> quantityFraction str
 
     quantityExpression = RawQuantity <$> (strictQuantityParser quantitySimple <|> quantityImproper)
-    quantityWord = RawQuantityWord . CI.mk <$> ((\str -> if CI.mk str `elem` Map.keys quantityAliasTable then pure str else fail $ unpack str <> " is not a quantity") =<< spaced (Atto.takeWhile1 isAlpha))
+    quantityWord = RawQuantityWord . CI.mk <$> ((\str -> if CI.mk str `elem` Map.keys quantityAliasTable then pure str else fail $ Text.unpack str <> " is not a quantity") =<< spaced (Atto.takeWhile1 isAlpha))
     quantityMissing = quantityParser $ \str -> case Text.null str of
       True -> pure RawQuantityMissing
-      False -> fail $ unpack str <> " is a quantity, but thought it was missing"
+      False -> fail $ Text.unpack str <> " is a quantity, but thought it was missing"
 
 spaced :: Atto.Parser a -> Atto.Parser a
 spaced p = optional (void Atto.space) *> (p <* optional (void Atto.space))
@@ -164,7 +165,7 @@ unitP = unitWord <|> pure RawUnitMissing
         False -> fail "No unit found"
 
 nameP :: Atto.Parser IngredientName
-nameP = IngredientName . CI.mk . strip . Text.unwords . filter (not . Text.null) . fmap strip . Text.words <$> Atto.takeText
+nameP = IngredientName . CI.mk . Text.strip . Text.unwords . filter (not . Text.null) . fmap Text.strip . Text.words <$> Atto.takeText
 
 ingredientP :: Atto.Parser RawIngredient
 ingredientP = mk <$> ((,,) <$> quantityP <*> unitP <*> nameP)
@@ -172,12 +173,12 @@ ingredientP = mk <$> ((,,) <$> quantityP <*> unitP <*> nameP)
     mk (q, u, n) = RawIngredient n q u
 
 sanitize :: Text -> Text
-sanitize = replace "\194" " " . Text.filter (not . isIgnoredC)
+sanitize = Text.replace "\194" " " . Text.filter (not . isIgnoredC)
   where
     isIgnoredC c = elem c ['▢']
 
 runParser :: Atto.Parser a -> Text -> Either String a
-runParser parser x = Atto.parseOnly parser (strip (sanitize x))
+runParser parser x = Atto.parseOnly parser (Text.strip (sanitize x))
 
 parseIngredients :: [UnparsedIngredient] -> Either Text [Ingredient]
 parseIngredients xs = left (const "Failed to parse ingredients") . fmap (nubOrd . fmap scrubIngredient . catMaybes) . for xs $ \case
@@ -194,15 +195,15 @@ parseRawIngredients content = do
 
 parseSteps :: [UnparsedStep] -> Either Text [Step]
 parseSteps = \case
-  [UnparsedStepRaw single] | "1." `isPrefixOf` single -> flip fix (filter (not . Text.null) . Text.words . Text.drop 2 $ single, (1 :: Int), []) $ \f -> \case
+  [UnparsedStepRaw single] | "1." `Text.isPrefixOf` single -> flip fix (filter (not . Text.null) . Text.words . Text.drop 2 $ single, (1 :: Int), []) $ \f -> \case
     ([], _, parsed) -> Right $ reverse parsed
     (toParse, ordinal, parsed) ->
       let nextOrdinal = tshow (ordinal + 1) <> "."
-          (next, rest) = span (not . isSuffixOf nextOrdinal) toParse
+          (next, rest) = span (not . Text.isSuffixOf nextOrdinal) toParse
       in case rest of
-        x:xs -> case stripSuffix nextOrdinal x of
+        x:xs -> case Text.stripSuffix nextOrdinal x of
           Just y -> f (xs, ordinal + 1, (Step (Text.unwords (next <> [y]))):parsed)
           Nothing -> f (xs, ordinal + 1, (Step (Text.unwords next)):parsed)
         [] -> f ([], ordinal + 1, (Step (Text.unwords next)):parsed)
-  [UnparsedStepRaw single] -> Right $ fmap (Step . Text.unwords . filter (not . Text.null) . Text.words) . filter (not . Text.null) . fmap strip . Text.lines $ single
+  [UnparsedStepRaw single] -> Right $ fmap (Step . Text.unwords . filter (not . Text.null) . Text.words) . filter (not . Text.null) . fmap Text.strip . Text.lines $ single
   xs -> Right $ fmap (\(UnparsedStepRaw step) -> Step . Text.unwords . filter (not . Text.null) . Text.words $ step) xs
