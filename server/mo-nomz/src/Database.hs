@@ -170,7 +170,7 @@ deactivateEverything conn userId = do
 
 insertGroceryItemIngredients :: Connection -> UserId -> [(GroceryItemId, Ingredient)] -> IO [IngredientId]
 insertGroceryItemIngredients conn userId ingredients =
-  fmap (map fromOnly)
+  fmap (fmap fromOnly)
     . returning conn "insert into nomz.ingredient (grocery_id, user_id, name, quantity, unit) values (?, ?, ?, ?, ?) returning id"
     . fmap (\(groceryItemId, Ingredient {..}) -> (groceryItemId, userId, ingredientName, ingredientQuantity, ingredientUnit))
     $ ingredients
