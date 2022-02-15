@@ -7,6 +7,7 @@ import Control.Monad.Logger (logError, runLoggingT)
 import Network.URI (parseURI)
 import Servant.API (NoContent(NoContent))
 import Servant.Server (ServerError, err400, err401, err403, err404, err500, errReasonPhrase)
+import qualified Data.CaseInsensitive as CI
 import qualified Data.Map as Map
 
 import API.Types
@@ -29,8 +30,9 @@ import Scrape (scrapeUrl)
 import Scraper.Types (ScrapedRecipe(..))
 import Settings (AppSettings(..), CacheSettings(..))
 import Types
-  ( GroceryItem(..), Ingredient(..), OrderedGroceryItem(..), OrderedIngredient(..), Recipe(..)
-  , RecipeLink(..), RecipeId, UserId, ingredientToGroceryItem
+  ( GroceryItem(..), Ingredient(..), IngredientName(..), OrderedGroceryItem(..)
+  , OrderedIngredient(..), Quantity(..), Recipe(..), RecipeLink(..), Unit(..), RecipeId, UserId
+  , ingredientToGroceryItem
   )
 import qualified Database
 
@@ -283,7 +285,12 @@ deleteRecipes token userId DeleteRecipeRequest {..} = do
 postParseBlob :: AppM m => Authorization -> UserId -> ParseBlobRequest -> m ParseBlobResponse
 postParseBlob token userId ParseBlobRequest {..} = do
   validateUserToken token userId
-  ingredients <- either (\e -> throwError err500 { errReasonPhrase = unpack e }) pure $ parseRawIngredients parseBlobRequestContent
+  -- FIXME deal with this on the client side
+  ingredients <- case parseRawIngredients parseBlobRequestContent of
+    Left e -> do
+      $logError e
+      pure . map (\str -> Ingredient (IngredientName (CI.mk str)) QuantityMissing UnitMissing) . lines $ parseBlobRequestContent
+    Right is -> pure is
   pure ParseBlobResponse
     { parseBlobResponseIngredients = mkReadableIngredient <$> zipWith OrderedIngredient ingredients [1..]
     }
