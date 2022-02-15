@@ -72,20 +72,16 @@ extension UIViewController {
 }
 
 extension UIViewController {
-    func withCompletion(data: Data?, resp: URLResponse?, error: Error?, completion: ((Data) -> Void)?, onUnsuccessfulStatus: ((URLResponse?) -> Void), onError: ((Error?) -> Void)) {
+    func withCompletion(data: Data?, resp: URLResponse?, error: Error?, completion: ((Data) -> Void)?, onError: (() -> Void)) {
         if error == nil {
             if statusIsSuccessful(resp) {
                 completion?(data!)
             } else {
-                onUnsuccessfulStatus(resp)
+                onError()
             }
         } else {
-            onError(error)
+            onError()
         }
-    }
-
-    func defaultWithCompletion(data: Data?, resp: URLResponse?, error: Error?, completion: ((Data) -> Void)?) {
-        withCompletion(data: data, resp: resp, error: error, completion: completion, onUnsuccessfulStatus: defaultOnUnsuccessfulStatus, onError: defaultOnError)
     }
 
     func statusIsSuccessful(_ resp: URLResponse?) -> Bool {
@@ -102,32 +98,6 @@ extension UIViewController {
         DispatchQueue.main.async {
             self.present(confirmation, animated: true, completion: nil)
         }
-    }
-    
-    func defaultOnUnsuccessfulStatus(_ resp: URLResponse?) {
-        let message: String
-        switch Configuration.environment {
-        case .Release:
-            message = "An error occurred."
-            break
-        default:
-            message = "\(resp as Any)"
-            break
-        }
-        alertUnsuccessful(message)
-    }
-
-    func defaultOnError(_ error: Error?) {
-        let message: String
-        switch Configuration.environment {
-        case .Release:
-            message = "Nomz is not available right now. Please try again later."
-            break
-        default:
-            message = "\(error as Any)"
-            break
-        }
-        alertUnsuccessful(message)
     }
 }
 
