@@ -1,16 +1,20 @@
 module ScrapeSpec where
 
-import ClassyPrelude
+import Prelude
 
-import Control.Monad (fail)
+import Control.Monad (when)
 import Control.Monad.Except (runExceptT)
 import Control.Monad.Logger (runNoLoggingT)
+import Control.Monad.Trans.Reader (runReaderT)
+import Data.List (intercalate)
 import Network.URI (parseURI)
 import Test.Hspec
   ( Expectation, Spec, describe, expectationFailure, it, shouldBe, shouldMatchList, shouldSatisfy
   , xit
   )
 import qualified Data.CaseInsensitive as CI
+import qualified Data.Map.Strict as Map
+import qualified Data.Text as Text
 
 import ParsedIngredients
   ( allRecipesIngredients, allRecipesSteps, bettyCrockerIngredients, bettyCrockerSteps
@@ -45,8 +49,8 @@ defaultTestCfg env = TestCfg
 scrapeAndParse :: Env -> String -> String -> ([Ingredient], [Step]) -> Expectation
 scrapeAndParse Env {..} url expectedName (expectedIngredients, expectedSteps) = do
   uri <- maybe (fail "Invalid URL") pure $ parseURI url
-  ScrapedRecipe {..} <- either (fail . unpack) (pure . fst) =<< runNoLoggingT (runReaderT (runExceptT (scrapeUrl uri)) envManager)
-  scrapedRecipeName `shouldBe` RecipeName (pack expectedName)
+  ScrapedRecipe {..} <- either (fail . Text.unpack) (pure . fst) =<< runNoLoggingT (runReaderT (runExceptT (scrapeUrl uri)) envManager)
+  scrapedRecipeName `shouldBe` RecipeName (Text.pack expectedName)
   scrapedRecipeIngredients `shouldMatchList` expectedIngredients
   scrapedRecipeSteps `shouldMatchList` expectedSteps
 
@@ -54,8 +58,8 @@ scrapeAndParseConfig :: TestCfg -> String -> Expectation
 scrapeAndParseConfig TestCfg {..} url = do
   let Env {..} = env
   uri <- maybe (fail "Invalid URL") pure $ parseURI url
-  ScrapedRecipe {..} <- either (fail . unpack) (pure . fst) =<< runNoLoggingT (runReaderT (runExceptT (scrapeUrl uri)) envManager)
-  unRecipeName scrapedRecipeName `shouldSatisfy` not . null
+  ScrapedRecipe {..} <- either (fail . Text.unpack) (pure . fst) =<< runNoLoggingT (runReaderT (runExceptT (scrapeUrl uri)) envManager)
+  unRecipeName scrapedRecipeName `shouldSatisfy` not . Text.null
   scrapedRecipeIngredients `shouldSatisfy` (\xs -> length xs >= requiredIngredients)
   scrapedRecipeIngredients `shouldSatisfy` any hasQuantityAndUnit
   scrapedRecipeIngredients `shouldSatisfy` duplicates
@@ -63,12 +67,12 @@ scrapeAndParseConfig TestCfg {..} url = do
   scrapedRecipeSteps `shouldSatisfy` (\xs -> length xs >= requiredSteps)
   where
     hasQuantityAndUnit Ingredient {..} = ingredientQuantity /= QuantityMissing && (if requireUnit then ingredientUnit /= UnitMissing else True)
-    duplicates = (< allowedDuplicates) . length . filter ((> 1) . length . snd) . mapToList . foldr (\x@Ingredient {..} -> asMap . insertWith (<>) ingredientName [x]) mempty
+    duplicates = (< allowedDuplicates) . length . filter ((> 1) . length . snd) . Map.toList . foldr (\x@Ingredient {..} -> Map.insertWith (<>) ingredientName [x]) mempty
     lessThanThreePrefixes xs = do
       let names = ingredientName <$> xs
-          toStr = toLower . CI.original . unIngredientName
-          go x y = case name `isPrefixOf` otherName && name /= otherName of
-            True -> [unpack name <> " is a prefix of " <> unpack otherName]
+          toStr = Text.toLower . CI.original . unIngredientName
+          go x y = case name `Text.isPrefixOf` otherName && name /= otherName of
+            True -> [Text.unpack name <> " is a prefix of " <> Text.unpack otherName]
             False -> []
             where
               name = toStr x

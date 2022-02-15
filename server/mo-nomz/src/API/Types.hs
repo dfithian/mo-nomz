@@ -1,8 +1,11 @@
 module API.Types where
 
-import ClassyPrelude
+import Prelude
 
 import Data.Aeson.TH (deriveJSON)
+import Data.Map.Strict (Map)
+import Data.Set (Set)
+import Data.Text (Text)
 
 import Auth (Authorization)
 import Json (jsonOptions)

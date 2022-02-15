@@ -1,9 +1,14 @@
 module Scraper.Site where
 
-import ClassyPrelude
+import Prelude
 
+import Data.Function (on)
+import Data.HashMap.Strict (HashMap)
+import Data.List (groupBy, sortOn)
+import Data.Text (Text)
 import Text.HTML.Scalpel ((//), (@:), (@=), Scraper, Selector)
 import qualified Data.HashMap.Strict as HashMap
+import qualified Data.Text as Text
 import qualified Text.HTML.Scalpel as Scalpel
 
 import Scraper.Types
@@ -12,7 +17,7 @@ import Scraper.Types
   )
 
 ingredientScrapers :: HashMap SiteName IngredientScraper
-ingredientScrapers = mapFromList
+ingredientScrapers = HashMap.fromList
   [ ("allrecipes.com", allrecipesI)
 
   , ("cooking.nytimes.com", nytimesI)
@@ -111,7 +116,7 @@ ingredientScrapers = mapFromList
   ]
 
 stepScrapers :: HashMap SiteName StepScraper
-stepScrapers = mapFromList
+stepScrapers = HashMap.fromList
   [ ("allrecipes.com", allrecipesS)
 
   , ("cooking.nytimes.com", nytimesS)
@@ -203,14 +208,14 @@ stepScrapers = mapFromList
 
 -- |Get all ingredient scrapers, ordered by most popular first.
 allIngredientScrapers :: [IngredientScraper]
-allIngredientScrapers = map unsafeHead . reverse . sortOn length  . groupBy ((==) `on` (scrapeInfoName . ingredientScraperInfo)) . sortOn (scrapeInfoName . ingredientScraperInfo) . HashMap.elems $ ingredientScrapers
+allIngredientScrapers = fmap head . reverse . sortOn length  . groupBy ((==) `on` (scrapeInfoName . ingredientScraperInfo)) . sortOn (scrapeInfoName . ingredientScraperInfo) . HashMap.elems $ ingredientScrapers
 
 -- |Get all step scrapers, ordered by most popular first.
 allStepScrapers :: [StepScraper]
-allStepScrapers = map unsafeHead . reverse . sortOn length  . groupBy ((==) `on` (scrapeInfoName . stepScraperInfo)) . sortOn (scrapeInfoName . stepScraperInfo) . HashMap.elems $ stepScrapers
+allStepScrapers = fmap head . reverse . sortOn length  . groupBy ((==) `on` (scrapeInfoName . stepScraperInfo)) . sortOn (scrapeInfoName . stepScraperInfo) . HashMap.elems $ stepScrapers
 
 testScrape :: Selector -> Scraper Text Bool
-testScrape test = not . null <$> Scalpel.html test
+testScrape test = not . Text.null <$> Scalpel.html test
 
 acceptAll :: Scraper Text Bool
 acceptAll = pure True
@@ -308,11 +313,11 @@ tastyS3 = simpleStepScraper "tasty3"
 
 foodNetworkI :: IngredientScraper
 foodNetworkI = IngredientScraper (ScrapeInfo (ScrapeName "foodNetwork") inception) denyAll $
-  map UnparsedIngredientRaw . filter (not . (==) "Deselect All") <$> Scalpel.chroots ("div" @: [Scalpel.hasClass "o-Ingredients__m-Body"] // "span") (Scalpel.text Scalpel.anySelector)
+  fmap UnparsedIngredientRaw . filter (not . (==) "Deselect All") <$> Scalpel.chroots ("div" @: [Scalpel.hasClass "o-Ingredients__m-Body"] // "span") (Scalpel.text Scalpel.anySelector)
 
 foodNetworkS :: StepScraper
 foodNetworkS = StepScraper (ScrapeInfo (ScrapeName "foodNetwork") inception) denyAll $ do
-  map UnparsedStepRaw <$> Scalpel.chroots ("div" @: [Scalpel.hasClass "o-Method__m-Body"] // "li") (Scalpel.text Scalpel.anySelector)
+  fmap UnparsedStepRaw <$> Scalpel.chroots ("div" @: [Scalpel.hasClass "o-Method__m-Body"] // "li") (Scalpel.text Scalpel.anySelector)
 
 wprmI :: IngredientScraper
 wprmI = simpleIngredientScraper "wprm"

@@ -1,12 +1,16 @@
 module Auth where
 
-import ClassyPrelude
+import Prelude
 
+import Control.Monad (replicateM)
 import Crypto.KDF.BCrypt (bcrypt, validatePassword)
 import Data.Aeson (FromJSON, ToJSON)
 import Data.ByteArray.Encoding (Base(Base64), convertFromBase, convertToBase)
+import Data.ByteString (ByteString)
 import Data.CaseInsensitive (CI)
+import Data.List (find)
 import Data.Proxy (Proxy(Proxy))
+import Data.Text (Text)
 import Database.PostgreSQL.Simple.FromField (FromField)
 import Database.PostgreSQL.Simple.ToField (ToField)
 import Network.Wai (requestHeaders)
@@ -16,6 +20,7 @@ import Servant.Server.Internal.Delayed (addHeaderCheck)
 import Servant.Server.Internal.DelayedIO (delayedFailFatal, withRequest)
 import System.Random (randomIO)
 import qualified Data.ByteString as BS
+import qualified Data.Text.Encoding as Text
 
 authorizationHeader :: CI ByteString
 authorizationHeader = "X-Mo-Nomz-API-Token"
@@ -34,7 +39,7 @@ instance HasServer api context => HasServer (Authorized :> api) context where
   route Proxy context subserver = route (Proxy :: Proxy api) context $
     subserver `addHeaderCheck` withRequest headerCheck
     where
-      headerCheck = maybe (delayedFailFatal err401) (pure . Authorization . decodeUtf8 . snd) . find ((==) authorizationHeader . fst) . requestHeaders
+      headerCheck = maybe (delayedFailFatal err401) (pure . Authorization . Text.decodeUtf8 . snd) . find ((==) authorizationHeader . fst) . requestHeaders
 
 -- |Returns a plain and a bcrypted API token.
 generateToken :: Int -> IO (Authorization, BcryptedAuthorization)
@@ -43,12 +48,12 @@ generateToken cost = do
   userBytes :: ByteString <- BS.pack <$> replicateM 32 randomIO
   let rawToken :: ByteString = convertToBase Base64 userBytes
       bcryptTokenBytes :: ByteString = bcrypt cost salt rawToken
-      rawBcryptedToken :: Text = decodeUtf8 $ convertToBase Base64 bcryptTokenBytes
-  pure (Authorization $ decodeUtf8 rawToken, BcryptedAuthorization rawBcryptedToken)
+      rawBcryptedToken :: Text = Text.decodeUtf8 $ convertToBase Base64 bcryptTokenBytes
+  pure (Authorization $ Text.decodeUtf8 rawToken, BcryptedAuthorization rawBcryptedToken)
 
 -- |Validate a token against its bcrypted version
 validateToken :: Authorization -> BcryptedAuthorization -> Either String Bool
 validateToken token bcryptedToken =
-  let rawToken :: ByteString = encodeUtf8 $ unAuthorization token
-      rawBcryptedTokenResult :: Either String ByteString = convertFromBase Base64 . encodeUtf8 . unBcryptedAuthorization $ bcryptedToken
+  let rawToken :: ByteString = Text.encodeUtf8 $ unAuthorization token
+      rawBcryptedTokenResult :: Either String ByteString = convertFromBase Base64 . Text.encodeUtf8 . unBcryptedAuthorization $ bcryptedToken
   in validatePassword rawToken <$> rawBcryptedTokenResult

@@ -1,12 +1,14 @@
 module ParserSpec where
 
-import ClassyPrelude
+import Prelude
 
-import Control.Monad (fail)
 import Data.FileEmbed (embedFile)
+import Data.Text (Text)
 import System.FilePath.TH (fileRelativeToAbsoluteStr)
 import Test.Hspec (Expectation, Spec, describe, it, shouldBe, shouldMatchList)
 import qualified Data.Attoparsec.Text as Atto
+import qualified Data.Text as Text
+import qualified Data.Text.Encoding as Text
 
 import ParsedIngredients
   ( allRecipesIngredients, foodNetworkIngredients, pillsburyIngredients, rachelMansfieldIngredients
@@ -38,21 +40,21 @@ spec = describe "Parser" $ do
 
   describe "Paste" $ do
     it "can parse allrecipes" $ do
-      actual <- either (fail . unpack) pure $ parseRawIngredients $ decodeUtf8 $(embedFile =<< fileRelativeToAbsoluteStr "./fixtures/chicken-pot-pie-allrecipes.txt")
+      actual <- either (fail . Text.unpack) pure $ parseRawIngredients $ Text.decodeUtf8 $(embedFile =<< fileRelativeToAbsoluteStr "./fixtures/chicken-pot-pie-allrecipes.txt")
       actual `shouldMatchList` allRecipesIngredients
 
     it "can parse pillsbury" $ do
-      actual <- either (fail . unpack) pure $ parseRawIngredients $ decodeUtf8 $(embedFile =<< fileRelativeToAbsoluteStr "./fixtures/chicken-pot-pie-pillsbury.txt")
+      actual <- either (fail . Text.unpack) pure $ parseRawIngredients $ Text.decodeUtf8 $(embedFile =<< fileRelativeToAbsoluteStr "./fixtures/chicken-pot-pie-pillsbury.txt")
       actual `shouldMatchList` pillsburyIngredients
 
     it "can parse taste of home" $ do
-      actual <- either (fail . unpack) pure $ parseRawIngredients $ decodeUtf8 $(embedFile =<< fileRelativeToAbsoluteStr "./fixtures/chicken-pot-pie-tasteofhome.txt")
+      actual <- either (fail . Text.unpack) pure $ parseRawIngredients $ Text.decodeUtf8 $(embedFile =<< fileRelativeToAbsoluteStr "./fixtures/chicken-pot-pie-tasteofhome.txt")
       actual  `shouldMatchList` tasteOfHomeIngredients
 
     it "can parse rachel mansfield" $ do
-      actual <- either (fail . unpack) pure $ parseRawIngredients $ decodeUtf8 $(embedFile =<< fileRelativeToAbsoluteStr "./fixtures/banana-bread-rachelmansfield.txt")
+      actual <- either (fail . Text.unpack) pure $ parseRawIngredients $ Text.decodeUtf8 $(embedFile =<< fileRelativeToAbsoluteStr "./fixtures/banana-bread-rachelmansfield.txt")
       actual  `shouldMatchList` rachelMansfieldIngredients
 
     it "can parse food network" $ do
-      actual <- either (fail . unpack) pure $ parseRawIngredients $ decodeUtf8 $(embedFile =<< fileRelativeToAbsoluteStr "./fixtures/roast-chicken-food-network.txt")
+      actual <- either (fail . Text.unpack) pure $ parseRawIngredients $ Text.decodeUtf8 $(embedFile =<< fileRelativeToAbsoluteStr "./fixtures/roast-chicken-food-network.txt")
       actual `shouldMatchList` foodNetworkIngredients

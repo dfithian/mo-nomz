@@ -53,10 +53,10 @@ common options
     , bytestring
     , case-insensitive
     , cereal
-    , classy-prelude
     , containers
     , cryptonite
     , data-default
+    , hashable
     , http-client
     , http-client-tls
     , http-media
@@ -74,6 +74,7 @@ common options
     , servant-server
     , text
     , time
+    , transformers
     , unordered-containers
     , wai
     , wai-app-static
@@ -110,6 +111,7 @@ library
       Server
       Settings
       Types
+      Utils
   other-modules:
       Paths_mo_nomz
   hs-source-dirs:

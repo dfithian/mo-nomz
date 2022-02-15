@@ -1,10 +1,13 @@
 module Gen where
 
-import ClassyPrelude
+import Prelude
 
+import Control.Monad (replicateM)
 import Data.CaseInsensitive (CI)
+import Data.Text (Text)
 import Test.QuickCheck (Gen, arbitrary, elements, oneof)
 import qualified Data.CaseInsensitive as CI
+import qualified Data.Text as Text
 
 import Types
 
@@ -14,7 +17,7 @@ arbitraryAlphaNum = elements $ ['a'..'z'] <> ['A'..'Z'] <> ['0'..'9']
 arbitraryAlphaNumStr :: Gen Text
 arbitraryAlphaNumStr = do
   n <- arbitrary
-  pack <$> replicateM (abs n + 10) arbitraryAlphaNum
+  Text.pack <$> replicateM (abs n + 10) arbitraryAlphaNum
 
 arbitraryCi :: Gen (CI Text)
 arbitraryCi = CI.mk <$> arbitraryAlphaNumStr
