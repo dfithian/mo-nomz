@@ -1,14 +1,17 @@
 module Json where
 
-import ClassyPrelude
+import Prelude
 
 import Data.Aeson.TH
   ( Options, allNullaryToStringTag, constructorTagModifier, defaultOptions, fieldLabelModifier
   , omitNothingFields
   )
+import Data.Char (toLower)
+import Data.List (stripPrefix)
+import Data.Maybe (fromMaybe)
 
 lowerFirst :: String -> String
-lowerFirst ((charToLower -> c) : cs) = c : cs
+lowerFirst ((toLower -> c) : cs) = c : cs
 lowerFirst cs = cs
 
 jsonOptions :: String -> Options

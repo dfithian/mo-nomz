@@ -1,9 +1,10 @@
 module ParserSpec where
 
-import ClassyPrelude
+import Prelude
 
-import Control.Monad (fail)
 import Data.FileEmbed (embedFile)
+import Data.Text (Text, unpack)
+import Data.Text.Encoding (decodeUtf8)
 import System.FilePath.TH (fileRelativeToAbsoluteStr)
 import Test.Hspec (Expectation, Spec, describe, it, shouldBe, shouldMatchList)
 import qualified Data.Attoparsec.Text as Atto

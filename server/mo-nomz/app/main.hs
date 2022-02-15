@@ -1,6 +1,6 @@
 import Application (appMain)
 
-import ClassyPrelude
+import Prelude
 
 main :: IO ()
 main = appMain

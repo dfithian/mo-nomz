@@ -1,13 +1,20 @@
 module Scrape where
 
-import ClassyPrelude hiding (link)
+import Prelude
 
-import Control.Monad (fail)
 import Control.Monad.Except (MonadError, runExceptT, throwError)
+import Control.Monad.IO.Class (MonadIO, liftIO)
 import Control.Monad.Logger (MonadLogger, logError, runStdoutLoggingT)
+import Control.Monad.Reader (MonadReader, asks)
+import Control.Monad.Trans.Reader (runReaderT)
 import Data.Aeson.Encode.Pretty (encodePretty)
-import Data.Text (replace)
+import Data.ByteString.Lazy (toStrict)
+import Data.List (find, sortOn)
+import Data.Maybe (fromMaybe, mapMaybe)
+import Data.Text (Text, pack, replace, unpack)
+import Data.Text.Encoding (decodeUtf8)
 import Network.URI (URI, parseURI, uriAuthority, uriRegName)
+import qualified Data.HashMap.Strict as HashMap
 import qualified Text.HTML.Scalpel as Scalpel
 
 import Conversion (mkReadableIngredient)
@@ -18,7 +25,7 @@ import Scraper.Types
   ( IngredientScraper(..), ScrapeInfo(..), ScrapedInfo(..), ScrapedRecipe(..), SiteName(..)
   , StepScraper(..), title
   )
-import Types (OrderedIngredient(..), RecipeName(..), Step(..))
+import Types (OrderedIngredient(..), RecipeName(..), Step(..), lastMay, tshow)
 
 scrapeUrl :: (HasManager r, MonadIO m, MonadError Text m, MonadLogger m, MonadReader r m) => URI -> m (ScrapedRecipe, ScrapedInfo)
 scrapeUrl uri = do
@@ -44,15 +51,15 @@ scrapeUrl uri = do
       goStep StepScraper {..} = case Scalpel.scrape stepScraperTest tags of
         Just True -> (,stepScraperInfo) <$> runScraper runStepParser stepScraperRun
         _ -> Nothing
-  (ingredients, ingredientInfo) <- case flip lookup ingredientScrapers =<< domainMay of
+  (ingredients, ingredientInfo) <- case flip HashMap.lookup ingredientScrapers =<< domainMay of
     Just IngredientScraper {..} -> maybe (throwError "Failed to scrape known URL") (pure . (,ingredientScraperInfo)) $ runScraper runIngredientParser ingredientScraperRun
     Nothing -> maybe (throwError "Failed to scrape URL from defaults") pure
       . lastMay
       . sortOn (length . fst)
       . mapMaybe goIngredient
       $ allIngredientScrapers
-  stepsMay <- case flip lookup stepScrapers =<< domainMay of
-    Just StepScraper {..} -> pure . map (,stepScraperInfo) . runScraper runStepParser $ stepScraperRun
+  stepsMay <- case flip HashMap.lookup stepScrapers =<< domainMay of
+    Just StepScraper {..} -> pure . fmap (,stepScraperInfo) . runScraper runStepParser $ stepScraperRun
     Nothing -> pure
       . lastMay
       . sortOn (length . fst)
@@ -68,12 +75,12 @@ isInvalidScraper :: ScrapedInfo -> Bool
 isInvalidScraper scrapeInfo =
   let matchesIngredientVersion info =
         (==) (Just (scrapeInfoVersion info))
-          . map (scrapeInfoVersion . ingredientScraperInfo)
+          . fmap (scrapeInfoVersion . ingredientScraperInfo)
           . find ((==) (scrapeInfoName info) . scrapeInfoName . ingredientScraperInfo)
           $ allIngredientScrapers
       matchesStepVersion info =
         (==) (Just (scrapeInfoVersion info))
-          . map (scrapeInfoVersion . stepScraperInfo)
+          . fmap (scrapeInfoVersion . stepScraperInfo)
           . find ((==) (scrapeInfoName info) . scrapeInfoName . stepScraperInfo)
           $ allStepScrapers
   in case scrapeInfo of
@@ -86,9 +93,9 @@ unsafeScrapeUrl url = do
   man <- createManager
   recipe <- either (fail . unpack) (pure . fst)
     =<< runStdoutLoggingT (runExceptT (runReaderT (scrapeUrl uri) man))
-  putStrLn . toStrict . decodeUtf8 . encodePretty
-    . map (mkReadableIngredient . uncurry OrderedIngredient)
+  putStrLn . unpack . decodeUtf8 . toStrict . encodePretty
+    . fmap (mkReadableIngredient . uncurry OrderedIngredient)
     . flip zip [1..]
     . scrapedRecipeIngredients
     $ recipe
-  putStrLn . toStrict . decodeUtf8 . encodePretty . map unStep . scrapedRecipeSteps $ recipe
+  putStrLn . unpack . decodeUtf8 . toStrict . encodePretty . fmap unStep . scrapedRecipeSteps $ recipe

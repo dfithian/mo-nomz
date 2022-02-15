@@ -1,13 +1,15 @@
 module Types where
 
-import ClassyPrelude
+import Prelude
 
 import Data.Aeson (FromJSON, FromJSONKey, ToJSON, ToJSONKey)
 import Data.Aeson.TH (deriveJSON)
 import Data.CaseInsensitive (CI)
 import Data.Serialize (Serialize)
+import Data.Text (Text, pack)
 import Database.PostgreSQL.Simple.FromField (FromField, fromField)
 import Database.PostgreSQL.Simple.ToField (ToField, toField)
+import GHC.Generics (Generic)
 import Servant.API (FromHttpApiData, ToHttpApiData)
 
 import CI.Orphans ()
@@ -212,3 +214,14 @@ instance Serialize Quantity
 instance Serialize Unit
 instance Serialize Ingredient
 instance Serialize Step
+
+tshow :: Show a => a -> Text
+tshow = pack . show
+
+headMay :: [a] -> Maybe a
+headMay = \case
+  x:_ -> Just x
+  [] -> Nothing
+
+lastMay :: [a] -> Maybe a
+lastMay = headMay . reverse

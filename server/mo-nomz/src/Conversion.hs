@@ -1,8 +1,13 @@
 module Conversion where
 
-import ClassyPrelude
+import Prelude
 
+import Control.Arrow (second)
+import Data.List (find, sortBy)
+import Data.Map.Strict (Map)
 import Data.Monoid (Sum(..))
+import qualified Data.Map.Strict as Map
+import qualified Data.Set as Set
 
 import API.Types
   ( ReadableGroceryItem(..), ReadableIngredient(..), ReadableIngredientV1(..), ReadableRecipe(..)
@@ -12,7 +17,7 @@ import Combinable (Constant(..), Combinable)
 import Types
   ( GroceryItem(..), Ingredient(..), OrderedGroceryItem(..), OrderedIngredient(..), Quantity(..)
   , ReadableFraction(..), ReadableQuantity(..), ReadableUnit(..), Recipe(..), Unit(..), IngredientId
-  , cup, gram, liter, milligram, milliliter, ounce, pinch, tablespoon, teaspoon
+  , cup, gram, headMay, liter, milligram, milliliter, ounce, pinch, tablespoon, teaspoon
   )
 import qualified Combinable as C
 
@@ -22,7 +27,7 @@ data UnitHierarchy
   deriving (Eq, Ord, Show)
 
 conversionTable :: Map Unit UnitHierarchy
-conversionTable = mapFromList
+conversionTable = Map.fromList
   [ (ounce, UnitHierarchyEnd (cup, 8))
   , (cup, UnitHierarchyMid (tablespoon, 16) (ounce, 0.125))
   , (tablespoon, UnitHierarchyMid (teaspoon, 3) (cup, 0.0625))
@@ -37,23 +42,23 @@ getAllConversions :: Unit -> Map Unit Quantity
 getAllConversions = snd . go mempty
   where
     go oldVisited next =
-      let visited = asSet $ insertSet next oldVisited
-      in case (member next oldVisited, lookup next conversionTable) of
+      let visited = Set.insert next oldVisited
+      in case (Set.member next oldVisited, Map.lookup next conversionTable) of
         (True, _) -> (oldVisited, mempty)
         (_, Nothing) -> (visited, mempty)
         (_, Just (UnitHierarchyEnd (x, q))) ->
           let (newVisited, newConversions) = go visited x
-          in (newVisited, insertMap x q $ map ((*) q) newConversions)
+          in (newVisited, Map.insert x q $ fmap ((*) q) newConversions)
         (_, Just (UnitHierarchyMid (x1, q1) (x2, q2))) ->
           let (newVisited1, newConversions1) = go visited x1
               (newVisited2, newConversions2) = go newVisited1 x2
-          in (newVisited2, mapFromList [(x1, q1), (x2, q2)] <> map ((*) q1) newConversions1 <> (map ((*) q2) newConversions2))
+          in (newVisited2, Map.fromList [(x1, q1), (x2, q2)] <> fmap ((*) q1) newConversions1 <> (fmap ((*) q2) newConversions2))
 
 knownUnitOrdering :: Map Unit Int
-knownUnitOrdering = mapFromList $ zip [ounce, cup, tablespoon, teaspoon, pinch] [1..]
+knownUnitOrdering = Map.fromList $ zip [ounce, cup, tablespoon, teaspoon, pinch] [1..]
 
 unitOrdering :: Unit -> Unit -> Ordering
-unitOrdering x y = case (lookup x knownUnitOrdering, lookup y knownUnitOrdering) of
+unitOrdering x y = case (Map.lookup x knownUnitOrdering, Map.lookup y knownUnitOrdering) of
   (Just a, Just b) -> compare a b
   (Just _, Nothing) -> LT
   (Nothing, Just _) -> GT
@@ -66,29 +71,29 @@ unwrapSidecar :: (Sum Quantity, Constant a) -> (Quantity, a)
 unwrapSidecar (Sum x, Constant y) = (x, y)
 
 combineQuantities :: Map Unit (Sum Quantity, Constant a) -> Map Unit (Sum Quantity, Constant a)
-combineQuantities = foldr go mempty . reverse . sortBy (\(x, _) (y, _) -> unitOrdering x y) . mapToList
+combineQuantities = foldr go mempty . reverse . sortBy (\(x, _) (y, _) -> unitOrdering x y) . Map.toList
   where
-    go (nextUnit, (nextQuantity, nextSidecar)) acc = case lookup nextUnit acc of
-      Just (existingQuantity, existingSidecar) -> asMap $ insertMap nextUnit (nextQuantity <> existingQuantity, nextSidecar <> existingSidecar) acc
+    go (nextUnit, (nextQuantity, nextSidecar)) acc = case Map.lookup nextUnit acc of
+      Just (existingQuantity, existingSidecar) -> Map.insert nextUnit (nextQuantity <> existingQuantity, nextSidecar <> existingSidecar) acc
       Nothing ->
         let allConversions = getAllConversions nextUnit
-            allConversionsKeys = asSet . setFromList . keys $ allConversions
-            existingKeys = asSet . setFromList . keys $ acc
-            overlappingKeys = headMay . sortBy unitOrdering . setToList . intersect allConversionsKeys $ existingKeys
+            allConversionsKeys = Map.keysSet allConversions
+            existingKeys = Map.keysSet acc
+            overlappingKeys = headMay . sortBy unitOrdering . Set.toList . Set.intersection allConversionsKeys $ existingKeys
         in case overlappingKeys of
-          Nothing -> insertMap nextUnit (nextQuantity, nextSidecar) acc
-          Just existingKey -> insertWith (<>) existingKey (Sum $ getSum nextQuantity * findWithDefault 1 existingKey allConversions, nextSidecar) acc
+          Nothing -> Map.insert nextUnit (nextQuantity, nextSidecar) acc
+          Just existingKey -> Map.insertWith (<>) existingKey (Sum $ getSum nextQuantity * Map.findWithDefault 1 existingKey allConversions, nextSidecar) acc
 
 combineItems :: Combinable a => [a] -> [a]
 combineItems =
   mconcat
-    . map (\(name, everythingElse) -> map (\(unit, (quantity, sidecar)) -> C.orig (name, quantity, unit, sidecar)) $ mapToList everythingElse)
-    . mapToList
-    . map (map unwrapSidecar . combineQuantities . foldr (uncurry (insertWith (<>))) mempty . map (second wrapSidecar))
-    . unionsWith (<>)
-    . map ( \x ->
+    . fmap (\(name, everythingElse) -> fmap (\(unit, (quantity, sidecar)) -> C.orig (name, quantity, unit, sidecar)) $ Map.toList everythingElse)
+    . Map.toList
+    . fmap (fmap unwrapSidecar . combineQuantities . foldr (uncurry (Map.insertWith (<>))) mempty . fmap (second wrapSidecar))
+    . Map.unionsWith (<>)
+    . fmap ( \x ->
         let (name, quantity, unit, sidecar) = C.mk x
-        in asMap $ singletonMap name [(unit, (quantity, sidecar))]
+        in Map.singleton name [(unit, (quantity, sidecar))]
       )
 
 readableQuantityPrecision :: Double

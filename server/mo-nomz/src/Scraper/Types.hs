@@ -1,11 +1,14 @@
 module Scraper.Types where
 
-import ClassyPrelude
+import Prelude
 
+import Data.Hashable (Hashable)
 import Data.Serialize (Serialize)
-import Data.Text (strip)
+import Data.String (IsString)
+import Data.Text (Text, strip)
 import Database.PostgreSQL.Simple.FromField (FromField)
 import Database.PostgreSQL.Simple.ToField (ToField)
+import GHC.Generics (Generic)
 import Text.HTML.Scalpel (Scraper)
 import qualified Text.HTML.Scalpel as Scalpel
 

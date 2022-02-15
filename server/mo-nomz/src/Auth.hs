@@ -1,12 +1,17 @@
 module Auth where
 
-import ClassyPrelude
+import Prelude
 
+import Control.Monad (replicateM)
 import Crypto.KDF.BCrypt (bcrypt, validatePassword)
 import Data.Aeson (FromJSON, ToJSON)
 import Data.ByteArray.Encoding (Base(Base64), convertFromBase, convertToBase)
+import Data.ByteString (ByteString)
 import Data.CaseInsensitive (CI)
+import Data.List (find)
 import Data.Proxy (Proxy(Proxy))
+import Data.Text (Text)
+import Data.Text.Encoding (decodeUtf8, encodeUtf8)
 import Database.PostgreSQL.Simple.FromField (FromField)
 import Database.PostgreSQL.Simple.ToField (ToField)
 import Network.Wai (requestHeaders)

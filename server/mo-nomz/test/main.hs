@@ -1,4 +1,4 @@
-import ClassyPrelude
+import Prelude
 
 import System.Environment (lookupEnv)
 import Test.Hspec (before_, hspec)

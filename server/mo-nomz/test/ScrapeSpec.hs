@@ -1,16 +1,21 @@
 module ScrapeSpec where
 
-import ClassyPrelude
+import Prelude
 
-import Control.Monad (fail)
+import Control.Monad (when)
 import Control.Monad.Except (runExceptT)
 import Control.Monad.Logger (runNoLoggingT)
+import Control.Monad.Trans.Reader (runReaderT)
+import Data.List (intercalate)
+import Data.Text (isPrefixOf, pack, toLower, unpack)
 import Network.URI (parseURI)
 import Test.Hspec
   ( Expectation, Spec, describe, expectationFailure, it, shouldBe, shouldMatchList, shouldSatisfy
   , xit
   )
 import qualified Data.CaseInsensitive as CI
+import qualified Data.Map.Strict as Map
+import qualified Data.Text as Text
 
 import ParsedIngredients
   ( allRecipesIngredients, allRecipesSteps, bettyCrockerIngredients, bettyCrockerSteps
@@ -55,7 +60,7 @@ scrapeAndParseConfig TestCfg {..} url = do
   let Env {..} = env
   uri <- maybe (fail "Invalid URL") pure $ parseURI url
   ScrapedRecipe {..} <- either (fail . unpack) (pure . fst) =<< runNoLoggingT (runReaderT (runExceptT (scrapeUrl uri)) envManager)
-  unRecipeName scrapedRecipeName `shouldSatisfy` not . null
+  unRecipeName scrapedRecipeName `shouldSatisfy` not . Text.null
   scrapedRecipeIngredients `shouldSatisfy` (\xs -> length xs >= requiredIngredients)
   scrapedRecipeIngredients `shouldSatisfy` any hasQuantityAndUnit
   scrapedRecipeIngredients `shouldSatisfy` duplicates
@@ -63,7 +68,7 @@ scrapeAndParseConfig TestCfg {..} url = do
   scrapedRecipeSteps `shouldSatisfy` (\xs -> length xs >= requiredSteps)
   where
     hasQuantityAndUnit Ingredient {..} = ingredientQuantity /= QuantityMissing && (if requireUnit then ingredientUnit /= UnitMissing else True)
-    duplicates = (< allowedDuplicates) . length . filter ((> 1) . length . snd) . mapToList . foldr (\x@Ingredient {..} -> asMap . insertWith (<>) ingredientName [x]) mempty
+    duplicates = (< allowedDuplicates) . length . filter ((> 1) . length . snd) . Map.toList . foldr (\x@Ingredient {..} -> Map.insertWith (<>) ingredientName [x]) mempty
     lessThanThreePrefixes xs = do
       let names = ingredientName <$> xs
           toStr = toLower . CI.original . unIngredientName

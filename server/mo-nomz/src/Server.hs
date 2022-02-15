@@ -1,13 +1,21 @@
 module Server where
 
-import ClassyPrelude hiding (link)
+import Prelude
 
+import Control.Exception (SomeException, fromException, throwIO)
+import Control.Monad (unless, void, when)
 import Control.Monad.Except (runExceptT, throwError)
+import Control.Monad.IO.Class (liftIO)
 import Control.Monad.Logger (logError, runLoggingT)
+import Control.Monad.Reader (ask, asks)
+import Control.Monad.Trans.Reader (runReaderT)
+import Data.Maybe (fromMaybe)
+import Data.Text (pack, unpack)
 import Network.URI (parseURI)
 import Servant.API (NoContent(NoContent))
 import Servant.Server (ServerError, err400, err401, err403, err404, err500, errReasonPhrase)
-import qualified Data.Map as Map
+import qualified Data.Map.Strict as Map
+import qualified Data.Set as Set
 
 import API.Types
   ( DeleteGroceryItemRequest(..), DeleteRecipeRequest(..), ExportGroceryItem(..)
@@ -30,7 +38,7 @@ import Scraper.Types (ScrapedRecipe(..))
 import Settings (AppSettings(..), CacheSettings(..))
 import Types
   ( GroceryItem(..), Ingredient(..), OrderedGroceryItem(..), OrderedIngredient(..), Recipe(..)
-  , RecipeLink(..), RecipeId, UserId, ingredientToGroceryItem
+  , RecipeLink(..), RecipeId, UserId, headMay, ingredientToGroceryItem, tshow
   )
 import qualified Database
 
@@ -71,7 +79,7 @@ getHealth = do
     { getHealthResponseStatus = "ok"
     }
 
-getRecentUsers :: AppM m => m (Int64, Int64, Int64, Int64)
+getRecentUsers :: AppM m => m (Int, Int, Int, Int)
 getRecentUsers =
   unwrapDb $ withDbConn Database.selectRecentUsers
 
@@ -124,8 +132,8 @@ postMergeGroceryItem :: AppM m => Authorization -> UserId -> MergeGroceryItemReq
 postMergeGroceryItem token userId MergeGroceryItemRequest {..} = do
   validateUserToken token userId
   unwrapDb $ withDbConn $ \c -> do
-    existingIds <- asSet . setFromList . keys <$> Database.selectGroceryItems c userId (setToList mergeGroceryItemRequestIds)
-    unless (null $ difference mergeGroceryItemRequestIds existingIds) $ throwIO err400
+    existingIds <- Set.fromList . Map.keys <$> Database.selectGroceryItems c userId (Set.toList mergeGroceryItemRequestIds)
+    unless (Set.null $ Set.difference mergeGroceryItemRequestIds existingIds) $ throwIO err400
     let newGroceryItem = OrderedGroceryItem
           { orderedGroceryItemItem = GroceryItem
             { groceryItemName = mergeGroceryItemRequestName
@@ -135,16 +143,16 @@ postMergeGroceryItem token userId MergeGroceryItemRequest {..} = do
             }
           , orderedGroceryItemOrder = mergeGroceryItemRequestOrder
           }
-    void $ Database.mergeGroceryItems c userId (setToList mergeGroceryItemRequestIds) newGroceryItem
+    void $ Database.mergeGroceryItems c userId (Set.toList mergeGroceryItemRequestIds) newGroceryItem
   pure NoContent
 
 deleteGroceryItem :: AppM m => Authorization -> UserId -> DeleteGroceryItemRequest -> m NoContent
 deleteGroceryItem token userId DeleteGroceryItemRequest {..} = do
   validateUserToken token userId
   unwrapDb $ withDbConn $ \c -> do
-    existingIds <- asSet . setFromList . keys <$> Database.selectGroceryItems c userId (setToList deleteGroceryItemRequestIds)
-    unless (null $ difference deleteGroceryItemRequestIds existingIds) $ throwIO err400
-    Database.deleteGroceryItems c userId (setToList deleteGroceryItemRequestIds)
+    existingIds <- Set.fromList . Map.keys <$> Database.selectGroceryItems c userId (Set.toList deleteGroceryItemRequestIds)
+    unless (Set.null $ Set.difference deleteGroceryItemRequestIds existingIds) $ throwIO err400
+    Database.deleteGroceryItems c userId (Set.toList deleteGroceryItemRequestIds)
   pure NoContent
 
 postClearGroceryItems :: AppM m => Authorization -> UserId -> m NoContent
@@ -158,7 +166,7 @@ postRecipeImportLink :: AppM m => Authorization -> UserId -> RecipeImportLinkReq
 postRecipeImportLink token userId RecipeImportLinkRequest {..} = do
   validateUserToken token userId
   existingRecipes <- unwrapDb $ withDbConn $ \c -> Database.selectRecipesByLink c userId recipeImportLinkRequestLink
-  case headMay (mapToList existingRecipes) of
+  case headMay (Map.toList existingRecipes) of
     Just (recipeId, Recipe {..}) ->
       case (recipeImportLinkRequestActive, recipeActive) of
         (True, True) -> pure ()
@@ -204,7 +212,7 @@ postUpdateRecipe :: AppM m => Authorization -> UserId -> UpdateRecipeRequest -> 
 postUpdateRecipe token userId UpdateRecipeRequest {..} = do
   validateUserToken token userId
   unwrapDb $ withDbConn $ \c -> do
-    Recipe {..} <- maybe (throwIO err404) pure . headMay =<< Database.selectRecipes c userId [updateRecipeRequestId]
+    Recipe {..} <- maybe (throwIO err404) (pure . snd) . headMay . Map.toList =<< Database.selectRecipes c userId [updateRecipeRequestId]
     Database.updateRecipe c userId updateRecipeRequestId (fromMaybe 0 updateRecipeRequestRating) (fromMaybe "" updateRecipeRequestNotes)
     when (updateRecipeRequestActive /= recipeActive) $
       case updateRecipeRequestActive of
@@ -217,10 +225,10 @@ postUpdateRecipeIngredients token userId UpdateRecipeIngredientsRequest {..} = d
   validateUserToken token userId
   unwrapDb $ withDbConn $ \c -> do
     existing <- Database.selectRecipes c userId [updateRecipeIngredientsRequestId]
-    let existingIds = asSet . setFromList . keys $ existing
-        deleteIngredientIds = setToList updateRecipeIngredientsRequestDeletes
-    Recipe {..} <- maybe (throwIO err400) pure $ lookup updateRecipeIngredientsRequestId existing
-    unless (null $ difference (singletonSet updateRecipeIngredientsRequestId) existingIds) $ throwIO err400
+    let existingIds = Set.fromList . Map.keys $ existing
+        deleteIngredientIds = Set.toList updateRecipeIngredientsRequestDeletes
+    Recipe {..} <- maybe (throwIO err400) pure $ Map.lookup updateRecipeIngredientsRequestId existing
+    unless (Set.null $ Set.difference (Set.singleton updateRecipeIngredientsRequestId) existingIds) $ throwIO err400
     Database.unmergeGroceryItems c userId deleteIngredientIds
     Database.deleteIngredients c userId deleteIngredientIds
     let adds = mkOrderedIngredient <$> updateRecipeIngredientsRequestAdds
@@ -239,9 +247,9 @@ getRecipesV1 token userId = do
     <$> Database.selectRecipes c userId []
     <*> Database.selectIngredientsByRecipeIds c userId []
   pure ListRecipeResponseV1
-    { listRecipeResponseV1Recipes = mapFromList
-        . map (\(recipeId, recipe) -> (recipeId, mkReadableRecipeV1 (orderedIngredientIngredient <$> Map.elems (findWithDefault mempty recipeId ingredients)) recipe))
-        . mapToList
+    { listRecipeResponseV1Recipes = Map.fromList
+        . fmap (\(recipeId, recipe) -> (recipeId, mkReadableRecipeV1 (orderedIngredientIngredient <$> Map.elems (Map.findWithDefault mempty recipeId ingredients)) recipe))
+        . Map.toList
         $ recipes
     }
 
@@ -252,9 +260,9 @@ getRecipes token userId = do
     <$> Database.selectRecipes c userId []
     <*> Database.selectIngredientsByRecipeIds c userId []
   pure ListRecipeResponse
-    { listRecipeResponseRecipes = mapFromList
-        . map (\(recipeId, recipe) -> (recipeId, mkReadableRecipe (findWithDefault mempty recipeId ingredients) recipe))
-        . mapToList
+    { listRecipeResponseRecipes = Map.fromList
+        . fmap (\(recipeId, recipe) -> (recipeId, mkReadableRecipe (Map.findWithDefault mempty recipeId ingredients) recipe))
+        . Map.toList
         $ recipes
     }
 
@@ -264,19 +272,19 @@ getRecipe token userId recipeId = do
   (recipes, ingredients) <- unwrapDb $ withDbConn $ \c -> (,)
     <$> Database.selectRecipes c userId [recipeId]
     <*> Database.selectIngredientsByRecipeId c userId recipeId
-  case headMay recipes of
+  case headMay (Map.toList recipes) of
     Nothing -> throwError err404
-    Just recipe -> pure $ mkReadableRecipe ingredients recipe
+    Just (_, recipe) -> pure $ mkReadableRecipe ingredients recipe
 
 deleteRecipes :: AppM m => Authorization -> UserId -> DeleteRecipeRequest -> m NoContent
 deleteRecipes token userId DeleteRecipeRequest {..} = do
   validateUserToken token userId
   unwrapDb $ withDbConn $ \c -> do
-    existingIds <- asSet . setFromList . keys <$> Database.selectRecipes c userId (setToList deleteRecipeRequestIds)
-    unless (null $ difference deleteRecipeRequestIds existingIds) $ throwIO err400
-    ingredientIds <- Database.selectRecipeIngredientIds c userId (setToList deleteRecipeRequestIds)
+    existingIds <- Set.fromList . Map.keys <$> Database.selectRecipes c userId (Set.toList deleteRecipeRequestIds)
+    unless (Set.null $ Set.difference deleteRecipeRequestIds existingIds) $ throwIO err400
+    ingredientIds <- Database.selectRecipeIngredientIds c userId (Set.toList deleteRecipeRequestIds)
     Database.unmergeGroceryItems c userId ingredientIds
-    Database.deleteRecipes c userId (setToList deleteRecipeRequestIds)
+    Database.deleteRecipes c userId (Set.toList deleteRecipeRequestIds)
   pure NoContent
 
 -- parsing only
@@ -309,7 +317,7 @@ getExport token userId = do
     Database.exportConfirm c userId
     pure (groceries, recipes, ingredients)
   pure ExportResponse
-    { exportResponseGroceries = map (\OrderedGroceryItem {..} ->
+    { exportResponseGroceries = fmap (\OrderedGroceryItem {..} ->
         let GroceryItem {..} = orderedGroceryItemItem
         in ExportGroceryItem
           { exportGroceryItemName = groceryItemName
@@ -319,7 +327,7 @@ getExport token userId = do
           , exportGroceryItemOrder = orderedGroceryItemOrder
           }
       ) groceries
-    , exportResponseRecipes = map (\Recipe {..} ->
+    , exportResponseRecipes = fmap (\Recipe {..} ->
         ExportRecipe
           { exportRecipeName = recipeName
           , exportRecipeLink = recipeLink
@@ -328,7 +336,7 @@ getExport token userId = do
           , exportRecipeNotes = recipeNotes
           }
       ) recipes
-    , exportResponseIngredients = map (\(recipeId, groceryItemId, OrderedIngredient {..}) ->
+    , exportResponseIngredients = fmap (\(recipeId, groceryItemId, OrderedIngredient {..}) ->
         let Ingredient {..} = orderedIngredientIngredient
         in ExportIngredient
           { exportIngredientGroceryItemId = groceryItemId

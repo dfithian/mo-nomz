@@ -1,10 +1,11 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 module Serialize.Orphans where
 
-import ClassyPrelude
+import Prelude
 
 import Data.CaseInsensitive (CI)
 import Data.Serialize (Serialize, get, put)
+import Data.Text (Text, pack, unpack)
 import qualified Data.CaseInsensitive as CI
 
 instance Serialize Text where

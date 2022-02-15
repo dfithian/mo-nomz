@@ -1,10 +1,12 @@
 module DatabaseSpec where
 
-import ClassyPrelude hiding (link, link2)
+import Prelude
 
+import Control.Monad (void)
+import Control.Monad.IO.Class (liftIO)
 import Test.Hspec (Spec, describe, it, shouldBe, shouldMatchList)
 import Test.QuickCheck (generate, listOf1)
-import qualified Data.Map as Map
+import qualified Data.Map.Strict as Map
 
 import Auth (BcryptedAuthorization(..))
 import Gen
@@ -94,7 +96,7 @@ spec env@Env {..} = describe "Database" $ do
       groceryItemIds <- insertGroceryItems c envUser items
       recipeId <- insertRecipe c envUser recipe (zip groceryItemIds ingredients)
       actualRecipes <- Map.elems <$> selectRecipes c envUser []
-      (ingredientIds, actualIngredients) <- unzip . mapToList . map orderedIngredientIngredient <$> selectIngredientsByRecipeId c envUser recipeId
+      (ingredientIds, actualIngredients) <- unzip . Map.toList . fmap orderedIngredientIngredient <$> selectIngredientsByRecipeId c envUser recipeId
       actualIngredientIds <- selectRecipeIngredientIds c envUser [recipeId]
       pure (actualRecipes, actualIngredients, ingredientIds, actualIngredientIds)
     actualRecipes `shouldMatchList` [recipe]

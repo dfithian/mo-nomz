@@ -1,11 +1,13 @@
 module TestEnv where
 
-import ClassyPrelude
+import Prelude
 
-import Control.Monad (fail)
+import Control.Monad (void)
 import Control.Monad.Except (runExceptT)
 import Control.Monad.Logger (runLoggingT)
+import Control.Monad.Trans.Reader (runReaderT)
 import Data.Pool (Pool, createPool)
+import Data.Time.Clock (getCurrentTime)
 import Database.PostgreSQL.Simple (Connection, close, connectPostgreSQL, execute_)
 import Network.HTTP.Client (Manager)
 

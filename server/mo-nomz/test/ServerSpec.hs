@@ -1,14 +1,16 @@
 module ServerSpec where
 
-import ClassyPrelude hiding (link)
+import Prelude
 
-import Control.Monad.Reader (local)
+import Control.Monad (void)
+import Control.Monad.Reader (asks, local)
 import Data.Serialize (encode)
-import Data.Time.Clock (addUTCTime)
+import Data.Time.Clock (addUTCTime, getCurrentTime)
 import Database.PostgreSQL.Simple (Binary(Binary), execute)
 import Test.Hspec (Spec, before, describe, it, shouldBe, shouldMatchList)
 import Test.QuickCheck (generate)
-import qualified Data.Map as Map
+import qualified Data.Map.Strict as Map
+import qualified Data.Set as Set
 
 import API.Types
   ( DeleteGroceryItemRequest(..), DeleteRecipeRequest(..), ListGroceryItemResponse(..)
@@ -55,7 +57,7 @@ spec env@Env {..} = describe "Server" $ do
             )
 
       toReadableDef = toReadable . zip [1..]
-      toReadable xs = flip map xs $ \(order, ingredient) ->
+      toReadable xs = flip fmap xs $ \(order, ingredient) ->
         mkReadableGroceryItem (OrderedGroceryItem (ingredientToGroceryItem True ingredient) order)
 
   before runBefore $ do
@@ -70,7 +72,7 @@ spec env@Env {..} = describe "Server" $ do
           (ingredient1, ingredient2, _, ingredient4, _, ingredient6) = ingredients
       ListGroceryItemResponse items <- runServer env $ do
         void $ postMergeGroceryItem envAuth envUser MergeGroceryItemRequest
-          { mergeGroceryItemRequestIds = setFromList [groceryItemId1, groceryItemId3, groceryItemId5]
+          { mergeGroceryItemRequestIds = Set.fromList [groceryItemId1, groceryItemId3, groceryItemId5]
           , mergeGroceryItemRequestName = ingredientName ingredient1
           , mergeGroceryItemRequestQuantity = mkReadableQuantity $ ingredientQuantity ingredient1
           , mergeGroceryItemRequestUnit = mkReadableUnit $ ingredientUnit ingredient1
@@ -88,7 +90,7 @@ spec env@Env {..} = describe "Server" $ do
         Database.mergeGroceryItems c envUser [groceryItemId1, groceryItemId3, groceryItemId5] (OrderedGroceryItem (ingredientToGroceryItem True ingredient1) (maxOrder + 1))
       ListGroceryItemResponse items <- runServer env $ do
         void $ deleteGroceryItem envAuth envUser DeleteGroceryItemRequest
-          { deleteGroceryItemRequestIds = setFromList [mergedGroceryItemId, groceryItemId2]
+          { deleteGroceryItemRequestIds = Set.fromList [mergedGroceryItemId, groceryItemId2]
           }
         getGroceryItems envAuth envUser
       Map.elems items `shouldMatchList` toReadable [(4, ingredient4), (6, ingredient6)]
@@ -110,10 +112,10 @@ spec env@Env {..} = describe "Server" $ do
         Database.mergeGroceryItems c envUser [groceryItemId1, groceryItemId3, groceryItemId5] (OrderedGroceryItem (ingredientToGroceryItem True ingredient1) (maxOrder + 1))
       ListGroceryItemResponse items <- runServer env $ do
         void $ deleteGroceryItem envAuth envUser DeleteGroceryItemRequest
-          { deleteGroceryItemRequestIds = setFromList [groceryItemId2]
+          { deleteGroceryItemRequestIds = Set.fromList [groceryItemId2]
           }
         void $ deleteRecipes envAuth envUser DeleteRecipeRequest
-          { deleteRecipeRequestIds = setFromList [recipeId1]
+          { deleteRecipeRequestIds = Set.fromList [recipeId1]
           }
         getGroceryItems envAuth envUser
       Map.elems items `shouldMatchList` expected
@@ -135,7 +137,7 @@ spec env@Env {..} = describe "Server" $ do
         Database.mergeGroceryItems c envUser [groceryItemId1, groceryItemId3, groceryItemId5] (OrderedGroceryItem (ingredientToGroceryItem True ingredient1) (maxOrder + 1))
       ListGroceryItemResponse items <- runServer env $ do
         void $ deleteGroceryItem envAuth envUser DeleteGroceryItemRequest
-          { deleteGroceryItemRequestIds = setFromList [groceryItemId2]
+          { deleteGroceryItemRequestIds = Set.fromList [groceryItemId2]
           }
         void $ postUpdateRecipe envAuth envUser UpdateRecipeRequest
           { updateRecipeRequestId = recipeId1
@@ -155,7 +157,7 @@ spec env@Env {..} = describe "Server" $ do
         Database.mergeGroceryItems c envUser [groceryItemId1, groceryItemId3, groceryItemId5] (OrderedGroceryItem (ingredientToGroceryItem True ingredient1) (maxOrder + 1))
       ListGroceryItemResponse items <- runServer env $ do
         void $ deleteGroceryItem envAuth envUser DeleteGroceryItemRequest
-          { deleteGroceryItemRequestIds = setFromList [groceryItemId2]
+          { deleteGroceryItemRequestIds = Set.fromList [groceryItemId2]
           }
         void $ postUpdateRecipe envAuth envUser UpdateRecipeRequest
           { updateRecipeRequestId = recipeId1
@@ -177,7 +179,7 @@ spec env@Env {..} = describe "Server" $ do
         Database.mergeGroceryItems c envUser [groceryItemId1, groceryItemId3, groceryItemId5] (OrderedGroceryItem (ingredientToGroceryItem True ingredient1) (maxOrder + 1))
       runServer env $ do
         void $ deleteGroceryItem envAuth envUser DeleteGroceryItemRequest
-          { deleteGroceryItemRequestIds = setFromList [groceryItemId2]
+          { deleteGroceryItemRequestIds = Set.fromList [groceryItemId2]
           }
         void $ postUpdateRecipe envAuth envUser UpdateRecipeRequest
           { updateRecipeRequestId = recipeId1

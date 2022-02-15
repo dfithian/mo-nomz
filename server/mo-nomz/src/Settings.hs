@@ -1,8 +1,9 @@
 module Settings where
 
-import ClassyPrelude
+import Prelude
 
 import Data.Aeson ((.:), (.=), FromJSON, ToJSON, Value, object, parseJSON, toJSON, withObject)
+import Data.Text (Text)
 
 data DatabaseSettings = DatabaseSettings
   { databaseSettingsConnStr  :: Text

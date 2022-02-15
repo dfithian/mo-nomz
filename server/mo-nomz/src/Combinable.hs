@@ -1,6 +1,6 @@
 module Combinable where
 
-import ClassyPrelude
+import Prelude
 
 import Types
   ( GroceryItem(..), Ingredient(..), OrderedGroceryItem(..), IngredientName, Quantity, Unit

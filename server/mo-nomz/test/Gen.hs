@@ -1,8 +1,10 @@
 module Gen where
 
-import ClassyPrelude
+import Prelude
 
+import Control.Monad (replicateM)
 import Data.CaseInsensitive (CI)
+import Data.Text (Text, pack)
 import Test.QuickCheck (Gen, arbitrary, elements, oneof)
 import qualified Data.CaseInsensitive as CI
 
