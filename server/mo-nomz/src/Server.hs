@@ -32,7 +32,7 @@ import Conversion
   , mkReadableRecipe, mkReadableRecipeV1, mkReadableUnit, mkUnit
   )
 import Foundation (AppM, appLogFunc, cacheSettings, settings, withDbConn)
-import Parser (parseRawIngredients)
+import Parser (parseRawIngredients, unparseRawIngredients)
 import Scrape (scrapeUrl)
 import Scraper.Types (ScrapedRecipe(..))
 import Settings (AppSettings(..), CacheSettings(..))
@@ -292,7 +292,11 @@ deleteRecipes token userId DeleteRecipeRequest {..} = do
 postParseBlob :: AppM m => Authorization -> UserId -> ParseBlobRequest -> m ParseBlobResponse
 postParseBlob token userId ParseBlobRequest {..} = do
   validateUserToken token userId
-  ingredients <- either (\e -> throwError err500 { errReasonPhrase = Text.unpack e }) pure $ parseRawIngredients parseBlobRequestContent
+  ingredients <- case parseRawIngredients parseBlobRequestContent of
+    Left e -> do
+      $logError e
+      pure $ unparseRawIngredients parseBlobRequestContent
+    Right is -> pure is
   pure ParseBlobResponse
     { parseBlobResponseIngredients = mkReadableIngredient <$> zipWith OrderedIngredient ingredients [1..]
     }
