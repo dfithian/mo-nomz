@@ -32,6 +32,20 @@ extension UIViewController {
         task.resume()
     }
     
+    func pingUser(completion: (() -> Void)?) {
+        let spinner = startLoading()
+        guard let state = User.loadState() else { return }
+        var req = URLRequest(url: URL(string: Configuration.baseURL + "api/v1/user/" + String(state.userId) + "/ping")!)
+        req.addValue(state.apiToken, forHTTPHeaderField: "X-Mo-Nomz-API-Token")
+        req.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        req.httpMethod = "POST"
+        let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
+            self.stopLoading(spinner)
+            completion?()
+        })
+        task.resume()
+    }
+    
     func loadExport(completion: (() -> Void)?) {
         let spinner = startLoading()
         guard let state = User.loadState() else { return }

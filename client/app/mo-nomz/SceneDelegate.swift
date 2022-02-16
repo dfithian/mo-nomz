@@ -53,6 +53,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         } else {
             window?.rootViewController = mainVc
         }
+        
+        mainVc.pingUser(completion: nil)
     }
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
@@ -82,8 +84,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneWillEnterForeground(_ scene: UIScene) {
-        // Called as the scene transitions from the background to the foreground.
-        // Use this method to undo the changes made on entering the background.
+        window?.rootViewController?.pingUser(completion: nil)
     }
 
     func sceneDidEnterBackground(_ scene: UIScene) {
