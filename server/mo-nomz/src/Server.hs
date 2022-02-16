@@ -24,7 +24,7 @@ import API.Types
   , ListRecipeResponseV1(..), MergeGroceryItemRequest(..), ParseBlobRequest(..)
   , ParseBlobResponse(..), ParseLinkRequest(..), ParseLinkResponse(..), RecipeImportLinkRequest(..)
   , UpdateGroceryItemRequest(..), UpdateRecipeIngredientsRequest(..), UpdateRecipeRequest(..)
-  , UserCreateResponse(..), ReadableRecipe
+  , UserCreateResponse(..), UserPingResponse(..), ReadableRecipe
   )
 import Auth (Authorization, generateToken, validateToken)
 import Conversion
@@ -104,6 +104,11 @@ validateUserToken token userId = do
     _ -> do
       $logError $ "No user token for " <> tshow userId
       throwError err403
+
+postPingUser :: AppM m => Authorization -> UserId -> m UserPingResponse
+postPingUser token userId = do
+  validateUserToken token userId
+  pure $ UserPingResponse "pong"
 
 getGroceryItems :: AppM m => Authorization -> UserId -> m ListGroceryItemResponse
 getGroceryItems token userId = do

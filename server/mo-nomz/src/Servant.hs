@@ -14,7 +14,7 @@ import API.Types
   , GroceryImportBlobRequest, ListGroceryItemResponse, ListRecipeResponse, ListRecipeResponseV1
   , MergeGroceryItemRequest, ParseBlobRequest, ParseBlobResponse, ParseLinkRequest
   , ParseLinkResponse, ReadableRecipe, RecipeImportLinkRequest, UpdateGroceryItemRequest
-  , UpdateRecipeIngredientsRequest, UpdateRecipeRequest, UserCreateResponse
+  , UpdateRecipeIngredientsRequest, UpdateRecipeRequest, UserCreateResponse, UserPingResponse
   )
 import Auth (Authorized)
 import Types (RecipeId, UserId)
@@ -37,6 +37,7 @@ type NomzApi =
   "status" :> Get '[HTML] Markup
     :<|> "health" :> Get '[JSON] GetHealthResponse
     :<|> "api" :> "v1" :> "user" :> Post '[JSON] UserCreateResponse
+    :<|> Authorized :> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "ping" :> Post '[JSON] UserPingResponse
     :<|> Authorized :> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "grocery" :> Get '[JSON] ListGroceryItemResponse
     :<|> Authorized :> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "grocery" :> ReqBody '[JSON] UpdateGroceryItemRequest :> PostNoContent
     :<|> Authorized :> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "grocery" :> "merge" :> ReqBody '[JSON] MergeGroceryItemRequest :> PostNoContent
