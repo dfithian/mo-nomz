@@ -7,8 +7,9 @@
 
 import UIKit
 
-class RecipeDetailController: UIViewController, UITextViewDelegate {
-    @IBOutlet weak var label: UILabel!
+class RecipeDetailController: UIViewController, UITextViewDelegate, UITextFieldDelegate {
+    @IBOutlet weak var nameRead: UILabel!
+    @IBOutlet weak var nameWrite: UITextField!
     @IBOutlet weak var star1: UIButton!
     @IBOutlet weak var star2: UIButton!
     @IBOutlet weak var star3: UIButton!
@@ -28,6 +29,22 @@ class RecipeDetailController: UIViewController, UITextViewDelegate {
         } else {
             UIApplication.shared.openURL(url)
         }
+    }
+    
+    @IBAction func didTapLabel(_ sender: UITapGestureRecognizer) {
+        nameWrite.becomeFirstResponder()
+        nameWrite.alpha = 1
+        nameRead.alpha = 0
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        guard let r = recipe, let name = nameWrite.text else { return }
+        nameWrite.alpha = 0
+        nameWrite.resignFirstResponder()
+        nameRead.text = name
+        nameRead.alpha = 1
+        updateRecipe(id: r.id, recipe: ReadableRecipe(name: name, link: r.recipe.link, active: r.recipe.active, rating: r.recipe.rating, notes: r.recipe.notes, ingredients: r.recipe.ingredients, steps: r.recipe.steps))
+        onChange?()
     }
     
     private func didTapStar(which: Int) {
@@ -130,11 +147,13 @@ class RecipeDetailController: UIViewController, UITextViewDelegate {
     }
     
     override func viewDidLoad() {
-        label.text = recipe?.recipe.name
+        nameRead.text = recipe?.recipe.name
+        nameWrite.text = recipe?.recipe.name
         if recipe?.recipe.link == nil {
             link.removeFromSuperview()
         }
         didTapStar(which: recipe?.recipe.rating ?? 0)
+        nameWrite.addDoneButtonOnKeyboard()
     }
     
     override func viewWillAppear(_ animated: Bool) {

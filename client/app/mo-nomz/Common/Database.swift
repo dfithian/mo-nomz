@@ -348,6 +348,7 @@ extension UIViewController {
                         try deactivateRecipeRaw(ctx, id: id)
                     }
                 }
+                fetched.name = recipe.name
                 fetched.active = recipe.active
                 fetched.notes = recipe.notes
                 fetched.rating = Int32(recipe.rating)
