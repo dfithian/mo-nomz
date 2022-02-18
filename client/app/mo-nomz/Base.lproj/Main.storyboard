@@ -98,29 +98,8 @@
                                     <outlet property="label" destination="Jn0-VO-gmh" id="SLg-My-l9u"/>
                                 </connections>
                             </tableViewCell>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="thanks" id="K42-w7-ZPt">
-                                <rect key="frame" x="0.0" y="88" width="414" height="43.5"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="K42-w7-ZPt" id="zeh-N4-THZ">
-                                    <rect key="frame" x="0.0" y="0.0" width="414" height="43.5"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                    <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Thanks for using this app! We appreciate your feedback." textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9Qs-Gj-GFE">
-                                            <rect key="frame" x="20" y="13.5" width="374" height="17"/>
-                                            <fontDescription key="fontDescription" type="italicSystem" pointSize="14"/>
-                                            <nil key="textColor"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
-                                    </subviews>
-                                    <constraints>
-                                        <constraint firstItem="9Qs-Gj-GFE" firstAttribute="centerY" secondItem="zeh-N4-THZ" secondAttribute="centerY" id="6kD-S8-aP3"/>
-                                        <constraint firstItem="9Qs-Gj-GFE" firstAttribute="trailing" secondItem="zeh-N4-THZ" secondAttribute="trailingMargin" id="XBU-du-lCR"/>
-                                        <constraint firstItem="9Qs-Gj-GFE" firstAttribute="leading" secondItem="zeh-N4-THZ" secondAttribute="leadingMargin" id="dJ4-Dx-qEX"/>
-                                    </constraints>
-                                </tableViewCellContentView>
-                            </tableViewCell>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="version" id="0Mx-gh-zyK" customClass="OneLabel" customModule="mo_nomz" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="131.5" width="414" height="43.5"/>
+                                <rect key="frame" x="0.0" y="88" width="414" height="43.5"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="0Mx-gh-zyK" id="eEJ-7q-R6w">
                                     <rect key="frame" x="0.0" y="0.0" width="414" height="43.5"/>
@@ -151,7 +130,7 @@
                                 </connections>
                             </tableViewCell>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="help" id="AoS-j6-MNg" customClass="OneButton" customModule="mo_nomz" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="175" width="414" height="43.5"/>
+                                <rect key="frame" x="0.0" y="131.5" width="414" height="43.5"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="AoS-j6-MNg" id="afM-CP-wby">
                                     <rect key="frame" x="0.0" y="0.0" width="414" height="43.5"/>
@@ -176,7 +155,7 @@
                                 </connections>
                             </tableViewCell>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="restore" id="TFG-rH-BaK" customClass="OneButton" customModule="mo_nomz" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="218.5" width="414" height="43.5"/>
+                                <rect key="frame" x="0.0" y="175" width="414" height="43.5"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="TFG-rH-BaK" id="7Sn-hH-Pza">
                                     <rect key="frame" x="0.0" y="0.0" width="414" height="43.5"/>
@@ -201,7 +180,7 @@
                                 </connections>
                             </tableViewCell>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="purchase" id="Bsq-lS-lek" customClass="LabelButton" customModule="mo_nomz" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="262" width="414" height="44"/>
+                                <rect key="frame" x="0.0" y="218.5" width="414" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Bsq-lS-lek" id="PSr-fR-QYK">
                                     <rect key="frame" x="0.0" y="0.0" width="414" height="44"/>
@@ -238,7 +217,7 @@
                                 </connections>
                             </tableViewCell>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="preference" id="jyj-wR-DeK" customClass="LabelSwitch" customModule="mo_nomz" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="306" width="414" height="44"/>
+                                <rect key="frame" x="0.0" y="262.5" width="414" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="jyj-wR-DeK" id="McP-MK-f2o">
                                     <rect key="frame" x="0.0" y="0.0" width="414" height="44"/>
