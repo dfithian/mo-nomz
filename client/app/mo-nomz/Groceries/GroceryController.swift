@@ -21,9 +21,7 @@ class GroceryController: UIViewController {
     @IBAction func export(_ sender: Any?) {
         let items: [ReadableGroceryItemWithId] = selectGroceries().filter({ $0.item.active })
         if !items.isEmpty {
-            let exportText: String = items.map({ (x: ReadableGroceryItemWithId) -> String in
-                return x.item.render()
-            }).joined(separator: "\n")
+            let exportText: String = items.map({ $0.item.render() }).joined(separator: "\n")
             let vc = UIActivityViewController(activityItems: [exportText], applicationActivities: nil)
             present(vc, animated: true, completion: nil)
         }

@@ -15,21 +15,11 @@ class RecipeDetailController: UIViewController, UITextViewDelegate, UITextFieldD
     @IBOutlet weak var star3: UIButton!
     @IBOutlet weak var star4: UIButton!
     @IBOutlet weak var star5: UIButton!
-    @IBOutlet weak var link: UIButton!
+    @IBOutlet weak var options: UIButton!
     
     var recipe: ReadableRecipeWithId? = nil
     var onChange: (() -> Void)? = nil
     var detailVc: RecipeDetailListController? = nil
-    
-    @IBAction func didTapLink(_ sender: Any?) {
-        guard let link = recipe?.recipe.link else { return }
-        let url = URL(string: link)!
-        if #available(iOS 10.0, *) {
-            UIApplication.shared.open(url, options: [:], completionHandler: nil)
-        } else {
-            UIApplication.shared.openURL(url)
-        }
-    }
     
     @IBAction func didTapLabel(_ sender: UITapGestureRecognizer) {
         nameWrite.becomeFirstResponder()
@@ -120,6 +110,43 @@ class RecipeDetailController: UIViewController, UITextViewDelegate, UITextFieldD
         didTapStar(which: 5)
     }
     
+    private func visitLink(_ link: String) {
+        let url = URL(string: link)!
+        if #available(iOS 10.0, *) {
+            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+        } else {
+            UIApplication.shared.openURL(url)
+        }
+    }
+    
+    private func exportLink(_ link: String) {
+        let vc = UIActivityViewController(activityItems: [link], applicationActivities: nil)
+        present(vc, animated: true, completion: nil)
+    }
+    
+    private func exportIngredients(_ ingredients: [ReadableIngredient]) {
+        let exportText: String = ingredients.map({ $0.render() }).joined(separator: "\n")
+        let vc = UIActivityViewController(activityItems: [exportText], applicationActivities: nil)
+        present(vc, animated: true, completion: nil)
+    }
+    
+    private func setupOptions() {
+        var actions = [UIAction]()
+        if let ingredients = recipe?.recipe.ingredients, !ingredients.isEmpty {
+            actions.append(UIAction(title: "Export Ingredients", image: UIImage(systemName: "square.and.arrow.up"), handler: { _ in self.exportIngredients(ingredients.map({ $0.value })) }))
+        }
+        if let link = recipe?.recipe.link {
+            actions.append(UIAction(title: "Export Link", image: UIImage(systemName: "square.and.arrow.up"), handler: { _ in self.exportLink(link) }))
+            actions.append(UIAction(title: "Open in Browser", image: UIImage(systemName: "safari"), handler: { _ in self.visitLink(link) }))
+        }
+        if actions.isEmpty {
+            options.removeFromSuperview()
+        } else {
+            options.menu = UIMenu(options: .displayInline, children: actions)
+            options.showsMenuAsPrimaryAction = true
+        }
+    }
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         guard let r = recipe else { return }
         if let vc = segue.destination as? RecipeDetailListController, segue.identifier == "embedDetail" {
@@ -129,8 +156,8 @@ class RecipeDetailController: UIViewController, UITextViewDelegate, UITextFieldD
             vc.steps = r.recipe.steps.map({ StepWithId(id: $0, step: $1) }).sorted(by: { $0.step.order < $1.step.order })
             vc.ingredients = r.recipe.ingredients.map({ ReadableIngredientWithId(id: $0, ingredient: $1) }).sorted(by: { $0.ingredient.order < $1.ingredient.order })
             vc.onChange = { () -> Void in
-                self.loadData()
                 self.onChange?()
+                self.loadData()
             }
         }
     }
@@ -138,6 +165,7 @@ class RecipeDetailController: UIViewController, UITextViewDelegate, UITextFieldD
     private func loadData() {
         guard let r = recipe else { return }
         guard let newRecipe = getRecipe(id: r.id) else { return }
+        recipe = newRecipe
         detailVc?.recipe = newRecipe
         detailVc?.steps = newRecipe.recipe.steps.map({ StepWithId(id: $0, step: $1) }).sorted(by: { ($0.step.order, $0.step.step) < ($1.step.order, $1.step.step) })
         detailVc?.ingredients = newRecipe.recipe.ingredients.map({ ReadableIngredientWithId(id: $0, ingredient: $1) }).sorted(by: { ($0.ingredient.order, $0.ingredient.name) < ($1.ingredient.order, $1.ingredient.name) })
@@ -149,11 +177,9 @@ class RecipeDetailController: UIViewController, UITextViewDelegate, UITextFieldD
     override func viewDidLoad() {
         nameRead.text = recipe?.recipe.name
         nameWrite.text = recipe?.recipe.name
-        if recipe?.recipe.link == nil {
-            link.removeFromSuperview()
-        }
         didTapStar(which: recipe?.recipe.rating ?? 0)
         nameWrite.addDoneButtonOnKeyboard()
+        setupOptions()
     }
     
     override func viewWillAppear(_ animated: Bool) {
