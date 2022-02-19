@@ -119,8 +119,10 @@ embedRecipe :: AppM m => Maybe Text -> Maybe RecipeLink -> m Markup
 embedRecipe userAgentMay linkMay = case (parseOS =<< fmap Text.encodeUtf8 userAgentMay, linkMay) of
   (Just OSResult {..}, Just (RecipeLink link)) | osrFamily == "iOS" ->
     pure $ Html.html $ do
+      Html.head $ do
+        Html.style $ Html.text "body,html{width:100%;height:100%;overflow:hidden}iframe{width:100%;height:100%;border:none}"
       Html.body $ do
-        Html.iframe ! HtmlAttr.src (toValue link) $ pure ()
+        Html.iframe ! HtmlAttr.src (toValue link) ! HtmlAttr.height "100%" $ pure ()
   (_, Just (RecipeLink link)) -> throwError err307
     { errHeaders = [(hLocation, Text.encodeUtf8 link)]
     }
