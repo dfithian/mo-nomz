@@ -39,6 +39,9 @@ extension UIViewController {
         req.addValue(state.apiToken, forHTTPHeaderField: "X-Mo-Nomz-API-Token")
         req.addValue("application/json", forHTTPHeaderField: "Content-Type")
         req.httpMethod = "POST"
+        let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as! String
+        let bundle = Bundle.main.infoDictionary?["CFBundleVersion"] as! String
+        req.httpBody = try? JSONEncoder().encode(UserPingRequest(version: "\(version).\(bundle)"))
         let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
             self.stopLoading(spinner)
             completion?()
