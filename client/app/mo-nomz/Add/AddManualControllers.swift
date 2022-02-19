@@ -188,7 +188,11 @@ class AddManualTableController: UITableViewController, UITextViewDelegate, UITex
             return cell
         case INGREDIENT_HEADING:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! OneLabel
-            cell.label.text = "Ingredients"
+            if parentVc?.isRecipe ?? false {
+                cell.label.text = "Ingredients"
+            } else {
+                cell.label.text = "Groceries"
+            }
             return cell
         case INGREDIENTS:
             let cell = tableView.dequeueReusableCell(withIdentifier: "textItem") as! OneText

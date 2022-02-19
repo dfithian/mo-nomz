@@ -293,3 +293,7 @@ struct ExportResponse: Codable {
     let recipes: [Int:ExportRecipe]
     let ingredients: [Int:ExportIngredient]
 }
+
+struct UserPingRequest: Codable {
+    let version: String
+}

@@ -221,7 +221,7 @@ class PickPhotoController: UICollectionViewController, UICollectionViewDelegateF
         do {
             try handler.perform([req])
         } catch {
-            defaultOnError(error)
+            stopLoading(progress)
         }
         cropper.dismiss(animated: true, completion: nil)
     }

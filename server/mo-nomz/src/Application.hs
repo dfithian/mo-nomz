@@ -38,8 +38,8 @@ import Servant (NomzApi, nomzApi, wholeApi)
 import Server
   ( deleteGroceryItem, deleteRecipes, getExport, getGroceryItems, getHealth, getRecentUsers
   , getRecipe, getRecipes, getRecipesV1, postClearGroceryItems, postCreateUser
-  , postGroceryImportBlob, postMergeGroceryItem, postParseBlob, postParseLink, postRecipeImportLink
-  , postUpdateGroceryItem, postUpdateRecipe, postUpdateRecipeIngredients
+  , postGroceryImportBlob, postMergeGroceryItem, postParseBlob, postParseLink, postPingUser
+  , postRecipeImportLink, postUpdateGroceryItem, postUpdateRecipe, postUpdateRecipeIngredients
   )
 import Settings (AppSettings(..), DatabaseSettings(..), staticSettingsValue)
 import Utils (tshow)
@@ -72,6 +72,7 @@ nomzServer =
   getMetrics
     :<|> getHealth
     :<|> postCreateUser
+    :<|> postPingUser
     :<|> getGroceryItems
     :<|> postUpdateGroceryItem
     :<|> postMergeGroceryItem

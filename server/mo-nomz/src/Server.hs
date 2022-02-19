@@ -13,7 +13,6 @@ import Data.Maybe (fromMaybe)
 import Network.URI (parseURI)
 import Servant.API (NoContent(NoContent))
 import Servant.Server (ServerError, err400, err401, err403, err404, err500, errReasonPhrase)
-import qualified Data.CaseInsensitive as CI
 import qualified Data.Map.Strict as Map
 import qualified Data.Set as Set
 import qualified Data.Text as Text
@@ -25,7 +24,7 @@ import API.Types
   , ListRecipeResponseV1(..), MergeGroceryItemRequest(..), ParseBlobRequest(..)
   , ParseBlobResponse(..), ParseLinkRequest(..), ParseLinkResponse(..), RecipeImportLinkRequest(..)
   , UpdateGroceryItemRequest(..), UpdateRecipeIngredientsRequest(..), UpdateRecipeRequest(..)
-  , UserCreateResponse(..), ReadableRecipe
+  , UserCreateResponse(..), UserPingRequest(..), UserPingResponse(..), ReadableRecipe
   )
 import Auth (Authorization, generateToken, validateToken)
 import Conversion
@@ -33,14 +32,13 @@ import Conversion
   , mkReadableRecipe, mkReadableRecipeV1, mkReadableUnit, mkUnit
   )
 import Foundation (AppM, appLogFunc, cacheSettings, settings, withDbConn)
-import Parser (parseRawIngredients)
+import Parser (parseRawIngredients, unparseRawIngredients)
 import Scrape (scrapeUrl)
 import Scraper.Types (ScrapedRecipe(..))
 import Settings (AppSettings(..), CacheSettings(..))
 import Types
-  ( GroceryItem(..), Ingredient(..), IngredientName(..), OrderedGroceryItem(..)
-  , OrderedIngredient(..), Quantity(..), Recipe(..), RecipeLink(..), Unit(..), RecipeId, UserId
-  , ingredientToGroceryItem
+  ( GroceryItem(..), Ingredient(..), OrderedGroceryItem(..), OrderedIngredient(..), Recipe(..)
+  , RecipeLink(..), RecipeId, UserId, ingredientToGroceryItem
   )
 import Utils (headMay, tshow)
 import qualified Database
@@ -106,6 +104,13 @@ validateUserToken token userId = do
     _ -> do
       $logError $ "No user token for " <> tshow userId
       throwError err403
+
+postPingUser :: AppM m => Authorization -> UserId -> UserPingRequest -> m UserPingResponse
+postPingUser token userId UserPingRequest {..} = do
+  validateUserToken token userId
+  unwrapDb $ withDbConn $ \c ->
+    Database.updateUserPing c userId userPingRequestVersion
+  pure $ UserPingResponse "pong"
 
 getGroceryItems :: AppM m => Authorization -> UserId -> m ListGroceryItemResponse
 getGroceryItems token userId = do
@@ -294,11 +299,10 @@ deleteRecipes token userId DeleteRecipeRequest {..} = do
 postParseBlob :: AppM m => Authorization -> UserId -> ParseBlobRequest -> m ParseBlobResponse
 postParseBlob token userId ParseBlobRequest {..} = do
   validateUserToken token userId
-  -- FIXME deal with this on the client side
   ingredients <- case parseRawIngredients parseBlobRequestContent of
     Left e -> do
       $logError e
-      pure . fmap (\str -> Ingredient (IngredientName (CI.mk str)) QuantityMissing UnitMissing) . Text.lines $ parseBlobRequestContent
+      pure $ unparseRawIngredients parseBlobRequestContent
     Right is -> pure is
   pure ParseBlobResponse
     { parseBlobResponseIngredients = mkReadableIngredient <$> zipWith OrderedIngredient ingredients [1..]

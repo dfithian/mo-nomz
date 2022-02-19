@@ -193,6 +193,10 @@ parseRawIngredients content = do
     . Text.lines
     $ content
 
+unparseRawIngredients :: Text -> [Ingredient]
+unparseRawIngredients =
+  fmap (\str -> Ingredient (IngredientName (CI.mk str)) QuantityMissing UnitMissing) . Text.lines
+
 parseSteps :: [UnparsedStep] -> Either Text [Step]
 parseSteps = \case
   [UnparsedStepRaw single] | "1." `Text.isPrefixOf` single -> flip fix (filter (not . Text.null) . Text.words . Text.drop 2 $ single, (1 :: Int), []) $ \f -> \case

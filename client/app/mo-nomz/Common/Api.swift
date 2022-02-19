@@ -16,14 +16,35 @@ extension UIViewController {
         req.httpMethod = "POST"
         let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
             self.stopLoading(spinner)
-            self.defaultWithCompletion(data: data, resp: resp, error: error, completion: { (d) -> Void in
+            let onError = {
+                self.alertUnsuccessful("Failed to initialize. Please close the app and try again.")
+            }
+            let onSuccess = { (data: Data) -> Void in
                 do {
-                    let output = try JSONDecoder().decode(CreateUserResponse.self, from: d)
+                    let output = try JSONDecoder().decode(CreateUserResponse.self, from: data)
                     completion?(output)
                 } catch {
-                    self.defaultOnError(error)
+                    onError()
                 }
-            })
+            }
+            self.withCompletion(data: data, resp: resp, error: error, completion: onSuccess, onError: onError)
+        })
+        task.resume()
+    }
+    
+    func pingUser(completion: (() -> Void)?) {
+        let spinner = startLoading()
+        guard let state = User.loadState() else { return }
+        var req = URLRequest(url: URL(string: Configuration.baseURL + "api/v1/user/" + String(state.userId) + "/ping")!)
+        req.addValue(state.apiToken, forHTTPHeaderField: "X-Mo-Nomz-API-Token")
+        req.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        req.httpMethod = "POST"
+        let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as! String
+        let bundle = Bundle.main.infoDictionary?["CFBundleVersion"] as! String
+        req.httpBody = try? JSONEncoder().encode(UserPingRequest(version: "\(version).\(bundle)"))
+        let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
+            self.stopLoading(spinner)
+            completion?()
         })
         task.resume()
     }
@@ -37,16 +58,20 @@ extension UIViewController {
         req.httpMethod = "GET"
         let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
             self.stopLoading(spinner)
-            self.defaultWithCompletion(data: data, resp: resp, error: error, completion: { (d) -> Void in
+            let onComplete = {
+                User.setDidExport()
+                completion?()
+            }
+            let onSuccess = { (data: Data) -> Void in
                 do {
-                    let output = try JSONDecoder().decode(ExportResponse.self, from: d)
+                    let output = try JSONDecoder().decode(ExportResponse.self, from: data)
                     self.overwrite(export: output)
-                    User.setDidExport()
-                    completion?()
+                    onComplete()
                 } catch {
-                    self.defaultOnError(error)
+                    onComplete()
                 }
-            })
+            }
+            self.withCompletion(data: data, resp: resp, error: error, completion: onSuccess, onError: onComplete)
         })
         task.resume()
     }
@@ -86,7 +111,7 @@ extension UIViewController {
                     } catch { }
                     onComplete()
                 }
-                self.withCompletion(data: data, resp: resp, error: error, completion: onSuccess, onUnsuccessfulStatus: { _ in onComplete() }, onError: { _ in onComplete() })
+                self.withCompletion(data: data, resp: resp, error: error, completion: onSuccess, onError: onComplete)
             })
             let delay = Double.random(in: 0...(Double(links.count) / 2))
             queue.asyncAfter(deadline: .now() + delay) {
@@ -125,7 +150,16 @@ extension UIViewController {
         req.httpBody = try? JSONEncoder().encode(ParseBlobRequest(content: content))
         let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
             self.stopLoading(spinner)
-            let onUnsuccessfulStatus = { (resp: URLResponse?) -> Void in self.alertUnsuccessful("Couldn't parse items. Please use one line per item, leading with the quantity.")
+            let onError = {
+                let rawIngredients = content.components(separatedBy: "\n").compactMap({ $0.nonEmpty() })
+                var ingredients = [ReadableIngredient]()
+                var order = 0
+                for ingredient in rawIngredients {
+                    ingredients.append(ReadableIngredient(name: ingredient, quantity: ReadableQuantity(whole: nil, fraction: nil), unit: nil, order: order))
+                    order += 1
+                }
+                self.insertGroceries(ingredients: ingredients)
+                completion?()
             }
             let onSuccess = { (d: Data) -> Void in
                 do {
@@ -133,10 +167,10 @@ extension UIViewController {
                     self.insertGroceries(ingredients: output.ingredients)
                     completion?()
                 } catch {
-                    self.defaultOnError(error)
+                    onError()
                 }
             }
-            self.withCompletion(data: data, resp: resp, error: error, completion: onSuccess, onUnsuccessfulStatus: onUnsuccessfulStatus, onError: self.defaultOnError)
+            self.withCompletion(data: data, resp: resp, error: error, completion: onSuccess, onError: onError)
         })
         task.resume()
     }
@@ -151,29 +185,27 @@ extension UIViewController {
         req.httpBody = try? JSONEncoder().encode(ParseBlobRequest(content: content))
         let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
             self.stopLoading(spinner)
-            let onUnsuccessfulStatus = { (resp: URLResponse?) -> Void in self.alertUnsuccessful("Couldn't parse items. Please use one line per item, leading with the quantity.")
+            let onError = {
+                let rawIngredients = content.components(separatedBy: "\n").compactMap({ $0.nonEmpty() })
+                var ingredients = [ReadableIngredient]()
+                var order = 0
+                for ingredient in rawIngredients {
+                    ingredients.append(ReadableIngredient(name: ingredient, quantity: ReadableQuantity(whole: nil, fraction: nil), unit: nil, order: order))
+                    order += 1
+                }
+                self.insertRecipe(response: ParseBlobResponse(ingredients: ingredients), name: name, link: link, rawSteps: rawSteps, active: active)
+                completion?()
             }
             let onSuccess = { (d: Data) -> Void in
                 do {
                     let output = try JSONDecoder().decode(ParseBlobResponse.self, from: d)
-                    var ingredients = [UUID:ReadableIngredient]()
-                    for ingredient in output.ingredients {
-                        ingredients[UUID()] = ingredient
-                    }
-                    var order = 0
-                    var steps = [UUID:Step]()
-                    for step in rawSteps {
-                        steps[UUID()] = Step(step: step, order: order)
-                        order += 1
-                    }
-                    let recipe = ReadableRecipe(name: name, link: link, active: active, rating: 0, notes: "", ingredients: ingredients, steps: steps)
-                    self.insertRecipe(recipe: recipe)
+                    self.insertRecipe(response: output, name: name, link: link, rawSteps: rawSteps, active: active)
                     completion?()
                 } catch {
-                    self.defaultOnError(error)
+                    
                 }
             }
-            self.withCompletion(data: data, resp: resp, error: error, completion: onSuccess, onUnsuccessfulStatus: onUnsuccessfulStatus, onError: self.defaultOnError)
+            self.withCompletion(data: data, resp: resp, error: error, completion: onSuccess, onError: onError)
         })
         task.resume()
     }
@@ -188,29 +220,18 @@ extension UIViewController {
         req.httpBody = try? JSONEncoder().encode(ParseLinkRequest(link: link))
         let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
             self.stopLoading(spinner)
-            let onUnsuccessfulStatus = { (resp: URLResponse?) -> Void in self.alertUnsuccessful("Unable to import recipe. Please select photos or enter ingredients manually.")
+            let onError = { self.alertUnsuccessful("Unable to import recipe. Please select photos or enter ingredients manually.")
             }
             let onSuccess = { (d: Data) -> Void in
                 do {
                     let output = try JSONDecoder().decode(ParseLinkResponse.self, from: d)
-                    var ingredients = [UUID:ReadableIngredient]()
-                    for ingredient in output.ingredients {
-                        ingredients[UUID()] = ingredient
-                    }
-                    var order = 0
-                    var steps = [UUID:Step]()
-                    for step in output.steps {
-                        steps[UUID()] = Step(step: step, order: order)
-                        order += 1
-                    }
-                    let recipe = ReadableRecipe(name: output.name, link: link, active: active, rating: 0, notes: "", ingredients: ingredients, steps: steps)
-                    self.insertRecipe(recipe: recipe)
+                    self.insertRecipe(response: output, link: link, active: active)
                     completion?()
                 } catch {
-                    self.defaultOnError(error)
+                    onError()
                 }
             }
-            self.withCompletion(data: data, resp: resp, error: error, completion: onSuccess, onUnsuccessfulStatus: onUnsuccessfulStatus, onError: self.defaultOnError)
+            self.withCompletion(data: data, resp: resp, error: error, completion: onSuccess, onError: onError)
         })
         task.resume()
     }

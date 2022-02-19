@@ -83,7 +83,7 @@ extension UIViewController {
             ]
             return try ctx.fetch(req).map({ $0.toReadableGroceryItemWithId() })
         } catch let error as NSError {
-            defaultOnError(error)
+            print(error)
         }
         return []
     }
@@ -125,7 +125,7 @@ extension UIViewController {
             try automergeGroceriesRaw(ctx)
             try ctx.save()
         } catch let error as NSError {
-            defaultOnError(error)
+            print(error)
         }
     }
     
@@ -153,7 +153,7 @@ extension UIViewController {
             }
             try ctx.save()
         } catch let error as NSError {
-            defaultOnError(error)
+            print(error)
         }
     }
     
@@ -180,7 +180,7 @@ extension UIViewController {
             
             try ctx.save()
         } catch let error as NSError {
-            defaultOnError(error)
+            print(error)
         }
     }
     
@@ -208,7 +208,7 @@ extension UIViewController {
             
             try ctx.save()
         } catch let error as NSError {
-            defaultOnError(error)
+            print(error)
         }
     }
     
@@ -226,7 +226,7 @@ extension UIViewController {
                 return recipe.toReadableRecipeWithId(ingredientsData: ingredients, stepsData: steps)
             })
         } catch let error as NSError {
-            defaultOnError(error)
+            print(error)
         }
         return []
     }
@@ -242,9 +242,39 @@ extension UIViewController {
             recipeReq.fetchLimit = 1
             return try ctx.fetch(recipeReq).first?.toReadableRecipeWithId(ingredientsData: ingredients, stepsData: steps)
         } catch let error as NSError {
-            defaultOnError(error)
+            print(error)
         }
         return nil
+    }
+    
+    func insertRecipe(response: ParseLinkResponse, link: String, active: Bool) {
+        var ingredients = [UUID:ReadableIngredient]()
+        for ingredient in response.ingredients {
+            ingredients[UUID()] = ingredient
+        }
+        var order = 0
+        var steps = [UUID:Step]()
+        for step in response.steps {
+            steps[UUID()] = Step(step: step, order: order)
+            order += 1
+        }
+        let recipe = ReadableRecipe(name: response.name, link: link, active: active, rating: 0, notes: "", ingredients: ingredients, steps: steps)
+        insertRecipe(recipe: recipe)
+    }
+    
+    func insertRecipe(response: ParseBlobResponse, name: String, link: String?, rawSteps: [String], active: Bool) {
+        var ingredients = [UUID:ReadableIngredient]()
+        for ingredient in response.ingredients {
+            ingredients[UUID()] = ingredient
+        }
+        var order = 0
+        var steps = [UUID:Step]()
+        for step in rawSteps {
+            steps[UUID()] = Step(step: step, order: order)
+            order += 1
+        }
+        let recipe = ReadableRecipe(name: name, link: link, active: active, rating: 0, notes: "", ingredients: ingredients, steps: steps)
+        insertRecipe(recipe: recipe)
     }
     
     func insertRecipe(recipe: ReadableRecipe) {
@@ -270,7 +300,7 @@ extension UIViewController {
 
             try ctx.save()
         } catch let error as NSError {
-            defaultOnError(error)
+            print(error)
         }
     }
     
@@ -318,13 +348,14 @@ extension UIViewController {
                         try deactivateRecipeRaw(ctx, id: id)
                     }
                 }
+                fetched.name = recipe.name
                 fetched.active = recipe.active
                 fetched.notes = recipe.notes
                 fetched.rating = Int32(recipe.rating)
             }
             try ctx.save()
         } catch let error as NSError {
-            defaultOnError(error)
+            print(error)
         }
     }
     
@@ -360,7 +391,7 @@ extension UIViewController {
             
             try ctx.save()
         } catch let error as NSError {
-            defaultOnError(error)
+            print(error)
         }
     }
     
@@ -379,7 +410,7 @@ extension UIViewController {
             
             return steps
         } catch let error as NSError {
-            defaultOnError(error)
+            print(error)
         }
         return []
     }
@@ -394,7 +425,7 @@ extension UIViewController {
             }
             try ctx.save()
         } catch let error as NSError {
-            defaultOnError(error)
+            print(error)
         }
     }
     
@@ -422,7 +453,7 @@ extension UIViewController {
             
             try ctx.save()
         } catch let error as NSError {
-            defaultOnError(error)
+            print(error)
         }
     }
     
@@ -449,7 +480,7 @@ extension UIViewController {
             
             try ctx.save()
         } catch let error as NSError {
-            defaultOnError(error)
+            print(error)
         }
     }
     
@@ -569,7 +600,7 @@ extension UIViewController {
             
             try ctx.save()
         } catch let error as NSError {
-            defaultOnError(error)
+            print(error)
         }
     }
     
@@ -608,7 +639,7 @@ extension UIViewController {
             
             try ctx.save()
         } catch let error as NSError {
-            defaultOnError(error)
+            print(error)
         }
     }
 }
