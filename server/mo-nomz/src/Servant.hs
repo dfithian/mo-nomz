@@ -1,10 +1,11 @@
 module Servant where
 
 import Data.Proxy (Proxy(..))
+import Data.Text (Text)
 import Network.HTTP.Media ((//))
 import Servant.API
-  ( (:<|>), (:>), Accept, Capture, DeleteNoContent, Get, JSON, MimeRender, Post, PostNoContent, Raw
-  , ReqBody, contentType, mimeRender
+  ( (:<|>), (:>), Accept, Capture, DeleteNoContent, Get, Header, JSON, MimeRender, Post
+  , PostNoContent, QueryParam, Raw, ReqBody, contentType, mimeRender
   )
 import Text.Blaze (Markup)
 import Text.Blaze.Renderer.Utf8 (renderMarkup)
@@ -18,7 +19,7 @@ import API.Types
   , UserPingResponse
   )
 import Auth (Authorized)
-import Types (RecipeId, UserId)
+import Types (RecipeId, RecipeLink, UserId)
 
 wholeApi :: Proxy (NomzApi :<|> Raw)
 wholeApi = Proxy
@@ -59,3 +60,6 @@ type NomzApi =
 
     -- export data
     :<|> Authorized :> "api" :> "v2" :> "user" :> Capture "user-id" UserId :> "export" :> Get '[JSON] ExportResponse
+
+    -- recipe hosting
+    :<|> "recipe" :> Header "User-Agent" Text :> QueryParam "recipe_url" RecipeLink :> Get '[HTML] Markup
