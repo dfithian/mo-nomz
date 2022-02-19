@@ -25,6 +25,11 @@ data UserCreateResponse = UserCreateResponse
   }
   deriving (Eq, Ord, Show)
 
+data UserPingRequest = UserPingRequest
+  { userPingRequestVersion :: Text
+  }
+  deriving (Eq, Ord, Show)
+
 data UserPingResponse = UserPingResponse
   { userPingResponseStatus :: Text
   }
@@ -206,6 +211,7 @@ data ExportResponse = ExportResponse
 
 deriveJSON (jsonOptions "getHealthResponse") ''GetHealthResponse
 deriveJSON (jsonOptions "userCreateResponse") ''UserCreateResponse
+deriveJSON (jsonOptions "userPingRequest") ''UserPingRequest
 deriveJSON (jsonOptions "userPingResponse") ''UserPingResponse
 deriveJSON (jsonOptions "updateGroceryItemRequest") ''UpdateGroceryItemRequest
 deriveJSON (jsonOptions "mergeGroceryItemRequest") ''MergeGroceryItemRequest

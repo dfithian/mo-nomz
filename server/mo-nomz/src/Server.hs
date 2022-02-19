@@ -24,7 +24,7 @@ import API.Types
   , ListRecipeResponseV1(..), MergeGroceryItemRequest(..), ParseBlobRequest(..)
   , ParseBlobResponse(..), ParseLinkRequest(..), ParseLinkResponse(..), RecipeImportLinkRequest(..)
   , UpdateGroceryItemRequest(..), UpdateRecipeIngredientsRequest(..), UpdateRecipeRequest(..)
-  , UserCreateResponse(..), UserPingResponse(..), ReadableRecipe
+  , UserCreateResponse(..), UserPingRequest(..), UserPingResponse(..), ReadableRecipe
   )
 import Auth (Authorization, generateToken, validateToken)
 import Conversion
@@ -105,9 +105,11 @@ validateUserToken token userId = do
       $logError $ "No user token for " <> tshow userId
       throwError err403
 
-postPingUser :: AppM m => Authorization -> UserId -> m UserPingResponse
-postPingUser token userId = do
+postPingUser :: AppM m => Authorization -> UserId -> UserPingRequest -> m UserPingResponse
+postPingUser token userId UserPingRequest {..} = do
   validateUserToken token userId
+  unwrapDb $ withDbConn $ \c ->
+    Database.updateUserPing c userId userPingRequestVersion
   pure $ UserPingResponse "pong"
 
 getGroceryItems :: AppM m => Authorization -> UserId -> m ListGroceryItemResponse
