@@ -25,12 +25,12 @@ class Configuration {
         #if DEBUG
         return "http://mo-nomz-dev.herokuapp.com/"
         #else
-        return "https://mo-nomz.herokuapp.com/"
+        return "https://app.mo-nomz.com/"
         #endif
     }
     
     static var helpUrl: String {
-        return "https://mo-nomz.herokuapp.com/#how-it-works"
+        return "https://app.mo-nomz.com/"
     }
     
     static var accountKey: String {

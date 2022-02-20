@@ -119,25 +119,26 @@ class RecipeDetailController: UIViewController, UITextViewDelegate, UITextFieldD
         }
     }
     
-    private func exportLink(_ link: String) {
-        let vc = UIActivityViewController(activityItems: [link], applicationActivities: nil)
-        present(vc, animated: true, completion: nil)
-    }
-    
-    private func exportIngredients(_ ingredients: [ReadableIngredient]) {
-        let exportText: String = ingredients.map({ $0.render() }).joined(separator: "\n")
-        let vc = UIActivityViewController(activityItems: [exportText], applicationActivities: nil)
+    private func export(_ str: String) {
+        let vc = UIActivityViewController(activityItems: [str], applicationActivities: nil)
         present(vc, animated: true, completion: nil)
     }
     
     private func setupOptions() {
         var actions = [UIAction]()
-        if let ingredients = recipe?.recipe.ingredients, !ingredients.isEmpty {
-            actions.append(UIAction(title: "Export Ingredients", image: UIImage(systemName: "square.and.arrow.up"), handler: { _ in self.exportIngredients(ingredients.map({ $0.value })) }))
-        }
+        let nomzPrefix = [
+            "Download Nomz to easily store, share, and shop for recipes!",
+            Configuration.baseURL,
+            ""
+        ].joined(separator: "\n")
         if let link = recipe?.recipe.link {
-            actions.append(UIAction(title: "Export Link", image: UIImage(systemName: "square.and.arrow.up"), handler: { _ in self.exportLink(link) }))
+            let linkText = nomzPrefix + "\n" + link
             actions.append(UIAction(title: "Open in Browser", image: UIImage(systemName: "safari"), handler: { _ in self.visitLink(link) }))
+            actions.append(UIAction(title: "Share Link", image: UIImage(systemName: "square.and.arrow.up"), handler: { _ in self.export(linkText) }))
+        }
+        if let r = recipe?.recipe {
+            let recipeText = nomzPrefix + "\n" + r.render()
+            actions.append(UIAction(title: "Share Recipe", image: UIImage(systemName: "list.dash"), handler: { _ in self.export(recipeText) }))
         }
         if actions.isEmpty {
             options.removeFromSuperview()
