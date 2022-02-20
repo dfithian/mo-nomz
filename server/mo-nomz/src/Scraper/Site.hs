@@ -100,6 +100,7 @@ ingredientScrapers = HashMap.fromList
   , ("shutterbean.com", ingredientLi11)
   , ("uitpaulineskeuken.nl", ingredientLi13)
   , ("leukerecepten.nl", ingredientLi14)
+  , ("wsj.com", ingredientLi15)
 
   , ("delish.com", delishI)
   , ("thepioneerwoman.com", delishI)
@@ -197,6 +198,7 @@ stepScrapers = HashMap.fromList
   , ("cookingandcooking.com", stepLi10)
   , ("uitpaulineskeuken.nl", stepLi11)
   , ("leukerecepten.nl", stepLi12)
+  , ("wsj.com", stepLi13)
 
   , ("delish.com", delishS)
   , ("thepioneerwoman.com", delishS)
@@ -459,6 +461,11 @@ ingredientLi14 = simpleIngredientScraper "ingredientLi14"
   (testScrape ("ul" @: [Scalpel.hasClass "page-content__ingredients-list"]))
   ("ul" @: [Scalpel.hasClass "page-content__ingredients-list"] // "li")
 
+ingredientLi15 :: IngredientScraper
+ingredientLi15 = simpleIngredientScraper "ingredientLi15"
+  (testScrape ("ul" @: [Scalpel.hasClass "ingredients-list"]))
+  ("ul" @: [Scalpel.hasClass "ingredients-list"] // "li")
+
 stepLi1 :: StepScraper
 stepLi1 = simpleStepScraper "stepLi1"
   (testScrape ("ul" @: [Scalpel.hasClass "recipeSteps"]))
@@ -518,6 +525,11 @@ stepLi12 :: StepScraper
 stepLi12 = simpleStepScraper "stepLi12"
   (testScrape ("div" @: [Scalpel.hasClass "page-content__recipe"]))
   ("div" @: [Scalpel.hasClass "page-content__recipe"] // "div" @: [Scalpel.hasClass "step"])
+
+stepLi13 :: StepScraper
+stepLi13 = simpleStepScraper "stepLi13"
+  (testScrape ("ol" @: [Scalpel.hasClass "steps-list"]))
+  ("ol" @: [Scalpel.hasClass "steps-list"] // "li")
 
 delishI :: IngredientScraper
 delishI = simpleIngredientScraper "delish"
