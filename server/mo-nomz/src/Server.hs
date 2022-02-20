@@ -10,22 +10,16 @@ import Control.Monad.Logger (logError, runLoggingT)
 import Control.Monad.Reader (ask, asks)
 import Control.Monad.Trans.Reader (runReaderT)
 import Data.Maybe (fromMaybe)
-import Data.Text (Text)
 import Data.Time.Clock (getCurrentTime)
 import Data.Time.Format (defaultTimeLocale, formatTime, iso8601DateFormat)
 import Data.Version (showVersion)
-import Network.HTTP.Types (hLocation)
 import Network.URI (parseURI)
 import Servant.API (NoContent(NoContent))
-import Servant.Server
-  ( ServerError, err307, err400, err401, err403, err404, err500, errHeaders, errReasonPhrase
-  )
-import Text.Blaze ((!), Markup, toValue)
-import Web.UAParser (OSResult(..), parseOS)
+import Servant.Server (ServerError, err400, err401, err403, err404, err500, errReasonPhrase)
+import Text.Blaze ((!), Markup)
 import qualified Data.Map.Strict as Map
 import qualified Data.Set as Set
 import qualified Data.Text as Text
-import qualified Data.Text.Encoding as Text
 import qualified Text.Blaze.Html5 as Html
 import qualified Text.Blaze.Html5.Attributes as HtmlAttr
 
@@ -114,21 +108,6 @@ getMetrics = do
       Html.meta ! HtmlAttr.httpEquiv "Refresh" ! HtmlAttr.content "300"
       Html.style $ Html.text "span { font-family: Courier New; font-size: 14px; }"
     Html.body $ mconcat [uptimeHtml, refreshHtml, versionHtml, healthHtml, metricsHtml]
-
-embedRecipe :: AppM m => Maybe Text -> Maybe RecipeLink -> m Markup
-embedRecipe userAgentMay linkMay = case (parseOS =<< fmap Text.encodeUtf8 userAgentMay, linkMay) of
-  (Just OSResult {..}, Just (RecipeLink link)) | osrFamily == "iOS" ->
-    pure $ Html.html $ do
-      Html.head $ do
-        Html.style $ Html.text "body,html{width:100%;height:100%;overflow:hidden}iframe{width:100%;height:100%;border:none}"
-      Html.body $ do
-        Html.iframe ! HtmlAttr.src (toValue link) ! HtmlAttr.height "100%" $ pure ()
-  (_, Just (RecipeLink link)) -> throwError err307
-    { errHeaders = [(hLocation, Text.encodeUtf8 link)]
-    }
-  _ -> throwError err307
-    { errHeaders = [(hLocation, "/")]
-    }
 
 postCreateUser :: AppM m => m UserCreateResponse
 postCreateUser = do

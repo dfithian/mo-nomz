@@ -75,7 +75,6 @@ common options
     , text
     , time
     , transformers
-    , ua-parser
     , unordered-containers
     , wai
     , wai-app-static

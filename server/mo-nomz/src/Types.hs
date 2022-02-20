@@ -42,7 +42,7 @@ quantityToValue = \case
   QuantityMissing -> 1
 
 newtype RecipeLink = RecipeLink { unRecipeLink :: Text }
-  deriving (Eq, Ord, Show, FromJSON, ToJSON, FromField, ToField, FromHttpApiData, ToHttpApiData)
+  deriving (Eq, Ord, Show, FromJSON, ToJSON, FromField, ToField)
 
 data RawUnit
   = RawUnit (CI Text)

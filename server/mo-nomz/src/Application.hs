@@ -27,10 +27,10 @@ import Foundation (App(..), LogFunc, NomzServer, createManager, runNomzServer, w
 import Scrape (isInvalidScraper)
 import Servant (NomzApi, nomzApi, wholeApi)
 import Server
-  ( deleteGroceryItem, deleteRecipes, embedRecipe, getExport, getGroceryItems, getHealth, getMetrics
-  , getRecipe, getRecipes, getRecipesV1, postClearGroceryItems, postCreateUser
-  , postGroceryImportBlob, postMergeGroceryItem, postParseBlob, postParseLink, postPingUser
-  , postRecipeImportLink, postUpdateGroceryItem, postUpdateRecipe, postUpdateRecipeIngredients
+  ( deleteGroceryItem, deleteRecipes, getExport, getGroceryItems, getHealth, getMetrics, getRecipe
+  , getRecipes, getRecipesV1, postClearGroceryItems, postCreateUser, postGroceryImportBlob
+  , postMergeGroceryItem, postParseBlob, postParseLink, postPingUser, postRecipeImportLink
+  , postUpdateGroceryItem, postUpdateRecipe, postUpdateRecipeIngredients
   )
 import Settings (AppSettings(..), DatabaseSettings(..), staticSettingsValue)
 import qualified Database
@@ -57,7 +57,6 @@ nomzServer =
     :<|> postParseBlob
     :<|> postParseLink
     :<|> getExport
-    :<|> embedRecipe
 
 migrateDatabase :: Pool Connection -> LogFunc -> AppSettings -> IO ()
 migrateDatabase pool logFunc settings = do
