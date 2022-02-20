@@ -1,6 +1,7 @@
 module Servant where
 
 import Data.Proxy (Proxy(..))
+import Data.Text (Text)
 import Network.HTTP.Media ((//))
 import Servant.API
   ( (:<|>), (:>), Accept, Capture, DeleteNoContent, Get, JSON, MimeRender, Post, PostNoContent, Raw

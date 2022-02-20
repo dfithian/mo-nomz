@@ -10,12 +10,18 @@ import Control.Monad.Logger (logError, runLoggingT)
 import Control.Monad.Reader (ask, asks)
 import Control.Monad.Trans.Reader (runReaderT)
 import Data.Maybe (fromMaybe)
+import Data.Time.Clock (getCurrentTime)
+import Data.Time.Format (defaultTimeLocale, formatTime, iso8601DateFormat)
+import Data.Version (showVersion)
 import Network.URI (parseURI)
 import Servant.API (NoContent(NoContent))
 import Servant.Server (ServerError, err400, err401, err403, err404, err500, errReasonPhrase)
+import Text.Blaze ((!), Markup)
 import qualified Data.Map.Strict as Map
 import qualified Data.Set as Set
 import qualified Data.Text as Text
+import qualified Text.Blaze.Html5 as Html
+import qualified Text.Blaze.Html5.Attributes as HtmlAttr
 
 import API.Types
   ( DeleteGroceryItemRequest(..), DeleteRecipeRequest(..), ExportGroceryItem(..)
@@ -31,8 +37,9 @@ import Conversion
   ( mkOrderedIngredient, mkQuantity, mkReadableGroceryItem, mkReadableIngredient, mkReadableQuantity
   , mkReadableRecipe, mkReadableRecipeV1, mkReadableUnit, mkUnit
   )
-import Foundation (AppM, appLogFunc, cacheSettings, settings, withDbConn)
+import Foundation (App(..), AppM, appLogFunc, cacheSettings, settings, withDbConn)
 import Parser (parseRawIngredients, unparseRawIngredients)
+import Paths_mo_nomz (version)
 import Scrape (scrapeUrl)
 import Scraper.Types (ScrapedRecipe(..))
 import Settings (AppSettings(..), CacheSettings(..))
@@ -80,9 +87,27 @@ getHealth = do
     { getHealthResponseStatus = "ok"
     }
 
-getRecentUsers :: AppM m => m (Int, Int, Int, Int)
-getRecentUsers =
-  unwrapDb $ withDbConn Database.selectRecentUsers
+getMetrics :: AppM m => m Markup
+getMetrics = do
+  let renderMetric (key, value) = Html.div (Html.span (Html.toHtml (Text.unwords [key, tshow value])))
+  App {..} <- ask
+  now <- liftIO getCurrentTime
+  (dayUsers, weekUsers, monthUsers, yearUsers) <- unwrapDb $ withDbConn Database.selectRecentUsers
+  healthHtml <- Html.div (Html.span (Html.text "Health OK")) <$ getHealth
+  let uptimeHtml = Html.div (Html.span (Html.text $ "Started at " <> Text.pack (formatTime defaultTimeLocale (iso8601DateFormat $ Just "%H:%M:%S") appStarted <> " UTC")))
+      refreshHtml = Html.div (Html.span (Html.text $ "Last refreshed at " <> Text.pack (formatTime defaultTimeLocale (iso8601DateFormat $ Just "%H:%M:%S") now <> " UTC")))
+      versionHtml = Html.div (Html.span (Html.text $ "Version " <> Text.pack (showVersion version)))
+      metricsHtml = mconcat . fmap renderMetric $
+        [ ("recent_users_day", dayUsers)
+        , ("recent_users_week", weekUsers)
+        , ("recent_users_month", monthUsers)
+        , ("recent_users_year", yearUsers)
+        ]
+  pure $ Html.html $ do
+    Html.head $ do
+      Html.meta ! HtmlAttr.httpEquiv "Refresh" ! HtmlAttr.content "300"
+      Html.style $ Html.text "span { font-family: Courier New; font-size: 14px; }"
+    Html.body $ mconcat [uptimeHtml, refreshHtml, versionHtml, healthHtml, metricsHtml]
 
 postCreateUser :: AppM m => m UserCreateResponse
 postCreateUser = do
