@@ -12,6 +12,8 @@ import Database.PostgreSQL.Simple (Connection, close, connectPostgreSQL)
 import Database.PostgreSQL.Simple.Migration
   ( MigrationCommand(..), MigrationResult(..), runMigrations
   )
+import Network.HTTP.Types (hLocation, temporaryRedirect307, unauthorized401)
+import Network.Wai (pathInfo, responseLBS)
 import Network.Wai.Handler.Warp (Settings, defaultSettings, runSettings, setPort)
 import Network.Wai.Middleware.RequestLogger (OutputFormat(Detailed), mkRequestLogger, outputFormat)
 import Servant.API ((:<|>)(..))
@@ -19,7 +21,7 @@ import Servant.Server (ServerT, hoistServer, serve)
 import Servant.Server.StaticFiles (serveDirectoryWith)
 import System.IO (stdout)
 import WaiAppStatic.Storage.Filesystem (defaultFileServerSettings)
-import WaiAppStatic.Types (ssListing)
+import WaiAppStatic.Types (ss404Handler, ssIndices, ssListing, unsafeToPiece)
 import qualified Data.Text.Encoding as Text
 import qualified Network.Wai.Middleware.EnforceHTTPS as EnforceHTTPS
 
@@ -33,6 +35,7 @@ import Server
   , postUpdateGroceryItem, postUpdateRecipe, postUpdateRecipeIngredients
   )
 import Settings (AppSettings(..), DatabaseSettings(..), staticSettingsValue)
+import Utils (headMay)
 import qualified Database
 
 nomzServer :: ServerT NomzApi NomzServer
@@ -91,8 +94,14 @@ appMain :: IO ()
 appMain = do
   settings <- loadYamlSettingsArgs [staticSettingsValue] useEnv
   app <- makeFoundation settings
-  let staticFileSettings = (defaultFileServerSettings $ appStaticDir $ appSettings app)
-        { ssListing = Nothing
+  let staticDir = appStaticDir $ appSettings app
+      staticFileSettings = (defaultFileServerSettings staticDir)
+        { ss404Handler = Just $ \req respond ->
+            respond $ case headMay (pathInfo req) == Just "api" of
+              True -> responseLBS unauthorized401 [] "Unauthorized"
+              False -> responseLBS temporaryRedirect307 [(hLocation, "/")] ""
+        , ssListing = Nothing
+        , ssIndices = fmap unsafeToPiece ["index.html", "index.htm"]
         }
       ssl = case appForceSsl settings of
         True -> EnforceHTTPS.withResolver EnforceHTTPS.xForwardedProto

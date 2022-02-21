@@ -20,7 +20,7 @@ import API.Types
 import Auth (Authorized)
 import Types (RecipeId, UserId)
 
-wholeApi :: Proxy (NomzApi :<|> Raw)
+wholeApi :: Proxy WholeApi
 wholeApi = Proxy
 
 nomzApi :: Proxy NomzApi
@@ -33,6 +33,9 @@ instance Accept HTML where
 
 instance MimeRender HTML Markup where
   mimeRender _ = renderMarkup
+
+type WholeApi =
+  NomzApi :<|> Raw
 
 type NomzApi =
   "status" :> Get '[HTML] Markup

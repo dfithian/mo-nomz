@@ -1,14 +1,14 @@
-import * as React from "react"
-import appStore from "../images/app-store.svg"
-import Layout from "../components/layout.js"
-import { ImgLink, H3, H4, PlainImg, Centered } from "../components/util"
-import icon from "../images/icon.png"
-import { ContentRow, Row } from "../components/row"
+import * as React from 'react'
+import appStore from '../images/app-store.svg'
+import Layout from '../components/layout.js'
+import { ImgLink, H3, H4, PlainImg, Centered } from '../components/util'
+import icon from '../images/icon.png'
+import { ContentRow, Row } from '../components/row'
 
-const add = "/screenshots/add-small.png"
-const groceryList = "/screenshots/grocery-list-small.png"
-const recipeDetail = "/screenshots/recipe-detail-small.png"
-const recipeList = "/screenshots/recipe-list-small.png"
+const add = process.env.PUBLIC_URL + '/screenshots/add-small.png'
+const groceryList = process.env.PUBLIC_URL + '/screenshots/grocery-list-small.png'
+const recipeDetail = process.env.PUBLIC_URL + '/screenshots/recipe-detail-small.png'
+const recipeList = process.env.PUBLIC_URL + '/screenshots/recipe-list-small.png'
 
 const imgStyles = {
   width: 150,
@@ -16,7 +16,7 @@ const imgStyles = {
   marginRight: 25,
 }
 
-const IndexPage = () => {
+const HomePage = () => {
   return (
     <Layout pageTitle="Nomz">
       <Row>
@@ -28,8 +28,8 @@ const IndexPage = () => {
           </Centered>
         </div>
         <div className="column is-4">
-          <H3 text="Skip the ads and life story." />
-          <H4 text="Save recipes and instantly create grocery lists. Simple, easy, and fun!" />
+          <H3>Skip the ads and life story.</H3>
+          <H4>Save recipes and instantly create grocery lists. Simple, easy, and fun!</H4>
         </div>
       </Row>
       <div className="column is-4 is-offset-6">
@@ -38,7 +38,7 @@ const IndexPage = () => {
         </Centered>
       </div>
       <ContentRow>
-        <H4 text="Screenshots" />
+        <H4>Screenshots</H4>
       </ContentRow>
       <div className="scrolling-wrapper" id="how-it-works">
         <ContentRow>
@@ -52,4 +52,4 @@ const IndexPage = () => {
   )
 }
 
-export default IndexPage
+export default HomePage
