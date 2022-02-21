@@ -131,10 +131,10 @@ class RecipeDetailController: UIViewController, UITextViewDelegate, UITextFieldD
             Configuration.baseURL,
             ""
         ].joined(separator: "\n")
-        if let link = recipe?.recipe.link {
-            let linkText = nomzPrefix + "\n" + link
+        if let link = recipe?.recipe.link, let encodedLink = link.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) {
+            let linkUrl = Configuration.baseURL + "#/recipe?recipe_url=" + encodedLink
             actions.append(UIAction(title: "Open in Browser", image: UIImage(systemName: "safari"), handler: { _ in self.visitLink(link) }))
-            actions.append(UIAction(title: "Share Link", image: UIImage(systemName: "square.and.arrow.up"), handler: { _ in self.export(linkText) }))
+            actions.append(UIAction(title: "Share Link", image: UIImage(systemName: "square.and.arrow.up"), handler: { _ in self.export(linkUrl) }))
         }
         if let r = recipe?.recipe {
             let recipeText = nomzPrefix + "\n" + r.render()
