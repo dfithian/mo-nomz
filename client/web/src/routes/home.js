@@ -20,19 +20,19 @@ const HomePage = () => {
   return (
     <Layout pageTitle="Nomz">
       <Row>
-        <div className="column is-4 is-offset-2">
+        <div className="column is-2 is-offset-2">
           <Centered>
             <div id="icon">
-              <PlainImg image={icon} size="is-128x128" alt="Nomz" />
+              <PlainImg image={icon} size="is-96x96" alt="Nomz" />
             </div>
           </Centered>
         </div>
-        <div className="column is-4">
+        <div className="column is-6">
           <H3>Skip the ads and life story.</H3>
           <H4>Save recipes and instantly create grocery lists. Simple, easy, and fun!</H4>
         </div>
       </Row>
-      <div className="column is-4 is-offset-6">
+      <div className="column is-6 is-offset-4">
         <Centered>
           <ImgLink href="https://apps.apple.com/us/app/grocer-ez/id1563273742" size="is-128x128" image={appStore} alt="Download on the App Store" />
         </Centered>
