@@ -15,7 +15,14 @@ import Types
   )
 
 data GetHealthResponse = GetHealthResponse
-  { getHealthResponseStatus :: Text
+  { getHealthResponseStatus    :: Text
+  , getHealthResponseVersion   :: Text
+  , getHealthResponseStarted   :: Text
+  , getHealthResponseFetched   :: Text
+  , getHealthResponseUserDay   :: Int
+  , getHealthResponseUserWeek  :: Int
+  , getHealthResponseUserMonth :: Int
+  , getHealthResponseUserYear  :: Int
   }
   deriving (Eq, Ord, Show)
 

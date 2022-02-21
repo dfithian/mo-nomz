@@ -1,18 +1,18 @@
-import * as React from "react"
-import Layout from "../components/layout"
-import { ContentRow } from "../components/row"
-import { H2, H3, H4 } from "../components/util"
+import * as React from 'react'
+import Layout from '../components/layout'
+import { ContentRow } from '../components/row'
+import { H2, H3, H4 } from '../components/util'
 
-const PrivacyPolicy = () => {
+const PrivacyPolicyPage = () => {
   return (
     <Layout pageTitle="Privacy Policy">
     <ContentRow><p>Last updated: May 10, 2021</p></ContentRow>
     <ContentRow><p>This Privacy Policy describes Our policies and procedures on the collection, use and disclosure of Your information when You use the Service and tells You about Your privacy rights and how the law protects You.</p></ContentRow>
     <ContentRow><p>We use Your Personal data to provide and improve the Service. By using the Service, You agree to the collection and use of information in accordance with this Privacy Policy. This Privacy Policy has been created with the help of the <a href="https://www.privacypolicies.com/privacy-policy-generator/" target="_blank" rel="noreferrer">Privacy Policy Generator</a>.</p></ContentRow>
-    <ContentRow><H2 text="Interpretation and Definitions" /></ContentRow>
-    <ContentRow><H3 text="Interpretation" /></ContentRow>
+    <ContentRow><H2>Interpretation and Definitions</H2></ContentRow>
+    <ContentRow><H3>Interpretation</H3></ContentRow>
     <ContentRow><p>The words of which the initial letter is capitalized have meanings defined under the following conditions. The following definitions shall have the same meaning regardless of whether they appear in singular or in plural.</p></ContentRow>
-    <ContentRow><H3 text="Definitions" /></ContentRow>
+    <ContentRow><H3>Definitions</H3></ContentRow>
     <ContentRow><p>For the purposes of this Privacy Policy:</p></ContentRow>
     <ul>
     <li>
@@ -49,19 +49,19 @@ const PrivacyPolicy = () => {
     <ContentRow><p><strong>You</strong> means the individual accessing or using the Service, or the company, or other legal entity on behalf of which such individual is accessing or using the Service, as applicable.</p></ContentRow>
     </li>
     </ul>
-    <ContentRow><H2 text="Collecting and Using Your Personal Data" /></ContentRow>
-    <ContentRow><H3 text="Types of Data Collected" /></ContentRow>
-    <ContentRow><H4 text="Personal Data" /></ContentRow>
+    <ContentRow><H2>Collecting and Using Your Personal Data</H2></ContentRow>
+    <ContentRow><H3>Types of Data Collected</H3></ContentRow>
+    <ContentRow><H4>Personal Data</H4></ContentRow>
     <ContentRow><p>While using Our Service, We may ask You to provide Us with certain personally identifiable information that can be used to contact or identify You. Personally identifiable information may include, but is not limited to:</p></ContentRow>
     <ul>
     <li><ContentRow>Usage Data</ContentRow></li>
     </ul>
-    <ContentRow><H4 text="Usage Data" /></ContentRow>
+    <ContentRow><H4>Usage Data</H4></ContentRow>
     <ContentRow><p>Usage Data is collected automatically when using the Service.</p></ContentRow>
     <ContentRow><p>Usage Data may include information such as Your Device's Internet Protocol address (e.g. IP address), browser type, browser version, the pages of our Service that You visit, the time and date of Your visit, the time spent on those pages, unique device identifiers and other diagnostic data.</p></ContentRow>
     <ContentRow><p>When You access the Service by or through a mobile device, We may collect certain information automatically, including, but not limited to, the type of mobile device You use, Your mobile device unique ID, the IP address of Your mobile device, Your mobile operating system, the type of mobile Internet browser You use, unique device identifiers and other diagnostic data.</p></ContentRow>
     <ContentRow><p>We may also collect information that Your browser sends whenever You visit our Service or when You access the Service by or through a mobile device.</p></ContentRow>
-    <ContentRow><H3 text="Use of Your Personal Data" /></ContentRow>
+    <ContentRow><H3>Use of Your Personal Data</H3></ContentRow>
     <ContentRow><p>The Company may use Personal Data for the following purposes:</p></ContentRow>
     <ul>
     <li>
@@ -98,19 +98,19 @@ const PrivacyPolicy = () => {
     <li><ContentRow><strong>With other users:</strong> when You share personal information or otherwise interact in the public areas with other users, such information may be viewed by all users and may be publicly distributed outside.</ContentRow></li>
     <li><ContentRow><strong>With Your consent</strong>: We may disclose Your personal information for any other purpose with Your consent.</ContentRow></li>
     </ul>
-    <ContentRow><H3 text="Retention of Your Personal Data" /></ContentRow>
+    <ContentRow><H3>Retention of Your Personal Data</H3></ContentRow>
     <ContentRow><p>The Company will retain Your Personal Data only for as long as is necessary for the purposes set out in this Privacy Policy. We will retain and use Your Personal Data to the extent necessary to comply with our legal obligations (for example, if we are required to retain your data to comply with applicable laws), resolve disputes, and enforce our legal agreements and policies.</p></ContentRow>
     <ContentRow><p>The Company will also retain Usage Data for internal analysis purposes. Usage Data is generally retained for a shorter period of time, except when this data is used to strengthen the security or to improve the functionality of Our Service, or We are legally obligated to retain this data for longer time periods.</p></ContentRow>
-    <ContentRow><H3 text="Transfer of Your Personal Data" /></ContentRow>
+    <ContentRow><H3>Transfer of Your Personal Data</H3></ContentRow>
     <ContentRow><p>Your information, including Personal Data, is processed at the Company's operating offices and in any other places where the parties involved in the processing are located. It means that this information may be transferred to — and maintained on — computers located outside of Your state, province, country or other governmental jurisdiction where the data protection laws may differ than those from Your jurisdiction.</p></ContentRow>
     <ContentRow><p>Your consent to this Privacy Policy followed by Your submission of such information represents Your agreement to that transfer.</p></ContentRow>
     <ContentRow><p>The Company will take all steps reasonably necessary to ensure that Your data is treated securely and in accordance with this Privacy Policy and no transfer of Your Personal Data will take place to an organization or a country unless there are adequate controls in place including the security of Your data and other personal information.</p></ContentRow>
-    <ContentRow><H3 text="Disclosure of Your Personal Data" /></ContentRow>
-    <ContentRow><H4 text="Business Transactions" /></ContentRow>
+    <ContentRow><H3>Disclosure of Your Personal Data</H3></ContentRow>
+    <ContentRow><H4>Business Transactions</H4></ContentRow>
     <ContentRow><p>If the Company is involved in a merger, acquisition or asset sale, Your Personal Data may be transferred. We will provide notice before Your Personal Data is transferred and becomes subject to a different Privacy Policy.</p></ContentRow>
-    <ContentRow><H4 text="Law enforcement" /></ContentRow>
+    <ContentRow><H4>Law enforcement</H4></ContentRow>
     <ContentRow><p>Under certain circumstances, the Company may be required to disclose Your Personal Data if required to do so by law or in response to valid requests by public authorities (e.g. a court or a government agency).</p></ContentRow>
-    <ContentRow><H4 text="Other legal requirements" /></ContentRow>
+    <ContentRow><H4>Other legal requirements</H4></ContentRow>
     <ContentRow><p>The Company may disclose Your Personal Data in the good faith belief that such action is necessary to:</p></ContentRow>
     <ul>
     <li><ContentRow>omply with a legal obligation</ContentRow></li>
@@ -119,19 +119,19 @@ const PrivacyPolicy = () => {
     <li><ContentRow>rotect the personal safety of Users of the Service or the public</ContentRow></li>
     <li><ContentRow>rotect against legal liability</ContentRow></li>
     </ul>
-    <ContentRow><H3 text="Security of Your Personal Data" /></ContentRow>
+    <ContentRow><H3>Security of Your Personal Data</H3></ContentRow>
     <ContentRow><p>The security of Your Personal Data is important to Us, but remember that no method of transmission over the Internet, or method of electronic storage is 100% secure. While We strive to use commercially acceptable means to protect Your Personal Data, We cannot guarantee its absolute security.</p></ContentRow>
-    <ContentRow><H2 text="Children's Privacy" /></ContentRow>
+    <ContentRow><H2>Children's Privacy</H2></ContentRow>
     <ContentRow><p>Our Service does not address anyone under the age of 13. We do not knowingly collect personally identifiable information from anyone under the age of 13. If You are a parent or guardian and You are aware that Your child has provided Us with Personal Data, please contact Us. If We become aware that We have collected Personal Data from anyone under the age of 13 without verification of parental consent, We take steps to remove that information from Our servers.</p></ContentRow>
     <ContentRow><p>If We need to rely on consent as a legal basis for processing Your information and Your country requires consent from a parent, We may require Your parent's consent before We collect and use that information.</p></ContentRow>
-    <ContentRow><H2 text="Links to Other Websites" /></ContentRow>
+    <ContentRow><H2>Links to Other Websites</H2></ContentRow>
     <ContentRow><p>Our Service may contain links to other websites that are not operated by Us. If You click on a third party link, You will be directed to that third party's site. We strongly advise You to review the Privacy Policy of every site You visit.</p></ContentRow>
     <ContentRow><p>We have no control over and assume no responsibility for the content, privacy policies or practices of any third party sites or services.</p></ContentRow>
-    <ContentRow><H2 text="Changes to this Privacy Policy" /></ContentRow>
+    <ContentRow><H2>Changes to this Privacy Policy</H2></ContentRow>
     <ContentRow><p>We may update Our Privacy Policy from time to time. We will notify You of any changes by posting the new Privacy Policy on this page.</p></ContentRow>
     <ContentRow><p>We will let You know via email and/or a prominent notice on Our Service, prior to the change becoming effective and update the &quot;Last updated&quot; date at the top of this Privacy Policy.</p></ContentRow>
     <ContentRow><p>You are advised to review this Privacy Policy periodically for any changes. Changes to this Privacy Policy are effective when they are posted on this page.</p></ContentRow>
-    <ContentRow><H2 text="Contact Us" /></ContentRow>
+    <ContentRow><H2>Contact Us</H2></ContentRow>
     <ContentRow><p>If you have any questions about this Privacy Policy, You can contact us:</p></ContentRow>
     <ul>
     <li>
@@ -145,4 +145,4 @@ const PrivacyPolicy = () => {
   )
 }
 
-export default PrivacyPolicy
+export default PrivacyPolicyPage

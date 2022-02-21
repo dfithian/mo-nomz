@@ -16,12 +16,9 @@ import Data.Version (showVersion)
 import Network.URI (parseURI)
 import Servant.API (NoContent(NoContent))
 import Servant.Server (ServerError, err400, err401, err403, err404, err500, errReasonPhrase)
-import Text.Blaze ((!), Markup)
 import qualified Data.Map.Strict as Map
 import qualified Data.Set as Set
 import qualified Data.Text as Text
-import qualified Text.Blaze.Html5 as Html
-import qualified Text.Blaze.Html5.Attributes as HtmlAttr
 
 import API.Types
   ( DeleteGroceryItemRequest(..), DeleteRecipeRequest(..), ExportGroceryItem(..)
@@ -82,32 +79,21 @@ unwrapDb ma = ma >>= \case
 
 getHealth :: AppM m => m GetHealthResponse
 getHealth = do
-  unwrapDb $ withDbConn Database.health
-  pure GetHealthResponse
-    { getHealthResponseStatus = "ok"
-    }
-
-getMetrics :: AppM m => m Markup
-getMetrics = do
-  let renderMetric (key, value) = Html.div (Html.span (Html.toHtml (Text.unwords [key, tshow value])))
   App {..} <- ask
   now <- liftIO getCurrentTime
-  (dayUsers, weekUsers, monthUsers, yearUsers) <- unwrapDb $ withDbConn Database.selectRecentUsers
-  healthHtml <- Html.div (Html.span (Html.text "Health OK")) <$ getHealth
-  let uptimeHtml = Html.div (Html.span (Html.text $ "Started at " <> Text.pack (formatTime defaultTimeLocale (iso8601DateFormat $ Just "%H:%M:%S") appStarted <> " UTC")))
-      refreshHtml = Html.div (Html.span (Html.text $ "Last refreshed at " <> Text.pack (formatTime defaultTimeLocale (iso8601DateFormat $ Just "%H:%M:%S") now <> " UTC")))
-      versionHtml = Html.div (Html.span (Html.text $ "Version " <> Text.pack (showVersion version)))
-      metricsHtml = mconcat . fmap renderMetric $
-        [ ("recent_users_day", dayUsers)
-        , ("recent_users_week", weekUsers)
-        , ("recent_users_month", monthUsers)
-        , ("recent_users_year", yearUsers)
-        ]
-  pure $ Html.html $ do
-    Html.head $ do
-      Html.meta ! HtmlAttr.httpEquiv "Refresh" ! HtmlAttr.content "300"
-      Html.style $ Html.text "span { font-family: Courier New; font-size: 14px; }"
-    Html.body $ mconcat [uptimeHtml, refreshHtml, versionHtml, healthHtml, metricsHtml]
+  unwrapDb $ withDbConn $ \c -> do
+    Database.health c
+    (day, week, month, year) <- Database.selectRecentUsers c
+    pure GetHealthResponse
+      { getHealthResponseStatus = "OK"
+      , getHealthResponseVersion = Text.pack (showVersion version)
+      , getHealthResponseStarted = Text.pack (formatTime defaultTimeLocale (iso8601DateFormat $ Just "%H:%M:%S") appStarted <> " UTC")
+      , getHealthResponseFetched = Text.pack (formatTime defaultTimeLocale (iso8601DateFormat $ Just "%H:%M:%S") now <> " UTC")
+      , getHealthResponseUserDay = day
+      , getHealthResponseUserWeek = week
+      , getHealthResponseUserMonth = month
+      , getHealthResponseUserYear = year
+      }
 
 postCreateUser :: AppM m => m UserCreateResponse
 postCreateUser = do
