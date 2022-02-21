@@ -25,6 +25,12 @@
         <priority>0.8</priority>
     </url>
     <url>
+        <loc>https://mo-nomz.herokuapp.com/#/status</loc>
+        <lastmod>2022-02-21</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
         <loc>https://mo-nomz.herokuapp.com/</loc>
         <lastmod>2022-02-21</lastmod>
         <changefreq>monthly</changefreq>

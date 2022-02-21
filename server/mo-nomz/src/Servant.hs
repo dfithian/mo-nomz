@@ -1,13 +1,9 @@
 module Servant where
 
 import Data.Proxy (Proxy(..))
-import Network.HTTP.Media ((//))
 import Servant.API
-  ( (:<|>), (:>), Accept, Capture, DeleteNoContent, Get, JSON, MimeRender, Post, PostNoContent, Raw
-  , ReqBody, contentType, mimeRender
+  ( (:<|>), (:>), Capture, DeleteNoContent, Get, JSON, Post, PostNoContent, Raw, ReqBody
   )
-import Text.Blaze (Markup)
-import Text.Blaze.Renderer.Utf8 (renderMarkup)
 
 import API.Types
   ( DeleteGroceryItemRequest, DeleteRecipeRequest, ExportResponse, GetHealthResponse
@@ -28,18 +24,11 @@ nomzApi = Proxy
 
 data HTML
 
-instance Accept HTML where
-  contentType _ = "text" // "html"
-
-instance MimeRender HTML Markup where
-  mimeRender _ = renderMarkup
-
 type WholeApi =
   NomzApi :<|> Raw
 
 type NomzApi =
-  "status" :> Get '[HTML] Markup
-    :<|> "health" :> Get '[JSON] GetHealthResponse
+  "health" :> Get '[JSON] GetHealthResponse
     :<|> "api" :> "v1" :> "user" :> Post '[JSON] UserCreateResponse
     :<|> Authorized :> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "ping" :> ReqBody '[JSON] UserPingRequest :> Post '[JSON] UserPingResponse
     :<|> Authorized :> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "grocery" :> Get '[JSON] ListGroceryItemResponse

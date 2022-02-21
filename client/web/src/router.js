@@ -5,12 +5,14 @@ import NotFoundPage from './routes/404';
 import PrivacyPolicyPage from './routes/privacy-policy';
 import SupportPage from './routes/support';
 import RecipePage from './routes/recipe';
+import StatusPage from './routes/status';
 import './styles/global.scss';
 
 const router = (
   <HashRouter basename="/">
     <Routes>
       <Route path="/" element={<HomePage />} />
+      <Route path="/status" element={<StatusPage />} />
       <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
       <Route path="/support" element={<SupportPage />} />
       <Route path="/recipe" element={<RecipePage />} />

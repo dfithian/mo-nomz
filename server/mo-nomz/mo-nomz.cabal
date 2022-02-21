@@ -48,8 +48,6 @@ common options
     , aeson-pretty
     , attoparsec
     , base
-    , blaze-html
-    , blaze-markup
     , bytestring
     , case-insensitive
     , cereal
