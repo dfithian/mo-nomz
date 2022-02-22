@@ -25,7 +25,9 @@ nomzApi = Proxy
 data HTML
 
 type WholeApi =
-  NomzApi :<|> Raw
+  NomzApi
+    :<|> ".well-known" :> "apple-app-site-association" :> Raw
+    :<|> Raw
 
 type NomzApi =
   "health" :> Get '[JSON] GetHealthResponse

@@ -70,6 +70,7 @@ common options
     , scalpel
     , servant
     , servant-server
+    , tagged
     , text
     , time
     , transformers
