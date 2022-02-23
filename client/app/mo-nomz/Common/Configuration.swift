@@ -30,7 +30,7 @@ class Configuration {
     }
     
     static var helpUrl: String {
-        return "https://app.mo-nomz.com/"
+        return baseURL
     }
     
     static var accountKey: String {
