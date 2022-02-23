@@ -16,8 +16,8 @@ extension UIViewController {
 }
 
 extension UIViewController {
-    func promptForConfirmation(title: String, message: String, handler: @escaping ((UIAlertAction) -> Void)) {
-        let ok = UIAlertAction(title: "OK", style: .default, handler: handler)
+    func buyPrompt(title: String, message: String, price: String, handler: @escaping ((UIAlertAction) -> Void)) {
+        let ok = UIAlertAction(title: "Buy for \(price)", style: .default, handler: handler)
         let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         let confirmation = UIAlertController(title: title, message: message, preferredStyle: .alert)
         confirmation.addAction(ok)
@@ -27,8 +27,8 @@ extension UIViewController {
         }
     }
 
-    func buyPrompt(title: String, message: String, price: String, handler: @escaping ((UIAlertAction) -> Void)) {
-        let ok = UIAlertAction(title: "Buy for \(price)", style: .default, handler: handler)
+    func promptForConfirmation(title: String, message: String, handler: @escaping ((UIAlertAction) -> Void)) {
+        let ok = UIAlertAction(title: "OK", style: .default, handler: handler)
         let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         let confirmation = UIAlertController(title: title, message: message, preferredStyle: .alert)
         confirmation.addAction(ok)
@@ -53,6 +53,19 @@ extension UIViewController {
         confirmation.addAction(option1)
         confirmation.addAction(option2)
         confirmation.addAction(cancel)
+        DispatchQueue.main.async {
+            self.present(confirmation, animated: true, completion: nil)
+        }
+    }
+    
+    func promptAcknowledgement(
+        title: String,
+        message: String,
+        completion: @escaping ((UIAlertAction) -> Void)
+    ) {
+        let action = UIAlertAction(title: "Continue", style: .default, handler: completion)
+        let confirmation = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        confirmation.addAction(action)
         DispatchQueue.main.async {
             self.present(confirmation, animated: true, completion: nil)
         }
