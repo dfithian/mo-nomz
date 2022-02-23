@@ -11,7 +11,6 @@ import Control.Monad.Reader (ask, asks)
 import Control.Monad.Trans.Reader (runReaderT)
 import Data.Maybe (fromMaybe)
 import Data.Time.Clock (getCurrentTime)
-import Data.Time.Format (defaultTimeLocale, formatTime, iso8601DateFormat)
 import Data.Version (showVersion)
 import Network.URI (parseURI)
 import Servant.API (NoContent(NoContent))
@@ -79,7 +78,6 @@ unwrapDb ma = ma >>= \case
 
 getHealth :: AppM m => m GetHealthResponse
 getHealth = do
-  let timeFormatter time = Text.pack $ formatTime defaultTimeLocale (iso8601DateFormat $ Just "%H:%M:%S") time <> " UTC"
   App {..} <- ask
   now <- liftIO getCurrentTime
   unwrapDb $ withDbConn $ \c -> do
@@ -89,15 +87,15 @@ getHealth = do
     pure GetHealthResponse
       { getHealthResponseStatus = "OK"
       , getHealthResponseVersion = Text.pack (showVersion version)
-      , getHealthResponseStarted = timeFormatter appStarted
-      , getHealthResponseFetched = timeFormatter now
+      , getHealthResponseStarted = appStarted
+      , getHealthResponseFetched = now
       , getHealthResponseUserDay = day
       , getHealthResponseUserWeek = week
       , getHealthResponseUserMonth = month
       , getHealthResponseUserYear = year
       , getHealthResponseCacheSize = cacheSize
-      , getHealthResponseCacheMostRecent = maybe "<missing>" timeFormatter mostRecent
-      , getHealthResponseCacheLeastRecent = maybe "<missing>" timeFormatter leastRecent
+      , getHealthResponseCacheMostRecent = mostRecent
+      , getHealthResponseCacheLeastRecent = leastRecent
       }
 
 postCreateUser :: AppM m => m UserCreateResponse

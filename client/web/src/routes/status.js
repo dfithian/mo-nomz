@@ -19,6 +19,13 @@ class Status extends React.Component {
   }
 
   render() {
+    const dateFormatter = (x) => {
+      if (x) {
+        return new Date(x).toLocaleString()
+      } else {
+        return "N/A"
+      }
+    }
     return (
       <div>
         <ContentRow>
@@ -26,11 +33,11 @@ class Status extends React.Component {
             <tbody>
               <tr>
                 <td>Started</td>
-                <td><b>{this.state.status.started}</b></td>
+                <td><b>{dateFormatter(this.state.status.started)}</b></td>
               </tr>
               <tr>
                 <td>Refreshed</td>
-                <td><b>{this.state.status.fetched}</b></td>
+                <td><b>{dateFormatter(this.state.status.fetched)}</b></td>
               </tr>
               <tr>
                 <td>Version</td>
@@ -62,11 +69,11 @@ class Status extends React.Component {
               </tr>
               <tr>
                 <td>Cache most recent</td>
-                <td><b>{this.state.status.cacheMostRecent}</b></td>
+                <td><b>{dateFormatter(this.state.status.cacheMostRecent)}</b></td>
               </tr>
               <tr>
                 <td>Cache least recent</td>
-                <td><b>{this.state.status.cacheLeastRecent}</b></td>
+                <td><b>{dateFormatter(this.state.status.cacheLeastRecent)}</b></td>
               </tr>
             </tbody>
           </table>
