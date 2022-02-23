@@ -1,0 +1,17 @@
+{
+    "applinks": {
+        "details": [
+            {
+                "appIDs": [
+                    "5A6Y383S44.mo-nomz.mo-nomz"
+                ],
+                "components": [
+                    {
+                        "/": "*",
+                        "#": "*"
+                    }
+                ]
+            }
+        ]
+    }
+}

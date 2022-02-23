@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		37145F2B2623CE460011C6C1 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37145F2A2623CE460011C6C1 /* Configuration.swift */; };
+		3716947727C5376D0002BD64 /* Browser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3716947627C5376D0002BD64 /* Browser.swift */; };
+		3716947A27C539790002BD64 /* Navigate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3716947927C539790002BD64 /* Navigate.swift */; };
+		3716947C27C67E890002BD64 /* URL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3716947B27C67E890002BD64 /* URL.swift */; };
 		3724EFCD27A6F8930094574E /* Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3724EFCC27A6F8930094574E /* Search.swift */; };
 		3724EFCF27A82F360094574E /* AddPhotoControllers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3724EFCE27A82F360094574E /* AddPhotoControllers.swift */; };
 		3724EFD927A8BDDE0094574E /* AddManualControllers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3724EFD827A8BDDE0094574E /* AddManualControllers.swift */; };
@@ -69,6 +72,9 @@
 /* Begin PBXFileReference section */
 		370F287626228726008C3AC0 /* mo-nomz.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "mo-nomz.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		37145F2A2623CE460011C6C1 /* Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
+		3716947627C5376D0002BD64 /* Browser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Browser.swift; sourceTree = "<group>"; };
+		3716947927C539790002BD64 /* Navigate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Navigate.swift; sourceTree = "<group>"; };
+		3716947B27C67E890002BD64 /* URL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URL.swift; sourceTree = "<group>"; };
 		3724EFCC27A6F8930094574E /* Search.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Search.swift; sourceTree = "<group>"; };
 		3724EFCE27A82F360094574E /* AddPhotoControllers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPhotoControllers.swift; sourceTree = "<group>"; };
 		3724EFD827A8BDDE0094574E /* AddManualControllers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddManualControllers.swift; sourceTree = "<group>"; };
@@ -170,6 +176,7 @@
 				37B979F426EEB9FC002B677F /* String.swift */,
 				37E1DC1C2631B7C000330C5B /* UserDefaults.swift */,
 				3724EFF927ACD7CE0094574E /* ViewController.swift */,
+				3716947B27C67E890002BD64 /* URL.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -224,9 +231,11 @@
 				3724EFF627ACD6F30094574E /* Extensions */,
 				37B979E226EC204B002B677F /* Model.xcdatamodeld */,
 				37AEE6372623D5710052304F /* Api.swift */,
+				3716947627C5376D0002BD64 /* Browser.swift */,
 				37145F2A2623CE460011C6C1 /* Configuration.swift */,
 				37B979E626EC2057002B677F /* DataAccess.swift */,
 				37B979EB26ED0B66002B677F /* Database.swift */,
+				3716947927C539790002BD64 /* Navigate.swift */,
 				372C0DC2265EE30E00DFB791 /* Toolbar.swift */,
 				378EBD5026214A41008FF6C4 /* Types.swift */,
 				3774A5A72624769F0029E35D /* User.swift */,
@@ -408,6 +417,7 @@
 				3724EFEC27ACD0990094574E /* SimpleController.swift in Sources */,
 				37AEE6382623D5710052304F /* Api.swift in Sources */,
 				37B979AB269BB3C6002B677F /* RecipeDetailListController.swift in Sources */,
+				3716947A27C539790002BD64 /* Navigate.swift in Sources */,
 				378EBD5126214A41008FF6C4 /* Types.swift in Sources */,
 				372C0DC3265EE30E00DFB791 /* Toolbar.swift in Sources */,
 				37145F2B2623CE460011C6C1 /* Configuration.swift in Sources */,
@@ -423,9 +433,11 @@
 				37B979EC26ED0B66002B677F /* Database.swift in Sources */,
 				3724EFD927A8BDDE0094574E /* AddManualControllers.swift in Sources */,
 				37E1034B279EE8FE0064C193 /* IngredientChangeController.swift in Sources */,
+				3716947727C5376D0002BD64 /* Browser.swift in Sources */,
 				3724EFFA27ACD7CE0094574E /* ViewController.swift in Sources */,
 				376095C0262125C10015B6F0 /* AppDelegate.swift in Sources */,
 				37E1DC1D2631B7C000330C5B /* UserDefaults.swift in Sources */,
+				3716947C27C67E890002BD64 /* URL.swift in Sources */,
 				37E10343279AF6CA0064C193 /* Preferences.swift in Sources */,
 				376095C2262125C10015B6F0 /* SceneDelegate.swift in Sources */,
 				372DDC40262B435400CA83A8 /* Keyboard.swift in Sources */,
@@ -586,7 +598,7 @@
 				CODE_SIGN_ENTITLEMENTS = "mo-nomz/mo-nomzDebug.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_TEAM = 5A6Y383S44;
 				INFOPLIST_FILE = "mo-nomz/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -669,7 +681,7 @@
 				CODE_SIGN_ENTITLEMENTS = "mo-nomz/mo-nomzRelease.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_TEAM = 5A6Y383S44;
 				INFOPLIST_FILE = "mo-nomz/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (

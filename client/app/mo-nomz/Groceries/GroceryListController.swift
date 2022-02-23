@@ -35,14 +35,14 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
     func selectRow(_ row: Int) {
         let item = toBuy[row]
         let newItem = ReadableGroceryItem(name: item.item.name, quantity: item.item.quantity, unit: item.item.unit, active: false, order: item.item.order)
-        updateGrocery(grocery: ReadableGroceryItemWithId(item: newItem, id: item.id))
+        Database.updateGrocery(grocery: ReadableGroceryItemWithId(item: newItem, id: item.id))
         onChange?()
     }
     
     func deselectRow(_ row: Int) {
         let item = bought[row]
         let newItem = ReadableGroceryItem(name: item.item.name, quantity: item.item.quantity, unit: item.item.unit, active: true, order: item.item.order)
-        updateGrocery(grocery: ReadableGroceryItemWithId(item: newItem, id: item.id))
+        Database.updateGrocery(grocery: ReadableGroceryItemWithId(item: newItem, id: item.id))
         onChange?()
     }
     
@@ -118,7 +118,7 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
     }
     
     func deleteRow(_ id: UUID) {
-        deleteGrocery(id: id)
+        Database.deleteGrocery(id: id)
         onChange?()
     }
     
@@ -316,7 +316,7 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
                         }
                     } else {
                         let newItem = ReadableGroceryItem(name: new.item.name, quantity: new.item.quantity, unit: new.item.unit, active: existing.item.active, order: newOrder)
-                        self.updateGrocery(grocery: ReadableGroceryItemWithId(item: newItem, id: new.id))
+                        Database.updateGrocery(grocery: ReadableGroceryItemWithId(item: newItem, id: new.id))
                         self.onChange?()
                     }
                 } catch {

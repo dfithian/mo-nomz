@@ -15,14 +15,22 @@ class AddLinkController: AddDetailController {
     var active: Bool = true
     
     @IBAction func didTapSubmit(_ sender: Any?) {
-        let completion = { () -> Void in
+        let recipeCompletion = { (recipe: ReadableRecipeWithId) in
             DispatchQueue.main.async {
                 self.dismiss(animated: true, completion: nil)
             }
             self.navigationVc?.onChange?()
+            self.loadRecipe(recipe)
         }
-        if let newLink = link.text?.nonEmpty() {
-            addLink(link: newLink, active: active, completion: completion)
+        if let newLink = link.text?.nonEmpty(), var url = URL(string: newLink) {
+            if let recipeUrl = url.toRecipeUrl() {
+                url = recipeUrl
+            }
+            if let host = url.host, let recipe = Database.findRecipeByLink(host: host, path: url.path) {
+                loadRecipe(recipe)
+            } else {
+                addLink(link: url.absoluteString, active: active, completion: recipeCompletion)
+            }
         } else {
             alertUnsuccessful("Please provide a link.")
         }

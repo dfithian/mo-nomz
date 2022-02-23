@@ -19,7 +19,7 @@ class GroceryController: UIViewController {
     var groceryVc: GroceryListController? = nil
     
     @IBAction func export(_ sender: Any?) {
-        let items: [ReadableGroceryItemWithId] = selectGroceries().filter({ $0.item.active })
+        let items: [ReadableGroceryItemWithId] = Database.selectGroceries().filter({ $0.item.active })
         if !items.isEmpty {
             let exportText: String = items.map({ $0.item.render() }).joined(separator: "\n")
             let vc = UIActivityViewController(activityItems: [exportText], applicationActivities: nil)
@@ -35,7 +35,7 @@ class GroceryController: UIViewController {
         let items: [ReadableGroceryItemWithId] = (groceryVc?.toBuy ?? []) + (groceryVc?.bought ?? [])
         if !items.isEmpty {
             let handler = { [weak self] (action: UIAlertAction) -> Void in
-                self?.clearAll()
+                Database.clearAll()
                 self?.loadData()
             }
             promptForConfirmation(title: "Clear", message: "Are you sure you want to clear?", handler: handler)
@@ -43,7 +43,7 @@ class GroceryController: UIViewController {
     }
     
     @objc func loadData() {
-        let groceries = selectGroceries()
+        let groceries = Database.selectGroceries()
         groceryVc?.toBuy = groceries.map({ ReadableGroceryItemWithId(item: $0.item, id: $0.id) }).filter({ $0.item.active })
         groceryVc?.bought = groceries.map({ ReadableGroceryItemWithId(item: $0.item, id: $0.id) }).filter({ !$0.item.active })
         DispatchQueue.main.async {

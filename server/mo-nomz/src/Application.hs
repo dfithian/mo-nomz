@@ -6,14 +6,17 @@ import Control.Monad.Logger (defaultOutput, runLoggingT)
 import Control.Monad.Trans.Reader (runReaderT)
 import Data.Default (def)
 import Data.Pool (Pool, createPool)
+import Data.Tagged (Tagged(..))
 import Data.Time.Clock (getCurrentTime)
 import Data.Yaml.Config (loadYamlSettingsArgs, useEnv)
 import Database.PostgreSQL.Simple (Connection, close, connectPostgreSQL)
 import Database.PostgreSQL.Simple.Migration
   ( MigrationCommand(..), MigrationResult(..), runMigrations
   )
-import Network.HTTP.Types (hLocation, temporaryRedirect307, unauthorized401)
-import Network.Wai (pathInfo, responseLBS)
+import Network.HTTP.Types
+  ( hContentEncoding, hContentType, hLocation, ok200, temporaryRedirect307, unauthorized401
+  )
+import Network.Wai (pathInfo, responseFile, responseLBS)
 import Network.Wai.Handler.Warp (Settings, defaultSettings, runSettings, setPort)
 import Network.Wai.Middleware.RequestLogger (OutputFormat(Detailed), mkRequestLogger, outputFormat)
 import Servant.API ((:<|>)(..))
@@ -107,6 +110,14 @@ appMain = do
         False -> id
       appl = serve wholeApi $
         hoistServer nomzApi (runNomzServer app) nomzServer
+          :<|> Tagged ( \_req respond ->
+            respond $
+              responseFile
+                ok200
+                [(hContentType, "application/json; charset=utf8"), (hContentEncoding, "gzip")]
+                (staticDir <> "/apple-app-site-association")
+                Nothing
+            )
           :<|> serveDirectoryWith staticFileSettings
   requestLogger <- mkRequestLogger def { outputFormat = Detailed False }
   runSettings (warpSettings app) $ requestLogger $ ssl appl

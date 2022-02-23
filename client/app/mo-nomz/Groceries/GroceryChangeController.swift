@@ -30,11 +30,11 @@ class GroceryChangeController: SimpleController, UIPickerViewDataSource, UIPicke
         switch change {
         case .merge(let existing, let new):
             let item = ReadableGroceryItemWithId(item: ReadableGroceryItem(name: name.text!, quantity: ReadableQuantity(whole: currentWholeQuantity, fraction: currentFractionQuantity), unit: unit.text?.nonEmpty(), active: existing.item.active, order: existing.item.order), id: UUID())
-            mergeGroceries(ids: [existing.id, new.id], grocery: item)
+            Database.mergeGroceries(ids: [existing.id, new.id], grocery: item)
             break
         case .edit(let existing):
             let item = ReadableGroceryItem(name: name.text!, quantity: ReadableQuantity(whole: currentWholeQuantity, fraction: currentFractionQuantity), unit: unit.text?.nonEmpty(), active: existing.item.active, order: existing.item.order)
-            updateGrocery(grocery: ReadableGroceryItemWithId(item: item, id: existing.id))
+            Database.updateGrocery(grocery: ReadableGroceryItemWithId(item: item, id: existing.id))
             break
         default: break
         }

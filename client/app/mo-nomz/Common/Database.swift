@@ -9,8 +9,8 @@ import CoreData
 import Foundation
 import UIKit
 
-extension UIViewController {
-    private func insertGroceryRaw(_ ctx: NSManagedObjectContext, grocery: ReadableGroceryItemWithId) {
+class Database {
+    private static func insertGroceryRaw(_ ctx: NSManagedObjectContext, grocery: ReadableGroceryItemWithId) {
         let newGrocery = NSEntityDescription.insertNewObject(forEntityName: "GroceryItemData", into: ctx) as! GroceryItemData
         newGrocery.id = grocery.id
         newGrocery.name = grocery.item.name
@@ -20,7 +20,7 @@ extension UIViewController {
         newGrocery.ordering = Int32(grocery.item.order)
     }
     
-    private func insertIngredientRaw(_ ctx: NSManagedObjectContext, ingredient: ReadableIngredientWithId, recipeId: UUID?, groceryId: UUID?) {
+    private static func insertIngredientRaw(_ ctx: NSManagedObjectContext, ingredient: ReadableIngredientWithId, recipeId: UUID?, groceryId: UUID?) {
         let newIngredient = NSEntityDescription.insertNewObject(forEntityName: "IngredientData", into: ctx) as! IngredientData
         newIngredient.id = ingredient.id
         newIngredient.grocery_id = groceryId
@@ -31,7 +31,7 @@ extension UIViewController {
         newIngredient.ordering = Int32(ingredient.ingredient.order)
     }
     
-    private func insertRecipeRaw(_ ctx: NSManagedObjectContext, recipe: ReadableRecipeWithId) {
+    private static func insertRecipeRaw(_ ctx: NSManagedObjectContext, recipe: ReadableRecipeWithId) {
         let newRecipe = NSEntityDescription.insertNewObject(forEntityName: "RecipeData", into: ctx) as! RecipeData
         newRecipe.id = recipe.id
         newRecipe.name = recipe.recipe.name
@@ -45,7 +45,7 @@ extension UIViewController {
         }
     }
     
-    private func insertStepRaw(_ ctx: NSManagedObjectContext, step: StepWithId, recipeId: UUID) {
+    private static func insertStepRaw(_ ctx: NSManagedObjectContext, step: StepWithId, recipeId: UUID) {
         let newStep = NSEntityDescription.insertNewObject(forEntityName: "StepData", into: ctx) as! StepData
         newStep.id = step.id
         newStep.recipe_id = recipeId
@@ -53,7 +53,7 @@ extension UIViewController {
         newStep.ordering = Int32(step.step.order)
     }
     
-    private func selectRecipeIngredientsRaw(_ ctx: NSManagedObjectContext, recipeId: UUID) throws -> [IngredientData] {
+    private static func selectRecipeIngredientsRaw(_ ctx: NSManagedObjectContext, recipeId: UUID) throws -> [IngredientData] {
         let ingredientReq = IngredientData.req()
         ingredientReq.predicate = NSPredicate(format: "recipe_id = %@", recipeId as CVarArg)
         ingredientReq.sortDescriptors = [
@@ -63,7 +63,7 @@ extension UIViewController {
         return try ctx.fetch(ingredientReq)
     }
     
-    private func selectRecipeStepsRaw(_ ctx: NSManagedObjectContext, recipeId: UUID) throws -> [StepData] {
+    private static func selectRecipeStepsRaw(_ ctx: NSManagedObjectContext, recipeId: UUID) throws -> [StepData] {
         let stepReq = StepData.req()
         stepReq.predicate = NSPredicate(format: "recipe_id = %@", recipeId as CVarArg)
         stepReq.sortDescriptors = [
@@ -73,7 +73,7 @@ extension UIViewController {
         return try ctx.fetch(stepReq)
     }
 
-    func selectGroceries() -> [ReadableGroceryItemWithId] {
+    static func selectGroceries() -> [ReadableGroceryItemWithId] {
         do {
             let ctx = DataAccess.shared.managedObjectContext
             let req = GroceryItemData.req()
@@ -88,7 +88,7 @@ extension UIViewController {
         return []
     }
     
-    func selectMaxOrderRaw(_ ctx: NSManagedObjectContext) throws -> Int {
+    static func selectMaxOrderRaw(_ ctx: NSManagedObjectContext) throws -> Int {
         let req = GroceryItemData.req()
         req.sortDescriptors = [NSSortDescriptor(key: "ordering", ascending: false)]
         req.fetchLimit = 1
@@ -99,7 +99,7 @@ extension UIViewController {
         }
     }
     
-    func selectMaxStepOrderRaw(_ ctx: NSManagedObjectContext, recipeId: UUID) throws -> Int {
+    static func selectMaxStepOrderRaw(_ ctx: NSManagedObjectContext, recipeId: UUID) throws -> Int {
         let req = StepData.req()
         req.predicate = NSPredicate(format: "recipe_id = %@", recipeId as CVarArg)
         req.sortDescriptors = [NSSortDescriptor(key: "ordering", ascending: false)]
@@ -111,7 +111,7 @@ extension UIViewController {
         }
     }
     
-    func insertGroceries(ingredients: [ReadableIngredient]) {
+    static func insertGroceries(ingredients: [ReadableIngredient]) {
         do {
             let ctx = DataAccess.shared.managedObjectContext
             var maxOrder = try selectMaxOrderRaw(ctx)
@@ -129,7 +129,7 @@ extension UIViewController {
         }
     }
     
-    func updateGrocery(grocery: ReadableGroceryItemWithId) {
+    static func updateGrocery(grocery: ReadableGroceryItemWithId) {
         do {
             let ctx = DataAccess.shared.managedObjectContext
             let req = GroceryItemData.req()
@@ -157,7 +157,7 @@ extension UIViewController {
         }
     }
     
-    func mergeGroceries(ids: [UUID], grocery: ReadableGroceryItemWithId) {
+    static func mergeGroceries(ids: [UUID], grocery: ReadableGroceryItemWithId) {
         do {
             let ctx = DataAccess.shared.managedObjectContext
             
@@ -184,7 +184,7 @@ extension UIViewController {
         }
     }
     
-    func deleteGrocery(id: UUID) {
+    static func deleteGrocery(id: UUID) {
         do {
             let ctx = DataAccess.shared.managedObjectContext
             
@@ -212,7 +212,7 @@ extension UIViewController {
         }
     }
     
-    func selectRecipes() -> [ReadableRecipeWithId] {
+    static func selectRecipes() -> [ReadableRecipeWithId] {
         do {
             let ctx = DataAccess.shared.managedObjectContext
             let req = RecipeData.req()
@@ -231,7 +231,25 @@ extension UIViewController {
         return []
     }
     
-    func getRecipe(id: UUID) -> ReadableRecipeWithId? {
+    static func findRecipeByLink(host: String, path: String) -> ReadableRecipeWithId? {
+        do {
+            let ctx = DataAccess.shared.managedObjectContext
+
+            let req = RecipeData.req()
+            req.predicate = NSPredicate(format: "link like[c] %@", "*\(host)*\(path)*" as CVarArg)
+            req.fetchLimit = 1
+            if let recipeData = try ctx.fetch(req).first {
+                let ingredients = try selectRecipeIngredientsRaw(ctx, recipeId: recipeData.id!)
+                let steps = try selectRecipeStepsRaw(ctx, recipeId: recipeData.id!)
+                return recipeData.toReadableRecipeWithId(ingredientsData: ingredients, stepsData: steps)
+            }
+        } catch let error as NSError {
+            print(error)
+        }
+        return nil
+    }
+    
+    static func getRecipe(id: UUID) -> ReadableRecipeWithId? {
         do {
             let ctx = DataAccess.shared.managedObjectContext
             let ingredients = try selectRecipeIngredientsRaw(ctx, recipeId: id)
@@ -247,7 +265,7 @@ extension UIViewController {
         return nil
     }
     
-    func insertRecipe(response: ParseLinkResponse, link: String, active: Bool) {
+    static func insertRecipe(response: ParseLinkResponse, link: String, active: Bool) -> ReadableRecipeWithId {
         var ingredients = [UUID:ReadableIngredient]()
         for ingredient in response.ingredients {
             ingredients[UUID()] = ingredient
@@ -259,10 +277,10 @@ extension UIViewController {
             order += 1
         }
         let recipe = ReadableRecipe(name: response.name, link: link, active: active, rating: 0, notes: "", ingredients: ingredients, steps: steps)
-        insertRecipe(recipe: recipe)
+        return insertRecipe(recipe: recipe)
     }
     
-    func insertRecipe(response: ParseBlobResponse, name: String, link: String?, rawSteps: [String], active: Bool) {
+    static func insertRecipe(response: ParseBlobResponse, name: String, link: String?, rawSteps: [String], active: Bool) -> ReadableRecipeWithId {
         var ingredients = [UUID:ReadableIngredient]()
         for ingredient in response.ingredients {
             ingredients[UUID()] = ingredient
@@ -274,15 +292,15 @@ extension UIViewController {
             order += 1
         }
         let recipe = ReadableRecipe(name: name, link: link, active: active, rating: 0, notes: "", ingredients: ingredients, steps: steps)
-        insertRecipe(recipe: recipe)
+        return insertRecipe(recipe: recipe)
     }
     
-    func insertRecipe(recipe: ReadableRecipe) {
+    static func insertRecipe(recipe: ReadableRecipe) -> ReadableRecipeWithId {
+        let recipeWithId = ReadableRecipeWithId(recipe: recipe, id: UUID())
         do {
             let ctx = DataAccess.shared.managedObjectContext
             
             // insert recipe
-            let recipeWithId = ReadableRecipeWithId(recipe: recipe, id: UUID())
             insertRecipeRaw(ctx, recipe: recipeWithId)
             
             // insert ingredients and groceries
@@ -302,9 +320,10 @@ extension UIViewController {
         } catch let error as NSError {
             print(error)
         }
+        return recipeWithId
     }
     
-    private func activateRecipeRaw(_ ctx: NSManagedObjectContext, id: UUID) throws {
+    private static func activateRecipeRaw(_ ctx: NSManagedObjectContext, id: UUID) throws {
         // setting recipe active bit handled by caller
         let ingredientReq = IngredientData.req()
         ingredientReq.predicate = NSPredicate(format: "recipe_id = %@", id as CVarArg)
@@ -321,7 +340,7 @@ extension UIViewController {
         }
     }
     
-    private func deactivateRecipeRaw(_ ctx: NSManagedObjectContext, id: UUID) throws {
+    private static func deactivateRecipeRaw(_ ctx: NSManagedObjectContext, id: UUID) throws {
         // setting recipe active bit handled by caller
         let ingredientReq = IngredientData.req()
         ingredientReq.predicate = NSPredicate(format: "recipe_id = %@", id as CVarArg)
@@ -332,7 +351,7 @@ extension UIViewController {
         try unmergeGroceriesRaw(ctx, ingredientIds: Array(ingredientIds))
     }
     
-    func updateRecipe(id: UUID, recipe: ReadableRecipe) {
+    static func updateRecipe(id: UUID, recipe: ReadableRecipe) {
         do {
             let ctx = DataAccess.shared.managedObjectContext
             let req = RecipeData.req()
@@ -359,7 +378,7 @@ extension UIViewController {
         }
     }
     
-    func updateRecipeIngredients(id: UUID, active: Bool, deletes: [UUID], adds: [ReadableIngredientWithId]) {
+    static func updateRecipeIngredients(id: UUID, active: Bool, deletes: [UUID], adds: [ReadableIngredientWithId]) {
         do {
             let ctx = DataAccess.shared.managedObjectContext
             
@@ -395,7 +414,7 @@ extension UIViewController {
         }
     }
     
-    func addRecipeSteps(recipeId: UUID, rawSteps: [String]) -> [StepWithId] {
+    static func addRecipeSteps(recipeId: UUID, rawSteps: [String]) -> [StepWithId] {
         do {
             let ctx = DataAccess.shared.managedObjectContext
             var ordering = try selectMaxStepOrderRaw(ctx, recipeId: recipeId)
@@ -415,7 +434,7 @@ extension UIViewController {
         return []
     }
     
-    func deleteRecipeStep(id: UUID) {
+    static func deleteRecipeStep(id: UUID) {
         do {
             let ctx = DataAccess.shared.managedObjectContext
             let req = StepData.req()
@@ -429,7 +448,7 @@ extension UIViewController {
         }
     }
     
-    func updateRecipeStep(recipeId: UUID, step: StepWithId) {
+    static func updateRecipeStep(recipeId: UUID, step: StepWithId) {
         do {
             let ctx = DataAccess.shared.managedObjectContext
             let req = StepData.req()
@@ -457,7 +476,7 @@ extension UIViewController {
         }
     }
     
-    func deleteRecipe(id: UUID) {
+    static func deleteRecipe(id: UUID) {
         do {
             let ctx = DataAccess.shared.managedObjectContext
             
@@ -484,7 +503,7 @@ extension UIViewController {
         }
     }
     
-    private func automergeGroceriesRaw(_ ctx: NSManagedObjectContext, active: Bool, groceries: [ReadableGroceryItemWithId]) throws {
+    private static func automergeGroceriesRaw(_ ctx: NSManagedObjectContext, active: Bool, groceries: [ReadableGroceryItemWithId]) throws {
         struct NameAndUnit: Hashable {
             let name: String
             let unit: String?
@@ -521,7 +540,7 @@ extension UIViewController {
         }
     }
     
-    private func automergeGroceriesRaw(_ ctx: NSManagedObjectContext) throws {
+    private static func automergeGroceriesRaw(_ ctx: NSManagedObjectContext) throws {
         // select the existing groceries
         var activeGroceries: [ReadableGroceryItemWithId] = []
         var inactiveGroceries: [ReadableGroceryItemWithId] = []
@@ -537,7 +556,7 @@ extension UIViewController {
         try automergeGroceriesRaw(ctx, active: false, groceries: inactiveGroceries)
     }
     
-    private func unmergeGroceriesRaw(_ ctx: NSManagedObjectContext, ingredientIds: [UUID]) throws {
+    private static func unmergeGroceriesRaw(_ ctx: NSManagedObjectContext, ingredientIds: [UUID]) throws {
         // unset the grocery id for the existing ingredients
         let ingredientReq = IngredientData.req()
         ingredientReq.predicate = NSPredicate(format: "id in %@", ingredientIds as CVarArg)
@@ -577,7 +596,7 @@ extension UIViewController {
         try automergeGroceriesRaw(ctx)
     }
     
-    func clearAll() {
+    static func clearAll() {
         do {
             let ctx = DataAccess.shared.managedObjectContext
             
@@ -604,7 +623,7 @@ extension UIViewController {
         }
     }
     
-    func overwrite(export: ExportResponse) {
+    static func overwrite(export: ExportResponse) {
         do {
             let ctx = DataAccess.shared.managedObjectContext
             

@@ -60,4 +60,12 @@ class Configuration {
     static var venmoUrl: String {
         return "https://venmo.com/code?user_id=1305125788319744156"
     }
+    
+    static var allDomains: [String] {
+        return [
+            "app.mo-nomz.com",
+            "mo-nomz.herokuapp.com",
+            "mo-nomz-dev.herokuapp.com"
+        ]
+    }
 }

@@ -33,15 +33,15 @@ class IngredientChangeController: SimpleController, UIPickerViewDataSource, UIPi
         switch change {
         case .merge(let existing, let new):
             let item = ReadableIngredientWithId(id: UUID(), ingredient: ReadableIngredient(name: name.text!, quantity: ReadableQuantity(whole: currentWholeQuantity, fraction: currentFractionQuantity), unit: unit.text?.nonEmpty(), order: existing.ingredient.order))
-            updateRecipeIngredients(id: r.id, active: r.recipe.active, deletes: [existing.id, new.id], adds: [item])
+            Database.updateRecipeIngredients(id: r.id, active: r.recipe.active, deletes: [existing.id, new.id], adds: [item])
             break
         case .edit(let existing):
             let item = ReadableIngredientWithId(id: UUID(), ingredient: ReadableIngredient(name: name.text!, quantity: ReadableQuantity(whole: currentWholeQuantity, fraction: currentFractionQuantity), unit: unit.text?.nonEmpty(), order: existing.ingredient.order))
-            updateRecipeIngredients(id: r.id, active: r.recipe.active, deletes: [existing.id], adds: [item])
+            Database.updateRecipeIngredients(id: r.id, active: r.recipe.active, deletes: [existing.id], adds: [item])
             break
         case .add(let order):
             let item = ReadableIngredientWithId(id: UUID(), ingredient: ReadableIngredient(name: name.text!, quantity: ReadableQuantity(whole: currentWholeQuantity, fraction: currentFractionQuantity), unit: unit.text?.nonEmpty(), order: order))
-            updateRecipeIngredients(id: r.id, active: r.recipe.active, deletes: [], adds: [item])
+            Database.updateRecipeIngredients(id: r.id, active: r.recipe.active, deletes: [], adds: [item])
             break
         default: break
         }
