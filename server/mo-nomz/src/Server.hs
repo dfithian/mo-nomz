@@ -79,20 +79,25 @@ unwrapDb ma = ma >>= \case
 
 getHealth :: AppM m => m GetHealthResponse
 getHealth = do
+  let timeFormatter time = Text.pack $ formatTime defaultTimeLocale (iso8601DateFormat $ Just "%H:%M:%S") time <> " UTC"
   App {..} <- ask
   now <- liftIO getCurrentTime
   unwrapDb $ withDbConn $ \c -> do
     Database.health c
     (day, week, month, year) <- Database.selectRecentUsers c
+    (cacheSize, mostRecent, leastRecent) <- Database.selectCacheStats c
     pure GetHealthResponse
       { getHealthResponseStatus = "OK"
       , getHealthResponseVersion = Text.pack (showVersion version)
-      , getHealthResponseStarted = Text.pack (formatTime defaultTimeLocale (iso8601DateFormat $ Just "%H:%M:%S") appStarted <> " UTC")
-      , getHealthResponseFetched = Text.pack (formatTime defaultTimeLocale (iso8601DateFormat $ Just "%H:%M:%S") now <> " UTC")
+      , getHealthResponseStarted = timeFormatter appStarted
+      , getHealthResponseFetched = timeFormatter now
       , getHealthResponseUserDay = day
       , getHealthResponseUserWeek = week
       , getHealthResponseUserMonth = month
       , getHealthResponseUserYear = year
+      , getHealthResponseCacheSize = cacheSize
+      , getHealthResponseCacheMostRecent = maybe "<missing>" timeFormatter mostRecent
+      , getHealthResponseCacheLeastRecent = maybe "<missing>" timeFormatter leastRecent
       }
 
 postCreateUser :: AppM m => m UserCreateResponse

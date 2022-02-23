@@ -9,7 +9,7 @@ import Data.Map.Strict (Map)
 import Data.Maybe (fromMaybe, mapMaybe)
 import Data.Serialize (decode, encode)
 import Data.Text (Text)
-import Data.Time.Clock (addUTCTime, getCurrentTime)
+import Data.Time.Clock (UTCTime, addUTCTime, getCurrentTime)
 import Database.PostgreSQL.Simple
   ( Binary(Binary), In(In), Only(Only), Connection, execute, executeMany, fromOnly, query, query_
   , returning
@@ -61,6 +61,11 @@ selectRecentUsers conn = do
     <*> q "7 day"
     <*> q "28 day"
     <*> q "365 day"
+
+selectCacheStats :: Connection -> IO (Int, Maybe UTCTime, Maybe UTCTime)
+selectCacheStats conn = do
+  fromMaybe (0, Nothing, Nothing) . headMay
+    <$> query_ conn "select count(*), max(updated), min(updated) from nomz.recipe_cache"
 
 selectGroceryItems :: Connection -> UserId -> [GroceryItemId] -> IO (Map GroceryItemId OrderedGroceryItem)
 selectGroceryItems conn userId groceryItemIds = do
