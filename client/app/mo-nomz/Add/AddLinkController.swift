@@ -15,14 +15,14 @@ class AddLinkController: AddDetailController {
     var active: Bool = true
     
     @IBAction func didTapSubmit(_ sender: Any?) {
-        let completion = { () -> Void in
+        let completion = {
             DispatchQueue.main.async {
                 self.dismiss(animated: true, completion: nil)
             }
             self.navigationVc?.onChange?()
         }
         if let newLink = link.text?.nonEmpty() {
-            addLink(link: newLink, active: active, completion: completion)
+            addLink(link: newLink, active: active, completion: { _ in completion() })
         } else {
             alertUnsuccessful("Please provide a link.")
         }

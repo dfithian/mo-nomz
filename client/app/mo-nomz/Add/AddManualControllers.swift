@@ -40,12 +40,12 @@ class AddManualController: AddDetailController {
         if let i = ingredients {
             if isRecipe {
                 if let n = name {
-                    addBlob(content: i, name: n, link: link, rawSteps: steps?.nonEmpty()?.components(separatedBy: "\n").compactMap({ $0.nonEmpty() }) ?? [], active: isActive, completion: completion)
+                    addBlob(content: i, name: n, link: link, rawSteps: steps?.nonEmpty()?.components(separatedBy: "\n").compactMap({ $0.nonEmpty() }) ?? [], active: isActive, completion: { _ in completion() })
                 } else {
                     alertUnsuccessful("Please provide a name.")
                 }
             } else {
-                addBlob(content: i, completion: completion)
+                addBlob(content: i, completion: { _ in completion() })
             }
         } else {
             alertUnsuccessful("Please provide ingredients.")

@@ -60,7 +60,7 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
     
     private func newStep() {
         guard let r = recipe else { return }
-        let newSteps = addRecipeSteps(recipeId: r.id, rawSteps: [""])
+        let newSteps = Database.addRecipeSteps(recipeId: r.id, rawSteps: [""])
         steps.append(contentsOf: newSteps)
         let indexPath = IndexPath(row: steps.count - 1, section: STEP_LIST)
         tableView.insertRows(at: [indexPath], with: .automatic)
@@ -77,7 +77,7 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
     func textViewDidEndEditing(_ textView: UITextView) {
         guard let r = recipe else { return }
         if textView.tag == Int.max {
-            updateRecipe(id: r.id, recipe: ReadableRecipe(name: r.recipe.name, link: r.recipe.link, active: r.recipe.active, rating: r.recipe.rating, notes: textView.text ?? r.recipe.notes, ingredients: r.recipe.ingredients, steps: r.recipe.steps))
+            Database.updateRecipe(id: r.id, recipe: ReadableRecipe(name: r.recipe.name, link: r.recipe.link, active: r.recipe.active, rating: r.recipe.rating, notes: textView.text ?? r.recipe.notes, ingredients: r.recipe.ingredients, steps: r.recipe.steps))
         } else {
             let step = steps[textView.tag]
             let cell = tableView.cellForRow(at: IndexPath(row: textView.tag, section: STEP_LIST)) as! TwoLabelOneText
@@ -86,9 +86,9 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
             cell.twoLabel.text = cell.text_.text
             if let newStep = cell.text_.text?.trimmingCharacters(in: .whitespacesAndNewlines).nonEmpty() {
                 let new = StepWithId(id: step.id, step: Step(step: newStep, order: step.step.order))
-                updateRecipeStep(recipeId: r.id, step: new)
+                Database.updateRecipeStep(recipeId: r.id, step: new)
             } else {
-                deleteRecipeStep(id: step.id)
+                Database.deleteRecipeStep(id: step.id)
             }
         }
         onChange?()
@@ -185,10 +185,10 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
         let action = UIContextualAction(style: .destructive, title: "Delete") { [weak self] (action, view, completionHandler) in
             switch delete {
             case .ingredient(let ingredient):
-                self?.updateRecipeIngredients(id: r.id, active: r.recipe.active, deletes: [ingredient.id], adds: [])
+                Database.updateRecipeIngredients(id: r.id, active: r.recipe.active, deletes: [ingredient.id], adds: [])
                 break
             case .step(let step):
-                self?.deleteRecipeStep(id: step.id)
+                Database.deleteRecipeStep(id: step.id)
                 break
             }
             self?.onChange?()
@@ -330,7 +330,7 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
                         case (_, .step(let y)):
                             guard let r = self.recipe else { break }
                             let step = StepWithId(id: y.id, step: Step(step: y.step.step, order: newOrder))
-                            self.updateRecipeStep(recipeId: r.id, step: step)
+                            Database.updateRecipeStep(recipeId: r.id, step: step)
                             self.onChange?()
                             break
                         default:

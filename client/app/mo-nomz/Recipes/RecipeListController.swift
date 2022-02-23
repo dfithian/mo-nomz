@@ -67,14 +67,14 @@ class RecipeListController: UITableViewController, UISearchBarDelegate {
     @objc func didTapActive(_ sender: Any?) {
         let b = sender as! UIButton
         let r = active[b.tag]
-        updateRecipe(id: r.id, recipe: ReadableRecipe(name: r.recipe.name, link: r.recipe.link, active: false, rating: r.recipe.rating, notes: r.recipe.notes, ingredients: r.recipe.ingredients, steps: r.recipe.steps))
+        Database.updateRecipe(id: r.id, recipe: ReadableRecipe(name: r.recipe.name, link: r.recipe.link, active: false, rating: r.recipe.rating, notes: r.recipe.notes, ingredients: r.recipe.ingredients, steps: r.recipe.steps))
         onChange?()
     }
     
     @objc func didTapSavedForLater(_ sender: Any?) {
         let b = sender as! UIButton
         let r = saved[b.tag]
-        updateRecipe(id: r.id, recipe: ReadableRecipe(name: r.recipe.name, link: r.recipe.link, active: true, rating: r.recipe.rating, notes: r.recipe.notes, ingredients: r.recipe.ingredients, steps: r.recipe.steps))
+        Database.updateRecipe(id: r.id, recipe: ReadableRecipe(name: r.recipe.name, link: r.recipe.link, active: true, rating: r.recipe.rating, notes: r.recipe.notes, ingredients: r.recipe.ingredients, steps: r.recipe.steps))
         onChange?()
         tableView.reloadData()
     }
@@ -105,7 +105,7 @@ class RecipeListController: UITableViewController, UISearchBarDelegate {
     }
     
     func deleteRow(_ id: UUID) {
-        deleteRecipe(id: id)
+        Database.deleteRecipe(id: id)
         onChange?()
     }
     
@@ -211,6 +211,10 @@ class RecipeListController: UITableViewController, UISearchBarDelegate {
                 break
             default: break
             }
+        }
+        if let vc = segue.destination as? RecipeDetailController, segue.identifier == "showRecipe", let r = sender as? ReadableRecipeWithId {
+            vc.onChange = onChange
+            vc.recipe = r
         }
     }
     

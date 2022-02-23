@@ -1,5 +1,5 @@
 //
-//  Actions.swift
+//  Api.swift
 //  mo-nomz
 //
 //  Created by Dan Fithian on 4/11/21.
@@ -33,7 +33,6 @@ extension UIViewController {
     }
     
     func pingUser(completion: (() -> Void)?) {
-        let spinner = startLoading()
         guard let state = User.loadState() else { return }
         var req = URLRequest(url: URL(string: Configuration.baseURL + "api/v1/user/" + String(state.userId) + "/ping")!)
         req.addValue(state.apiToken, forHTTPHeaderField: "X-Mo-Nomz-API-Token")
@@ -43,7 +42,6 @@ extension UIViewController {
         let bundle = Bundle.main.infoDictionary?["CFBundleVersion"] as! String
         req.httpBody = try? JSONEncoder().encode(UserPingRequest(version: "\(version).\(bundle)"))
         let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
-            self.stopLoading(spinner)
             completion?()
         })
         task.resume()
@@ -65,7 +63,7 @@ extension UIViewController {
             let onSuccess = { (data: Data) -> Void in
                 do {
                     let output = try JSONDecoder().decode(ExportResponse.self, from: data)
-                    self.overwrite(export: output)
+                    Database.overwrite(export: output)
                     onComplete()
                 } catch {
                     onComplete()
@@ -79,7 +77,7 @@ extension UIViewController {
     func pullSteps(completion: (() -> Void)?) {
         let progress = startProgress()
         guard let state = User.loadState() else { return }
-        let recipes = selectRecipes()
+        let recipes = Database.selectRecipes()
         let queue = DispatchQueue(label: "mo-nomz.pull-steps")
         let group = DispatchGroup()
         var numPulled = 0
@@ -107,7 +105,7 @@ extension UIViewController {
                 let onSuccess = { (data: Data) -> Void in
                     do {
                         let output = try JSONDecoder().decode(ParseLinkResponse.self, from: data)
-                        let _ = self.addRecipeSteps(recipeId: id, rawSteps: output.steps)
+                        let _ = Database.addRecipeSteps(recipeId: id, rawSteps: output.steps)
                     } catch { }
                     onComplete()
                 }
@@ -127,12 +125,12 @@ extension UIViewController {
     
     func cleanSteps(completion: (() -> Void)?) {
         let progress = startProgress()
-        let recipes = selectRecipes()
+        let recipes = Database.selectRecipes()
         for recipe in recipes {
             var steps = Set<String>()
             for (stepId, step) in recipe.recipe.steps.sorted(by: { $0.value.order < $1.value.order }) {
                 if !steps.insert(step.step).inserted {
-                    deleteRecipeStep(id: stepId)
+                    Database.deleteRecipeStep(id: stepId)
                 }
             }
         }
@@ -140,7 +138,7 @@ extension UIViewController {
         completion?()
     }
     
-    func addBlob(content: String, completion: (() -> Void)?) {
+    func addBlob(content: String, completion: (([ReadableIngredient]) -> Void)?) {
         let spinner = startLoading()
         guard let state = User.loadState() else { return }
         var req = URLRequest(url: URL(string: Configuration.baseURL + "api/v2/user/" + String(state.userId) + "/blob")!)
@@ -158,14 +156,14 @@ extension UIViewController {
                     ingredients.append(ReadableIngredient(name: ingredient, quantity: ReadableQuantity(whole: nil, fraction: nil), unit: nil, order: order))
                     order += 1
                 }
-                self.insertGroceries(ingredients: ingredients)
-                completion?()
+                Database.insertGroceries(ingredients: ingredients)
+                completion?(ingredients)
             }
             let onSuccess = { (d: Data) -> Void in
                 do {
                     let output = try JSONDecoder().decode(ParseBlobResponse.self, from: d)
-                    self.insertGroceries(ingredients: output.ingredients)
-                    completion?()
+                    Database.insertGroceries(ingredients: output.ingredients)
+                    completion?(output.ingredients)
                 } catch {
                     onError()
                 }
@@ -175,7 +173,7 @@ extension UIViewController {
         task.resume()
     }
     
-    func addBlob(content: String, name: String, link: String?, rawSteps: [String], active: Bool, completion: (() -> Void)?) {
+    func addBlob(content: String, name: String, link: String?, rawSteps: [String], active: Bool, completion: ((ReadableRecipeWithId) -> Void)?) {
         let spinner = startLoading()
         guard let state = User.loadState() else { return }
         var req = URLRequest(url: URL(string: Configuration.baseURL + "api/v2/user/" + String(state.userId) + "/blob")!)
@@ -193,14 +191,14 @@ extension UIViewController {
                     ingredients.append(ReadableIngredient(name: ingredient, quantity: ReadableQuantity(whole: nil, fraction: nil), unit: nil, order: order))
                     order += 1
                 }
-                self.insertRecipe(response: ParseBlobResponse(ingredients: ingredients), name: name, link: link, rawSteps: rawSteps, active: active)
-                completion?()
+                let recipe = Database.insertRecipe(response: ParseBlobResponse(ingredients: ingredients), name: name, link: link, rawSteps: rawSteps, active: active)
+                completion?(recipe)
             }
             let onSuccess = { (d: Data) -> Void in
                 do {
                     let output = try JSONDecoder().decode(ParseBlobResponse.self, from: d)
-                    self.insertRecipe(response: output, name: name, link: link, rawSteps: rawSteps, active: active)
-                    completion?()
+                    let recipe = Database.insertRecipe(response: output, name: name, link: link, rawSteps: rawSteps, active: active)
+                    completion?(recipe)
                 } catch {
                     
                 }
@@ -210,7 +208,7 @@ extension UIViewController {
         task.resume()
     }
     
-    func addLink(link: String, active: Bool, completion: (() -> Void)?) {
+    func addLink(link: String, active: Bool, completion: ((ReadableRecipeWithId) -> Void)?) {
         let spinner = startLoading()
         guard let state = User.loadState() else { return }
         var req = URLRequest(url: URL(string: Configuration.baseURL + "api/v2/user/" + String(state.userId) + "/link")!)
@@ -225,8 +223,8 @@ extension UIViewController {
             let onSuccess = { (d: Data) -> Void in
                 do {
                     let output = try JSONDecoder().decode(ParseLinkResponse.self, from: d)
-                    self.insertRecipe(response: output, link: link, active: active)
-                    completion?()
+                    let recipe = Database.insertRecipe(response: output, link: link, active: active)
+                    completion?(recipe)
                 } catch {
                     onError()
                 }
