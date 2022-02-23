@@ -31,21 +31,29 @@ class AddManualController: AddDetailController {
     }
     
     @IBAction func didTapSubmit(_ sender: Any?) {
-        let completion = {
+        let recipeCompletion = { (recipe: ReadableRecipeWithId) in
             DispatchQueue.main.async {
                 self.dismiss(animated: true, completion: nil)
             }
             self.navigationVc?.onChange?()
+            self.loadRecipe(recipe)
+        }
+        let groceryCompletion = {
+            DispatchQueue.main.async {
+                self.dismiss(animated: true, completion: nil)
+            }
+            self.navigationVc?.onChange?()
+            self.loadGroceries()
         }
         if let i = ingredients {
             if isRecipe {
                 if let n = name {
-                    addBlob(content: i, name: n, link: link, rawSteps: steps?.nonEmpty()?.components(separatedBy: "\n").compactMap({ $0.nonEmpty() }) ?? [], active: isActive, completion: { _ in completion() })
+                    addBlob(content: i, name: n, link: link, rawSteps: steps?.nonEmpty()?.components(separatedBy: "\n").compactMap({ $0.nonEmpty() }) ?? [], active: isActive, completion: recipeCompletion)
                 } else {
                     alertUnsuccessful("Please provide a name.")
                 }
             } else {
-                addBlob(content: i, completion: { _ in completion() })
+                addBlob(content: i, completion: { _ in groceryCompletion() })
             }
         } else {
             alertUnsuccessful("Please provide ingredients.")

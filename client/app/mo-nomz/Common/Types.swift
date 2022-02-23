@@ -324,6 +324,7 @@ struct RecipeImport {
     static func parse(_ url: URL) -> RecipeImport? {
         let prefix = "/recipe?recipe_url="
         guard let base = URLComponents(url: url, resolvingAgainstBaseURL: true) else { return nil }
+        guard let host = base.host, Configuration.allDomains.contains(host) else { return nil }
         guard base.fragment?.starts(with: prefix) ?? false else { return nil }
         guard let link = base.fragment?.dropFirst(prefix.count) else { return nil }
         guard let url = URL(string: String(link)), UIApplication.shared.canOpenURL(url) else { return nil }
