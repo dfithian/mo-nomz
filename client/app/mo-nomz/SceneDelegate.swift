@@ -60,8 +60,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     private func universalLink(_ userActivity: NSUserActivity) {
         if userActivity.activityType == NSUserActivityTypeBrowsingWeb, let incomingURL = userActivity.webpageURL {
-            if let link = RecipeImport.parse(incomingURL) {
-                window?.rootViewController?.createOrLoadRecipe(link.url)
+            if let recipeUrl = incomingURL.toRecipeUrl() {
+                window?.rootViewController?.createOrLoadRecipe(recipeUrl)
             } else {
                 Browser.visitUrl(incomingURL)
             }

@@ -23,8 +23,8 @@ class AddLinkController: AddDetailController {
             self.loadRecipe(recipe)
         }
         if let newLink = link.text?.nonEmpty(), var url = URL(string: newLink) {
-            if let import_ = RecipeImport.parse(url) {
-                url = import_.url
+            if let recipeUrl = url.toRecipeUrl() {
+                url = recipeUrl
             }
             if let host = url.host, let recipe = Database.findRecipeByLink(host: host, path: url.path) {
                 loadRecipe(recipe)
