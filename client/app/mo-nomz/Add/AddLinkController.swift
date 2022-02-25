@@ -35,6 +35,9 @@ class AddLinkController: AddDetailController {
                     url = recipeUrl
                 }
                 if let host = url.host, let recipe = Database.findRecipeByLink(host: host, path: url.path) {
+                    if recipe.recipe.active != active {
+                        Database.updateRecipe(id: recipe.id, recipe: ReadableRecipe(name: recipe.recipe.name, link: recipe.recipe.link, active: active, rating: recipe.recipe.rating, notes: recipe.recipe.notes, ingredients: recipe.recipe.ingredients, steps: recipe.recipe.steps))
+                    }
                     loadRecipe(recipe)
                 } else {
                     addLink(link: url.absoluteString, active: active, completion: recipeCompletion)
