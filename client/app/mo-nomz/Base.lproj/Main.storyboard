@@ -331,8 +331,8 @@
                                         </button>
                                     </barButtonItem>
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="Kh4-Dn-3ar"/>
-                                    <barButtonItem style="plain" id="8TV-Zi-ckR">
-                                        <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="iDQ-7n-RoD">
+                                    <barButtonItem enabled="NO" style="plain" id="8TV-Zi-ckR">
+                                        <button key="customView" opaque="NO" alpha="0.5" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="iDQ-7n-RoD">
                                             <rect key="frame" x="127" y="8" width="72" height="28"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="12"/>
@@ -341,7 +341,7 @@
                                                 <imageReference key="image" image="square.and.arrow.up" catalog="system" symbolScale="large"/>
                                             </state>
                                             <connections>
-                                                <action selector="export:" destination="YMV-r0-X4W" eventType="touchUpInside" id="uOP-4r-cvC"/>
+                                                <action selector="didTapExport:" destination="YMV-r0-X4W" eventType="touchUpInside" id="aoP-cv-1dU"/>
                                             </connections>
                                         </button>
                                     </barButtonItem>
@@ -474,7 +474,7 @@
                                                 <imageReference key="image" image="square.and.arrow.up" catalog="system" symbolScale="large"/>
                                             </state>
                                             <connections>
-                                                <action selector="export:" destination="6IF-YC-SCE" eventType="touchUpInside" id="oRX-w2-rIY"/>
+                                                <action selector="didTapExport:" destination="6IF-YC-SCE" eventType="touchUpInside" id="CEs-tI-60o"/>
                                             </connections>
                                         </button>
                                     </barButtonItem>
