@@ -1,6 +1,6 @@
 cabal-version: 3.0
 name:          mo-nomz
-version:       7.1
+version:       7.2
 maintainer:    Dan Fithian
 copyright:     2021 Dan Fithian
 build-type:    Simple
@@ -48,8 +48,6 @@ common options
     , aeson-pretty
     , attoparsec
     , base
-    , blaze-html
-    , blaze-markup
     , bytestring
     , case-insensitive
     , cereal
@@ -72,6 +70,7 @@ common options
     , scalpel
     , servant
     , servant-server
+    , tagged
     , text
     , time
     , transformers

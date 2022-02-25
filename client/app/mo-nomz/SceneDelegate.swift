@@ -10,7 +10,7 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
     
-    private func launch() {
+    private func launch(completion: (() -> Void)?) {
         let launchSb = UIStoryboard(name: "LaunchScreen", bundle: nil)
         let launchVc = launchSb.instantiateInitialViewController()
         let mainSb = UIStoryboard(name: "Main", bundle: nil)
@@ -55,6 +55,17 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
         
         mainVc.pingUser(completion: nil)
+        completion?()
+    }
+    
+    private func universalLink(_ userActivity: NSUserActivity) {
+        if userActivity.activityType == NSUserActivityTypeBrowsingWeb, let incomingURL = userActivity.webpageURL {
+            if let recipeUrl = incomingURL.toRecipeUrl() {
+                window?.rootViewController?.createOrLoadRecipe(recipeUrl)
+            } else {
+                Browser.visitUrl(incomingURL)
+            }
+        }
     }
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
@@ -62,8 +73,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let _ = (scene as? UIWindowScene) else { return }
-        
-        launch()
+
+        if let userActivity = connectionOptions.userActivities.first {
+            launch(completion: { self.universalLink(userActivity) })
+        } else {
+            launch(completion: nil)
+        }
+    }
+    
+    func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
+        universalLink(userActivity)
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

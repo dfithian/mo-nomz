@@ -23,7 +23,7 @@ class RecipeController: UIViewController {
     }
     
     @IBAction func export(_ sender: Any?) {
-        let items: [ReadableGroceryItemWithId] = selectGroceries().filter({ $0.item.active })
+        let items: [ReadableGroceryItemWithId] = Database.selectGroceries().filter({ $0.item.active })
         if !items.isEmpty {
             let exportText: String = items.map({ $0.item.render() }).joined(separator: "\n")
             let vc = UIActivityViewController(activityItems: [exportText], applicationActivities: nil)
@@ -39,7 +39,7 @@ class RecipeController: UIViewController {
         let items : [ReadableRecipeWithId] = (recipeVc?.active ?? []) + (recipeVc?.saved ?? [])
         if !items.isEmpty {
             let handler = { [weak self] (action: UIAlertAction) -> Void in
-                self?.clearAll()
+                Database.clearAll()
                 self?.loadData()
             }
             promptForConfirmation(title: "Clear", message: "Are you sure you want to clear?", handler: handler)
@@ -47,7 +47,7 @@ class RecipeController: UIViewController {
     }
 
     @objc func loadData() {
-        let recipes = selectRecipes()
+        let recipes = Database.selectRecipes()
         recipeVc?.allActive = recipes.filter({ $0.recipe.active })
         recipeVc?.allSaved = recipes.filter({ !$0.recipe.active })
         recipeVc?.onSearch()

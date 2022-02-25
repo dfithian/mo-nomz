@@ -33,7 +33,7 @@ class RecipeDetailController: UIViewController, UITextViewDelegate, UITextFieldD
         nameWrite.resignFirstResponder()
         nameRead.text = name
         nameRead.alpha = 1
-        updateRecipe(id: r.id, recipe: ReadableRecipe(name: name, link: r.recipe.link, active: r.recipe.active, rating: r.recipe.rating, notes: r.recipe.notes, ingredients: r.recipe.ingredients, steps: r.recipe.steps))
+        Database.updateRecipe(id: r.id, recipe: ReadableRecipe(name: name, link: r.recipe.link, active: r.recipe.active, rating: r.recipe.rating, notes: r.recipe.notes, ingredients: r.recipe.ingredients, steps: r.recipe.steps))
         onChange?()
     }
     
@@ -81,7 +81,7 @@ class RecipeDetailController: UIViewController, UITextViewDelegate, UITextFieldD
         }
         if which != r.recipe.rating && which > 0 {
             let newRecipe = ReadableRecipe(name: r.recipe.name, link: r.recipe.link, active: r.recipe.active, rating: which, notes: r.recipe.notes, ingredients: r.recipe.ingredients, steps: r.recipe.steps)
-            updateRecipe(id: r.id, recipe: newRecipe)
+            Database.updateRecipe(id: r.id, recipe: newRecipe)
             loadData()
             onChange?()
             DispatchQueue.main.async {
@@ -110,34 +110,26 @@ class RecipeDetailController: UIViewController, UITextViewDelegate, UITextFieldD
         didTapStar(which: 5)
     }
     
-    private func visitLink(_ link: String) {
-        let url = URL(string: link)!
-        if #available(iOS 10.0, *) {
-            UIApplication.shared.open(url, options: [:], completionHandler: nil)
-        } else {
-            UIApplication.shared.openURL(url)
-        }
-    }
-    
-    private func exportLink(_ link: String) {
-        let vc = UIActivityViewController(activityItems: [link], applicationActivities: nil)
-        present(vc, animated: true, completion: nil)
-    }
-    
-    private func exportIngredients(_ ingredients: [ReadableIngredient]) {
-        let exportText: String = ingredients.map({ $0.render() }).joined(separator: "\n")
-        let vc = UIActivityViewController(activityItems: [exportText], applicationActivities: nil)
+    private func export(_ str: String) {
+        let vc = UIActivityViewController(activityItems: [str], applicationActivities: nil)
         present(vc, animated: true, completion: nil)
     }
     
     private func setupOptions() {
         var actions = [UIAction]()
-        if let ingredients = recipe?.recipe.ingredients, !ingredients.isEmpty {
-            actions.append(UIAction(title: "Export Ingredients", image: UIImage(systemName: "square.and.arrow.up"), handler: { _ in self.exportIngredients(ingredients.map({ $0.value })) }))
+        let nomzPrefix = [
+            "Download Nomz to easily store, share, and shop for recipes!",
+            Configuration.baseURL,
+            ""
+        ].joined(separator: "\n")
+        if let link = recipe?.recipe.link, let encodedLink = link.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) {
+            let linkUrl = Configuration.baseURL + "#/recipe?recipe_url=" + encodedLink
+            actions.append(UIAction(title: "Open in Browser", image: UIImage(systemName: "safari"), handler: { _ in Browser.visitLink(link) }))
+            actions.append(UIAction(title: "Share Link", image: UIImage(systemName: "square.and.arrow.up"), handler: { _ in self.export(linkUrl) }))
         }
-        if let link = recipe?.recipe.link {
-            actions.append(UIAction(title: "Export Link", image: UIImage(systemName: "square.and.arrow.up"), handler: { _ in self.exportLink(link) }))
-            actions.append(UIAction(title: "Open in Browser", image: UIImage(systemName: "safari"), handler: { _ in self.visitLink(link) }))
+        if let r = recipe?.recipe {
+            let recipeText = nomzPrefix + "\n" + r.render()
+            actions.append(UIAction(title: "Share Recipe", image: UIImage(systemName: "list.dash"), handler: { _ in self.export(recipeText) }))
         }
         if actions.isEmpty {
             options.removeFromSuperview()
@@ -164,7 +156,7 @@ class RecipeDetailController: UIViewController, UITextViewDelegate, UITextFieldD
     
     private func loadData() {
         guard let r = recipe else { return }
-        guard let newRecipe = getRecipe(id: r.id) else { return }
+        guard let newRecipe = Database.getRecipe(id: r.id) else { return }
         recipe = newRecipe
         detailVc?.recipe = newRecipe
         detailVc?.steps = newRecipe.recipe.steps.map({ StepWithId(id: $0, step: $1) }).sorted(by: { ($0.step.order, $0.step.step) < ($1.step.order, $1.step.step) })

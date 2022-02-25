@@ -6,27 +6,33 @@ const Title = ({ text }) => {
   )
 }
 
-const H1 = ({ text }) => {
+const H1 = ({ children }) => {
   return (
-    <h1 className="subtitle is-2">{text}</h1>
+    <h1 className="subtitle is-2">{children}</h1>
   )
 }
 
-const H2 = ({ text }) => {
+const H2 = ({ children }) => {
   return (
-    <h2 className="subtitle is-3">{text}</h2>
+    <h2 className="subtitle is-3">{children}</h2>
   )
 }
 
-const H3 = ({ text }) => {
+const H3 = ({ children }) => {
   return (
-    <h3 className="subtitle is-4">{text}</h3>
+    <h3 className="subtitle is-4">{children}</h3>
   )
 }
 
-const H4 = ({ text }) => {
+const H4 = ({ children }) => {
   return (
-    <h4 className="subtitle is-5">{text}</h4>
+    <h4 className="subtitle is-5">{children}</h4>
+  )
+}
+
+const H5 = ({ children }) => {
+  return (
+    <h4 className="subtitle is-6">{children}</h4>
   )
 }
 
@@ -60,6 +66,7 @@ export {
   H2,
   H3,
   H4,
+  H5,
   PlainImg,
   ImgLink,
   Centered,

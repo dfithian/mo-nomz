@@ -9,7 +9,7 @@ const Layout = ({ pageTitle, children }) => {
       <title>{pageTitle}</title>
       <Row>
         <div className="column is-2" />
-        <nav class="navbar" role="navigation" aria-label="main navigation">
+        <nav className="navbar" role="navigation" aria-label="main navigation">
           <div className="navbar-brand">
             <div className="navbar-item">
               <div className="buttons">
@@ -18,24 +18,24 @@ const Layout = ({ pageTitle, children }) => {
                 </a>
               </div>
             </div>
-            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" onClick={() => setNavExpanded(!navExpanded)}>
+            <a role="button" className="navbar-burger" aria-label="menu" aria-expanded="false" onClick={() => setNavExpanded(!navExpanded)}>
               <span aria-hidden="true"></span>
               <span aria-hidden="true"></span>
               <span aria-hidden="true"></span>
             </a>
           </div>
-          <div class={navExpanded ? "navbar-menu is-active" : "navbar-menu"}>
-            <div class="navbar-start">
-              <a class="navbar-item" href="/support">
+          <div className={navExpanded ? "navbar-menu is-active" : "navbar-menu"}>
+            <div className="navbar-start">
+              <a className="navbar-item" href="#/support">
                 Support
               </a>
-              <a class="navbar-item" href="/privacy-policy">
+              <a className="navbar-item" href="#/privacy-policy">
                 Privacy Policy
               </a>
-              <a class="navbar-item" href="https://dfithian.github.io/2021/06/08/nomz-meal-planner.html">
+              <a className="navbar-item" href="https://dfithian.github.io/2021/06/08/nomz-meal-planner.html">
                 Blog
               </a>
-              <a class="navbar-item" href="https://venmo.com/code?user_id=1305125788319744156">
+              <a className="navbar-item" href="https://venmo.com/code?user_id=1305125788319744156">
                 <span role="img" aria-label="Heart" style={{color: "#183672"}}>❤</span> Donate
               </a>
             </div>

@@ -6,6 +6,7 @@ import Data.Aeson.TH (deriveJSON)
 import Data.Map.Strict (Map)
 import Data.Set (Set)
 import Data.Text (Text)
+import Data.Time.Clock (UTCTime)
 
 import Auth (Authorization)
 import Json (jsonOptions)
@@ -15,7 +16,17 @@ import Types
   )
 
 data GetHealthResponse = GetHealthResponse
-  { getHealthResponseStatus :: Text
+  { getHealthResponseStatus           :: Text
+  , getHealthResponseVersion          :: Text
+  , getHealthResponseStarted          :: UTCTime
+  , getHealthResponseFetched          :: UTCTime
+  , getHealthResponseUserDay          :: Int
+  , getHealthResponseUserWeek         :: Int
+  , getHealthResponseUserMonth        :: Int
+  , getHealthResponseUserYear         :: Int
+  , getHealthResponseCacheSize        :: Int
+  , getHealthResponseCacheMostRecent  :: Maybe UTCTime
+  , getHealthResponseCacheLeastRecent :: Maybe UTCTime
   }
   deriving (Eq, Ord, Show)
 

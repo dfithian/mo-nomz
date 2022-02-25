@@ -1,8 +1,8 @@
-import * as React from "react"
-import Layout from "../components/layout"
-import { ContentRow } from "../components/row"
+import * as React from 'react'
+import Layout from '../components/layout'
+import { ContentRow } from '../components/row'
 
-const Support = () => {
+const SupportPage = () => {
   return (
     <Layout pageTitle="Support">
       <ContentRow>
@@ -16,4 +16,4 @@ const Support = () => {
   )
 }
 
-export default Support
+export default SupportPage

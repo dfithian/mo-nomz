@@ -6,12 +6,17 @@ import Control.Monad.Logger (defaultOutput, runLoggingT)
 import Control.Monad.Trans.Reader (runReaderT)
 import Data.Default (def)
 import Data.Pool (Pool, createPool)
+import Data.Tagged (Tagged(..))
 import Data.Time.Clock (getCurrentTime)
 import Data.Yaml.Config (loadYamlSettingsArgs, useEnv)
 import Database.PostgreSQL.Simple (Connection, close, connectPostgreSQL)
 import Database.PostgreSQL.Simple.Migration
   ( MigrationCommand(..), MigrationResult(..), runMigrations
   )
+import Network.HTTP.Types
+  ( hContentEncoding, hContentType, hLocation, ok200, temporaryRedirect307, unauthorized401
+  )
+import Network.Wai (pathInfo, responseFile, responseLBS)
 import Network.Wai.Handler.Warp (Settings, defaultSettings, runSettings, setPort)
 import Network.Wai.Middleware.RequestLogger (OutputFormat(Detailed), mkRequestLogger, outputFormat)
 import Servant.API ((:<|>)(..))
@@ -19,7 +24,7 @@ import Servant.Server (ServerT, hoistServer, serve)
 import Servant.Server.StaticFiles (serveDirectoryWith)
 import System.IO (stdout)
 import WaiAppStatic.Storage.Filesystem (defaultFileServerSettings)
-import WaiAppStatic.Types (ssListing)
+import WaiAppStatic.Types (ss404Handler, ssIndices, ssListing, unsafeToPiece)
 import qualified Data.Text.Encoding as Text
 import qualified Network.Wai.Middleware.EnforceHTTPS as EnforceHTTPS
 
@@ -27,18 +32,18 @@ import Foundation (App(..), LogFunc, NomzServer, createManager, runNomzServer, w
 import Scrape (isInvalidScraper)
 import Servant (NomzApi, nomzApi, wholeApi)
 import Server
-  ( deleteGroceryItem, deleteRecipes, getExport, getGroceryItems, getHealth, getMetrics, getRecipe
-  , getRecipes, getRecipesV1, postClearGroceryItems, postCreateUser, postGroceryImportBlob
-  , postMergeGroceryItem, postParseBlob, postParseLink, postPingUser, postRecipeImportLink
-  , postUpdateGroceryItem, postUpdateRecipe, postUpdateRecipeIngredients
+  ( deleteGroceryItem, deleteRecipes, getExport, getGroceryItems, getHealth, getRecipe, getRecipes
+  , getRecipesV1, postClearGroceryItems, postCreateUser, postGroceryImportBlob, postMergeGroceryItem
+  , postParseBlob, postParseLink, postPingUser, postRecipeImportLink, postUpdateGroceryItem
+  , postUpdateRecipe, postUpdateRecipeIngredients
   )
 import Settings (AppSettings(..), DatabaseSettings(..), staticSettingsValue)
+import Utils (headMay)
 import qualified Database
 
 nomzServer :: ServerT NomzApi NomzServer
 nomzServer =
-  getMetrics
-    :<|> getHealth
+  getHealth
     :<|> postCreateUser
     :<|> postPingUser
     :<|> getGroceryItems
@@ -91,14 +96,28 @@ appMain :: IO ()
 appMain = do
   settings <- loadYamlSettingsArgs [staticSettingsValue] useEnv
   app <- makeFoundation settings
-  let staticFileSettings = (defaultFileServerSettings $ appStaticDir $ appSettings app)
-        { ssListing = Nothing
+  let staticDir = appStaticDir $ appSettings app
+      staticFileSettings = (defaultFileServerSettings staticDir)
+        { ss404Handler = Just $ \req respond ->
+            respond $ case headMay (pathInfo req) == Just "api" of
+              True -> responseLBS unauthorized401 [] "Unauthorized"
+              False -> responseLBS temporaryRedirect307 [(hLocation, "/")] ""
+        , ssListing = Nothing
+        , ssIndices = fmap unsafeToPiece ["index.html", "index.htm"]
         }
       ssl = case appForceSsl settings of
         True -> EnforceHTTPS.withResolver EnforceHTTPS.xForwardedProto
         False -> id
       appl = serve wholeApi $
         hoistServer nomzApi (runNomzServer app) nomzServer
+          :<|> Tagged ( \_req respond ->
+            respond $
+              responseFile
+                ok200
+                [(hContentType, "application/json; charset=utf8"), (hContentEncoding, "gzip")]
+                (staticDir <> "/apple-app-site-association")
+                Nothing
+            )
           :<|> serveDirectoryWith staticFileSettings
   requestLogger <- mkRequestLogger def { outputFormat = Detailed False }
   runSettings (warpSettings app) $ requestLogger $ ssl appl

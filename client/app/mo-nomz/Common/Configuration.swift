@@ -25,12 +25,12 @@ class Configuration {
         #if DEBUG
         return "http://mo-nomz-dev.herokuapp.com/"
         #else
-        return "https://mo-nomz.herokuapp.com/"
+        return "https://app.mo-nomz.com/"
         #endif
     }
     
     static var helpUrl: String {
-        return "https://mo-nomz.herokuapp.com/#how-it-works"
+        return baseURL
     }
     
     static var accountKey: String {
@@ -59,5 +59,13 @@ class Configuration {
     
     static var venmoUrl: String {
         return "https://venmo.com/code?user_id=1305125788319744156"
+    }
+    
+    static var allDomains: [String] {
+        return [
+            "app.mo-nomz.com",
+            "mo-nomz.herokuapp.com",
+            "mo-nomz-dev.herokuapp.com"
+        ]
     }
 }

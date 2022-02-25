@@ -5,7 +5,7 @@
   "description": "Nomz Wrapper",
   "author": "Dan Fithian",
   "scripts": {
-    "postinstall": "yarn --cwd client/web --production=false install",
+    "postinstall": "yarn --cwd client/web install",
     "build": "yarn --cwd client/web build"
   }
 }
