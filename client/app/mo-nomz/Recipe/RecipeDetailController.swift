@@ -117,18 +117,13 @@ class RecipeDetailController: UIViewController, UITextViewDelegate, UITextFieldD
     
     private func setupOptions() {
         var actions = [UIAction]()
-        let nomzPrefix = [
-            "Download Nomz to easily store, share, and shop for recipes!",
-            Configuration.baseURL,
-            ""
-        ].joined(separator: "\n")
         if let link = recipe?.recipe.link, let encodedLink = link.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) {
             let linkUrl = Configuration.baseURL + "#/recipe?recipe_url=" + encodedLink
             actions.append(UIAction(title: "Open in Browser", image: UIImage(systemName: "safari"), handler: { _ in Browser.visitLink(link) }))
             actions.append(UIAction(title: "Share Link", image: UIImage(systemName: "square.and.arrow.up"), handler: { _ in self.export(linkUrl) }))
         }
         if let r = recipe?.recipe {
-            let recipeText = nomzPrefix + "\n" + r.render()
+            let recipeText = Configuration.nomzPrefix + "\n" + r.render()
             actions.append(UIAction(title: "Share Recipe", image: UIImage(systemName: "list.dash"), handler: { _ in self.export(recipeText) }))
         }
         if actions.isEmpty {

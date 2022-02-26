@@ -25,14 +25,8 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Add recipe or groceries" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NCa-zv-dKO">
-                                <rect key="frame" x="10" y="60" width="394" height="21"/>
-                                <fontDescription key="fontDescription" type="italicSystem" pointSize="17"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9fn-PI-kfi">
-                                <rect key="frame" x="0.0" y="172" width="414" height="587"/>
+                                <rect key="frame" x="0.0" y="60" width="414" height="699"/>
                                 <connections>
                                     <segue destination="YcL-PR-inj" kind="embed" identifier="embedManual" id="iKb-E5-jyB"/>
                                 </connections>
@@ -56,17 +50,6 @@
                                     </barButtonItem>
                                 </items>
                             </toolbar>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" textAlignment="natural" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Z5f-Iy-ACa">
-                                <rect key="frame" x="20" y="89" width="384" height="75"/>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="75" id="wQW-Sz-QRp"/>
-                                </constraints>
-                                <string key="text">Add ingredients. Nomz will add the ingredients to your grocery list. If these are ingredients from a recipe, check "Save as recipe".</string>
-                                <color key="textColor" systemColor="secondaryLabelColor"/>
-                                <fontDescription key="fontDescription" type="italicSystem" pointSize="14"/>
-                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
-                            </textView>
                             <button opaque="NO" alpha="0.0" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Iwa-dJ-Qkr">
                                 <rect key="frame" x="10" y="20" width="34" height="30"/>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
@@ -79,15 +62,10 @@
                         <viewLayoutGuide key="safeArea" id="oE9-pG-dpM"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="NCa-zv-dKO" firstAttribute="leading" secondItem="oE9-pG-dpM" secondAttribute="leading" constant="10" id="0If-1G-9RV"/>
-                            <constraint firstItem="Z5f-Iy-ACa" firstAttribute="top" secondItem="NCa-zv-dKO" secondAttribute="bottom" constant="8" symbolic="YES" id="7bv-5W-D2m"/>
-                            <constraint firstItem="oE9-pG-dpM" firstAttribute="trailing" secondItem="NCa-zv-dKO" secondAttribute="trailing" constant="10" id="8Gz-CL-uHV"/>
+                            <constraint firstItem="9fn-PI-kfi" firstAttribute="top" secondItem="SD0-qT-rTm" secondAttribute="bottom" constant="8" symbolic="YES" id="1Vu-rm-vj1"/>
                             <constraint firstItem="Tre-FV-MCp" firstAttribute="top" secondItem="9fn-PI-kfi" secondAttribute="bottom" id="GtC-Dg-KWK"/>
-                            <constraint firstItem="NCa-zv-dKO" firstAttribute="top" secondItem="SD0-qT-rTm" secondAttribute="bottom" constant="8" symbolic="YES" id="LMc-RS-XeW"/>
                             <constraint firstItem="Tre-FV-MCp" firstAttribute="leading" secondItem="oE9-pG-dpM" secondAttribute="leading" id="Mag-u4-Jrf"/>
                             <constraint firstItem="Tre-FV-MCp" firstAttribute="bottom" secondItem="oE9-pG-dpM" secondAttribute="bottom" id="Oyj-c0-Tga"/>
-                            <constraint firstItem="Z5f-Iy-ACa" firstAttribute="leading" secondItem="oE9-pG-dpM" secondAttribute="leading" constant="20" id="VnN-So-NNt"/>
-                            <constraint firstItem="oE9-pG-dpM" firstAttribute="trailing" secondItem="Z5f-Iy-ACa" secondAttribute="trailing" constant="10" id="WUf-fN-08b"/>
                             <constraint firstItem="SD0-qT-rTm" firstAttribute="centerX" secondItem="B7W-Fp-HuN" secondAttribute="centerX" id="d2D-se-ick"/>
                             <constraint firstItem="Iwa-dJ-Qkr" firstAttribute="top" secondItem="oE9-pG-dpM" secondAttribute="top" constant="20" id="d2s-OD-97A"/>
                             <constraint firstItem="9fn-PI-kfi" firstAttribute="leading" secondItem="oE9-pG-dpM" secondAttribute="leading" id="eBE-Ey-whr"/>
@@ -95,13 +73,13 @@
                             <constraint firstItem="9fn-PI-kfi" firstAttribute="trailing" secondItem="oE9-pG-dpM" secondAttribute="trailing" id="n5Z-2w-fyy"/>
                             <constraint firstItem="SD0-qT-rTm" firstAttribute="top" secondItem="oE9-pG-dpM" secondAttribute="top" constant="20" id="o1l-qN-hgx"/>
                             <constraint firstItem="Tre-FV-MCp" firstAttribute="trailing" secondItem="oE9-pG-dpM" secondAttribute="trailing" id="pDZ-31-MDn"/>
-                            <constraint firstItem="9fn-PI-kfi" firstAttribute="top" secondItem="Z5f-Iy-ACa" secondAttribute="bottom" constant="8" symbolic="YES" id="pXL-Iq-7x0"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="LoS-Q6-t25"/>
                     <connections>
                         <outlet property="back" destination="Iwa-dJ-Qkr" id="4f1-bc-bpD"/>
                         <outlet property="switcher" destination="Lco-xu-ph6" id="bSb-le-Q4a"/>
+                        <outlet property="toolbarConstraint" destination="Oyj-c0-Tga" id="tvv-cb-s4N"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="NjI-HE-Yxz" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -204,6 +182,7 @@
                         <outlet property="keyboardView" destination="Mxj-HG-raG" id="1ZA-MS-0HT"/>
                         <outlet property="link" destination="Mxj-HG-raG" id="ZMX-8V-kG6"/>
                         <outlet property="switcher" destination="yut-7d-zab" id="6F6-46-lB1"/>
+                        <outlet property="toolbarConstraint" destination="dRj-GJ-7LD" id="duk-jd-zRa"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="kbf-00-Ci5" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -405,6 +384,7 @@
                         <outlet property="image" destination="ITN-ec-POO" id="QSG-Zw-857"/>
                         <outlet property="keyboardView" destination="ja8-9m-ECK" id="ESe-aI-y6a"/>
                         <outlet property="text" destination="ja8-9m-ECK" id="VAh-5c-Nyf"/>
+                        <outlet property="toolbarConstraint" destination="XHP-DV-ZgJ" id="K43-pd-wBD"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dfW-gj-Eh8" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -506,7 +486,7 @@
             <objects>
                 <tableViewController id="YcL-PR-inj" customClass="AddManualTableController" customModule="mo_nomz" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="ab6-rj-ZZM">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="587"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="699"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <prototypes>
@@ -622,6 +602,42 @@
                                 <connections>
                                     <outlet property="text_" destination="ueK-af-XMq" id="ZEl-rf-wj1"/>
                                 </connections>
+                            </tableViewCell>
+                            <tableViewCell clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="header" rowHeight="120" id="dNq-eZ-kA2" customClass="OneText" customModule="mo_nomz" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="361.5" width="414" height="120"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="dNq-eZ-kA2" id="Cnk-Nw-4V6">
+                                    <rect key="frame" x="0.0" y="0.0" width="414" height="120"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Add recipe or groceries" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NCa-zv-dKO">
+                                            <rect key="frame" x="10" y="11" width="394" height="26"/>
+                                            <fontDescription key="fontDescription" type="italicSystem" pointSize="17"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" textAlignment="natural" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Z5f-Iy-ACa">
+                                            <rect key="frame" x="20" y="45" width="384" height="75"/>
+                                            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="75" id="wQW-Sz-QRp"/>
+                                            </constraints>
+                                            <string key="text">Add ingredients. Nomz will add the ingredients to your grocery list. If these are ingredients from a recipe, check "Save as recipe".</string>
+                                            <color key="textColor" systemColor="secondaryLabelColor"/>
+                                            <fontDescription key="fontDescription" type="italicSystem" pointSize="14"/>
+                                            <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                        </textView>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstItem="NCa-zv-dKO" firstAttribute="trailing" secondItem="Cnk-Nw-4V6" secondAttribute="trailingMargin" constant="10" id="DeI-lG-raZ"/>
+                                        <constraint firstItem="Z5f-Iy-ACa" firstAttribute="leading" secondItem="Cnk-Nw-4V6" secondAttribute="leading" constant="20" id="FMS-Pu-3Tg"/>
+                                        <constraint firstItem="NCa-zv-dKO" firstAttribute="leading" secondItem="Cnk-Nw-4V6" secondAttribute="leading" constant="10" id="cl5-i0-IAd"/>
+                                        <constraint firstAttribute="trailing" secondItem="Z5f-Iy-ACa" secondAttribute="trailing" constant="10" id="cut-29-DbL"/>
+                                        <constraint firstAttribute="bottom" secondItem="Z5f-Iy-ACa" secondAttribute="bottom" id="gHv-pl-URd"/>
+                                        <constraint firstItem="Z5f-Iy-ACa" firstAttribute="top" secondItem="NCa-zv-dKO" secondAttribute="bottom" constant="8" symbolic="YES" id="hdC-76-6LX"/>
+                                        <constraint firstItem="NCa-zv-dKO" firstAttribute="top" secondItem="Cnk-Nw-4V6" secondAttribute="topMargin" id="vmT-Cg-IE5"/>
+                                    </constraints>
+                                </tableViewCellContentView>
                             </tableViewCell>
                         </prototypes>
                         <connections>

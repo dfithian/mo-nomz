@@ -18,15 +18,6 @@ class GroceryController: UIViewController {
 
     var groceryVc: GroceryListController? = nil
     
-    @IBAction func export(_ sender: Any?) {
-        let items: [ReadableGroceryItemWithId] = Database.selectGroceries().filter({ $0.item.active })
-        if !items.isEmpty {
-            let exportText: String = items.map({ $0.item.render() }).joined(separator: "\n")
-            let vc = UIActivityViewController(activityItems: [exportText], applicationActivities: nil)
-            present(vc, animated: true, completion: nil)
-        }
-    }
-    
     @IBAction func help(_ sender: Any?) {
         needHelp()
     }
