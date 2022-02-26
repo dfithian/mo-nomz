@@ -8,6 +8,8 @@
 import UIKit
 
 extension UITextField {
+    static let TOOLBAR_HEIGHT: CGFloat = 50
+
     @IBInspectable var doneAccessory: Bool {
         get { return self.doneAccessory }
         set (hasDone) {
@@ -18,7 +20,7 @@ extension UITextField {
     }
 
     func addDoneButtonOnKeyboard() {
-        let doneToolbar: UIToolbar = UIToolbar(frame: CGRect.init(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 50))
+        let doneToolbar: UIToolbar = UIToolbar(frame: CGRect.init(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UITextField.TOOLBAR_HEIGHT))
         doneToolbar.barStyle = .default
         
         let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
@@ -36,6 +38,8 @@ extension UITextField {
 }
 
 extension UITextView {
+    static let TOOLBAR_HEIGHT: CGFloat = 50
+
     @IBInspectable var doneAccessory: Bool {
         get { return self.doneAccessory }
         set (hasDone) {
@@ -46,7 +50,7 @@ extension UITextView {
     }
 
     func addDoneButtonOnKeyboard() {
-        let doneToolbar: UIToolbar = UIToolbar(frame: CGRect.init(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 50))
+        let doneToolbar: UIToolbar = UIToolbar(frame: CGRect.init(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UITextView.TOOLBAR_HEIGHT))
         doneToolbar.barStyle = .default
         
         let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
@@ -64,28 +68,22 @@ extension UITextView {
 }
 
 extension UIViewController {
-    static let margin: CGFloat = 10
+    static let MARGIN: CGFloat = 10
 
-    func keyboardWillShowInternal(subview: UIView, notification: NSNotification) -> CGFloat? {
-        guard let keyboard = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return nil }
-        if self.view.frame.origin.y == 0 {
-            let height = self.view.frame.height
-            self.view.frame.origin.y -= (subview.frame.origin.y - UIViewController.margin)
-            self.view.frame.size.height -= (keyboard.cgRectValue.height - subview.frame.origin.y + UIViewController.margin)
-            return height
+    func keyboardWillShowInternal(notification: NSNotification, keyboardView: UIView?, toolbarConstraint: NSLayoutConstraint?) {
+        guard let keyboard = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
+        if let subview = keyboardView {
+            view.frame.origin.y -= subview.frame.origin.y - UIViewController.MARGIN
+            toolbarConstraint?.constant = subview.frame.origin.y - UIViewController.MARGIN - keyboard.cgRectValue.size.height
+        } else {
+            toolbarConstraint?.constant = UITextField.TOOLBAR_HEIGHT - 2 * UIViewController.MARGIN - keyboard.cgRectValue.size.height
         }
-        return nil
+        view.layoutIfNeeded()
     }
     
-    func keyboardWillHideInternal(heightMay: CGFloat?, notification: NSNotification) {
-        guard let keyboard = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
-        if self.view.frame.origin.y != 0 {
-            if let height = heightMay {
-                self.view.frame.size.height = height
-            } else {
-                self.view.frame.size.height += (keyboard.cgRectValue.height + self.view.frame.origin.y - UIViewController.margin)
-            }
-            self.view.frame.origin.y = 0
-        }
+    func keyboardWillHideInternal(notification: NSNotification, toolbarConstraint: NSLayoutConstraint?) {
+        view.frame.origin.y = 0
+        toolbarConstraint?.constant = 0
+        view.layoutIfNeeded()
     }
 }

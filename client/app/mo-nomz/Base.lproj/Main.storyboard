@@ -837,6 +837,7 @@
                         <outlet property="newInfo" destination="Nfg-V2-lUP" id="lke-VY-Yz7"/>
                         <outlet property="quantity" destination="134-Vg-n19" id="7Ef-15-lxw"/>
                         <outlet property="synopsis" destination="SiK-UI-rQZ" id="Rph-Wf-yNr"/>
+                        <outlet property="toolbarConstraint" destination="KIp-F7-e0R" id="y2m-DA-Aon"/>
                         <outlet property="unit" destination="j9Q-Bq-gEp" id="5Ta-uC-DeS"/>
                     </connections>
                 </viewController>
@@ -1580,6 +1581,7 @@
                         <outlet property="newInfo" destination="7Vc-TT-rhS" id="2Z8-cJ-3RA"/>
                         <outlet property="quantity" destination="4kb-Cq-hr5" id="FIs-AT-bjr"/>
                         <outlet property="synopsis" destination="Ggq-Ei-ihB" id="WWK-QD-p4T"/>
+                        <outlet property="toolbarConstraint" destination="eHr-GQ-hOK" id="urb-3y-Akj"/>
                         <outlet property="unit" destination="ir7-uu-FZT" id="edg-Y8-Hzb"/>
                     </connections>
                 </viewController>

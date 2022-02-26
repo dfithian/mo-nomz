@@ -9,17 +9,14 @@ import UIKit
 
 class SimpleController: UIViewController {
     @IBOutlet weak var keyboardView: UIView!
-
-    var beforeHeight: CGFloat? = nil
+    @IBOutlet weak var toolbarConstraint: NSLayoutConstraint!
     
     @objc func keyboardWillShow(notification: NSNotification) {
-        if let subview = keyboardView {
-            beforeHeight = keyboardWillShowInternal(subview: subview, notification: notification)
-        }
+        keyboardWillShowInternal(notification: notification, keyboardView: keyboardView, toolbarConstraint: toolbarConstraint)
     }
     
     @objc func keyboardWillHide(notification: NSNotification) {
-        keyboardWillHideInternal(heightMay: beforeHeight, notification: notification)
+        keyboardWillHideInternal(notification: notification, toolbarConstraint: toolbarConstraint)
     }
     
     override func viewWillAppear(_ animated: Bool) {
