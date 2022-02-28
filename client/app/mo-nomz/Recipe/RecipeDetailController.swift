@@ -120,11 +120,11 @@ class RecipeDetailController: UIViewController, UITextViewDelegate, UITextFieldD
         if let link = recipe?.recipe.link, let encodedLink = link.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) {
             let linkUrl = Configuration.baseURL + "#/recipe?recipe_url=" + encodedLink
             actions.append(UIAction(title: "Open in Browser", image: UIImage(systemName: "safari"), handler: { _ in Browser.visitLink(link) }))
-            actions.append(UIAction(title: "Share Link", image: UIImage(systemName: "square.and.arrow.up"), handler: { _ in self.export(linkUrl) }))
+            actions.append(UIAction(title: "Share Recipe Link", image: UIImage(systemName: "square.and.arrow.up"), handler: { _ in self.export(linkUrl) }))
         }
         if let r = recipe?.recipe {
             let recipeText = Configuration.nomzPrefix + "\n" + r.render()
-            actions.append(UIAction(title: "Share Recipe", image: UIImage(systemName: "list.dash"), handler: { _ in self.export(recipeText) }))
+            actions.append(UIAction(title: "Share Recipe Steps", image: UIImage(systemName: "list.dash"), handler: { _ in self.export(recipeText) }))
         }
         if actions.isEmpty {
             options.removeFromSuperview()

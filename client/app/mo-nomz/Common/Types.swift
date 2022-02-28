@@ -168,7 +168,12 @@ struct ReadableRecipe: Codable {
     func render() -> String {
         var lines = [String]()
         if let l = link?.nonEmpty() {
-            lines.append(name + " - " + l)
+            if let encoded = l.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) {
+                let u = Configuration.baseURL + "#/recipe?recipe_url=" + encoded
+                lines.append(name + " - " + u)
+            } else {
+                lines.append(name + " - " + l)
+            }
         } else {
             lines.append(name)
         }
