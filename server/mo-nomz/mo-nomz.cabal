@@ -1,6 +1,6 @@
 cabal-version: 3.0
 name:          mo-nomz
-version:       7.2
+version:       7.3
 maintainer:    Dan Fithian
 copyright:     2021 Dan Fithian
 build-type:    Simple
