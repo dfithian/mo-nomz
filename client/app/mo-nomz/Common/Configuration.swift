@@ -68,12 +68,4 @@ class Configuration {
             "mo-nomz-dev.herokuapp.com"
         ]
     }
-    
-    static var nomzPrefix: String {
-        return [
-            "Download Nomz to easily store, share, and shop for recipes!",
-            Configuration.baseURL,
-            ""
-        ].joined(separator: "\n")
-    }
 }

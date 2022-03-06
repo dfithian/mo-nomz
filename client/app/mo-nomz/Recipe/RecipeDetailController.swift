@@ -123,7 +123,7 @@ class RecipeDetailController: UIViewController, UITextViewDelegate, UITextFieldD
             actions.append(UIAction(title: "Share Recipe", image: UIImage(systemName: "square.and.arrow.up"), handler: { _ in self.export(linkUrl) }))
         }
         if let r = recipe?.recipe {
-            let ingredientText = Configuration.nomzPrefix + "\n" + "Ingredients for " + r.name + ":" + "\n" + r.ingredients.map({ $0.value.render() }).joined(separator: "\n")
+            let ingredientText = r.ingredients.map({ $0.value.render() }).joined(separator: "\n")
             actions.append(UIAction(title: "Share Ingredients", image: UIImage(systemName: "list.dash"), handler: { _ in self.export(ingredientText) }))
         }
         if actions.isEmpty {
