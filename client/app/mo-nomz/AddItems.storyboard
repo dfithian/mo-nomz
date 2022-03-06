@@ -179,7 +179,6 @@
                     <navigationItem key="navigationItem" id="uJU-cu-X0S"/>
                     <connections>
                         <outlet property="checkbox" destination="uxF-fz-ow1" id="VSY-3x-0rA"/>
-                        <outlet property="keyboardView" destination="Mxj-HG-raG" id="1ZA-MS-0HT"/>
                         <outlet property="link" destination="Mxj-HG-raG" id="ZMX-8V-kG6"/>
                         <outlet property="switcher" destination="yut-7d-zab" id="6F6-46-lB1"/>
                         <outlet property="toolbarConstraint" destination="dRj-GJ-7LD" id="duk-jd-zRa"/>

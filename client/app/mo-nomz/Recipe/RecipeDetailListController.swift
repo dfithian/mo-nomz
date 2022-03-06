@@ -385,6 +385,8 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
         tableView.dragDelegate = self
         tableView.dropDelegate = self
         tableView.dragInteractionEnabled = true
+
+        // This is here because we allow drag and drop, but only merge, so the cell sizes are not recalculated
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 600
     }

@@ -164,30 +164,6 @@ struct ReadableRecipe: Codable {
     let notes: String
     let ingredients: [UUID:ReadableIngredient]
     let steps: [UUID:Step]
-    
-    func render() -> String {
-        var lines = [String]()
-        if let l = link?.nonEmpty() {
-            if let encoded = l.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) {
-                let u = Configuration.baseURL + "#/recipe?recipe_url=" + encoded
-                lines.append(name + " - " + u)
-            } else {
-                lines.append(name + " - " + l)
-            }
-        } else {
-            lines.append(name)
-        }
-        if !ingredients.isEmpty {
-            lines.append("")
-            lines.append(contentsOf: ingredients.map({ $0.value.render() }))
-        }
-        if !steps.isEmpty {
-            let s = steps.map({ $0.value }).sorted(by: { $0.order < $1.order }).map({ $0.step })
-            lines.append("")
-            lines.append(contentsOf: zip(1..., s).map({ String($0.0) + ". " + $0.1 }))
-        }
-        return lines.joined(separator: "\n")
-    }
 }
 
 struct ReadableRecipeWithId: Codable, Indexable {
