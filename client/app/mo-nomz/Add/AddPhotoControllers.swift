@@ -42,14 +42,11 @@ class AddPhotoController: AddDetailController {
             vc.addVc = self
         }
         if let vc = segue.destination as? AddManualController, segue.identifier == "pushManualRecipe" {
-            vc.change = .photoReview
-            vc.isActive = true
-            vc.ingredients = scrape.ingredients.map({ $0.value }).joined(separator: "\n")
-            if scrape.steps.isEmpty {
-                vc.isRecipe = false
+            let ingredients = scrape.ingredients.map({ $0.value }).joined(separator: "\n")
+            if let steps = scrape.steps.map({ $0.value }).joined(separator: "\n").nonEmpty() {
+                vc.change = .photoReview(ingredients, steps)
             } else {
-                vc.isRecipe = true
-                vc.steps = scrape.steps.map({ $0.value }).joined(separator: "\n")
+                vc.change = .photoReview(ingredients, nil)
             }
         }
         if let vc = segue.destination as? ReviewPhotoController, segue.identifier == "reviewScrape" {

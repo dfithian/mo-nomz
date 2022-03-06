@@ -9,19 +9,13 @@ import UIKit
 
 enum ManualChange {
     case add
-    case photoReview
+    case photoReview(String, String?)
 }
 
 class AddManualController: AddDetailController {
     @IBOutlet weak var back: UIButton!
 
     var change: ManualChange? = nil
-    var name: String? = nil
-    var link: String? = nil
-    var ingredients: String? = nil
-    var steps: String? = nil
-    var isRecipe: Bool = false
-    var isActive: Bool = true
     var manualVc: AddManualTableController? = nil
     
     @IBAction func didTapBack(_ sender: Any?) {
@@ -45,10 +39,10 @@ class AddManualController: AddDetailController {
             self.navigationVc?.onChange?()
             self.loadGroceries()
         }
-        if let i = ingredients {
-            if isRecipe {
-                if let n = name {
-                    addBlob(content: i, name: n, link: link, rawSteps: steps?.nonEmpty()?.components(separatedBy: "\n").compactMap({ $0.nonEmpty() }) ?? [], active: isActive, completion: recipeCompletion)
+        if let i = manualVc?.ingredients?.text?.nonEmpty() {
+            if manualVc?.isRecipe ?? false {
+                if let n = manualVc?.name?.text?.nonEmpty() {
+                    addBlob(content: i, name: n, link: manualVc?.link?.text?.nonEmpty(), rawSteps: manualVc?.steps?.text?.nonEmpty()?.components(separatedBy: "\n").compactMap({ $0.nonEmpty() }) ?? [], active: manualVc?.isActive ?? true, completion: recipeCompletion)
                 } else {
                     alertUnsuccessful("Please provide a name.")
                 }
@@ -61,20 +55,34 @@ class AddManualController: AddDetailController {
     }
     
     override func addType() -> AddType {
-        return change == .photoReview ? .photo : .manual
+        switch change {
+        case .photoReview(_, _): return .photo
+        default: return .manual
+        }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let vc = segue.destination as? AddManualTableController, segue.identifier == "embedManual" {
             manualVc = vc
-            vc.parentVc = self
+            switch change {
+            case .photoReview(let ingredients, let steps):
+                vc.ingredients = UITextView()
+                vc.ingredients?.text = ingredients
+                vc.steps = UITextView()
+                vc.steps?.text = steps
+                if steps?.nonEmpty() != nil {
+                    vc.isRecipe = true
+                }
+                break
+            default: break
+            }
         }
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         switch change {
-        case .photoReview:
+        case .photoReview(_, _):
             back.alpha = 1
             break
         default: break
@@ -82,14 +90,13 @@ class AddManualController: AddDetailController {
     }
 }
 
-class AddManualTableController: UITableViewController, UITextViewDelegate, UITextFieldDelegate {
-    var parentVc: AddManualController? = nil
-
-    let INGREDIENTS_TAG = 0
-    let STEPS_TAG = 1
-    
-    let NAME_TAG = 0
-    let LINK_TAG = 1
+class AddManualTableController: UITableViewController {
+    var isRecipe: Bool = false
+    var isActive: Bool = true
+    var name: UITextField? = nil
+    var link: UITextField? = nil
+    var ingredients: UITextView? = nil
+    var steps: UITextView? = nil
     
     let HEADER = 0
     let INFO_HEADING = 1
@@ -103,11 +110,11 @@ class AddManualTableController: UITableViewController, UITextViewDelegate, UITex
     
     @objc func didTapIsRecipe(_ sender: Any?) {
         let b = sender as! UIButton
-        if parentVc?.isRecipe ?? false {
-            parentVc?.isRecipe = false
+        if isRecipe {
+            isRecipe = false
             b.setImage(UIImage(systemName: "square"), for: .normal)
         } else {
-            parentVc?.isRecipe = true
+            isRecipe = true
             b.setImage(UIImage(systemName: "checkmark.square"), for: .normal)
         }
         tableView.reloadData()
@@ -115,36 +122,12 @@ class AddManualTableController: UITableViewController, UITextViewDelegate, UITex
     
     @objc func didTapIsActive(_ sender: Any?) {
         let b = sender as! UIButton
-        if parentVc?.isActive ?? true {
-            parentVc?.isActive = false
+        if isActive {
+            isActive = false
             b.setImage(UIImage(systemName: "square"), for: .normal)
         } else {
-            parentVc?.isActive = true
+            isActive = true
             b.setImage(UIImage(systemName: "checkmark.square"), for: .normal)
-        }
-    }
-    
-    func textViewDidEndEditing(_ textView: UITextView) {
-        switch textView.tag {
-        case INGREDIENTS_TAG:
-            parentVc?.ingredients = textView.text
-            break
-        case STEPS_TAG:
-            parentVc?.steps = textView.text
-            break
-        default: break
-        }
-    }
-    
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        switch textField.tag {
-        case NAME_TAG:
-            parentVc?.name = textField.text
-            break
-        case LINK_TAG:
-            parentVc?.link = textField.text
-            break
-        default: break
         }
     }
     
@@ -157,12 +140,12 @@ class AddManualTableController: UITableViewController, UITextViewDelegate, UITex
         case HEADER: return 1
         case INFO_HEADING: return 1
         case IS_RECIPE__IS_ACTIVE: return 1
-        case NAME: return (parentVc?.isRecipe ?? false) ? 1 : 0
-        case LINK: return (parentVc?.isRecipe ?? false) ? 1 : 0
+        case NAME: return isRecipe ? 1 : 0
+        case LINK: return isRecipe ? 1 : 0
         case INGREDIENT_HEADING: return 1
         case INGREDIENTS: return 1
-        case STEP_HEADING: return (parentVc?.isRecipe ?? false) ? 1 : 0
-        case STEPS: return (parentVc?.isRecipe ?? false) ? 1 : 0
+        case STEP_HEADING: return isRecipe ? 1 : 0
+        case STEPS: return isRecipe ? 1 : 0
         default: return 0
         }
     }
@@ -177,30 +160,28 @@ class AddManualTableController: UITableViewController, UITextViewDelegate, UITex
             return cell
         case IS_RECIPE__IS_ACTIVE:
             let cell = tableView.dequeueReusableCell(withIdentifier: "checkboxItem") as! TwoButton
-            cell.one.setImage(UIImage(systemName: (parentVc?.isActive ?? true) ? "checkmark.square" : "square"), for: .normal)
+            cell.one.setImage(UIImage(systemName: isActive ? "checkmark.square" : "square"), for: .normal)
             cell.one.addTarget(self, action: #selector(didTapIsActive), for: .touchUpInside)
-            cell.two.setImage(UIImage(systemName: (parentVc?.isRecipe ?? false) ? "checkmark.square" : "square"), for: .normal)
+            cell.two.setImage(UIImage(systemName: isRecipe ? "checkmark.square" : "square"), for: .normal)
             cell.two.addTarget(self, action: #selector(didTapIsRecipe), for: .touchUpInside)
             return cell
         case NAME:
             let cell = tableView.dequeueReusableCell(withIdentifier: "textFieldItem") as! OneTextField
             cell.text_.placeholder = "Recipe name"
-            cell.text_.tag = NAME_TAG
-            cell.text_.delegate = self
+            cell.text_.text = name?.text
             cell.text_.addDoneButtonOnKeyboard()
-            cell.text_.text = parentVc?.name
+            name = cell.text_
             return cell
         case LINK:
             let cell = tableView.dequeueReusableCell(withIdentifier: "textFieldItem") as! OneTextField
             cell.text_.placeholder = "Recipe link (optional)"
-            cell.text_.tag = LINK_TAG
-            cell.text_.delegate = self
+            cell.text_.text = link?.text
             cell.text_.addDoneButtonOnKeyboard()
-            cell.text_.text = parentVc?.link
+            link = cell.text_
             return cell
         case INGREDIENT_HEADING:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! OneLabel
-            if parentVc?.isRecipe ?? false {
+            if isRecipe {
                 cell.label.text = "Ingredients"
             } else {
                 cell.label.text = "Groceries"
@@ -208,11 +189,10 @@ class AddManualTableController: UITableViewController, UITextViewDelegate, UITex
             return cell
         case INGREDIENTS:
             let cell = tableView.dequeueReusableCell(withIdentifier: "textItem") as! OneText
-            cell.text_.tag = INGREDIENTS_TAG
-            cell.text_.delegate = self
+            cell.text_.text = ingredients?.text
             cell.text_.addDoneButtonOnKeyboard()
             cell.text_.layer.cornerRadius = 10
-            cell.text_.text = parentVc?.ingredients
+            ingredients = cell.text_
             return cell
         case STEP_HEADING:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! OneLabel
@@ -220,20 +200,13 @@ class AddManualTableController: UITableViewController, UITextViewDelegate, UITex
             return cell
         case STEPS:
             let cell = tableView.dequeueReusableCell(withIdentifier: "textItem") as! OneText
-            cell.text_.tag = STEPS_TAG
-            cell.text_.delegate = self
+            cell.text_.text = steps?.text
             cell.text_.addDoneButtonOnKeyboard()
             cell.text_.layer.cornerRadius = 10
-            cell.text_.text = parentVc?.steps
+            steps = cell.text_
             return cell
         default:
             return tableView.dequeueReusableCell(withIdentifier: "sectionHeader")!
         }
-    }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        tableView.rowHeight = UITableView.automaticDimension
-        tableView.estimatedRowHeight = 600
     }
 }
