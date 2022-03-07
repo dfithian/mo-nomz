@@ -298,4 +298,5 @@ struct ExportResponse: Codable {
 
 struct UserPingRequest: Codable {
     let version: String
+    let target: String
 }

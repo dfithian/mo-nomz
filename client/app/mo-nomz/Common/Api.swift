@@ -40,7 +40,12 @@ extension UIViewController {
         req.httpMethod = "POST"
         let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as! String
         let bundle = Bundle.main.infoDictionary?["CFBundleVersion"] as! String
-        req.httpBody = try? JSONEncoder().encode(UserPingRequest(version: "\(version).\(bundle)"))
+        #if targetEnvironment(simulator)
+        let target = "simulator"
+        #else
+        let target = "device"
+        #endif
+        req.httpBody = try? JSONEncoder().encode(UserPingRequest(version: "\(version).\(bundle)", target: target))
         let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
             completion?()
         })
