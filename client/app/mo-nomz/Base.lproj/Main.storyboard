@@ -459,7 +459,7 @@
                                                 <imageReference key="image" image="arrow.clockwise" catalog="system" symbolScale="large"/>
                                             </state>
                                             <connections>
-                                                <action selector="clear:" destination="6IF-YC-SCE" eventType="touchUpInside" id="Qb4-tY-gfe"/>
+                                                <action selector="didTapClear:" destination="6IF-YC-SCE" eventType="touchUpInside" id="QfG-ek-kZV"/>
                                             </connections>
                                         </button>
                                     </barButtonItem>

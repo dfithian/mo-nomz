@@ -17,12 +17,12 @@ class GroceryController: UIViewController {
     @IBOutlet weak var add: UIButton!
 
     var groceryVc: GroceryListController? = nil
-    
+
     @IBAction func help(_ sender: Any?) {
         needHelp()
     }
-    
-    @IBAction func clear(_ sender: Any?) {
+
+    @IBAction func didTapClear(_ sender: Any?) {
         let items: [ReadableGroceryItemWithId] = (groceryVc?.toBuy ?? []) + (groceryVc?.bought ?? [])
         if !items.isEmpty {
             let handler = { [weak self] (action: UIAlertAction) -> Void in
@@ -32,7 +32,16 @@ class GroceryController: UIViewController {
             promptForConfirmation(title: "Clear", message: "Are you sure you want to clear?", handler: handler)
         }
     }
-    
+
+    @IBAction func didTapExport(_ sender: Any) {
+        let items: [ReadableGroceryItemWithId] = Database.selectGroceries().filter({ $0.item.active })
+        if !items.isEmpty {
+            let exportText: String = items.map({ $0.item.render() }).joined(separator: "\n")
+            let vc = UIActivityViewController(activityItems: [exportText], applicationActivities: nil)
+            present(vc, animated: true, completion: nil)
+        }
+    }
+
     @objc func loadData() {
         let groceries = Database.selectGroceries()
         groceryVc?.toBuy = groceries.map({ ReadableGroceryItemWithId(item: $0.item, id: $0.id) }).filter({ $0.item.active })
@@ -41,7 +50,7 @@ class GroceryController: UIViewController {
             self.groceryVc?.tableView.reloadData()
         }
     }
-    
+
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let vc = segue.destination as? AddController, segue.identifier == "addGroceries" {
             vc.onChange = loadData
@@ -55,7 +64,7 @@ class GroceryController: UIViewController {
             vc.height = banner.constraints.filter({ $0.identifier == "height" }).first
         }
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         clear.frame = CGRect(x: clear.frame.minX, y: clear.frame.minY, width: clear.frame.width, height: toolbar.frame.height)
@@ -68,7 +77,7 @@ class GroceryController: UIViewController {
         add.alignTextUnderImage()
         NotificationCenter.default.addObserver(self, selector: #selector(loadData), name: UIApplication.willEnterForegroundNotification, object: nil)
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         loadData()
