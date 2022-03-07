@@ -19,18 +19,18 @@ class RecipeController: UIViewController, RecipeFilterDelegate {
 
     func loadData() {
         recipes = Database.selectRecipes()
+        filterVc?.tags = Database.getAllTags()
+        filterVc?.collectionView.reloadData()
         recipeVc?.allRecipes = recipes ?? []
         recipeVc?.onFilter()
         recipeVc?.tableView.reloadData()
     }
 
-    func updateTags(active: Bool, tags: Set<String>) -> [String] {
+    func updateTags(active: Bool, tags: Set<String>) {
         recipeVc?.active = active
         recipeVc?.tags = tags
         recipeVc?.onFilter()
         recipeVc?.tableView.reloadData()
-        // FIXME
-        return []
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -40,8 +40,7 @@ class RecipeController: UIViewController, RecipeFilterDelegate {
         if let vc = segue.destination as? RecipeFilterController, segue.identifier == "embedTags" {
             filterVc = vc
             vc.delegate = self
-            // FIXME tags should be ordered by count
-            // vc.tags = recipes?.flatMap({ $0.recipe.tags.map({ TagWithId(id: $0.key, tag: $0.value) }) })
+            vc.tags = Database.getAllTags()
         }
         if let vc = segue.destination as? RecipeListController, segue.identifier == "embedRecipes" {
             recipeVc = vc

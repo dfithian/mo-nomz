@@ -53,6 +53,7 @@
 		37E55B5026F2CD7E00207FFE /* Purchases.plist in Resources */ = {isa = PBXBuildFile; fileRef = 37E55B4F26F2CD7E00207FFE /* Purchases.plist */; };
 		37E55B5226F2CDB700207FFE /* Purchases.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37E55B5126F2CDB700207FFE /* Purchases.swift */; };
 		37E861E927D58ECA0048B874 /* RecipeFilterController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37E861E827D58EC90048B874 /* RecipeFilterController.swift */; };
+		37E861EB27D645F60048B874 /* RecipeDetailTagController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37E861EA27D645F50048B874 /* RecipeDetailTagController.swift */; };
 		37FE86EF2648CC7200E0B85F /* InfoControllers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37FE86EE2648CC7200E0B85F /* InfoControllers.swift */; };
 		A5AA8FF560BE489F2712D24F /* Pods_mo_nomz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D8E6C91D35B99778B838A8A /* Pods_mo_nomz.framework */; };
 /* End PBXBuildFile section */
@@ -120,6 +121,7 @@
 		37E55B4F26F2CD7E00207FFE /* Purchases.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Purchases.plist; sourceTree = "<group>"; };
 		37E55B5126F2CDB700207FFE /* Purchases.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Purchases.swift; sourceTree = "<group>"; };
 		37E861E827D58EC90048B874 /* RecipeFilterController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeFilterController.swift; sourceTree = "<group>"; };
+		37E861EA27D645F50048B874 /* RecipeDetailTagController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeDetailTagController.swift; sourceTree = "<group>"; };
 		37EAACF726339C14006D9184 /* mo-nomzRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "mo-nomzRelease.entitlements"; sourceTree = "<group>"; };
 		37FE86EE2648CC7200E0B85F /* InfoControllers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoControllers.swift; sourceTree = "<group>"; };
 		3D8E6C91D35B99778B838A8A /* Pods_mo_nomz.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_mo_nomz.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -272,6 +274,7 @@
 				37E1034A279EE8FE0064C193 /* IngredientChangeController.swift */,
 				37B979A22693DB0D002B677F /* RecipeDetailController.swift */,
 				37B979AA269BB3C6002B677F /* RecipeDetailListController.swift */,
+				37E861EA27D645F50048B874 /* RecipeDetailTagController.swift */,
 			);
 			path = Recipe;
 			sourceTree = "<group>";
@@ -435,6 +438,7 @@
 				376095D926212FBB0015B6F0 /* GroceryController.swift in Sources */,
 				379D479B26264D6E003DD2C6 /* RecipeListController.swift in Sources */,
 				37B979EC26ED0B66002B677F /* Database.swift in Sources */,
+				37E861EB27D645F60048B874 /* RecipeDetailTagController.swift in Sources */,
 				3724EFD927A8BDDE0094574E /* AddManualControllers.swift in Sources */,
 				37E1034B279EE8FE0064C193 /* IngredientChangeController.swift in Sources */,
 				3716947727C5376D0002BD64 /* Browser.swift in Sources */,

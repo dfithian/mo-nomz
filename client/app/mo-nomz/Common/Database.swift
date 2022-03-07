@@ -39,6 +39,7 @@ class Database {
         newRecipe.active = recipe.recipe.active
         newRecipe.rating = Int32(recipe.recipe.rating)
         newRecipe.notes = recipe.recipe.notes
+        newRecipe.tags = recipe.recipe.tags
         
         for (id, step) in recipe.recipe.steps {
             insertStepRaw(ctx, step: StepWithId(id: id, step: step), recipeId: recipe.id)
@@ -371,6 +372,7 @@ class Database {
                 fetched.active = recipe.active
                 fetched.notes = recipe.notes
                 fetched.rating = Int32(recipe.rating)
+                fetched.tags = recipe.tags
             }
             try ctx.save()
         } catch let error as NSError {
@@ -660,5 +662,16 @@ class Database {
         } catch let error as NSError {
             print(error)
         }
+    }
+    
+    static func getAllTags() -> [String] {
+        do {
+            let ctx = DataAccess.shared.managedObjectContext
+            let rawTags = try ctx.fetch(RecipeData.req()).compactMap({ $0.tags }).flatMap({ $0 })
+            return Array(Dictionary(rawTags.map({ ($0, 1) }), uniquingKeysWith: +)).sorted(by: { $0.1 > $1.1 }).map({ $0.0 })
+        } catch let error as NSError {
+            print(error)
+        }
+        return []
     }
 }

@@ -8,7 +8,7 @@
 import UIKit
 
 protocol RecipeFilterDelegate {
-    func updateTags(active: Bool, tags: Set<String>) -> [String]
+    func updateTags(active: Bool, tags: Set<String>)
 }
 
 class RecipeFilterController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
@@ -35,9 +35,7 @@ class RecipeFilterController: UICollectionViewController, UICollectionViewDelega
     }
     
     private func sendUpdates() {
-        let newTags = delegate?.updateTags(active: active, tags: selected) ?? []
-        tags = newTags
-        selected = selected.filter({ (selected_) in !newTags.filter({ (tag_) in tag_ == selected_ }).isEmpty })
+        delegate?.updateTags(active: active, tags: selected)
         collectionView.reloadData()
     }
     
@@ -99,6 +97,21 @@ class RecipeFilterController: UICollectionViewController, UICollectionViewDelega
             return cell
         default:
             return UICollectionViewCell()
+        }
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        switch indexPath.section {
+        case ACTIVE:
+            didTapActive(nil)
+            break
+        case TAGS:
+            toggleTag(indexPath.row)
+            break
+        case CLEAR:
+            didTapClear(nil)
+            break
+        default: break
         }
     }
     

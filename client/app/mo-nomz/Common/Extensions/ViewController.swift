@@ -70,6 +70,26 @@ extension UIViewController {
             self.present(confirmation, animated: true, completion: nil)
         }
     }
+    
+    func promptGetInput(
+        title: String,
+        completion: @escaping ((String) -> Void)
+    ) {
+        var text: UITextField? = nil
+        let handler = { (_: UIAlertAction) -> Void in
+            guard let str = text?.text else { return }
+            completion(str)
+        }
+        let action = UIAlertAction(title: "OK", style: .default, handler: handler)
+        let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        let input = UIAlertController(title: title, message: nil, preferredStyle: .alert)
+        input.addTextField(configurationHandler: { text = $0 })
+        input.addAction(action)
+        input.addAction(cancel)
+        DispatchQueue.main.async {
+            self.present(input, animated: true, completion: nil)
+        }
+    }
 }
 
 extension UIViewController {
