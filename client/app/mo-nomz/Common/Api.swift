@@ -191,13 +191,13 @@ extension UIViewController {
                     ingredients.append(ReadableIngredient(name: ingredient, quantity: ReadableQuantity(whole: nil, fraction: nil), unit: nil, order: order))
                     order += 1
                 }
-                let recipe = Database.insertRecipe(response: ParseBlobResponse(ingredients: ingredients), name: name, link: link, rawSteps: rawSteps, active: active)
+                let recipe = Database.insertRecipe(response: ParseBlobResponse(ingredients: ingredients), name: name, link: link, rawSteps: rawSteps, active: active, tags: [])
                 completion?(recipe)
             }
             let onSuccess = { (d: Data) -> Void in
                 do {
                     let output = try JSONDecoder().decode(ParseBlobResponse.self, from: d)
-                    let recipe = Database.insertRecipe(response: output, name: name, link: link, rawSteps: rawSteps, active: active)
+                    let recipe = Database.insertRecipe(response: output, name: name, link: link, rawSteps: rawSteps, active: active, tags: [])
                     completion?(recipe)
                 } catch {
                     
@@ -223,7 +223,7 @@ extension UIViewController {
             let onSuccess = { (d: Data) -> Void in
                 do {
                     let output = try JSONDecoder().decode(ParseLinkResponse.self, from: d)
-                    let recipe = Database.insertRecipe(response: output, link: link, active: active)
+                    let recipe = Database.insertRecipe(response: output, link: link, active: active, tags: [])
                     completion?(recipe)
                 } catch {
                     onError()

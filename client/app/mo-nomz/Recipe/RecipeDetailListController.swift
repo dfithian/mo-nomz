@@ -77,7 +77,7 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
     func textViewDidEndEditing(_ textView: UITextView) {
         guard let r = recipe else { return }
         if textView.tag == Int.max {
-            Database.updateRecipe(id: r.id, recipe: ReadableRecipe(name: r.recipe.name, link: r.recipe.link, active: r.recipe.active, rating: r.recipe.rating, notes: textView.text ?? r.recipe.notes, ingredients: r.recipe.ingredients, steps: r.recipe.steps))
+            Database.updateRecipe(id: r.id, recipe: ReadableRecipe(name: r.recipe.name, link: r.recipe.link, active: r.recipe.active, rating: r.recipe.rating, notes: textView.text ?? r.recipe.notes, ingredients: r.recipe.ingredients, steps: r.recipe.steps, tags: r.recipe.tags))
         } else {
             let step = steps[textView.tag]
             let cell = tableView.cellForRow(at: IndexPath(row: textView.tag, section: STEP_LIST)) as! TwoLabelOneText

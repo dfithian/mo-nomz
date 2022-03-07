@@ -265,7 +265,7 @@ class Database {
         return nil
     }
     
-    static func insertRecipe(response: ParseLinkResponse, link: String, active: Bool) -> ReadableRecipeWithId {
+    static func insertRecipe(response: ParseLinkResponse, link: String, active: Bool, tags: [String]) -> ReadableRecipeWithId {
         var ingredients = [UUID:ReadableIngredient]()
         for ingredient in response.ingredients {
             ingredients[UUID()] = ingredient
@@ -276,11 +276,11 @@ class Database {
             steps[UUID()] = Step(step: step, order: order)
             order += 1
         }
-        let recipe = ReadableRecipe(name: response.name, link: link, active: active, rating: 0, notes: "", ingredients: ingredients, steps: steps)
+        let recipe = ReadableRecipe(name: response.name, link: link, active: active, rating: 0, notes: "", ingredients: ingredients, steps: steps, tags: tags)
         return insertRecipe(recipe: recipe)
     }
     
-    static func insertRecipe(response: ParseBlobResponse, name: String, link: String?, rawSteps: [String], active: Bool) -> ReadableRecipeWithId {
+    static func insertRecipe(response: ParseBlobResponse, name: String, link: String?, rawSteps: [String], active: Bool, tags: [String]) -> ReadableRecipeWithId {
         var ingredients = [UUID:ReadableIngredient]()
         for ingredient in response.ingredients {
             ingredients[UUID()] = ingredient
@@ -291,7 +291,7 @@ class Database {
             steps[UUID()] = Step(step: step, order: order)
             order += 1
         }
-        let recipe = ReadableRecipe(name: name, link: link, active: active, rating: 0, notes: "", ingredients: ingredients, steps: steps)
+        let recipe = ReadableRecipe(name: name, link: link, active: active, rating: 0, notes: "", ingredients: ingredients, steps: steps, tags: tags)
         return insertRecipe(recipe: recipe)
     }
     
@@ -635,7 +635,7 @@ class Database {
             // insert recipes
             var recipeIds = [Int:UUID]()
             for (recipeKey, recipe) in export.recipes {
-                let recipeWithId = ReadableRecipeWithId(recipe: ReadableRecipe(name: recipe.name, link: recipe.link, active: recipe.active, rating: recipe.rating, notes: recipe.notes, ingredients: [:], steps: [:]), id: UUID())
+                let recipeWithId = ReadableRecipeWithId(recipe: ReadableRecipe(name: recipe.name, link: recipe.link, active: recipe.active, rating: recipe.rating, notes: recipe.notes, ingredients: [:], steps: [:], tags: []), id: UUID())
                 insertRecipeRaw(ctx, recipe: recipeWithId)
                 recipeIds[recipeKey] = recipeWithId.id
             }

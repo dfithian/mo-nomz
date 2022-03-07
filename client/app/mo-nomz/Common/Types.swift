@@ -164,6 +164,7 @@ struct ReadableRecipe: Codable {
     let notes: String
     let ingredients: [UUID:ReadableIngredient]
     let steps: [UUID:Step]
+    let tags: [String]
 }
 
 struct ReadableRecipeWithId: Codable, Indexable {
@@ -177,7 +178,8 @@ struct ReadableRecipeWithId: Codable, Indexable {
         ]
         let ingredientsIndex = recipe.ingredients.map({ ReadableIngredientWithId(id: $0.0, ingredient: $0.1) }).flatMap({ $0.index().map({ $0.decPriority() }) })
         let stepsIndex = recipe.steps.map({ StepWithId(id: $0.0, step: $0.1) }).flatMap({ $0.index().map({ $0.decPriority() }) })
-        return index + ingredientsIndex + stepsIndex
+        let tagsIndex = recipe.tags.map({ Index(value: $0, priority: .medium) })
+        return index + ingredientsIndex + stepsIndex + tagsIndex
     }
     
     func identifier() -> UUID {
@@ -255,7 +257,7 @@ extension RecipeData {
         for step in stepsData {
             steps[step.id!] = step.toStepWithId().step
         }
-        return ReadableRecipe(name: name ?? "", link: link, active: active, rating: Int(rating), notes: notes ?? "", ingredients: ingredients, steps: steps)
+        return ReadableRecipe(name: name ?? "", link: link, active: active, rating: Int(rating), notes: notes ?? "", ingredients: ingredients, steps: steps, tags: (tags as [String]?) ?? [])
     }
     
     func toReadableRecipeWithId(ingredientsData: [IngredientData], stepsData: [StepData]) -> ReadableRecipeWithId {

@@ -33,7 +33,7 @@ class RecipeDetailController: UIViewController, UITextViewDelegate, UITextFieldD
         nameWrite.resignFirstResponder()
         nameRead.text = name
         nameRead.alpha = 1
-        Database.updateRecipe(id: r.id, recipe: ReadableRecipe(name: name, link: r.recipe.link, active: r.recipe.active, rating: r.recipe.rating, notes: r.recipe.notes, ingredients: r.recipe.ingredients, steps: r.recipe.steps))
+        Database.updateRecipe(id: r.id, recipe: ReadableRecipe(name: name, link: r.recipe.link, active: r.recipe.active, rating: r.recipe.rating, notes: r.recipe.notes, ingredients: r.recipe.ingredients, steps: r.recipe.steps, tags: r.recipe.tags))
         onChange?()
     }
     
@@ -80,7 +80,7 @@ class RecipeDetailController: UIViewController, UITextViewDelegate, UITextFieldD
             star5.setImage(filledStar, for: .normal)
         }
         if which != r.recipe.rating && which > 0 {
-            let newRecipe = ReadableRecipe(name: r.recipe.name, link: r.recipe.link, active: r.recipe.active, rating: which, notes: r.recipe.notes, ingredients: r.recipe.ingredients, steps: r.recipe.steps)
+            let newRecipe = ReadableRecipe(name: r.recipe.name, link: r.recipe.link, active: r.recipe.active, rating: which, notes: r.recipe.notes, ingredients: r.recipe.ingredients, steps: r.recipe.steps, tags: r.recipe.tags)
             Database.updateRecipe(id: r.id, recipe: newRecipe)
             loadData()
             onChange?()
