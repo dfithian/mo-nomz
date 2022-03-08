@@ -19,6 +19,9 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
     var onChange: (() -> Void)? = nil
     var collapsed: [Bool] = [false, true]
 
+    let TO_BUY_TAG = 0
+    let BOUGHT_TAG = 1
+
     let EMPTY = 0
     let REORDER_MERGE_TIP = 1
     let TO_BUY_HEADING = 2
@@ -64,14 +67,14 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
             promptForConfirmation(title: "Dismiss this tip", message: "Drag items to reorder or merge", handler: handler)
             break
         case TO_BUY_HEADING:
-            collapsed[0] = !collapsed[0]
+            collapsed[TO_BUY_TAG] = !collapsed[TO_BUY_TAG]
             tableView.reloadData()
             break
         case TO_BUY:
             performSegue(withIdentifier: "editItem", sender: GroceryChange.edit(toBuy[indexPath.row]))
             break
         case BOUGHT_HEADING:
-            collapsed[1] = !collapsed[1]
+            collapsed[BOUGHT_TAG] = !collapsed[BOUGHT_TAG]
             tableView.reloadData()
             break
         case BOUGHT:
@@ -88,8 +91,8 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
 
     private func collapsedSection(_ section: Int) -> Int? {
         switch section {
-        case TO_BUY: return 0
-        case BOUGHT: return 1
+        case TO_BUY: return TO_BUY_TAG
+        case BOUGHT: return BOUGHT_TAG
         default: return nil
         }
     }

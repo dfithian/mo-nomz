@@ -9,7 +9,7 @@ import MobileCoreServices
 import UIKit
 
 class RecipeListController: UITableViewController, UISearchBarDelegate {
-    var active: Bool = true
+    var active: Bool = false
     var tags: Set<String>? = nil
     var search: String? = nil
     var allRecipes: [ReadableRecipeWithId] = []

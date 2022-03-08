@@ -15,15 +15,17 @@ class RecipeDetailTagController: UICollectionViewController, UICollectionViewDel
     var tags: [String] = []
     var delegate: RecipeTagDelegate? = nil
     
-    let TAGS = 0
-    let ADD = 1
+    let HEADER = 0
+    let TAGS = 1
+    let ADD = 2
 
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 2
+        return 3
     }
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         switch section {
+        case HEADER: return 1
         case TAGS: return tags.count
         case ADD: return 1
         default: return 0
@@ -44,6 +46,8 @@ class RecipeDetailTagController: UICollectionViewController, UICollectionViewDel
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         switch indexPath.section {
+        case HEADER:
+            return collectionView.dequeueReusableCell(withReuseIdentifier: "tagHeader", for: indexPath)
         case TAGS:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "tagItem", for: indexPath) as! OneCellButton
             cell.button.setTitle(tags[indexPath.row], for: .normal)
@@ -74,6 +78,8 @@ class RecipeDetailTagController: UICollectionViewController, UICollectionViewDel
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let text: String
         switch indexPath.section {
+        case HEADER:
+            text = "Tags:"
         case TAGS:
             text = tags[indexPath.row]
             break

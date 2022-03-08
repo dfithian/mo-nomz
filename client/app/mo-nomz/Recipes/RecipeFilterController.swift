@@ -13,7 +13,7 @@ protocol RecipeFilterDelegate {
 
 class RecipeFilterController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
     var delegate: RecipeFilterDelegate? = nil
-    var active: Bool = true
+    var active: Bool = false
     var tags: [String]? = nil
     var selected: Set<String> = Set<String>()
     
@@ -40,7 +40,7 @@ class RecipeFilterController: UICollectionViewController, UICollectionViewDelega
     }
     
     @objc func didTapClear(_ sender: Any?) {
-        active = true
+        active = false
         selected = Set<String>()
         sendUpdates()
     }
