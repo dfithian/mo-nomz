@@ -61,26 +61,20 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
         case REORDER_MERGE_TIP:
             let handler = { (action: UIAlertAction) -> Void in
                 User.setDidDismissReorderMergeTip()
-                DispatchQueue.main.async {
-                    self.tableView.reloadData()
-                }
+                tableView.reloadData()
             }
             promptForConfirmation(title: "Dismiss this tip", message: "Drag items to reorder or merge", handler: handler)
             break
         case TO_BUY_HEADING:
             collapsed[0] = !collapsed[0]
-            DispatchQueue.main.async {
-                self.tableView.reloadData()
-            }
+            tableView.reloadData()
             break
         case TO_BUY:
             editRow(item: toBuy[indexPath.row])
             break
         case BOUGHT_HEADING:
             collapsed[1] = !collapsed[1]
-            DispatchQueue.main.async {
-                self.tableView.reloadData()
-            }
+            tableView.reloadData()
             break
         case BOUGHT:
             editRow(item: bought[indexPath.row])
@@ -138,8 +132,8 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
             break
         default: return nil
         }
-        let action = UIContextualAction(style: .destructive, title: "Delete") { [weak self] (action, view, completionHandler) in
-            self?.deleteRow(id)
+        let action = UIContextualAction(style: .destructive, title: "Delete") { (action, view, completionHandler) in
+            self.deleteRow(id)
             completionHandler(true)
         }
         action.backgroundColor = .systemRed

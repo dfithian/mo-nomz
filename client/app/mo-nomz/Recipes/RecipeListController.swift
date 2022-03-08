@@ -66,8 +66,8 @@ class RecipeListController: UITableViewController, UISearchBarDelegate {
         default:
             return nil
         }
-        let action = UIContextualAction(style: .destructive, title: "Delete") { [weak self] (action, view, completionHandler) in
-            self?.deleteRow(id)
+        let action = UIContextualAction(style: .destructive, title: "Delete") { (action, view, completionHandler) in
+            self.deleteRow(id)
             completionHandler(true)
         }
         action.backgroundColor = .systemRed

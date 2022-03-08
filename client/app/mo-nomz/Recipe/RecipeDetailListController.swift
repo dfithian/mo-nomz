@@ -182,7 +182,7 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
         default:
             return nil
         }
-        let action = UIContextualAction(style: .destructive, title: "Delete") { [weak self] (action, view, completionHandler) in
+        let action = UIContextualAction(style: .destructive, title: "Delete") { (action, view, completionHandler) in
             switch delete {
             case .ingredient(let ingredient):
                 Database.updateRecipeIngredients(id: r.id, active: r.recipe.active, deletes: [ingredient.id], adds: [])
@@ -191,7 +191,7 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
                 Database.deleteRecipeStep(id: step.id)
                 break
             }
-            self?.onChange?()
+            self.onChange?()
             completionHandler(true)
         }
         action.backgroundColor = .systemRed
@@ -211,9 +211,7 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
         case MERGE_TIP:
             let handler = { (action: UIAlertAction) -> Void in
                 User.setDidDismissIngredientMergeTip()
-                DispatchQueue.main.async {
-                    self.tableView.reloadData()
-                }
+                tableView.reloadData()
             }
             promptForConfirmation(title: "Dismiss this tip", message: "Drag items to merge", handler: handler)
             break
@@ -227,9 +225,7 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
         case REORDER_STEP_TIP:
             let handler = { (action: UIAlertAction) -> Void in
                 User.setDidDismissStepReorderTip()
-                DispatchQueue.main.async {
-                    self.tableView.reloadData()
-                }
+                tableView.reloadData()
             }
             promptForConfirmation(title: "Dismiss this tip", message: "Drag steps to reorder", handler: handler)
             break

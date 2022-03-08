@@ -70,9 +70,7 @@ class InfoTableController: UITableViewController {
                 unbought.sort(by: { $0.productIdentifier < $1.productIdentifier })
                 self.boughtProducts = bought
                 self.unboughtProducts = unbought
-                DispatchQueue.main.async {
-                    self.tableView.reloadData()
-                }
+                self.tableView.reloadData()
                 break
             }
         })

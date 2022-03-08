@@ -20,9 +20,9 @@ class GroceryController: UIViewController {
     @IBAction func didTapClear(_ sender: Any?) {
         let items: [ReadableGroceryItemWithId] = (groceryVc?.toBuy ?? []) + (groceryVc?.bought ?? [])
         if !items.isEmpty {
-            let handler = { [weak self] (action: UIAlertAction) -> Void in
+            let handler = { (action: UIAlertAction) -> Void in
                 Database.clearAll()
-                self?.loadData()
+                self.loadData()
             }
             promptForConfirmation(title: "Clear", message: "Are you sure you want to clear?", handler: handler)
         }
@@ -37,13 +37,11 @@ class GroceryController: UIViewController {
         }
     }
 
-    func loadData() {
+    private func loadData() {
         let groceries = Database.selectGroceries()
         groceryVc?.toBuy = groceries.map({ ReadableGroceryItemWithId(item: $0.item, id: $0.id) }).filter({ $0.item.active })
         groceryVc?.bought = groceries.map({ ReadableGroceryItemWithId(item: $0.item, id: $0.id) }).filter({ !$0.item.active })
-        DispatchQueue.main.async {
-            self.groceryVc?.tableView.reloadData()
-        }
+        groceryVc?.tableView.reloadData()
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -52,7 +50,6 @@ class GroceryController: UIViewController {
         }
         if let vc = segue.destination as? GroceryListController, segue.identifier == "embedGroceryItems" {
             groceryVc = vc
-            loadData()
             vc.onChange = loadData
         }
         if let vc = segue.destination as? BannerController, segue.identifier == "embedBanner" {
