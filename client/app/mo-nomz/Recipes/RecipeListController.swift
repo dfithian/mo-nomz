@@ -45,7 +45,7 @@ class RecipeListController: UITableViewController, UISearchBarDelegate {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.section {
         case RECIPES:
-            performSegue(withIdentifier: "showRecipe", sender: indexPath)
+            performSegue(withIdentifier: "showRecipe", sender: recipes[indexPath.row])
             break
         default:
             break
@@ -130,15 +130,6 @@ class RecipeListController: UITableViewController, UISearchBarDelegate {
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let vc = segue.destination as? RecipeDetailController, segue.identifier == "showRecipe", let indexPath = sender as? IndexPath {
-            vc.onChange = onChange
-            switch indexPath.section {
-            case RECIPES:
-                vc.recipe = recipes[indexPath.row]
-                break
-            default: break
-            }
-        }
         if let vc = segue.destination as? RecipeDetailController, segue.identifier == "showRecipe", let r = sender as? ReadableRecipeWithId {
             vc.onChange = onChange
             vc.recipe = r

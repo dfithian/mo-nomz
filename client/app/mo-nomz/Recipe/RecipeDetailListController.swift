@@ -32,8 +32,6 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
     var steps: [StepWithId] = []
     var ingredients: [ReadableIngredientWithId] = []
     var onChange: (() -> Void)? = nil
-    var mergeItems: (ReadableIngredientWithId, ReadableIngredientWithId)? = nil
-    var editItem: ReadableIngredientWithId? = nil
     
     let ADD_INGREDIENT_TAG = 0
     let ADD_STEP_TAG = 1
@@ -52,7 +50,7 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
     @objc func didTapAdd(_ sender: Any?) {
         guard let b = sender as? UIButton else { return }
         if b.tag == ADD_INGREDIENT_TAG {
-            performSegue(withIdentifier: "addItem", sender: nil)
+            performSegue(withIdentifier: "addItem", sender: IngredientChange.add(recipe?.recipe.ingredients.map({ $0.value.order }).max().map({ $0 + 1}) ?? 1))
         } else {
             newStep()
         }
@@ -216,11 +214,10 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
             promptForConfirmation(title: "Dismiss this tip", message: "Drag items to merge", handler: handler)
             break
         case INGREDIENT_LIST:
-            editItem = ingredients[indexPath.row]
-            performSegue(withIdentifier: "editItem", sender: nil)
+            performSegue(withIdentifier: "editItem", sender: IngredientChange.edit(ingredients[indexPath.row]))
             break
         case ADD_INGREDIENT:
-            performSegue(withIdentifier: "addItem", sender: nil)
+            performSegue(withIdentifier: "addItem", sender: IngredientChange.add(recipe?.recipe.ingredients.map({ $0.value.order }).max().map({ $0 + 1}) ?? 1))
             break
         case REORDER_STEP_TIP:
             let handler = { (action: UIAlertAction) -> Void in
@@ -320,8 +317,7 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
                     let run = { () -> Void in
                         switch (existing, new) {
                         case (.ingredient(let x), .ingredient(let y)):
-                            self.mergeItems = (x, y)
-                            self.performSegue(withIdentifier: "mergeItems", sender: nil)
+                            self.performSegue(withIdentifier: "mergeItems", sender: IngredientChange.merge(x, y))
                             break
                         case (_, .step(let y)):
                             guard let r = self.recipe else { break }
@@ -358,21 +354,10 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let vc = segue.destination as? IngredientChangeController {
+        if let vc = segue.destination as? IngredientChangeController, ["mergeItems", "editItem", "addItem"].contains(segue.identifier), let change = sender as? IngredientChange {
             vc.recipe = recipe
             vc.onChange = onChange
-            switch segue.identifier {
-            case "mergeItems":
-                vc.change = .merge(mergeItems!.0, mergeItems!.1)
-                break
-            case "editItem":
-                vc.change = .edit(editItem!)
-                break
-            case "addItem":
-                vc.change = .add(recipe?.recipe.ingredients.map({ $0.value.order }).max().map({ $0 + 1}) ?? 1)
-                break
-            default: break
-            }
+            vc.change = change
         }
     }
     

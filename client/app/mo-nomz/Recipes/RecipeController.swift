@@ -54,6 +54,7 @@ class RecipeController: UIViewController, RecipeFilterDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        loadData()
         add.frame = CGRect(x: add.frame.minX, y: add.frame.minY, width: add.frame.width, height: toolbar.frame.height)
         add.alignTextUnderImage()
         search.searchTextField.addDoneButtonOnKeyboard()
