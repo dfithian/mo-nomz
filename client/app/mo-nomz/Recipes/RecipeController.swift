@@ -19,7 +19,7 @@ class RecipeController: UIViewController, RecipeFilterDelegate {
 
     func loadData() {
         recipes = Database.selectRecipes()
-        filterVc?.tags = Database.getAllTags()
+        filterVc?.tags = Database.getTopTags()
         filterVc?.collectionView.reloadData()
         recipeVc?.allRecipes = recipes ?? []
         recipeVc?.onFilter()
@@ -40,7 +40,7 @@ class RecipeController: UIViewController, RecipeFilterDelegate {
         if let vc = segue.destination as? RecipeFilterController, segue.identifier == "embedTags" {
             filterVc = vc
             vc.delegate = self
-            vc.tags = Database.getAllTags()
+            vc.tags = Database.getTopTags()
         }
         if let vc = segue.destination as? RecipeListController, segue.identifier == "embedRecipes" {
             recipeVc = vc

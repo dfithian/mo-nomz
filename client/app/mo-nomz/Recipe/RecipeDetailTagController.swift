@@ -56,7 +56,7 @@ class RecipeDetailTagController: UICollectionViewController, UICollectionViewDel
             return cell
         case ADD:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "addItem", for: indexPath) as! OneCellButton
-            let actions = Database.getAllTags().filter({ !tags.contains($0) }).map({
+            let actions = Database.getTopTags().filter({ !tags.contains($0) }).map({
                 (tag_) in UIAction(title: tag_, handler: { _ in
                     self.add(tag_)
                 })

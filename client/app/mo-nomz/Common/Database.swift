@@ -664,11 +664,11 @@ class Database {
         }
     }
     
-    static func getAllTags() -> [String] {
+    static func getTopTags() -> [String] {
         do {
             let ctx = DataAccess.shared.managedObjectContext
             let rawTags = try ctx.fetch(RecipeData.req()).compactMap({ $0.tags }).flatMap({ $0 })
-            return Array(Dictionary(rawTags.map({ ($0, 1) }), uniquingKeysWith: +)).sorted(by: { $0.1 > $1.1 }).map({ $0.0 })
+            return Array(Array(Dictionary(rawTags.map({ ($0, 1) }), uniquingKeysWith: +)).sorted(by: { $0.1 > $1.1 }).map({ $0.0 }).prefix(5))
         } catch let error as NSError {
             print(error)
         }
