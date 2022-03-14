@@ -30,7 +30,7 @@ import Types (Ingredient(..), IngredientName(..), Quantity(..), RecipeName(..), 
 import Scrape
 
 data TestCfg = TestCfg
-  { requireUnit :: Bool
+  { requireOneQuantityUnit :: Bool
   , allowedDuplicates :: Int
   , requiredIngredients :: Int
   , requiredSteps :: Int
@@ -39,7 +39,7 @@ data TestCfg = TestCfg
 
 defaultTestCfg :: Env -> TestCfg
 defaultTestCfg env = TestCfg
-  { requireUnit = True
+  { requireOneQuantityUnit = True
   , allowedDuplicates = 3
   , requiredIngredients = 5
   , requiredSteps = 1
@@ -66,7 +66,7 @@ scrapeAndParseConfig TestCfg {..} url = do
   lessThanThreePrefixes scrapedRecipeIngredients
   scrapedRecipeSteps `shouldSatisfy` (\xs -> length xs >= requiredSteps)
   where
-    hasQuantityAndUnit Ingredient {..} = ingredientQuantity /= QuantityMissing && (if requireUnit then ingredientUnit /= UnitMissing else True)
+    hasQuantityAndUnit Ingredient {..} = if requireOneQuantityUnit then ingredientQuantity /= QuantityMissing && ingredientUnit /= UnitMissing else True
     duplicates = (< allowedDuplicates) . length . filter ((> 1) . length . snd) . Map.toList . foldr (\x@Ingredient {..} -> Map.insertWith (<>) ingredientName [x]) mempty
     lessThanThreePrefixes xs = do
       let names = ingredientName <$> xs
@@ -252,6 +252,6 @@ spec env = describe "Scrape" $ do
     describe "Tasty 3" $ do
       it "handles ourbestbites" $ scrapeAndParseConfig (defCfg { requiredIngredients = 1 }) "https://ourbestbites.com/greek-pasta-salad/#tasty-recipes-45657"
     describe "Eating Well" $ do
-      it "handles bhg" $ scrapeAndParseConfig defCfg "https://www.bhg.com/recipe/air-fried-ginger-glazed-pork-ribs/"
+      it "handles bhg" $ scrapeAndParseConfig (defCfg { requireOneQuantityUnit = False }) "https://www.bhg.com/recipe/air-fried-ginger-glazed-pork-ribs/"
     describe "Simply Recipes" $ do
       it "handles simplyrecipes" $ scrapeAndParseConfig defCfg "https://www.simplyrecipes.com/recipes/easy_green_chicken_chili/"
