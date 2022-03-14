@@ -17,45 +17,69 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let mainVc = mainSb.instantiateInitialViewController() as! UITabBarController
         mainVc.selectedIndex = User.preference(.mealsDefaultTab) ? 1 : 0
         window?.rootViewController = launchVc
-
-        if User.loadState() == nil {
-            User.setDidExport()
-            User.setDidPullSteps()
+        
+        let loadState = { (cont: @escaping (() -> Void)) in
             let completion = { (resp: CreateUserResponse) -> Void in
-                DispatchQueue.main.async {
-                    User.setState(State(userId: resp.userId, apiToken: resp.apiToken))
-                    self.window?.rootViewController = mainVc
-                }
+                User.setState(State(userId: resp.userId, apiToken: resp.apiToken))
+                cont()
             }
-            window?.rootViewController?.loadUser(completion: completion)
-        } else if !User.exported() {
-            User.setDidPullSteps()
-            let completion = {
-                DispatchQueue.main.async {
-                    self.window?.rootViewController = mainVc
-                }
+            if User.loadState() == nil {
+                User.setDidExport()
+                User.setDidPullSteps()
+                User.setDidCleanSteps()
+                self.window?.rootViewController?.loadUser(completion: completion)
+            } else {
+                cont()
             }
-            window?.rootViewController?.loadExport(completion: completion)
-        } else if !User.stepsPulled() {
-            let completion = {
-                DispatchQueue.main.async {
-                    self.window?.rootViewController = mainVc
-                }
-            }
-            window?.rootViewController?.pullSteps(completion: completion)
-        } else if !User.stepsCleaned() {
-            let completion = {
-                DispatchQueue.main.async {
-                    self.window?.rootViewController = mainVc
-                }
-            }
-            window?.rootViewController?.cleanSteps(completion: completion)
-        } else {
-            window?.rootViewController = mainVc
         }
         
-        mainVc.pingUser(completion: nil)
-        completion?()
+        let export = { (cont: @escaping (() -> Void)) in
+            if !User.exported() {
+                User.setDidPullSteps()
+                User.setDidCleanSteps()
+                self.window?.rootViewController?.loadExport(completion: cont)
+            } else {
+                cont()
+            }
+        }
+        
+        let pullSteps = { (cont: @escaping (() -> Void)) in
+            if !User.stepsPulled() {
+                self.window?.rootViewController?.pullSteps(completion: cont)
+            } else {
+                cont()
+            }
+        }
+        
+        let cleanSteps = { (cont: @escaping (() -> Void)) in
+            if !User.stepsCleaned() {
+                self.window?.rootViewController?.cleanSteps(completion: cont)
+            } else {
+                cont()
+            }
+        }
+        
+        let initializeGroups = { (cont: @escaping (() -> Void)) in
+            if !User.groupsInitialized() {
+                self.window?.rootViewController?.initializeGroups(completion: cont)
+            } else {
+                cont()
+            }
+        }
+        
+        loadState({
+            export({
+                pullSteps({
+                    cleanSteps({
+                        initializeGroups({
+                            self.window?.rootViewController = mainVc
+                            self.window?.rootViewController?.pingUser(completion: nil)
+                            completion?()
+                        })
+                    })
+                })
+            })
+        })
     }
     
     private func universalLink(_ userActivity: NSUserActivity) {

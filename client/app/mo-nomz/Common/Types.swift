@@ -73,12 +73,23 @@ struct ReadableQuantity: Codable {
     }
 }
 
+struct GroceryGroup: Codable {
+    let name: String
+    let order: Int
+}
+
+struct GroceryGroupWithId: Codable {
+    let group: GroceryGroup
+    let id: UUID
+}
+
 struct ReadableGroceryItem: Codable {
     let name: String
     let quantity: ReadableQuantity
     let unit: String?
     let active: Bool
     let order: Int
+    let group: GroceryGroupWithId?
     
     func render() -> String {
         switch (quantity.render(), unit) {
@@ -121,7 +132,7 @@ struct ReadableIngredientWithId: Codable, Indexable {
     let ingredient: ReadableIngredient
     
     func toGroceryItemWithId(active: Bool, order: Int) -> ReadableGroceryItemWithId {
-        return ReadableGroceryItemWithId(item: ReadableGroceryItem(name: ingredient.name, quantity: ingredient.quantity, unit: ingredient.unit, active: active, order: order), id: UUID())
+        return ReadableGroceryItemWithId(item: ReadableGroceryItem(name: ingredient.name, quantity: ingredient.quantity, unit: ingredient.unit, active: active, order: order, group: nil), id: UUID())
     }
     
     func index() -> [Index] {
@@ -209,17 +220,27 @@ public extension CodingUserInfoKey {
     static let managedObjectContext = CodingUserInfoKey(rawValue: "managedObjectContext")
 }
 
+extension GroceryGroupData {
+    class func req() -> NSFetchRequest<GroceryGroupData> {
+        return NSFetchRequest<GroceryGroupData>(entityName: "GroceryGroupData")
+    }
+
+    func toGroceryGroupWithId() -> GroceryGroupWithId {
+        return GroceryGroupWithId(group: GroceryGroup(name: name!, order: Int(ordering)), id: id!)
+    }
+}
+
 extension GroceryItemData {
     class func req() -> NSFetchRequest<GroceryItemData> {
         return NSFetchRequest<GroceryItemData>(entityName: "GroceryItemData")
     }
-
-    func toReadableGroceryItem() -> ReadableGroceryItem {
-        return ReadableGroceryItem(name: name ?? "", quantity: ReadableQuantity.fromInt(x: Int(quantity)), unit: unit, active: active, order: Int(ordering))
+    
+    func toReadableGroceryItem(groupData: GroceryGroupData?) -> ReadableGroceryItem {
+        return ReadableGroceryItem(name: name ?? "", quantity: ReadableQuantity.fromInt(x: Int(quantity)), unit: unit, active: active, order: Int(ordering), group: groupData?.toGroceryGroupWithId())
     }
     
-    func toReadableGroceryItemWithId() -> ReadableGroceryItemWithId {
-        return ReadableGroceryItemWithId(item: toReadableGroceryItem(), id: id!)
+    func toReadableGroceryItemWithId(groupData: GroceryGroupData?) -> ReadableGroceryItemWithId {
+        return ReadableGroceryItemWithId(item: toReadableGroceryItem(groupData: groupData), id: id!)
     }
 }
 

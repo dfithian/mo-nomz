@@ -67,6 +67,12 @@ class User {
     static func setDidCleanSteps() {
         UserDefaults.shared.set(true, forKey: "cleanedSteps")
     }
+    static func groupsInitialized() -> Bool {
+        return UserDefaults.shared.bool(forKey: "groupsInitialized")
+    }
+    static func setDidInitializeGroups() {
+         UserDefaults.shared.set(true, forKey: "groupsInitialized")
+    }
     static func dismissedReorderMergeTip() -> Bool {
         return UserDefaults.shared.bool(forKey: "dismissedReorderMergeTip") || preference(.noTips)
     }

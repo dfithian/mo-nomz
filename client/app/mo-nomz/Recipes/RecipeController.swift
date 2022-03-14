@@ -13,17 +13,12 @@ class RecipeController: UIViewController, RecipeFilterDelegate {
     @IBOutlet weak var add: UIButton!
     @IBOutlet weak var search: UISearchBar!
 
-    var recipes: [ReadableRecipeWithId]? = nil
     var filterVc: RecipeFilterController? = nil
     var recipeVc: RecipeListController? = nil
 
-    func loadData() {
-        recipes = Database.selectRecipes()
-        filterVc?.tags = Database.getTopTags()
-        filterVc?.collectionView.reloadData()
-        recipeVc?.allRecipes = recipes ?? []
-        recipeVc?.onFilter()
-        recipeVc?.tableView.reloadData()
+    func reloadData() {
+        recipeVc?.reloadData()
+        filterVc?.reloadData()
     }
 
     func updateTags(active: Bool, tags: Set<String>) {
@@ -35,16 +30,15 @@ class RecipeController: UIViewController, RecipeFilterDelegate {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let vc = segue.destination as? AddController, segue.identifier == "addGroceries" {
-            vc.onChange = loadData
+            vc.onChange = reloadData
         }
         if let vc = segue.destination as? RecipeFilterController, segue.identifier == "embedTags" {
             filterVc = vc
             vc.delegate = self
-            vc.tags = Database.getTopTags()
         }
         if let vc = segue.destination as? RecipeListController, segue.identifier == "embedRecipes" {
             recipeVc = vc
-            vc.onChange = loadData
+            vc.onChange = reloadData
             search.delegate = vc
         }
         if let vc = segue.destination as? BannerController, segue.identifier == "embedBanner" {
@@ -54,7 +48,7 @@ class RecipeController: UIViewController, RecipeFilterDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        loadData()
+        reloadData()
         add.frame = CGRect(x: add.frame.minX, y: add.frame.minY, width: add.frame.width, height: toolbar.frame.height)
         add.alignTextUnderImage()
         search.searchTextField.addDoneButtonOnKeyboard()
@@ -63,6 +57,6 @@ class RecipeController: UIViewController, RecipeFilterDelegate {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        loadData()
+        reloadData()
     }
 }

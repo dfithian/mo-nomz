@@ -43,7 +43,7 @@ extension UIViewController {
                 mainVc.selectedIndex = RECIPE_TAB
                 let vc = mainVc.viewControllers![RECIPE_TAB] as! RecipeController
                 vc.recipeVc?.addLink(link: url.absoluteString, active: true, completion: { recipe in
-                    vc.loadData()
+                    vc.reloadData()
                     DispatchQueue.main.async {
                         vc.recipeVc?.performSegue(withIdentifier: "showRecipe", sender: recipe)
                     }

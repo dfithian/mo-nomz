@@ -135,4 +135,18 @@ class RecipeFilterController: UICollectionViewController, UICollectionViewDelega
         let height = view.frame.size.height - 10
         return CGSize(width: width, height: height)
     }
+    
+    private func loadData() {
+        tags = Database.getTopTags()
+    }
+    
+    func reloadData() {
+        loadData()
+        collectionView.reloadData()
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        loadData()
+    }
 }

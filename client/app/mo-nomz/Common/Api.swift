@@ -143,6 +143,26 @@ extension UIViewController {
         completion?()
     }
     
+    func initializeGroups(completion: (() -> Void)?) {
+        let rawGroups = [
+            "Produce",
+            "Meat/Seafood",
+            "Dairy/Eggs",
+            "Frozen",
+            "Alcohol",
+            "Household"
+        ]
+        var groups: [GroceryGroupWithId] = []
+        var order = 0
+        for rawGroup in rawGroups {
+            groups.append(GroceryGroupWithId(group: GroceryGroup(name: rawGroup, order: order), id: UUID()))
+            order += 1
+        }
+        Database.insertGroups(groups: groups)
+        User.setDidInitializeGroups()
+        completion?()
+    }
+    
     func addBlob(content: String, completion: (([ReadableIngredient]) -> Void)?) {
         let spinner = startLoading()
         guard let state = User.loadState() else { return }

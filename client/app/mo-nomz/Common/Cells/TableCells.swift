@@ -23,7 +23,7 @@ class OneTextField: UITableViewCell {
     @IBOutlet weak var text_: UITextField!
 }
 
-class TwoLabelOneText: UITableViewCell, UITextFieldDelegate {
+class TwoLabelOneText: UITableViewCell {
     @IBOutlet weak var oneLabel: UILabel!
     @IBOutlet weak var twoLabel: UILabel!
     @IBOutlet weak var text_: UITextView!
@@ -48,4 +48,9 @@ class TwoLabelOneButton: UITableViewCell {
     @IBOutlet weak var oneLabel: UILabel!
     @IBOutlet weak var button: UIButton!
     @IBOutlet weak var twoLabel: UILabel!
+}
+
+class LabelText: UITableViewCell {
+    @IBOutlet weak var label: UILabel!
+    @IBOutlet weak var text_: UITextView!
 }

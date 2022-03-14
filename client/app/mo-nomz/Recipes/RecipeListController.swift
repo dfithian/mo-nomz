@@ -136,8 +136,19 @@ class RecipeListController: UITableViewController, UISearchBarDelegate {
         }
     }
     
+    private func loadData() {
+        allRecipes = Database.selectRecipes()
+        onFilter()
+    }
+    
+    func reloadData() {
+        loadData()
+        tableView.reloadData()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        loadData()
 
         // This is here because we don't support drag and drop
         tableView.rowHeight = UITableView.automaticDimension

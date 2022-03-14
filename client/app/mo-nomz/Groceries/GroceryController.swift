@@ -15,21 +15,20 @@ class GroceryController: UIViewController {
     @IBOutlet weak var export: UIButton!
     @IBOutlet weak var add: UIButton!
 
-    var groceries: [ReadableGroceryItemWithId] = []
     var groceryVc: GroceryListController? = nil
 
     @IBAction func didTapClear(_ sender: Any?) {
-        if !groceries.isEmpty {
+        if !Database.selectGroceries().isEmpty {
             let handler = { (action: UIAlertAction) -> Void in
                 Database.clearAll()
-                self.loadData()
+                self.reloadData()
             }
             promptForConfirmation(title: "Clear", message: "Are you sure you want to clear?", handler: handler)
         }
     }
 
     @IBAction func didTapExport(_ sender: Any) {
-        let items = groceries.filter({ $0.item.active })
+        let items = Database.selectGroceries().filter({ $0.item.active })
         if !items.isEmpty {
             let exportText: String = items.map({ $0.item.render() }).joined(separator: "\n")
             let vc = UIActivityViewController(activityItems: [exportText], applicationActivities: nil)
@@ -37,20 +36,16 @@ class GroceryController: UIViewController {
         }
     }
 
-    private func loadData() {
-        groceries = Database.selectGroceries()
-        groceryVc?.toBuy = groceries.map({ ReadableGroceryItemWithId(item: $0.item, id: $0.id) }).filter({ $0.item.active })
-        groceryVc?.bought = groceries.map({ ReadableGroceryItemWithId(item: $0.item, id: $0.id) }).filter({ !$0.item.active })
-        groceryVc?.tableView.reloadData()
+    func reloadData() {
+        groceryVc?.reloadData()
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let vc = segue.destination as? AddController, segue.identifier == "addGroceries" {
-            vc.onChange = loadData
+            vc.onChange = reloadData
         }
         if let vc = segue.destination as? GroceryListController, segue.identifier == "embedGroceryItems" {
             groceryVc = vc
-            vc.onChange = loadData
         }
         if let vc = segue.destination as? BannerController, segue.identifier == "embedBanner" {
             vc.height = banner.constraints.filter({ $0.identifier == "height" }).first
@@ -59,7 +54,7 @@ class GroceryController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        loadData()
+        reloadData()
         clear.frame = CGRect(x: clear.frame.minX, y: clear.frame.minY, width: clear.frame.width, height: toolbar.frame.height)
         clear.alignTextUnderImage()
         export.frame = CGRect(x: export.frame.minX, y: export.frame.minY, width: export.frame.width, height: toolbar.frame.height)
@@ -70,6 +65,6 @@ class GroceryController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        loadData()
+        reloadData()
     }
 }

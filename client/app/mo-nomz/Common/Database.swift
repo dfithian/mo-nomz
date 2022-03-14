@@ -18,6 +18,7 @@ class Database {
         newGrocery.unit = grocery.item.unit
         newGrocery.active = grocery.item.active
         newGrocery.ordering = Int32(grocery.item.order)
+        newGrocery.group = grocery.item.group?.id
     }
     
     private static func insertIngredientRaw(_ ctx: NSManagedObjectContext, ingredient: ReadableIngredientWithId, recipeId: UUID?, groceryId: UUID?) {
@@ -73,6 +74,13 @@ class Database {
         ]
         return try ctx.fetch(stepReq)
     }
+    
+    private static func insertGroceryGroupRaw(_ ctx: NSManagedObjectContext, group: GroceryGroupWithId) {
+        let newGroup = NSEntityDescription.insertNewObject(forEntityName: "GroceryGroupData", into: ctx) as! GroceryGroupData
+        newGroup.id = group.id
+        newGroup.name = group.group.name
+        newGroup.ordering = Int32(group.group.order)
+    }
 
     static func selectGroceries() -> [ReadableGroceryItemWithId] {
         do {
@@ -82,7 +90,11 @@ class Database {
                 NSSortDescriptor(key: "ordering", ascending: true),
                 NSSortDescriptor(key: "name", ascending: true)
             ]
-            return try ctx.fetch(req).map({ $0.toReadableGroceryItemWithId() })
+            
+            return try ctx.fetch(req).map({ (grocery) in
+                let groupData = try groceryGroupForRaw(ctx, grocery: grocery)
+                return grocery.toReadableGroceryItemWithId(groupData: groupData)
+            })
         } catch let error as NSError {
             print(error)
         }
@@ -103,6 +115,17 @@ class Database {
     static func selectMaxStepOrderRaw(_ ctx: NSManagedObjectContext, recipeId: UUID) throws -> Int {
         let req = StepData.req()
         req.predicate = NSPredicate(format: "recipe_id = %@", recipeId as CVarArg)
+        req.sortDescriptors = [NSSortDescriptor(key: "ordering", ascending: false)]
+        req.fetchLimit = 1
+        if let row = try ctx.fetch(req).first {
+            return row.value(forKey: "ordering") as! Int + 1
+        } else {
+            return 1
+        }
+    }
+    
+    static func selectMaxGroupOrderRaw(_ ctx: NSManagedObjectContext) throws -> Int {
+        let req = GroceryGroupData.req()
         req.sortDescriptors = [NSSortDescriptor(key: "ordering", ascending: false)]
         req.fetchLimit = 1
         if let row = try ctx.fetch(req).first {
@@ -151,6 +174,32 @@ class Database {
                 fetched.unit = grocery.item.unit
                 fetched.active = grocery.item.active
                 fetched.ordering = Int32(grocery.item.order)
+                fetched.group = grocery.item.group?.id
+            }
+            try ctx.save()
+        } catch let error as NSError {
+            print(error)
+        }
+    }
+    
+    static func updateGroup(group: GroceryGroupWithId) {
+        do {
+            let ctx = DataAccess.shared.managedObjectContext
+            let req = GroceryGroupData.req()
+            req.predicate = NSPredicate(format: "id = %@", group.id as CVarArg)
+            req.fetchLimit = 1
+            if let fetched = try ctx.fetch(req).first {
+                if fetched.ordering != Int32(group.group.order) {
+                    let reorderReq = GroceryGroupData.req()
+                    let notThisId = NSPredicate(format: "id <> %@", group.id as CVarArg)
+                    let largerOrder = NSPredicate(format: "ordering >= %@", group.group.order as NSNumber)
+                    reorderReq.predicate = NSCompoundPredicate(type: .and, subpredicates: [notThisId, largerOrder])
+                    for other in try ctx.fetch(reorderReq) {
+                        other.ordering += 1
+                    }
+                }
+                fetched.name = group.group.name
+                fetched.ordering = Int32(group.group.order)
             }
             try ctx.save()
         } catch let error as NSError {
@@ -505,6 +554,15 @@ class Database {
         }
     }
     
+    private static func groceryGroupForRaw(_ ctx: NSManagedObjectContext, grocery: GroceryItemData) throws -> GroceryGroupData? {
+        if let groupId = grocery.group {
+            let groupReq = GroceryGroupData.req()
+            groupReq.predicate = NSPredicate(format: "id = %@", groupId as CVarArg)
+            return try ctx.fetch(groupReq).first
+        }
+        return nil
+    }
+    
     private static func automergeGroceriesRaw(_ ctx: NSManagedObjectContext, active: Bool, groceries: [ReadableGroceryItemWithId]) throws {
         struct NameAndUnit: Hashable {
             let name: String
@@ -512,17 +570,17 @@ class Database {
         }
         
         // aggregate groceries by name and unit
-        var byNameAndUnit = [NameAndUnit:([UUID], ReadableQuantity, Int)]()
+        var byNameAndUnit = [NameAndUnit:([UUID], ReadableQuantity, Int, GroceryGroupWithId?)]()
         for grocery in groceries {
             let nameAndUnit = NameAndUnit(name: grocery.item.name, unit: grocery.item.unit)
-            let (ids, quantity, order) = byNameAndUnit[nameAndUnit] ?? ([], ReadableQuantity(whole: 0, fraction: nil), Int.max)
-            byNameAndUnit[nameAndUnit] = (ids + [grocery.id], quantity + grocery.item.quantity, min(grocery.item.order, order))
+            let (ids, quantity, order, group) = byNameAndUnit[nameAndUnit] ?? ([], ReadableQuantity(whole: 0, fraction: nil), Int.max, nil)
+            byNameAndUnit[nameAndUnit] = (ids + [grocery.id], quantity + grocery.item.quantity, min(grocery.item.order, order), group ?? grocery.item.group)
         }
         
-        for (nameAndUnit, (ids, quantity, order)) in byNameAndUnit {
+        for (nameAndUnit, (ids, quantity, order, group)) in byNameAndUnit {
             if ids.count >= 2 {
                 // insert new grocery for merge
-                let newGrocery = ReadableGroceryItemWithId(item: ReadableGroceryItem(name: nameAndUnit.name, quantity: quantity, unit: nameAndUnit.unit, active: active, order: order), id: UUID())
+                let newGrocery = ReadableGroceryItemWithId(item: ReadableGroceryItem(name: nameAndUnit.name, quantity: quantity, unit: nameAndUnit.unit, active: active, order: order, group: group), id: UUID())
                 insertGroceryRaw(ctx, grocery: newGrocery)
                 
                 // update the ingredient grocery id
@@ -547,10 +605,11 @@ class Database {
         var activeGroceries: [ReadableGroceryItemWithId] = []
         var inactiveGroceries: [ReadableGroceryItemWithId] = []
         for grocery in try ctx.fetch(GroceryItemData.req()) {
+            let groupData = try groceryGroupForRaw(ctx, grocery: grocery)
             if grocery.active {
-                activeGroceries.append(grocery.toReadableGroceryItemWithId())
+                activeGroceries.append(grocery.toReadableGroceryItemWithId(groupData: groupData))
             } else {
-                inactiveGroceries.append(grocery.toReadableGroceryItemWithId())
+                inactiveGroceries.append(grocery.toReadableGroceryItemWithId(groupData: groupData))
             }
         }
         
@@ -575,7 +634,8 @@ class Database {
         groceryReq.predicate = NSPredicate(format: "id in %@", Array(oldGroceryIds) as CVarArg)
         var oldGroceries = [UUID:(ReadableGroceryItemWithId, GroceryItemData)]()
         for grocery in try ctx.fetch(groceryReq) {
-            oldGroceries[grocery.id!] = (grocery.toReadableGroceryItemWithId(), grocery)
+            let groupData = try groceryGroupForRaw(ctx, grocery: grocery)
+            oldGroceries[grocery.id!] = (grocery.toReadableGroceryItemWithId(groupData: groupData), grocery)
         }
         
         // insert new groceries from unmerged old groceries
@@ -583,7 +643,7 @@ class Database {
         ingredientReq2.predicate = NSPredicate(format: "grocery_id in %@", Array(oldGroceryIds) as CVarArg)
         for ingredient in try ctx.fetch(ingredientReq2) {
             if let groceryId = ingredient.grocery_id, let (grocery, _) = oldGroceries[groceryId] {
-                let newGrocery = ReadableGroceryItemWithId(item: ReadableGroceryItem(name: grocery.item.name, quantity: ReadableQuantity.fromInt(x: Int(ingredient.quantity)), unit: ingredient.unit, active: grocery.item.active, order: grocery.item.order), id: UUID())
+                let newGrocery = ReadableGroceryItemWithId(item: ReadableGroceryItem(name: grocery.item.name, quantity: ReadableQuantity.fromInt(x: Int(ingredient.quantity)), unit: ingredient.unit, active: grocery.item.active, order: grocery.item.order, group: grocery.item.group), id: UUID())
                 insertGroceryRaw(ctx, grocery: newGrocery)
                 ingredient.grocery_id = newGrocery.id
             }
@@ -645,7 +705,7 @@ class Database {
             // insert groceries
             var groceryIds = [Int:UUID]()
             for (groceryKey, grocery) in export.groceries {
-                let groceryWithId = ReadableGroceryItemWithId(item: ReadableGroceryItem(name: grocery.name, quantity: grocery.quantity, unit: grocery.unit, active: grocery.active, order: grocery.order), id: UUID())
+                let groceryWithId = ReadableGroceryItemWithId(item: ReadableGroceryItem(name: grocery.name, quantity: grocery.quantity, unit: grocery.unit, active: grocery.active, order: grocery.order, group: nil), id: UUID())
                 insertGroceryRaw(ctx, grocery: groceryWithId)
                 groceryIds[groceryKey] = groceryWithId.id
             }
@@ -673,5 +733,57 @@ class Database {
             print(error)
         }
         return []
+    }
+    
+    static func selectGroups() -> [GroceryGroupWithId] {
+        do {
+            let ctx = DataAccess.shared.managedObjectContext
+            let req = GroceryGroupData.req()
+            return try ctx.fetch(req).map({ $0.toGroceryGroupWithId() }).sorted(by: { $0.group.order < $1.group.order })
+        } catch let error as NSError {
+            print(error)
+        }
+        return []
+    }
+    
+    static func selectMaxGroupOrder() -> Int {
+        do {
+            let ctx = DataAccess.shared.managedObjectContext
+            return try selectMaxGroupOrderRaw(ctx)
+        } catch let error as NSError {
+            print(error)
+        }
+        return 1
+    }
+    
+    static func insertGroups(groups: [GroceryGroupWithId]) {
+        do {
+            let ctx = DataAccess.shared.managedObjectContext
+            for group in groups {
+                insertGroceryGroupRaw(ctx, group: group)
+            }
+            try ctx.save()
+        } catch let error as NSError {
+            print(error)
+        }
+    }
+    
+    static func deleteGroup(id: UUID) {
+        do {
+            let ctx = DataAccess.shared.managedObjectContext
+            let groceryReq = GroceryItemData.req()
+            groceryReq.predicate = NSPredicate(format: "group = %@", id as CVarArg)
+            for grocery in try ctx.fetch(groceryReq) {
+                grocery.group = nil
+            }
+            let req = GroceryGroupData.req()
+            req.predicate = NSPredicate(format: "id = %@", id as CVarArg)
+            for group in try ctx.fetch(req) {
+                ctx.delete(group)
+            }
+            try ctx.save()
+        } catch let error as NSError {
+            print(error)
+        }
     }
 }

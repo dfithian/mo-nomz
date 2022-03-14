@@ -8,53 +8,153 @@
 import MobileCoreServices
 import UIKit
 
+enum GroceryDragType: Codable {
+    case item(ReadableGroceryItemWithId)
+    case group(GroceryGroupWithId)
+    
+    var isGroup: Bool {
+        switch self {
+        case .item(_): return false
+        case .group(_): return true
+        }
+    }
+}
+
+enum GroceryListItem {
+    case item(ReadableGroceryItemWithId)
+    case group(GroceryGroupWithId)
+    case uncategorized
+    
+    var isGroup: Bool {
+        switch self {
+        case .item(_): return false
+        case .group(_): return true
+        case .uncategorized: return true
+        }
+    }
+    
+    var isItem: Bool {
+        switch self {
+        case .item(_): return true
+        case .group(_): return false
+        case .uncategorized: return false
+        }
+    }
+    
+    var asItem: ReadableGroceryItemWithId? {
+        switch self {
+        case .item(let item): return item
+        default: return nil
+        }
+    }
+    
+    var asGroup: GroceryGroupWithId? {
+        switch self {
+        case .item(let item): return item.item.group
+        case .group(let group): return group
+        case .uncategorized: return nil
+        }
+    }
+    
+    var asDraggable: GroceryDragType? {
+        switch self {
+        case .item(let item): return .item(item)
+        case .group(let group): return .group(group)
+        default: return nil
+        }
+    }
+}
+
 struct GroceryDragInfo {
-    let toBuy: Bool
+    let isGroup: Bool
     let indexPath: IndexPath
 }
 
-class GroceryListController: UITableViewController, UITableViewDragDelegate, UITableViewDropDelegate {
-    var toBuy: [ReadableGroceryItemWithId] = []
+class GroceryListController: UITableViewController, UITableViewDragDelegate, UITableViewDropDelegate, UITextViewDelegate {
+    var toBuy: [GroceryListItem] = []
     var bought: [ReadableGroceryItemWithId] = []
-    var onChange: (() -> Void)? = nil
-    var collapsed: [Bool] = [false, true]
-
-    let TO_BUY_TAG = 0
-    let BOUGHT_TAG = 1
+    var toBuyCollapsed: Bool = false
+    var boughtCollapsed: Bool = true
 
     let EMPTY = 0
     let REORDER_MERGE_TIP = 1
     let TO_BUY_HEADING = 2
-    let TO_BUY = 3
-    let BOUGHT_HEADING = 4
-    let BOUGHT = 5
+    let NEW_GROUP = 3
+    let TO_BUY = 4
+    let BOUGHT_HEADING = 5
+    let BOUGHT = 6
     
     private func hasData() -> Bool {
-        return (toBuy.count + bought.count) > 0
+        return toBuy.filter({ $0.isItem }).count + bought.count > 0
     }
-
-    func selectRow(_ row: Int) {
-        let item = toBuy[row]
-        let newItem = ReadableGroceryItem(name: item.item.name, quantity: item.item.quantity, unit: item.item.unit, active: false, order: item.item.order)
+    
+    private func toggleRow(_ item: ReadableGroceryItemWithId) {
+        let newItem = ReadableGroceryItem(name: item.item.name, quantity: item.item.quantity, unit: item.item.unit, active: !item.item.active, order: item.item.order, group: item.item.group)
         Database.updateGrocery(grocery: ReadableGroceryItemWithId(item: newItem, id: item.id))
-        onChange?()
+        reloadData()
     }
-
-    func deselectRow(_ row: Int) {
-        let item = bought[row]
-        let newItem = ReadableGroceryItem(name: item.item.name, quantity: item.item.quantity, unit: item.item.unit, active: true, order: item.item.order)
-        Database.updateGrocery(grocery: ReadableGroceryItemWithId(item: newItem, id: item.id))
-        onChange?()
-    }
-
+    
     @objc func didTapToBuy(_ sender: Any?) {
-        let b = sender as! UIButton
-        selectRow(b.tag)
+        let button = sender as! UIButton
+        if let item = toBuy[button.tag].asItem {
+            toggleRow(item)
+        }
     }
-
+    
     @objc func didTapBought(_ sender: Any?) {
-        let b = sender as! UIButton
-        deselectRow(b.tag)
+        let button = sender as! UIButton
+        toggleRow(bought[button.tag])
+    }
+    
+    @objc func didTapCreateGroup(_ sender: Any?) {
+        newGroup()
+    }
+    
+    private func deleteRow(_ id: UUID) {
+        Database.deleteGrocery(id: id)
+        reloadData()
+    }
+    
+    private func deleteGroup(_ id: UUID) {
+        Database.deleteGroup(id: id)
+        reloadData()
+    }
+    
+    private func newGroup() {
+        let newGroup = GroceryGroupWithId(group: GroceryGroup(name: "", order: 0), id: UUID())
+        Database.insertGroups(groups: [newGroup])
+        toBuy.insert(.group(newGroup), at: 0)
+        let indexPath = IndexPath(row: 0, section: TO_BUY)
+        tableView.insertRows(at: [indexPath], with: .automatic)
+        editGroup(indexPath)
+    }
+    
+    private func editGroup(_ indexPath: IndexPath) {
+        let cell = tableView.cellForRow(at: indexPath) as! LabelText
+        cell.text_.becomeFirstResponder()
+        cell.text_.alpha = 1
+        cell.label.alpha = 0
+    }
+    
+    func textViewDidEndEditing(_ textView: UITextView) {
+        let group: GroceryGroupWithId
+        switch toBuy[textView.tag] {
+        case .group(let existing):
+            group = existing
+            break
+        default: return
+        }
+        let cell = tableView.cellForRow(at: IndexPath(row: textView.tag, section: TO_BUY)) as! LabelText
+        cell.text_.alpha = 0
+        cell.label.alpha = 1
+        cell.label.text = cell.text_.text
+        if let newGroup = cell.text_.text?.trimmingCharacters(in: .whitespacesAndNewlines).nonEmpty() {
+            let new = GroceryGroupWithId(group: GroceryGroup(name: newGroup, order: group.group.order), id: group.id)
+            Database.updateGroup(group: new)
+        } else {
+            Database.deleteGroup(id: group.id)
+        }
+        reloadData()
     }
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -67,73 +167,86 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
             promptForConfirmation(title: "Dismiss this tip", message: "Drag items to reorder or merge", handler: handler)
             break
         case TO_BUY_HEADING:
-            collapsed[TO_BUY_TAG] = !collapsed[TO_BUY_TAG]
+            toBuyCollapsed = !toBuyCollapsed
             tableView.reloadData()
             break
+        case NEW_GROUP:
+            newGroup()
+            break
         case TO_BUY:
-            performSegue(withIdentifier: "editItem", sender: GroceryChange.edit(toBuy[indexPath.row]))
+            switch toBuy[indexPath.row] {
+            case .item(let item):
+                performSegue(withIdentifier: "editItem", sender: GroceryChange.edit(item))
+                break
+            case .group(_):
+                editGroup(indexPath)
+                break
+            case .uncategorized: break
+            }
             break
         case BOUGHT_HEADING:
-            collapsed[BOUGHT_TAG] = !collapsed[BOUGHT_TAG]
+            boughtCollapsed = !boughtCollapsed
             tableView.reloadData()
             break
         case BOUGHT:
             performSegue(withIdentifier: "editItem", sender: GroceryChange.edit(bought[indexPath.row]))
             break
-        default:
-            break
+        default: break
         }
     }
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 6
-    }
-
-    private func collapsedSection(_ section: Int) -> Int? {
-        switch section {
-        case TO_BUY: return TO_BUY_TAG
-        case BOUGHT: return BOUGHT_TAG
-        default: return nil
-        }
+        return 7
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if let c = collapsedSection(section) {
-            if collapsed[c] { return 0 }
-        }
         switch section {
         case EMPTY: return hasData() ? 0 : 1
         case REORDER_MERGE_TIP: return (hasData() && !User.dismissedReorderMergeTip()) ? 1 : 0
         case TO_BUY_HEADING: return hasData() ? 1 : 0
-        case TO_BUY: return toBuy.count
+        case NEW_GROUP: return hasData() ? 1 : 0
+        case TO_BUY:
+            if toBuyCollapsed || !hasData() {
+                return 0
+            }
+            return toBuy.count
         case BOUGHT_HEADING: return hasData() ? 1 : 0
-        case BOUGHT: return bought.count
+        case BOUGHT:
+            if boughtCollapsed || !hasData() {
+                return 0
+            }
+            return bought.count
         default: return 0
         }
     }
 
-    func deleteRow(_ id: UUID) {
-        Database.deleteGrocery(id: id)
-        onChange?()
-    }
-
     private func swipe(_ indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        let id: UUID
+        let itemAction = { (id: UUID) -> UISwipeActionsConfiguration? in
+            let action = UIContextualAction(style: .destructive, title: "Delete") { (action, view, completionHandler) in
+                self.deleteRow(id)
+                completionHandler(true)
+            }
+            action.backgroundColor = .systemRed
+            return UISwipeActionsConfiguration(actions: [action])
+        }
+        let groupAction = { (id: UUID) -> UISwipeActionsConfiguration? in
+            let action = UIContextualAction(style: .destructive, title: "Delete") { (action, view, completionHandler) in
+                self.deleteGroup(id)
+                completionHandler(true)
+            }
+            action.backgroundColor = .systemRed
+            return UISwipeActionsConfiguration(actions: [action])
+        }
         switch indexPath.section {
         case TO_BUY:
-            id = toBuy[indexPath.row].id
-            break
-        case BOUGHT:
-            id = bought[indexPath.row].id
-            break
+            switch toBuy[indexPath.row] {
+            case .item(let item): return itemAction(item.id)
+            case .group(let group): return groupAction(group.id)
+            case .uncategorized: return nil
+            }
+        case BOUGHT: return itemAction(bought[indexPath.row].id)
         default: return nil
         }
-        let action = UIContextualAction(style: .destructive, title: "Delete") { (action, view, completionHandler) in
-            self.deleteRow(id)
-            completionHandler(true)
-        }
-        action.backgroundColor = .systemRed
-        return UISwipeActionsConfiguration(actions: [action])
     }
 
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
@@ -153,29 +266,45 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
             return tableView.dequeueReusableCell(withIdentifier: "reorderMergeTip")!
         case TO_BUY_HEADING:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! LabelButton
-            let image = collapsed[0] ? UIImage(systemName: "chevron.forward.circle.fill") : UIImage(systemName: "chevron.down.circle.fill")
-            cell.button.setImage(image, for: .normal)
-            cell.label.text = "To buy (\(toBuy.count))"
+            let imageName = toBuyCollapsed ? "chevron.forward.circle.fill" : "chevron.down.circle.fill"
+            cell.label.text = "To buy (\(toBuy.filter({ $0.isItem }).count))"
+            cell.button.setImage(UIImage(systemName: imageName), for: .normal)
+            return cell
+        case NEW_GROUP:
+            let cell = tableView.dequeueReusableCell(withIdentifier: "newGroup") as! OneButton
+            cell.button.addTarget(self, action: #selector(didTapCreateGroup), for: .touchUpInside)
             return cell
         case TO_BUY:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "toBuyListItem") as! LabelButton
-            let item = toBuy[indexPath.row].item
-            cell.tag = indexPath.row
-            cell.label.text = item.render()
-            cell.button.tag = indexPath.row
-            cell.button.addTarget(self, action: #selector(didTapToBuy), for: .touchUpInside)
-            return cell
+            switch toBuy[indexPath.row] {
+            case .item(let item):
+                let cell = tableView.dequeueReusableCell(withIdentifier: "toBuyListItem") as! LabelButton
+                cell.label.text = item.item.render()
+                cell.button.tag = indexPath.row
+                cell.button.addTarget(self, action: #selector(didTapToBuy), for: .touchUpInside)
+                return cell
+            case .group(let group):
+                let cell = tableView.dequeueReusableCell(withIdentifier: "groupHeader") as! LabelText
+                cell.label.text = group.group.name
+                cell.text_.text = group.group.name
+                cell.text_.tag = indexPath.row
+                cell.text_.addDoneButtonOnKeyboard()
+                cell.text_.delegate = self
+                return cell
+            case .uncategorized:
+                let cell = tableView.dequeueReusableCell(withIdentifier: "groupHeader") as! LabelText
+                cell.label.text = "Uncategorized"
+                return cell
+            }
         case BOUGHT_HEADING:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! LabelButton
-            let image = collapsed[1] ? UIImage(systemName: "chevron.forward.circle.fill") : UIImage(systemName: "chevron.down.circle.fill")
-            cell.button.setImage(image, for: .normal)
+            let imageName = boughtCollapsed ? "chevron.forward.circle.fill" : "chevron.down.circle.fill"
             cell.label.text = "Bought (\(bought.count))"
+            cell.button.setImage(UIImage(systemName: imageName), for: .normal)
             return cell
         case BOUGHT:
+            let item = bought[indexPath.row]
             let cell = tableView.dequeueReusableCell(withIdentifier: "boughtListItem") as! LabelButton
-            let item = bought[indexPath.row].item
-            cell.tag = indexPath.row
-            cell.label.text = item.render()
+            cell.label.text = item.item.render()
             cell.button.tag = indexPath.row
             cell.button.addTarget(self, action: #selector(didTapBought), for: .touchUpInside)
             return cell
@@ -184,23 +313,20 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
     }
 
     func tableView(_ tableView: UITableView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
-        let item: ReadableGroceryItemWithId
-        let isToBuy: Bool
+        let draggable: GroceryDragType
         switch indexPath.section {
         case TO_BUY:
-            item = toBuy[indexPath.row]
-            isToBuy = true
+            if let draggable_ = toBuy[indexPath.row].asDraggable {
+                draggable = draggable_
+            } else {
+                return []
+            }
             break
-        case BOUGHT:
-            item = bought[indexPath.row]
-            isToBuy = false
-            break
-        default:
-            return []
+        default: return []
         }
         do {
-            session.localContext = GroceryDragInfo(toBuy: isToBuy, indexPath: indexPath)
-            let data = try JSONEncoder().encode(item)
+            session.localContext = GroceryDragInfo(isGroup: draggable.isGroup, indexPath: indexPath)
+            let data = try JSONEncoder().encode(draggable)
             return [UIDragItem(itemProvider: NSItemProvider(item: data as NSData, typeIdentifier: kUTTypePlainText as String))]
         } catch {
             print("Failed to initiate drag and drop \(error)")
@@ -213,79 +339,54 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
         guard let info = session.localDragSession?.localContext as? GroceryDragInfo else { return cancel }
         guard let indexPath = destinationIndexPath else { return cancel }
         guard session.items.count == 1 else { return cancel }
-        switch (indexPath.section, info.toBuy) {
-        case (TO_BUY, true):
+        let sanitizedIndexPath: IndexPath
+        switch indexPath.section {
+        case TO_BUY:
             if indexPath.row < toBuy.count {
-                tableView.scrollToRow(at: indexPath, at: .none, animated: true)
+                sanitizedIndexPath = indexPath
             } else {
-                tableView.scrollToRow(at: IndexPath(row: toBuy.count - 1, section: indexPath.section), at: .none, animated: true)
-            }
-            break
-        case (BOUGHT, false):
-            if indexPath.row < bought.count {
-                tableView.scrollToRow(at: indexPath, at: .none, animated: true)
-            } else {
-                tableView.scrollToRow(at: IndexPath(row: bought.count - 1, section: indexPath.section), at: .none, animated: true)
+                sanitizedIndexPath = IndexPath(row: indexPath.row - 1, section: indexPath.section)
             }
             break
         default: return cancel
         }
+        tableView.scrollToRow(at: sanitizedIndexPath, at: .none, animated: true)
         if tableView.hasActiveDrag {
+            if toBuy[sanitizedIndexPath.row].isGroup {
+                return UITableViewDropProposal(operation: .move, intent: .insertAtDestinationIndexPath)
+            }
+            if info.isGroup {
+                return cancel
+            }
             return UITableViewDropProposal(operation: .move, intent: .automatic)
         }
         return cancel
+    }
+    
+    private func reorder<T>(source: Int, destination: Int, items: [T], extract: ((T) -> Int)) -> Int {
+        if source < destination {
+            return extract(items[destination]) + 1
+        } else if source == 0 {
+            return extract(items[destination])
+        } else {
+            return extract(items[destination - 1]) + 1
+        }
     }
 
     func tableView(_ tableView: UITableView, performDropWith coordinator: UITableViewDropCoordinator) {
         guard let indexPath = coordinator.destinationIndexPath else { return }
         guard let info = coordinator.session.localDragSession?.localContext as? GroceryDragInfo else { return }
-        let existing: ReadableGroceryItemWithId
-        let newOrder: Int
         let isMerge = coordinator.proposal.intent == .insertIntoDestinationIndexPath
-        switch (indexPath.section, isMerge) {
-        case (TO_BUY, true):
-            existing = toBuy[indexPath.row]
-            newOrder = existing.item.order
-            break
-        case (TO_BUY, false):
-            if info.indexPath.row < indexPath.row {
-                existing = toBuy[indexPath.row]
-                newOrder = existing.item.order + 1
-            } else if indexPath.row == 0 {
-                existing = toBuy[indexPath.row]
-                newOrder = existing.item.order
-            } else {
-                existing = toBuy[indexPath.row - 1]
-                newOrder = existing.item.order + 1
-            }
-            break
-        case (BOUGHT, true):
-            existing = bought[tableView.cellForRow(at: indexPath)!.tag]
-            newOrder = existing.item.order
-            break
-        case (BOUGHT, false):
-            if info.indexPath.row < indexPath.row {
-                existing = bought[indexPath.row]
-                newOrder = existing.item.order + 1
-            } else if indexPath.row == 0 {
-                existing = bought[indexPath.row]
-                newOrder = existing.item.order
-            } else {
-                existing = bought[indexPath.row - 1]
-                newOrder = existing.item.order + 1
-            }
-            break
-        default:
-            return
-        }
         coordinator.session.loadObjects(ofClass: NSString.self, completion: { items in
             guard let strings = items as? [String] else { return }
             for string in strings {
                 do {
-                    let new = try JSONDecoder().decode(ReadableGroceryItemWithId.self, from: string.data(using: .utf8)!)
-                    if isMerge {
+                    let new = try JSONDecoder().decode(GroceryDragType.self, from: string.data(using: .utf8)!)
+                    switch (new, isMerge) {
+                    case (.item(let item), true):
+                        guard let existing = self.toBuy[indexPath.row].asItem else { return }
                         let run = { () -> Void in
-                            self.performSegue(withIdentifier: "mergeItems", sender: GroceryChange.merge(existing, new))
+                            self.performSegue(withIdentifier: "mergeItems", sender: GroceryChange.merge(existing, item))
                         }
                         let runAndIgnore = { () -> Void in
                             User.setDidDismissMergeWarning()
@@ -303,10 +404,42 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
                         } else {
                             run()
                         }
-                    } else {
-                        let newItem = ReadableGroceryItem(name: new.item.name, quantity: new.item.quantity, unit: new.item.unit, active: existing.item.active, order: newOrder)
-                        Database.updateGrocery(grocery: ReadableGroceryItemWithId(item: newItem, id: new.id))
-                        self.onChange?()
+                        break
+                    case (.item(let item), false):
+                        let newActive: Bool
+                        let newOrder: Int
+                        let newGroup: GroceryGroupWithId?
+                        switch indexPath.section {
+                        case self.TO_BUY:
+                            newActive = true
+                            newOrder = self.reorder(source: info.indexPath.row, destination: indexPath.row, items: self.toBuy, extract: {
+                                switch $0 {
+                                case .item(let item): return item.item.order
+                                case .group(_): return 0
+                                case .uncategorized: return 0
+                                }
+                            })
+                            newGroup = self.toBuy[indexPath.row].asGroup
+                            break
+                        default: return
+                        }
+                        let newItem = ReadableGroceryItem(name: item.item.name, quantity: item.item.quantity, unit: item.item.unit, active: newActive, order: newOrder, group: newGroup)
+                        Database.updateGrocery(grocery: ReadableGroceryItemWithId(item: newItem, id: item.id))
+                        self.reloadData()
+                        break
+                    case (.group(let group), false):
+                        let newOrder = self.reorder(source: info.indexPath.row, destination: indexPath.row, items: self.toBuy, extract: {
+                            switch $0 {
+                            case .item(let item): return item.item.group?.group.order ?? Database.selectMaxGroupOrder()
+                            case .group(let group): return group.group.order
+                            case .uncategorized: return Database.selectMaxGroupOrder()
+                            }
+                        })
+                        Database.updateGroup(group: GroceryGroupWithId(group: GroceryGroup(name: group.group.name, order: newOrder), id: group.id))
+                        self.reloadData()
+                        break
+                    default:
+                        break
                     }
                 } catch {
                     print("Failed completing drag and drop \(error)")
@@ -317,13 +450,36 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let vc = segue.destination as? GroceryChangeController, ["editItem", "mergeItems"].contains(segue.identifier), let change = sender as? GroceryChange {
-            vc.onChange = onChange
+            vc.onChange = reloadData
             vc.change = change
         }
+    }
+    
+    private func loadData() {
+        toBuy = []
+        let groups = Database.selectGroups()
+        let items = Database.selectGroceries()
+        for group in groups {
+            toBuy.append(.group(group))
+            toBuy.append(contentsOf: items.filter({
+                $0.item.group?.id == group.id && $0.item.active
+            }).map({ .item($0) }))
+        }
+        toBuy.append(.uncategorized)
+        toBuy.append(contentsOf: items.filter({
+            $0.item.group == nil && $0.item.active
+        }).map({ .item($0) }))
+        bought = items.filter({ !$0.item.active })
+    }
+    
+    func reloadData() {
+        loadData()
+        tableView.reloadData()
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        loadData()
         tableView.dragDelegate = self
         tableView.dropDelegate = self
         tableView.dragInteractionEnabled = true
