@@ -173,9 +173,13 @@ ingredientP = mk <$> ((,,) <$> quantityP <*> unitP <*> nameP)
     mk (q, u, n) = RawIngredient n q u
 
 sanitize :: Text -> Text
-sanitize = Text.replace "\194" " " . Text.filter (not . isIgnoredC)
+sanitize = replacements . Text.filter (not . isIgnoredC)
   where
-    isIgnoredC c = elem c ['▢']
+    replacements str = foldr (uncurry Text.replace) str
+      [ ("\194", " ")
+      , ("\226\150\162", "")
+      ]
+    isIgnoredC c = elem c ['▢', '☐']
 
 runParser :: Atto.Parser a -> Text -> Either String a
 runParser parser x = Atto.parseOnly parser (Text.strip (sanitize x))
