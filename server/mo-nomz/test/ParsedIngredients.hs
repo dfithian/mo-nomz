@@ -166,7 +166,7 @@ tasteOfHomeSteps =
   [ Step "Preheat oven to 425\194\176. Place potatoes and carrots in a large saucepan; add water to cover. Bring to a boil. Reduce heat; cook, covered, 8-10 minutes or until crisp-tender; drain."
   , Step "In a large skillet, heat butter over medium-high heat. Add onion; cook and stir until tender. Stir in flour and seasonings until blended. Gradually stir in broth and milk. Bring to a boil, stirring constantly; cook and stir 2 minutes or until thickened. Stir in chicken, peas, corn and potato-carrot mixture; remove from heat."
   , Step "Unroll a pie crust into each of two 9-in. pie plates; trim crusts even with rims of plates. Add chicken mixture. Unroll remaining crusts; place over filling. Trim, seal and flute edges. Cut slits in tops."
-  , Step "Bake 35-40 minutes or until crust is lightly browned. Let stand 15 minutes before cutting. Freeze option: Cover and freeze unbaked pies. To use, remove from freezer 30 minutes before baking (do not thaw). Preheat oven to 425\194\176. Place pies on baking sheets; cover edges loosely with foil. Bake 30 minutes. Reduce oven setting to 350\194\176; bake 70-80 minutes longer or until crust is golden brown and a thermometer inserted in center reads 165\194\176."
+  , Step "Bake 35-40 minutes or until crust is lightly browned. Let stand 15 minutes before cutting."
   ]
 
 rachelMansfieldIngredients :: [Ingredient]
