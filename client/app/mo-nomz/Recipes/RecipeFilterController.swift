@@ -8,14 +8,14 @@
 import UIKit
 
 protocol RecipeFilterDelegate {
-    func updateTags(active: Bool, tags: Set<String>)
+    func updateSelectedTag(active: Bool, tag: String?)
 }
 
 class RecipeFilterController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
     var delegate: RecipeFilterDelegate? = nil
     var active: Bool = false
     var tags: [String]? = nil
-    var selected: Set<String> = Set<String>()
+    var selected: String? = nil
     
     let ACTIVE = 0
     let TAGS = 1
@@ -35,13 +35,13 @@ class RecipeFilterController: UICollectionViewController, UICollectionViewDelega
     }
     
     private func sendUpdates() {
-        delegate?.updateTags(active: active, tags: selected)
+        delegate?.updateSelectedTag(active: active, tag: selected)
         collectionView.reloadData()
     }
     
     @objc func didTapClear(_ sender: Any?) {
         active = false
-        selected = Set<String>()
+        selected = nil
         sendUpdates()
     }
     
@@ -52,10 +52,10 @@ class RecipeFilterController: UICollectionViewController, UICollectionViewDelega
     
     private func toggleTag(_ index: Int) {
         let tag_ = tags![index]
-        if selected.contains(tag_) {
-            selected.remove(tag_)
+        if selected == tag_ {
+            selected = nil
         } else {
-            selected.insert(tag_)
+            selected = tag_
         }
         sendUpdates()
     }
@@ -84,7 +84,7 @@ class RecipeFilterController: UICollectionViewController, UICollectionViewDelega
             cell.button.tag = indexPath.row
             cell.button.setTitle(tag_, for: .normal)
             cell.button.layer.cornerRadius = 5
-            if selected.contains(tag_) {
+            if selected == tag_ {
                 cell.button.backgroundColor = UIColor.systemGray5
             } else {
                 cell.button.backgroundColor = nil

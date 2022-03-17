@@ -10,7 +10,7 @@ import UIKit
 
 class RecipeListController: UITableViewController, UISearchBarDelegate {
     var active: Bool = false
-    var tags: Set<String>? = nil
+    var tag: String? = nil
     var search: String? = nil
     var allRecipes: [ReadableRecipeWithId] = []
     var recipes: [ReadableRecipeWithId] = []
@@ -109,8 +109,8 @@ class RecipeListController: UITableViewController, UISearchBarDelegate {
         if active {
             recipes = recipes.filter({ $0.recipe.active })
         }
-        for tag_ in tags ?? [] {
-            recipes = recipes.filter({ $0.recipe.tags.contains(where: { $0 == tag_ }) })
+        if let tag_ = tag {
+            recipes = recipes.filter({ $0.recipe.tags.contains(tag_) })
         }
         if let searchText = search {
             let words = searchText.components(separatedBy: .whitespacesAndNewlines).filter({ !$0.isEmpty }).map({ $0.lowercased() })

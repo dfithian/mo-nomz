@@ -8,7 +8,7 @@
 import UIKit
 
 protocol RecipeTagDelegate {
-    func updateTags(tags: [String])
+    func updateRecipeTags(tags: [String])
 }
 
 class RecipeDetailTagController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
@@ -34,13 +34,13 @@ class RecipeDetailTagController: UICollectionViewController, UICollectionViewDel
     
     private func add(_ tag_: String) {
         tags.append(tag_)
-        delegate?.updateTags(tags: tags)
+        delegate?.updateRecipeTags(tags: tags)
         collectionView.reloadData()
     }
     
     private func delete(_ index: Int) {
         tags.remove(at: index)
-        delegate?.updateTags(tags: tags)
+        delegate?.updateRecipeTags(tags: tags)
         collectionView.reloadData()
     }
     

@@ -135,7 +135,7 @@ class RecipeDetailController: UIViewController, UITextViewDelegate, UITextFieldD
         }
     }
     
-    func updateTags(tags: [String]) {
+    func updateRecipeTags(tags: [String]) {
         guard let r = recipe else { return }
         Database.updateRecipe(id: r.id, recipe: ReadableRecipe(name: r.recipe.name, link: r.recipe.link, active: r.recipe.active, rating: r.recipe.rating, notes: r.recipe.notes, ingredients: r.recipe.ingredients, steps: r.recipe.steps, tags: tags))
         onChange?()

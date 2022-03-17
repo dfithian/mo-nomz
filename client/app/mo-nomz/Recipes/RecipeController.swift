@@ -21,9 +21,9 @@ class RecipeController: UIViewController, RecipeFilterDelegate {
         filterVc?.reloadData()
     }
 
-    func updateTags(active: Bool, tags: Set<String>) {
+    func updateSelectedTag(active: Bool, tag: String?) {
         recipeVc?.active = active
-        recipeVc?.tags = tags
+        recipeVc?.tag = tag
         recipeVc?.onFilter()
         recipeVc?.tableView.reloadData()
     }
