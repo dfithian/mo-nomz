@@ -72,7 +72,7 @@ struct GroceryDragInfo {
 
 class GroceryListController: UITableViewController, UITableViewDragDelegate, UITableViewDropDelegate, UITextViewDelegate {
     var toBuy: [GroceryListItem] = []
-    var bought: [ReadableGroceryItemWithId] = []
+    var bought: [GroceryListItem] = []
     var toBuyCollapsed: Bool = false
     var boughtCollapsed: Bool = true
 
@@ -103,7 +103,9 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
     
     @objc func didTapBought(_ sender: Any?) {
         let button = sender as! UIButton
-        toggleRow(bought[button.tag])
+        if let item = bought[button.tag].asItem {
+            toggleRow(item)
+        }
     }
     
     @objc func didTapCreateGroup(_ sender: Any?) {
@@ -188,9 +190,6 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
             boughtCollapsed = !boughtCollapsed
             tableView.reloadData()
             break
-        case BOUGHT:
-            performSegue(withIdentifier: "editItem", sender: GroceryChange.edit(bought[indexPath.row]))
-            break
         default: break
         }
     }
@@ -244,7 +243,12 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
             case .group(let group): return groupAction(group.id)
             case .uncategorized: return nil
             }
-        case BOUGHT: return itemAction(bought[indexPath.row].id)
+        case BOUGHT:
+            switch bought[indexPath.row] {
+            case .item(let item): return itemAction(item.id)
+            case .group(let group): return groupAction(group.id)
+            case .uncategorized: return nil
+            }
         default: return nil
         }
     }
@@ -298,16 +302,26 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
         case BOUGHT_HEADING:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! LabelButton
             let imageName = boughtCollapsed ? "chevron.forward.circle.fill" : "chevron.down.circle.fill"
-            cell.label.text = "Bought (\(bought.count))"
+            cell.label.text = "Bought (\(bought.filter({ $0.isItem }).count))"
             cell.button.setImage(UIImage(systemName: imageName), for: .normal)
             return cell
         case BOUGHT:
-            let item = bought[indexPath.row]
-            let cell = tableView.dequeueReusableCell(withIdentifier: "boughtListItem") as! LabelButton
-            cell.label.text = item.item.render()
-            cell.button.tag = indexPath.row
-            cell.button.addTarget(self, action: #selector(didTapBought), for: .touchUpInside)
-            return cell
+            switch bought[indexPath.row] {
+            case .item(let item):
+                let cell = tableView.dequeueReusableCell(withIdentifier: "boughtListItem") as! LabelButton
+                cell.label.text = item.item.render()
+                cell.button.tag = indexPath.row
+                cell.button.addTarget(self, action: #selector(didTapBought), for: .touchUpInside)
+                return cell
+            case .group(let group):
+                let cell = tableView.dequeueReusableCell(withIdentifier: "boughtGroupHeader") as! OneLabel
+                cell.label.text = group.group.name
+                return cell
+            case .uncategorized:
+                let cell = tableView.dequeueReusableCell(withIdentifier: "boughtGroupHeader") as! OneLabel
+                cell.label.text = "Uncategorized"
+                return cell
+            }
         default: return UITableViewCell()
         }
     }
@@ -457,6 +471,7 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
     
     private func loadData() {
         toBuy = []
+        bought = []
         let groups = Database.selectGroups()
         let items = Database.selectGroceries()
         for group in groups {
@@ -464,12 +479,19 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
             toBuy.append(contentsOf: items.filter({
                 $0.item.group?.id == group.id && $0.item.active
             }).map({ .item($0) }))
+            bought.append(.group(group))
+            bought.append(contentsOf: items.filter({
+                $0.item.group?.id == group.id && !$0.item.active
+            }).map({ .item($0) }))
         }
         toBuy.append(.uncategorized)
         toBuy.append(contentsOf: items.filter({
             $0.item.group == nil && $0.item.active
         }).map({ .item($0) }))
-        bought = items.filter({ !$0.item.active })
+        bought.append(.uncategorized)
+        bought.append(contentsOf: items.filter({
+            $0.item.group == nil && !$0.item.active
+        }).map({ .item($0) }))
     }
     
     func reloadData() {
