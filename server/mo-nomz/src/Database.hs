@@ -55,7 +55,7 @@ updateUserPing conn userId version targetMay = do
 
 selectRecentUsers :: Connection -> IO (Int, Int, Int, Int)
 selectRecentUsers conn = do
-  let q interval = maybe 0 fromOnly . headMay <$> query_ conn ("select count(id) from nomz.user where last_active >= now () - interval '" <> interval <> "' and target <> 'simulator'")
+  let q interval = maybe 0 fromOnly . headMay <$> query_ conn ("select count(id) from nomz.user where last_active >= now () - interval '" <> interval <> "' and coalesce(target, 'device') <> 'simulator'")
   (,,,)
     <$> q "1 day"
     <*> q "7 day"
