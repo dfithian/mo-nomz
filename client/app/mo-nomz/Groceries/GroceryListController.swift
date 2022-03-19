@@ -461,6 +461,28 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
             }
         })
     }
+    
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        let defaultHeadingHeight = 44.5
+        let groupHeadingHeight = 32.0
+        switch indexPath.section {
+        case TO_BUY:
+            switch toBuy[indexPath.row] {
+            case .group(_): return groupHeadingHeight
+            case .uncategorized: return groupHeadingHeight
+            default: break
+            }
+        case BOUGHT:
+            switch bought[indexPath.row] {
+            case .group(_): return groupHeadingHeight
+            case .uncategorized: return groupHeadingHeight
+            default: break
+            }
+        case NEW_GROUP: return groupHeadingHeight
+        default: break
+        }
+        return defaultHeadingHeight
+    }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let vc = segue.destination as? GroceryChangeController, ["editItem", "mergeItems"].contains(segue.identifier), let change = sender as? GroceryChange {
