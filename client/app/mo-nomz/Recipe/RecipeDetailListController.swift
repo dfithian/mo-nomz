@@ -37,15 +37,13 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
     let ADD_STEP_TAG = 1
 
     let INGREDIENT_LIST_HEADING = 0
-    let MERGE_TIP = 1
-    let INGREDIENT_LIST = 2
-    let ADD_INGREDIENT = 3
-    let STEP_LIST_HEADING = 4
-    let REORDER_STEP_TIP = 5
-    let STEP_LIST = 6
-    let ADD_STEP = 7
-    let NOTES_HEADING = 8
-    let NOTES = 9
+    let INGREDIENT_LIST = 1
+    let ADD_INGREDIENT = 2
+    let STEP_LIST_HEADING = 3
+    let STEP_LIST = 4
+    let ADD_STEP = 5
+    let NOTES_HEADING = 76
+    let NOTES = 7
     
     @objc func didTapAdd(_ sender: Any?) {
         guard let b = sender as? UIButton else { return }
@@ -93,19 +91,17 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
     }
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 10
+        return 8
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
         case NOTES_HEADING: return 1
         case NOTES: return 1
-        case MERGE_TIP: return !User.dismissedIngredientMergeTip() ? 1 : 0
         case INGREDIENT_LIST_HEADING: return 1
         case INGREDIENT_LIST: return ingredients.count
         case ADD_INGREDIENT: return 1
         case STEP_LIST_HEADING: return 1
-        case REORDER_STEP_TIP: return !User.dismissedStepReorderTip() ? 1 : 0
         case STEP_LIST: return steps.count
         case ADD_STEP: return 1
         default: return 0
@@ -126,8 +122,6 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
             cell.text_.delegate = self
             cell.text_.tag = Int.max
             return cell
-        case MERGE_TIP:
-            return tableView.dequeueReusableCell(withIdentifier: "mergeTip")!
         case INGREDIENT_LIST_HEADING:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! OneLabel
             cell.label.text = "Ingredients"
@@ -146,8 +140,6 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! OneLabel
             cell.label.text = "Steps"
             return cell
-        case REORDER_STEP_TIP:
-            return tableView.dequeueReusableCell(withIdentifier: "reorderTip")!
         case STEP_LIST:
             let cell = tableView.dequeueReusableCell(withIdentifier: "stepItem") as! TwoLabelOneText
             cell.oneLabel.text = String(indexPath.row + 1)
@@ -206,25 +198,11 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.section {
-        case MERGE_TIP:
-            let handler = { (action: UIAlertAction) -> Void in
-                User.setDidDismissIngredientMergeTip()
-                tableView.reloadData()
-            }
-            promptForConfirmation(title: "Dismiss this tip", message: "Drag items to merge", handler: handler)
-            break
         case INGREDIENT_LIST:
             performSegue(withIdentifier: "editItem", sender: IngredientChange.edit(ingredients[indexPath.row]))
             break
         case ADD_INGREDIENT:
             performSegue(withIdentifier: "addItem", sender: IngredientChange.add(recipe?.recipe.ingredients.map({ $0.value.order }).max().map({ $0 + 1}) ?? 1))
-            break
-        case REORDER_STEP_TIP:
-            let handler = { (action: UIAlertAction) -> Void in
-                User.setDidDismissStepReorderTip()
-                tableView.reloadData()
-            }
-            promptForConfirmation(title: "Dismiss this tip", message: "Drag steps to reorder", handler: handler)
             break
         case STEP_LIST:
             editStep(indexPath)

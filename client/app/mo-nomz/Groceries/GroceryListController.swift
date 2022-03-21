@@ -77,12 +77,11 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
     var boughtCollapsed: Bool = true
 
     let EMPTY = 0
-    let REORDER_MERGE_TIP = 1
-    let TO_BUY_HEADING = 2
-    let NEW_GROUP = 3
-    let TO_BUY = 4
-    let BOUGHT_HEADING = 5
-    let BOUGHT = 6
+    let TO_BUY_HEADING = 1
+    let NEW_GROUP = 2
+    let TO_BUY = 3
+    let BOUGHT_HEADING = 4
+    let BOUGHT = 5
     
     private func hasData() -> Bool {
         return toBuy.filter({ $0.isItem }).count + bought.count > 0
@@ -161,13 +160,6 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.section {
-        case REORDER_MERGE_TIP:
-            let handler = { (action: UIAlertAction) -> Void in
-                User.setDidDismissReorderMergeTip()
-                tableView.reloadData()
-            }
-            promptForConfirmation(title: "Dismiss this tip", message: "Drag items to reorder or merge", handler: handler)
-            break
         case TO_BUY_HEADING:
             toBuyCollapsed = !toBuyCollapsed
             tableView.reloadData()
@@ -195,13 +187,12 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
     }
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 7
+        return 6
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
         case EMPTY: return hasData() ? 0 : 1
-        case REORDER_MERGE_TIP: return (hasData() && !User.dismissedReorderMergeTip()) ? 1 : 0
         case TO_BUY_HEADING: return hasData() ? 1 : 0
         case NEW_GROUP: return hasData() ? 1 : 0
         case TO_BUY:
@@ -266,8 +257,6 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
         case EMPTY:
             let cell = tableView.dequeueReusableCell(withIdentifier: "emptyItem")!
             return cell
-        case REORDER_MERGE_TIP:
-            return tableView.dequeueReusableCell(withIdentifier: "reorderMergeTip")!
         case TO_BUY_HEADING:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! LabelButton
             let imageName = toBuyCollapsed ? "chevron.forward.circle.fill" : "chevron.down.circle.fill"

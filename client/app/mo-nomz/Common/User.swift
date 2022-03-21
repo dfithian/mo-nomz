@@ -73,18 +73,6 @@ class User {
     static func setDidInitializeGroups() {
          UserDefaults.shared.set(true, forKey: "groupsInitialized")
     }
-    static func dismissedReorderMergeTip() -> Bool {
-        return UserDefaults.shared.bool(forKey: "dismissedReorderMergeTip") || preference(.noTips)
-    }
-    static func setDidDismissReorderMergeTip() {
-        UserDefaults.shared.set(true, forKey: "dismissedReorderMergeTip")
-    }
-    static func dismissedIngredientMergeTip() -> Bool {
-        return UserDefaults.shared.bool(forKey: "dismissedIngredientMergeTip") || preference(.noTips)
-    }
-    static func setDidDismissIngredientMergeTip() {
-        UserDefaults.shared.set(true, forKey: "dismissedIngredientMergeTip")
-    }
     static func dismissedMergeWarning() -> Bool {
         return UserDefaults.shared.bool(forKey: "dismissedMergeWarning")
     }
@@ -96,12 +84,6 @@ class User {
     }
     static func setDidDismissIngredientMergeWarning() {
         UserDefaults.shared.set(true, forKey: "dismissedIngredientMergeWarning")
-    }
-    static func dismissedStepReorderTip() -> Bool {
-        return UserDefaults.shared.bool(forKey: "dismissedStepReorderTip") || preference(.noTips)
-    }
-    static func setDidDismissStepReorderTip() {
-        UserDefaults.shared.set(true, forKey: "dismissedStepReorderTip")
     }
     static func purchased(_ x: ProductRole) -> Bool {
         return UserDefaults.shared.bool(forKey: x.productIdentifier)
