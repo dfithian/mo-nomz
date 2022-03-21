@@ -46,6 +46,7 @@ class RecipeController: UIViewController, RecipeFilterDelegate {
         }
         if let vc = segue.destination as? RecipeFilterController, segue.identifier == "embedTags" {
             filterVc = vc
+            vc.onChange = reloadData
             vc.delegate = self
         }
         if let vc = segue.destination as? RecipeListController, segue.identifier == "embedRecipes" {

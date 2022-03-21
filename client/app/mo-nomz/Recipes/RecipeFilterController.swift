@@ -16,6 +16,7 @@ class RecipeFilterController: UICollectionViewController, UICollectionViewDelega
     var active: Bool = false
     var tags: [String]? = nil
     var selected: String? = nil
+    var onChange: (() -> Void)? = nil
     
     let ACTIVE = 0
     let TAGS = 1
@@ -60,11 +61,6 @@ class RecipeFilterController: UICollectionViewController, UICollectionViewDelega
         sendUpdates()
     }
     
-    @objc func didTapTag(_ sender: Any?) {
-        guard let button = sender as? UIButton else { return }
-        toggleTag(button.tag)
-    }
-    
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         switch indexPath.section {
         case ACTIVE:
@@ -89,7 +85,6 @@ class RecipeFilterController: UICollectionViewController, UICollectionViewDelega
             } else {
                 cell.button.backgroundColor = nil
             }
-            cell.button.addTarget(self, action: #selector(didTapTag), for: .touchUpInside)
             return cell
         case CLEAR:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "clearButton", for: indexPath) as! OneCellButton
@@ -97,6 +92,28 @@ class RecipeFilterController: UICollectionViewController, UICollectionViewDelega
             return cell
         default:
             return UICollectionViewCell()
+        }
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        switch indexPath.section {
+        case TAGS:
+            guard let tag_ = tags?[indexPath.row] else { return nil }
+            return UIContextMenuConfiguration(identifier: nil, previewProvider: nil, actionProvider: { _ in
+                    UIMenu(children: [
+                        UIAction(title: "Edit tag", image: UIImage(systemName: "pencil"), handler: { _ in
+                            self.promptGetInput(title: "Edit tag", content: tag_, completion: { (new) in
+                                Database.updateTag(old: tag_, new: new)
+                                self.onChange?()
+                            })
+                        }),
+                        UIAction(title: "Delete tag", image: UIImage(systemName: "xmark"), attributes: .destructive, handler: { _ in
+                            Database.deleteTag(old: tag_)
+                            self.onChange?()
+                        })
+                    ])
+            })
+        default: return nil
         }
     }
     

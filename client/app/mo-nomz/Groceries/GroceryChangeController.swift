@@ -96,7 +96,7 @@ class GroceryChangeController: SimpleController, UIPickerViewDataSource, UIPicke
             self.group.setTitle("Select group", for: .normal)
         })
         let addGroup = UIAction(title: "Add", image: UIImage(systemName: "plus"), handler: { _ in
-            self.promptGetInput(title: "Add group", completion: { (new) in
+            self.promptGetInput(title: "Add group", content: nil, completion: { (new) in
                 let order = groups.map({ $0.group.order }).max() ?? 0
                 let group = GroceryGroupWithId(group: GroceryGroup(name: new, order: order), id: UUID())
                 Database.insertGroups(groups: [group])

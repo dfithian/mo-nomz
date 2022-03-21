@@ -73,6 +73,7 @@ extension UIViewController {
     
     func promptGetInput(
         title: String,
+        content: String?,
         completion: @escaping ((String) -> Void)
     ) {
         var text: UITextField? = nil
@@ -83,7 +84,10 @@ extension UIViewController {
         let action = UIAlertAction(title: "OK", style: .default, handler: handler)
         let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         let input = UIAlertController(title: title, message: nil, preferredStyle: .alert)
-        input.addTextField(configurationHandler: { text = $0 })
+        input.addTextField(configurationHandler: {
+            text = $0
+            $0.text = content
+        })
         input.addAction(action)
         input.addAction(cancel)
         DispatchQueue.main.async {

@@ -746,6 +746,34 @@ class Database {
         return []
     }
     
+    static func updateTag(old: String, new: String) {
+        do {
+            let ctx = DataAccess.shared.managedObjectContext
+            let req = RecipeData.req()
+            req.predicate = NSPredicate(format: "tags contains[c] %@", old as CVarArg)
+            for recipe in try ctx.fetch(req) {
+                recipe.tags = recipe.tags?.map({ $0 == old ? new : $0 })
+            }
+            try ctx.save()
+        } catch let error as NSError {
+            print(error)
+        }
+    }
+    
+    static func deleteTag(old: String) {
+        do {
+            let ctx = DataAccess.shared.managedObjectContext
+            let req = RecipeData.req()
+            req.predicate = NSPredicate(format: "tags contains[c] %@", old as CVarArg)
+            for recipe in try ctx.fetch(req) {
+                recipe.tags = recipe.tags?.filter({ $0 != old })
+            }
+            try ctx.save()
+        } catch let error as NSError {
+            print(error)
+        }
+    }
+    
     static func selectMaxGroupOrder() -> Int {
         do {
             let ctx = DataAccess.shared.managedObjectContext
