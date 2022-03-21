@@ -91,7 +91,7 @@ class GroceryChangeController: SimpleController, UIPickerViewDataSource, UIPicke
                 self.group.setTitle(group.group.name, for: .normal)
             })
         })
-        let clearGroup = UIAction(title: "Clear", image: UIImage(systemName: "xmark"), attributes: .destructive, handler: { _ in
+        let clearGroup = UIAction(title: "Remove", image: UIImage(systemName: "xmark"), attributes: .destructive, handler: { _ in
             self.currentGroup = nil
             self.group.setTitle("Select group", for: .normal)
         })

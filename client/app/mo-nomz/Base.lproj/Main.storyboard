@@ -295,7 +295,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mYf-bB-0W0">
-                                <rect key="frame" x="0.0" y="172" width="414" height="583"/>
+                                <rect key="frame" x="0.0" y="179" width="414" height="576"/>
                                 <connections>
                                     <segue destination="eAD-3b-nmH" kind="embed" identifier="embedRecipes" id="Ffy-Tl-dbL"/>
                                 </connections>
@@ -313,18 +313,45 @@
                                     <segue destination="W8V-Kf-LnW" kind="embed" identifier="embedBanner" id="RLt-FV-xLP"/>
                                 </connections>
                             </containerView>
-                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Nwd-by-Fmi" customClass="Toolbar" customModule="mo_nomz" customModuleProvider="target">
+                            <searchBar contentMode="redraw" searchBarStyle="minimal" translatesAutoresizingMaskIntoConstraints="NO" id="kAj-rZ-NaQ">
+                                <rect key="frame" x="0.0" y="120" width="126" height="51"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="126" id="Ciu-Vf-vwL"/>
+                                </constraints>
+                                <textInputTraits key="textInputTraits"/>
+                            </searchBar>
+                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="q0d-Wl-JGa" customClass="Toolbar" customModule="mo_nomz" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="76" width="414" height="44"/>
                                 <items>
-                                    <barButtonItem style="plain" id="UeE-yY-Stl">
-                                        <searchBar key="customView" contentMode="redraw" text="" id="Hog-q1-oN6">
-                                            <rect key="frame" x="20" y="0.0" width="314" height="44"/>
+                                    <barButtonItem style="plain" id="k0d-dS-FDl">
+                                        <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="UFO-jQ-jhJ">
+                                            <rect key="frame" x="20" y="8.5" width="61" height="27.5"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                            <textInputTraits key="textInputTraits"/>
-                                        </searchBar>
+                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                            <state key="normal" title="Clear">
+                                                <color key="titleColor" name="AccentColor"/>
+                                                <imageReference key="image" image="arrow.clockwise" catalog="system" symbolScale="large"/>
+                                            </state>
+                                            <connections>
+                                                <action selector="didTapClear:" destination="YMV-r0-X4W" eventType="touchUpInside" id="hxo-jp-DNk"/>
+                                            </connections>
+                                        </button>
                                     </barButtonItem>
-                                    <barButtonItem style="plain" id="ZiR-Hz-chD">
-                                        <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="tUe-bR-zm9">
+                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="J4n-XS-qEf"/>
+                                    <barButtonItem enabled="NO" style="plain" id="Cie-8D-2YH">
+                                        <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="QgU-DT-fIb">
+                                            <rect key="frame" x="171" y="8" width="72" height="28"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                            <state key="normal" title="Export">
+                                                <color key="titleColor" name="AccentColor"/>
+                                                <imageReference key="image" image="square.and.arrow.up" catalog="system" symbolScale="large"/>
+                                            </state>
+                                        </button>
+                                    </barButtonItem>
+                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="RVd-Oz-pGv"/>
+                                    <barButtonItem style="plain" id="8QC-hR-W2n">
+                                        <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="eC8-ee-OrA">
                                             <rect key="frame" x="343" y="9" width="51" height="26"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="12"/>
@@ -333,16 +360,16 @@
                                                 <imageReference key="image" image="plus" catalog="system" symbolScale="large"/>
                                             </state>
                                             <connections>
-                                                <segue destination="G6h-5j-u4H" kind="show" identifier="addGroceries" id="q9j-wi-4gI"/>
+                                                <segue destination="G6h-5j-u4H" kind="show" identifier="addGroceries" id="AHG-sB-v6g"/>
                                             </connections>
                                         </button>
                                     </barButtonItem>
                                 </items>
                             </toolbar>
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nyB-Sd-ZFc">
-                                <rect key="frame" x="0.0" y="120" width="414" height="44"/>
+                                <rect key="frame" x="126" y="120" width="288" height="51"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="44" id="cTB-r6-ULO"/>
+                                    <constraint firstAttribute="height" constant="51" id="1fN-dC-e8a"/>
                                 </constraints>
                                 <connections>
                                     <segue destination="S8q-Rx-sS7" kind="embed" identifier="embedTags" id="b1y-nz-vhw"/>
@@ -352,29 +379,33 @@
                         <viewLayoutGuide key="safeArea" id="lEH-cO-OP7"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="nyB-Sd-ZFc" firstAttribute="leading" secondItem="lEH-cO-OP7" secondAttribute="leading" id="1ha-hY-8Ga"/>
-                            <constraint firstItem="Nwd-by-Fmi" firstAttribute="top" secondItem="OKO-ca-LY2" secondAttribute="bottom" id="CSm-H2-Awq"/>
                             <constraint firstItem="wq3-Ui-YiB" firstAttribute="leading" secondItem="lEH-cO-OP7" secondAttribute="leading" id="CaP-Sm-5zx"/>
-                            <constraint firstItem="Nwd-by-Fmi" firstAttribute="leading" secondItem="lEH-cO-OP7" secondAttribute="leading" id="EHV-fc-dfj"/>
-                            <constraint firstItem="nyB-Sd-ZFc" firstAttribute="top" secondItem="Nwd-by-Fmi" secondAttribute="bottom" id="IBo-xD-Nzn"/>
+                            <constraint firstItem="nyB-Sd-ZFc" firstAttribute="leading" secondItem="kAj-rZ-NaQ" secondAttribute="trailing" id="Cy8-Av-G1O"/>
                             <constraint firstItem="wq3-Ui-YiB" firstAttribute="trailing" secondItem="lEH-cO-OP7" secondAttribute="trailing" id="JyY-11-hYe"/>
                             <constraint firstItem="OKO-ca-LY2" firstAttribute="top" secondItem="lEH-cO-OP7" secondAttribute="top" id="LYZ-7H-Ef9"/>
                             <constraint firstItem="mYf-bB-0W0" firstAttribute="leading" secondItem="lEH-cO-OP7" secondAttribute="leading" id="OII-QM-t2D"/>
                             <constraint firstItem="OKO-ca-LY2" firstAttribute="centerX" secondItem="eII-h4-H7F" secondAttribute="centerX" id="QZf-T6-6Uy"/>
                             <constraint firstItem="wq3-Ui-YiB" firstAttribute="bottom" secondItem="lEH-cO-OP7" secondAttribute="bottom" id="QwV-sU-nY8"/>
-                            <constraint firstItem="Nwd-by-Fmi" firstAttribute="trailing" secondItem="lEH-cO-OP7" secondAttribute="trailing" id="W9Z-sr-yLN"/>
+                            <constraint firstItem="q0d-Wl-JGa" firstAttribute="top" secondItem="OKO-ca-LY2" secondAttribute="bottom" id="TrR-pF-NSg"/>
                             <constraint firstItem="wq3-Ui-YiB" firstAttribute="top" secondItem="mYf-bB-0W0" secondAttribute="bottom" constant="8" symbolic="YES" id="ZkN-hN-ypa"/>
+                            <constraint firstItem="q0d-Wl-JGa" firstAttribute="trailing" secondItem="lEH-cO-OP7" secondAttribute="trailing" id="czT-iV-rVK"/>
                             <constraint firstItem="nyB-Sd-ZFc" firstAttribute="trailing" secondItem="lEH-cO-OP7" secondAttribute="trailing" id="cze-GZ-L6T"/>
+                            <constraint firstItem="kAj-rZ-NaQ" firstAttribute="top" secondItem="q0d-Wl-JGa" secondAttribute="bottom" id="dfp-5y-apQ"/>
                             <constraint firstItem="mYf-bB-0W0" firstAttribute="top" secondItem="nyB-Sd-ZFc" secondAttribute="bottom" constant="8" symbolic="YES" id="h2H-zG-DxL"/>
                             <constraint firstItem="mYf-bB-0W0" firstAttribute="trailing" secondItem="lEH-cO-OP7" secondAttribute="trailing" id="hML-ho-Tqk"/>
+                            <constraint firstItem="nyB-Sd-ZFc" firstAttribute="top" secondItem="q0d-Wl-JGa" secondAttribute="bottom" id="rl9-mv-UOX"/>
+                            <constraint firstItem="kAj-rZ-NaQ" firstAttribute="leading" secondItem="lEH-cO-OP7" secondAttribute="leading" id="vB5-EZ-ChO"/>
+                            <constraint firstItem="q0d-Wl-JGa" firstAttribute="leading" secondItem="lEH-cO-OP7" secondAttribute="leading" id="yyh-9L-dLQ"/>
                         </constraints>
                     </view>
                     <tabBarItem key="tabBarItem" title="Meals" image="list.dash" catalog="system" id="sBs-eL-zOR"/>
                     <connections>
-                        <outlet property="add" destination="tUe-bR-zm9" id="xvc-wE-ald"/>
+                        <outlet property="add" destination="eC8-ee-OrA" id="Rie-0E-BkR"/>
                         <outlet property="banner" destination="wq3-Ui-YiB" id="QM2-JT-yqW"/>
-                        <outlet property="search" destination="Hog-q1-oN6" id="0S6-0T-TTl"/>
-                        <outlet property="toolbar" destination="Nwd-by-Fmi" id="gSh-Af-cPV"/>
+                        <outlet property="clear" destination="UFO-jQ-jhJ" id="rQZ-4C-3Rs"/>
+                        <outlet property="export" destination="QgU-DT-fIb" id="2mq-4g-TST"/>
+                        <outlet property="search" destination="kAj-rZ-NaQ" id="iRC-NZ-PIz"/>
+                        <outlet property="toolbar" destination="q0d-Wl-JGa" id="Wny-kM-hcj"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="oNS-8K-ynE" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -899,7 +930,7 @@
             <objects>
                 <collectionViewController id="S8q-Rx-sS7" customClass="RecipeFilterController" customModule="mo_nomz" customModuleProvider="target" sceneMemberID="viewController">
                     <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="eSG-e6-940">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="44"/>
+                        <rect key="frame" x="0.0" y="0.0" width="288" height="51"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" automaticEstimatedItemSize="YES" minimumLineSpacing="10" minimumInteritemSpacing="10" id="cQF-sd-QqU">
@@ -910,7 +941,7 @@
                         </collectionViewFlowLayout>
                         <cells>
                             <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="activeButton" id="hZ1-9J-bsL" customClass="OneCellButton" customModule="mo_nomz" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="1.5" width="129" height="41"/>
+                                <rect key="frame" x="0.0" y="5" width="129" height="41"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="XYT-rc-jrd">
                                     <rect key="frame" x="0.0" y="0.0" width="129" height="41"/>
@@ -936,13 +967,13 @@
                                 </connections>
                             </collectionViewCell>
                             <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" reuseIdentifier="tagButton" id="zAB-Dt-PHn" customClass="OneCellButton" customModule="mo_nomz" customModuleProvider="target">
-                                <rect key="frame" x="139" y="1.5" width="129" height="41"/>
+                                <rect key="frame" x="139" y="5" width="129" height="41"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="LM3-yB-21h">
                                     <rect key="frame" x="0.0" y="0.0" width="129" height="41"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OUx-kQ-cG6">
+                                        <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OUx-kQ-cG6">
                                             <rect key="frame" x="49.5" y="7" width="30" height="27"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                             <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
@@ -957,11 +988,11 @@
                                     </constraints>
                                 </collectionViewCellContentView>
                                 <connections>
-                                    <outlet property="button" destination="OUx-kQ-cG6" id="umS-Jl-CEg"/>
+                                    <outlet property="button" destination="OUx-kQ-cG6" id="wDr-mq-uwC"/>
                                 </connections>
                             </collectionViewCell>
                             <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" reuseIdentifier="clearButton" id="jpE-c5-XRr" customClass="OneCellButton" customModule="mo_nomz" customModuleProvider="target">
-                                <rect key="frame" x="278" y="1.5" width="129" height="41"/>
+                                <rect key="frame" x="278" y="5" width="129" height="41"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="NNq-eX-n55">
                                     <rect key="frame" x="0.0" y="0.0" width="129" height="41"/>
@@ -1014,7 +1045,7 @@
             <objects>
                 <viewController id="eAD-3b-nmH" customClass="RecipeListController" customModule="mo_nomz" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="obZ-do-dPY">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="583"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="576"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <prototypes>
@@ -1178,7 +1209,7 @@
             <objects>
                 <viewController id="sFq-7J-p0e" customClass="RecipeDetailController" customModule="mo_nomz" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="oOb-uB-670">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="529"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="522"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" minimumFontSize="18" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Vbz-ep-qK5">
@@ -1227,7 +1258,7 @@
                                 </connections>
                             </button>
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="REl-iJ-C4G">
-                                <rect key="frame" x="0.0" y="186" width="414" height="323"/>
+                                <rect key="frame" x="0.0" y="186" width="414" height="316"/>
                                 <connections>
                                     <segue destination="e2N-n0-P9v" kind="embed" identifier="embedDetail" id="0lm-9a-fdc"/>
                                 </connections>
@@ -1410,7 +1441,7 @@
             <objects>
                 <tableViewController id="e2N-n0-P9v" customClass="RecipeDetailListController" customModule="mo_nomz" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="bbp-75-X3e">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="323"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="316"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <prototypes>
@@ -1701,7 +1732,7 @@
             <objects>
                 <viewController id="CXg-lF-fFe" customClass="IngredientChangeController" customModule="mo_nomz" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="xod-C3-vdf">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="323"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="316"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Merge" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DUv-0g-qQA">
@@ -1711,7 +1742,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cqi-mq-A1Z">
-                                <rect key="frame" x="0.0" y="279" width="414" height="44"/>
+                                <rect key="frame" x="0.0" y="272" width="414" height="44"/>
                                 <items>
                                     <barButtonItem title="Cancel" id="odp-dW-JnT">
                                         <color key="tintColor" systemColor="systemRedColor"/>

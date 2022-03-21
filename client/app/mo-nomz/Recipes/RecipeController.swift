@@ -10,11 +10,23 @@ import UIKit
 class RecipeController: UIViewController, RecipeFilterDelegate {
     @IBOutlet weak var banner: UIView!
     @IBOutlet weak var toolbar: Toolbar!
+    @IBOutlet weak var clear: UIButton!
+    @IBOutlet weak var export: UIButton!
     @IBOutlet weak var add: UIButton!
     @IBOutlet weak var search: UISearchBar!
 
     var filterVc: RecipeFilterController? = nil
     var recipeVc: RecipeListController? = nil
+    
+    @IBAction func didTapClear(_ sender: Any?) {
+        if !Database.selectGroceries().isEmpty {
+            let handler = { (action: UIAlertAction) -> Void in
+                Database.clearAll()
+                self.reloadData()
+            }
+            promptForConfirmation(title: "Clear", message: "Are you sure you want to clear?", handler: handler)
+        }
+    }
 
     func reloadData() {
         recipeVc?.reloadData()
@@ -49,6 +61,10 @@ class RecipeController: UIViewController, RecipeFilterDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         reloadData()
+        clear.frame = CGRect(x: clear.frame.minX, y: clear.frame.minY, width: clear.frame.width, height: toolbar.frame.height)
+        clear.alignTextUnderImage()
+        export.frame = CGRect(x: export.frame.minX, y: export.frame.minY, width: export.frame.width, height: toolbar.frame.height)
+        export.alignTextUnderImage()
         add.frame = CGRect(x: add.frame.minX, y: add.frame.minY, width: add.frame.width, height: toolbar.frame.height)
         add.alignTextUnderImage()
         search.searchTextField.addDoneButtonOnKeyboard()
