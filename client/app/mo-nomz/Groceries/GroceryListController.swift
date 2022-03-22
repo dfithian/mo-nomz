@@ -70,7 +70,7 @@ struct GroceryDragInfo {
     let indexPath: IndexPath
 }
 
-class GroceryListController: UITableViewController, UITableViewDragDelegate, UITableViewDropDelegate, UITextViewDelegate {
+class GroceryListController: UITableViewController, UITableViewDragDelegate, UITableViewDropDelegate, UITextFieldDelegate {
     var toBuy: [GroceryListItem] = []
     var bought: [GroceryListItem] = []
     var toBuyCollapsed: Bool = false
@@ -131,24 +131,19 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
     }
     
     private func editGroup(_ indexPath: IndexPath) {
-        let cell = tableView.cellForRow(at: indexPath) as! LabelText
+        let cell = tableView.cellForRow(at: indexPath) as! OneTextField
         cell.text_.becomeFirstResponder()
-        cell.text_.alpha = 1
-        cell.label.alpha = 0
     }
     
-    func textViewDidEndEditing(_ textView: UITextView) {
+    func textFieldDidEndEditing(_ textField: UITextField) {
         let group: GroceryGroupWithId
-        switch toBuy[textView.tag] {
+        switch toBuy[textField.tag] {
         case .group(let existing):
             group = existing
             break
         default: return
         }
-        let cell = tableView.cellForRow(at: IndexPath(row: textView.tag, section: TO_BUY)) as! LabelText
-        cell.text_.alpha = 0
-        cell.label.alpha = 1
-        cell.label.text = cell.text_.text
+        let cell = tableView.cellForRow(at: IndexPath(row: textField.tag, section: TO_BUY)) as! OneTextField
         if let newGroup = cell.text_.text?.trimmingCharacters(in: .whitespacesAndNewlines).nonEmpty() {
             let new = GroceryGroupWithId(group: GroceryGroup(name: newGroup, order: group.group.order), id: group.id)
             Database.updateGroup(group: new)
@@ -253,7 +248,7 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
                         self.reloadData()
                     })
                 })
-            ])})
+            ]) })
         }
         switch indexPath.section {
         case TO_BUY:
@@ -295,16 +290,16 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
                 cell.button.addTarget(self, action: #selector(didTapToBuy), for: .touchUpInside)
                 return cell
             case .group(let group):
-                let cell = tableView.dequeueReusableCell(withIdentifier: "groupHeader") as! LabelText
-                cell.label.text = group.group.name
+                let cell = tableView.dequeueReusableCell(withIdentifier: "groupHeader") as! OneTextField
                 cell.text_.text = group.group.name
                 cell.text_.tag = indexPath.row
                 cell.text_.addDoneButtonOnKeyboard()
                 cell.text_.delegate = self
                 return cell
             case .uncategorized:
-                let cell = tableView.dequeueReusableCell(withIdentifier: "groupHeader") as! LabelText
-                cell.label.text = "Uncategorized"
+                let cell = tableView.dequeueReusableCell(withIdentifier: "groupHeader") as! OneTextField
+                cell.text_.isUserInteractionEnabled = false
+                cell.text_.text = "Uncategorized"
                 return cell
             }
         case BOUGHT_HEADING:

@@ -7,7 +7,7 @@
 
 import UIKit
 
-class RecipeDetailController: UIViewController, UITextViewDelegate, UITextFieldDelegate, RecipeTagDelegate {
+class RecipeDetailController: UIViewController, UITextFieldDelegate, RecipeTagDelegate {
     @IBOutlet weak var nameRead: UILabel!
     @IBOutlet weak var nameWrite: UITextField!
     @IBOutlet weak var star1: UIButton!

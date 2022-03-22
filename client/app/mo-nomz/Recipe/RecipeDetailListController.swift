@@ -42,7 +42,7 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
     let STEP_LIST_HEADING = 3
     let STEP_LIST = 4
     let ADD_STEP = 5
-    let NOTES_HEADING = 76
+    let NOTES_HEADING = 6
     let NOTES = 7
     
     @objc func didTapAdd(_ sender: Any?) {
@@ -55,19 +55,16 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
     }
     
     private func newStep() {
-        guard let r = recipe else { return }
-        let newSteps = Database.addRecipeSteps(recipeId: r.id, rawSteps: [""])
-        steps.append(contentsOf: newSteps)
+        let maxOrder = steps.map({ $0.step.order }).max() ?? 0
+        steps.append(StepWithId(id: UUID(), step: Step(step: "", order: maxOrder)))
         let indexPath = IndexPath(row: steps.count - 1, section: STEP_LIST)
         tableView.insertRows(at: [indexPath], with: .automatic)
         editStep(indexPath)
     }
     
     private func editStep(_ indexPath: IndexPath) {
-        let cell = tableView.cellForRow(at: indexPath) as! TwoLabelOneText
+        let cell = tableView.cellForRow(at: indexPath) as! LabelText
         cell.text_.becomeFirstResponder()
-        cell.text_.alpha = 1
-        cell.twoLabel.alpha = 0
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
@@ -76,10 +73,7 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
             Database.updateRecipe(id: r.id, recipe: ReadableRecipe(name: r.recipe.name, link: r.recipe.link, active: r.recipe.active, rating: r.recipe.rating, notes: textView.text ?? r.recipe.notes, ingredients: r.recipe.ingredients, steps: r.recipe.steps, tags: r.recipe.tags))
         } else {
             let step = steps[textView.tag]
-            let cell = tableView.cellForRow(at: IndexPath(row: textView.tag, section: STEP_LIST)) as! TwoLabelOneText
-            cell.text_.alpha = 0
-            cell.twoLabel.alpha = 1
-            cell.twoLabel.text = cell.text_.text
+            let cell = tableView.cellForRow(at: IndexPath(row: textView.tag, section: STEP_LIST)) as! LabelText
             if let newStep = cell.text_.text?.trimmingCharacters(in: .whitespacesAndNewlines).nonEmpty() {
                 let new = StepWithId(id: step.id, step: Step(step: newStep, order: step.step.order))
                 Database.updateRecipeStep(recipeId: r.id, step: new)
@@ -141,9 +135,8 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
             cell.label.text = "Steps"
             return cell
         case STEP_LIST:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "stepItem") as! TwoLabelOneText
-            cell.oneLabel.text = String(indexPath.row + 1)
-            cell.twoLabel.text = steps[indexPath.row].step.step
+            let cell = tableView.dequeueReusableCell(withIdentifier: "stepItem") as! LabelText
+            cell.label.text = String(indexPath.row + 1)
             cell.text_.text = steps[indexPath.row].step.step
             cell.text_.tag = indexPath.row
             cell.text_.addDoneButtonOnKeyboard()
@@ -159,41 +152,30 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
         }
     }
     
-    private func swipe(_ indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        guard let r = recipe else { return nil }
-        let delete: Subentity
+    override func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         switch indexPath.section {
         case INGREDIENT_LIST:
-            delete = .ingredient(ingredients[indexPath.row])
-            break
+            return UIContextMenuConfiguration(identifier: nil, previewProvider: nil, actionProvider: { _ in
+                UIMenu(children: [
+                    UIAction(title: "Delete ingredient", image: UIImage(systemName: "xmark"), attributes: .destructive, handler: { _ in
+                        self.promptForConfirmation(title: "Delete ingredient", message: "Are you sure you want to delete?", handler: { _ in
+                            self.ingredients.remove(at: indexPath.row)
+                        })
+                    })
+                ])
+            })
         case STEP_LIST:
-            delete = .step(steps[indexPath.row])
-            break
-        default:
-            return nil
+            return UIContextMenuConfiguration(identifier: nil, previewProvider: nil, actionProvider: { _ in
+                UIMenu(children: [
+                    UIAction(title: "Delete step", image: UIImage(systemName: "xmark"), attributes: .destructive, handler: { _ in
+                        self.promptForConfirmation(title: "Delete step", message: "Are you sure you want to delete?", handler: { _ in
+                            self.steps.remove(at: indexPath.row)
+                        })
+                    })
+                ])
+            })
+        default: return nil
         }
-        let action = UIContextualAction(style: .destructive, title: "Delete") { (action, view, completionHandler) in
-            switch delete {
-            case .ingredient(let ingredient):
-                Database.updateRecipeIngredients(id: r.id, active: r.recipe.active, deletes: [ingredient.id], adds: [])
-                break
-            case .step(let step):
-                Database.deleteRecipeStep(id: step.id)
-                break
-            }
-            self.onChange?()
-            completionHandler(true)
-        }
-        action.backgroundColor = .systemRed
-        return UISwipeActionsConfiguration(actions: [action])
-    }
-    
-    override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        return swipe(indexPath)
-    }
-    
-    override func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        return swipe(indexPath)
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
