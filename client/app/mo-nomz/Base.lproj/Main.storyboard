@@ -850,12 +850,6 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Fgh-HX-BEv">
-                                <rect key="frame" x="361" y="421.5" width="43" height="29"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                <state key="normal" title="Button"/>
-                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="qFK-ct-aCv"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -865,7 +859,6 @@
                             <constraint firstItem="qFK-ct-aCv" firstAttribute="trailing" secondItem="K3f-WB-Ysn" secondAttribute="trailing" constant="10" id="3So-HC-PwW"/>
                             <constraint firstItem="qFK-ct-aCv" firstAttribute="trailing" secondItem="Nfg-V2-lUP" secondAttribute="trailing" constant="10" id="5Oc-1d-lW7"/>
                             <constraint firstItem="qFK-ct-aCv" firstAttribute="trailing" secondItem="134-Vg-n19" secondAttribute="trailing" constant="10" id="7T7-3a-UXn"/>
-                            <constraint firstItem="qFK-ct-aCv" firstAttribute="trailing" secondItem="Fgh-HX-BEv" secondAttribute="trailing" constant="10" id="JEc-Ir-nIO"/>
                             <constraint firstItem="qFK-ct-aCv" firstAttribute="trailing" secondItem="j9Q-Bq-gEp" secondAttribute="trailing" constant="10" id="Jap-Nw-4Go"/>
                             <constraint firstItem="7CI-S7-fEL" firstAttribute="top" secondItem="SiK-UI-rQZ" secondAttribute="bottom" constant="8" symbolic="YES" id="K2K-7R-3b9"/>
                             <constraint firstItem="ASS-S0-dlR" firstAttribute="bottom" secondItem="qFK-ct-aCv" secondAttribute="bottom" id="KIp-F7-e0R"/>
@@ -877,7 +870,6 @@
                             <constraint firstItem="qFK-ct-aCv" firstAttribute="trailing" secondItem="7CI-S7-fEL" secondAttribute="trailing" constant="10" id="ZUB-XN-p24"/>
                             <constraint firstItem="2V5-f2-izg" firstAttribute="top" secondItem="qFK-ct-aCv" secondAttribute="top" constant="20" id="ZpL-bq-8Wg"/>
                             <constraint firstItem="SiK-UI-rQZ" firstAttribute="leading" secondItem="qFK-ct-aCv" secondAttribute="leading" constant="10" id="drv-Q3-bAX"/>
-                            <constraint firstItem="Fgh-HX-BEv" firstAttribute="top" secondItem="j9Q-Bq-gEp" secondAttribute="bottom" constant="8" symbolic="YES" id="dtp-3b-7St"/>
                             <constraint firstItem="K3f-WB-Ysn" firstAttribute="leading" secondItem="qFK-ct-aCv" secondAttribute="leading" constant="10" id="gWi-JS-gNn"/>
                             <constraint firstItem="Nfg-V2-lUP" firstAttribute="leading" secondItem="qFK-ct-aCv" secondAttribute="leading" constant="20" id="k9s-9P-hIp"/>
                             <constraint firstItem="2V5-f2-izg" firstAttribute="centerX" secondItem="sfx-IP-tHh" secondAttribute="centerX" id="tGw-jY-VAJ"/>
@@ -890,7 +882,6 @@
                     <navigationItem key="navigationItem" id="DSN-HB-0ev"/>
                     <connections>
                         <outlet property="existingInfo" destination="7CI-S7-fEL" id="w2V-uU-5go"/>
-                        <outlet property="group" destination="Fgh-HX-BEv" id="sGO-qH-V7Q"/>
                         <outlet property="heading" destination="2V5-f2-izg" id="FSr-VI-7gk"/>
                         <outlet property="keyboardView" destination="K3f-WB-Ysn" id="ZoG-FC-s3v"/>
                         <outlet property="name" destination="K3f-WB-Ysn" id="DxG-Vw-Nmt"/>

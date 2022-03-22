@@ -52,7 +52,7 @@ class RecipeDetailTagController: UICollectionViewController, UICollectionViewDel
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "tagItem", for: indexPath) as! OneCellButton
             cell.button.setTitle(tags[indexPath.row], for: .normal)
             cell.button.menu = UIMenu(children: [
-                UIAction(title: "Remove", image: UIImage(systemName: "xmark"), attributes: .destructive, handler: { _ in
+                UIAction(title: "Remove tag", image: UIImage(systemName: "xmark"), attributes: .destructive, handler: { _ in
                     self.delete(indexPath.row)
                 })
             ])

@@ -209,47 +209,59 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
         default: return 0
         }
     }
-
-    private func swipe(_ indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        let itemAction = { (id: UUID) -> UISwipeActionsConfiguration? in
-            let action = UIContextualAction(style: .destructive, title: "Delete") { (action, view, completionHandler) in
-                self.deleteRow(id)
-                completionHandler(true)
-            }
-            action.backgroundColor = .systemRed
-            return UISwipeActionsConfiguration(actions: [action])
+    
+    override func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        let groups = Database.selectGroups()
+        let itemConfig = { (item: ReadableGroceryItemWithId) -> UIContextMenuConfiguration in
+            let groupActions = groups.map({ (group) in
+                UIAction(title: group.group.name, state: item.item.group?.id == group.id ? .on : .off, handler: { _ in
+                    if item.item.group?.id != group.id {
+                        Database.updateGrocery(grocery: ReadableGroceryItemWithId(item: ReadableGroceryItem(name: item.item.name, quantity: item.item.quantity, unit: item.item.unit, active: item.item.active, order: 0, group: group), id: item.id))
+                        self.reloadData()
+                    }
+                })
+            })
+            let removeGroup = UIAction(title: "Remove group", image: UIImage(systemName: "xmark"), attributes: .destructive, handler: { _ in
+                if item.item.group == nil {
+                    Database.updateGrocery(grocery: ReadableGroceryItemWithId(item: ReadableGroceryItem(name: item.item.name, quantity: item.item.quantity, unit: item.item.unit, active: item.item.active, order: 0, group: nil), id: item.id))
+                    self.reloadData()
+                }
+            })
+            let groupMenu = UIMenu(title: "Manage Group", children: groupActions + [removeGroup])
+            let menu = UIMenu(children: [
+                groupMenu,
+                UIAction(title: "Edit item", image: UIImage(systemName: "pencil"), handler: { _ in
+                    self.performSegue(withIdentifier: "editItem", sender: GroceryChange.edit(item))
+                }),
+                UIAction(title: "Delete item", image: UIImage(systemName: "xmark"), attributes: .destructive, handler: { _ in
+                    Database.deleteGrocery(id: item.id)
+                    self.reloadData()
+                })
+            ])
+            return UIContextMenuConfiguration(identifier: nil, previewProvider: nil, actionProvider: { _ in menu })
         }
-        let groupAction = { (id: UUID) -> UISwipeActionsConfiguration? in
-            let action = UIContextualAction(style: .destructive, title: "Delete") { (action, view, completionHandler) in
-                self.deleteGroup(id)
-                completionHandler(true)
-            }
-            action.backgroundColor = .systemRed
-            return UISwipeActionsConfiguration(actions: [action])
+        let groupConfig = { (group: GroceryGroupWithId) -> UIContextMenuConfiguration in
+            return UIContextMenuConfiguration(identifier: nil, previewProvider: nil, actionProvider: { _ in UIMenu(children: [
+                UIAction(title: "Delete group", image: UIImage(systemName: "xmark"), attributes: .destructive, handler: { _ in
+                    Database.deleteGroup(id: group.id)
+                    self.reloadData()
+                })
+            ])})
         }
         switch indexPath.section {
         case TO_BUY:
             switch toBuy[indexPath.row] {
-            case .item(let item): return itemAction(item.id)
-            case .group(let group): return groupAction(group.id)
-            case .uncategorized: return nil
+            case .item(let item): return itemConfig(item)
+            case .group(let group): return groupConfig(group)
+            default: return nil
             }
         case BOUGHT:
             switch bought[indexPath.row] {
-            case .item(let item): return itemAction(item.id)
-            case .group(let group): return groupAction(group.id)
-            case .uncategorized: return nil
+            case .item(let item): return itemConfig(item)
+            default: return nil
             }
         default: return nil
         }
-    }
-
-    override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        return swipe(indexPath)
-    }
-
-    override func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        return swipe(indexPath)
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

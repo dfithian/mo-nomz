@@ -17,7 +17,6 @@ class GroceryChangeController: SimpleController, UIPickerViewDataSource, UIPicke
     var onChange: (() -> Void)? = nil
     var currentWholeQuantity: Int? = nil
     var currentFractionQuantity: ReadableFraction? = nil
-    var currentGroup: GroceryGroupWithId? = nil
     
     @IBOutlet weak var heading: UILabel!
     @IBOutlet weak var synopsis: UILabel!
@@ -26,7 +25,6 @@ class GroceryChangeController: SimpleController, UIPickerViewDataSource, UIPicke
     @IBOutlet weak var name: UITextField!
     @IBOutlet weak var existingInfo: UILabel!
     @IBOutlet weak var newInfo: UILabel!
-    @IBOutlet weak var group: UIButton!
     
     let WHOLE = 0
     let FRACTION = 1
@@ -34,13 +32,11 @@ class GroceryChangeController: SimpleController, UIPickerViewDataSource, UIPicke
     @IBAction func didTapSave(_ sender: Any?) {
         switch change {
         case .merge(let existing, let new):
-            let newOrder = existing.item.group?.id != currentGroup?.id ? 0 : existing.item.order
-            let item = ReadableGroceryItemWithId(item: ReadableGroceryItem(name: name.text!, quantity: ReadableQuantity(whole: currentWholeQuantity, fraction: currentFractionQuantity), unit: unit.text?.nonEmpty(), active: existing.item.active, order: newOrder, group: currentGroup), id: UUID())
+            let item = ReadableGroceryItemWithId(item: ReadableGroceryItem(name: name.text!, quantity: ReadableQuantity(whole: currentWholeQuantity, fraction: currentFractionQuantity), unit: unit.text?.nonEmpty(), active: existing.item.active, order: existing.item.order, group: existing.item.group), id: UUID())
             Database.mergeGroceries(ids: [existing.id, new.id], grocery: item)
             break
         case .edit(let existing):
-            let newOrder = existing.item.group?.id != currentGroup?.id ? 0 : existing.item.order
-            let item = ReadableGroceryItem(name: name.text!, quantity: ReadableQuantity(whole: currentWholeQuantity, fraction: currentFractionQuantity), unit: unit.text?.nonEmpty(), active: existing.item.active, order: newOrder, group: currentGroup)
+            let item = ReadableGroceryItem(name: name.text!, quantity: ReadableQuantity(whole: currentWholeQuantity, fraction: currentFractionQuantity), unit: unit.text?.nonEmpty(), active: existing.item.active, order: existing.item.order, group: existing.item.group)
             Database.updateGrocery(grocery: ReadableGroceryItemWithId(item: item, id: existing.id))
             break
         default: break
@@ -83,31 +79,6 @@ class GroceryChangeController: SimpleController, UIPickerViewDataSource, UIPicke
         }
     }
     
-    private func setupGroup() {
-        let groups = Database.selectGroups()
-        let groupActions = groups.map({ (group) in
-            UIAction(title: group.group.name, handler: { _ in
-                self.currentGroup = group
-                self.group.setTitle(group.group.name, for: .normal)
-            })
-        })
-        let clearGroup = UIAction(title: "Remove", image: UIImage(systemName: "xmark"), attributes: .destructive, handler: { _ in
-            self.currentGroup = nil
-            self.group.setTitle("Select group", for: .normal)
-        })
-        let addGroup = UIAction(title: "Add", image: UIImage(systemName: "plus"), handler: { _ in
-            self.promptGetInput(title: "Add group", content: nil, completion: { (new) in
-                let order = groups.map({ $0.group.order }).max() ?? 0
-                let group = GroceryGroupWithId(group: GroceryGroup(name: new, order: order), id: UUID())
-                Database.insertGroups(groups: [group])
-                self.currentGroup = group
-                self.group.setTitle(new, for: .normal)
-        })})
-        group.setTitle(currentGroup?.group.name ?? "Select group", for: .normal)
-        group.menu = UIMenu(title: "Select group", children: groupActions + [clearGroup] + [addGroup])
-        group.showsMenuAsPrimaryAction = true
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         switch change {
@@ -123,7 +94,6 @@ class GroceryChangeController: SimpleController, UIPickerViewDataSource, UIPicke
             currentFractionQuantity = q.fraction
             quantity.selectRow(q.whole ?? 0, inComponent: 0, animated: true)
             quantity.selectRow(q.fraction?.toInt() ?? 0, inComponent: 1, animated: true)
-            currentGroup = existing.item.group
             break
         case .edit(let existing):
             heading.text = "Edit"
@@ -136,11 +106,9 @@ class GroceryChangeController: SimpleController, UIPickerViewDataSource, UIPicke
             currentFractionQuantity = existing.item.quantity.fraction
             quantity.selectRow(existing.item.quantity.whole ?? 0, inComponent: 0, animated: true)
             quantity.selectRow(existing.item.quantity.fraction?.toInt() ?? 0, inComponent: 1, animated: true)
-            currentGroup = existing.item.group
             break
         default: break
         }
-        setupGroup()
         unit.addDoneButtonOnKeyboard()
         name.addDoneButtonOnKeyboard()
     }
