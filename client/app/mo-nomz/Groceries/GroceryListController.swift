@@ -228,23 +228,30 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
                 }
             })
             let groupMenu = UIMenu(title: "Manage Group", children: groupActions + [removeGroup])
-            let menu = UIMenu(children: [
-                groupMenu,
+            var children: [UIMenuElement] = []
+            if item.item.active {
+                children.append(groupMenu)
+            }
+            children.append(contentsOf: [
                 UIAction(title: "Edit item", image: UIImage(systemName: "pencil"), handler: { _ in
                     self.performSegue(withIdentifier: "editItem", sender: GroceryChange.edit(item))
                 }),
                 UIAction(title: "Delete item", image: UIImage(systemName: "xmark"), attributes: .destructive, handler: { _ in
-                    Database.deleteGrocery(id: item.id)
-                    self.reloadData()
+                    self.promptForConfirmation(title: "Delete item", message: "Are you sure you want to delete?", handler: { _ in
+                        Database.deleteGrocery(id: item.id)
+                        self.reloadData()
+                    })
                 })
             ])
-            return UIContextMenuConfiguration(identifier: nil, previewProvider: nil, actionProvider: { _ in menu })
+            return UIContextMenuConfiguration(identifier: nil, previewProvider: nil, actionProvider: { _ in UIMenu(children: children) })
         }
         let groupConfig = { (group: GroceryGroupWithId) -> UIContextMenuConfiguration in
             return UIContextMenuConfiguration(identifier: nil, previewProvider: nil, actionProvider: { _ in UIMenu(children: [
                 UIAction(title: "Delete group", image: UIImage(systemName: "xmark"), attributes: .destructive, handler: { _ in
-                    Database.deleteGroup(id: group.id)
-                    self.reloadData()
+                    self.promptForConfirmation(title: "Delete group", message: "Are you sure you want to delete?", handler: { _ in
+                        Database.deleteGroup(id: group.id)
+                        self.reloadData()
+                    })
                 })
             ])})
         }
@@ -378,13 +385,15 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
         return cancel
     }
     
-    private func reorder<T>(source: Int, destination: Int, items: [T], extract: ((T) -> Int)) -> Int {
+    private func reorderedElement<T>(source: Int, destination: Int, items: [T]) -> (T, Int) {
         if source < destination {
-            return extract(items[destination]) + 1
+            return (items[destination], 1)
         } else if source == 0 {
-            return extract(items[destination])
+            return (items[destination], 0)
+        } else if destination == 0 {
+            return (items[destination], 0)
         } else {
-            return extract(items[destination - 1]) + 1
+            return (items[destination - 1], 1)
         }
     }
 
@@ -427,14 +436,18 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
                         switch indexPath.section {
                         case self.TO_BUY:
                             newActive = true
-                            newOrder = self.reorder(source: info.indexPath.row, destination: indexPath.row, items: self.toBuy, extract: {
-                                switch $0 {
-                                case .item(let item): return item.item.order
-                                case .group(_): return 0
-                                case .uncategorized: return 0
-                                }
-                            })
-                            newGroup = self.toBuy[indexPath.row].asGroup
+                            let (drop, addOrder) = self.reorderedElement(source: info.indexPath.row, destination: indexPath.row, items: self.toBuy)
+                            switch drop {
+                            case .item(let i):
+                                newOrder = i.item.order + addOrder
+                                newGroup = i.item.group
+                            case .group(let g):
+                                newOrder = 0
+                                newGroup = g
+                            case .uncategorized:
+                                newOrder = 0
+                                newGroup = nil
+                            }
                             break
                         default: return
                         }
@@ -443,13 +456,19 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
                         self.reloadData()
                         break
                     case (.group(let group), false):
-                        let newOrder = self.reorder(source: info.indexPath.row, destination: indexPath.row, items: self.toBuy, extract: {
-                            switch $0 {
-                            case .item(let item): return item.item.group?.group.order ?? Database.selectMaxGroupOrder()
-                            case .group(let group): return group.group.order
-                            case .uncategorized: return Database.selectMaxGroupOrder()
-                            }
-                        })
+                        let newOrder: Int
+                        let (drop, addOrder) = self.reorderedElement(source: info.indexPath.row, destination: indexPath.row, items: self.toBuy)
+                        switch drop {
+                        case .item(let i):
+                            newOrder = i.item.group.map({ $0.group.order + addOrder }) ?? Database.selectMaxGroupOrder()
+                            break
+                        case .group(let g):
+                            newOrder = g.group.order + addOrder
+                            break
+                        case .uncategorized:
+                            newOrder = Database.selectMaxGroupOrder()
+                            break
+                        }
                         Database.updateGroup(group: GroceryGroupWithId(group: GroceryGroup(name: group.group.name, order: newOrder), id: group.id))
                         self.reloadData()
                         break

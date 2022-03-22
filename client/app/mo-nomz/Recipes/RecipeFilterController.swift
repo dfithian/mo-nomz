@@ -108,8 +108,10 @@ class RecipeFilterController: UICollectionViewController, UICollectionViewDelega
                             })
                         }),
                         UIAction(title: "Delete tag", image: UIImage(systemName: "xmark"), attributes: .destructive, handler: { _ in
-                            Database.deleteTag(old: tag_)
-                            self.onChange?()
+                            self.promptForConfirmation(title: "Delete tag", message: "Are you sure you want to delete?", handler: { _ in
+                                Database.deleteTag(old: tag_)
+                                self.onChange?()
+                            })
                         })
                     ])
             })
