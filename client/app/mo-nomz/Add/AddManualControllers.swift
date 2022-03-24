@@ -99,14 +99,13 @@ class AddManualTableController: UITableViewController {
     var steps: UITextView? = nil
     
     let HEADER = 0
-    let INFO_HEADING = 1
-    let IS_RECIPE__IS_ACTIVE = 2
-    let NAME = 3
-    let LINK = 4
-    let INGREDIENT_HEADING = 5
-    let INGREDIENTS = 6
-    let STEP_HEADING = 7
-    let STEPS = 8
+    let IS_RECIPE__IS_ACTIVE = 1
+    let NAME = 2
+    let LINK = 3
+    let INGREDIENT_HEADING = 4
+    let INGREDIENTS = 5
+    let STEP_HEADING = 6
+    let STEPS = 7
     
     @objc func didTapIsRecipe(_ sender: Any?) {
         let b = sender as! UIButton
@@ -132,13 +131,12 @@ class AddManualTableController: UITableViewController {
     }
     
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 9
+        return 8
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
         case HEADER: return 1
-        case INFO_HEADING: return 1
         case IS_RECIPE__IS_ACTIVE: return 1
         case NAME: return isRecipe ? 1 : 0
         case LINK: return isRecipe ? 1 : 0
@@ -154,10 +152,6 @@ class AddManualTableController: UITableViewController {
         switch indexPath.section {
         case HEADER:
             return tableView.dequeueReusableCell(withIdentifier: "header")!
-        case INFO_HEADING:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! OneLabel
-            cell.label.text = "Info"
-            return cell
         case IS_RECIPE__IS_ACTIVE:
             let cell = tableView.dequeueReusableCell(withIdentifier: "checkboxItem") as! TwoButton
             cell.one.setImage(UIImage(systemName: isActive ? "checkmark.square" : "square"), for: .normal)
@@ -206,7 +200,7 @@ class AddManualTableController: UITableViewController {
             steps = cell.text_
             return cell
         default:
-            return tableView.dequeueReusableCell(withIdentifier: "sectionHeader")!
+            return UITableViewCell()
         }
     }
 }
