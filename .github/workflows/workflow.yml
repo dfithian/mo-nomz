@@ -4,6 +4,7 @@ on:
     - cron: "0 5 * * *"
 jobs:
   build-app:
+    if: ${{ github.event_name == 'push' }}
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
@@ -19,6 +20,7 @@ jobs:
             CODE_SIGNING_REQUIRED=NO \
             ONLY_ACTIVE_ARCH=NO
   build-web:
+    if: ${{ github.event_name == 'push' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
