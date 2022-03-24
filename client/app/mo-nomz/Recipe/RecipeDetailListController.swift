@@ -55,8 +55,9 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
     }
     
     private func newStep() {
-        let maxOrder = steps.map({ $0.step.order }).max() ?? 0
-        steps.append(StepWithId(id: UUID(), step: Step(step: "", order: maxOrder)))
+        guard let r = recipe else { return }
+        let newStep = Database.addRecipeSteps(recipeId: r.id, rawSteps: [""])[0]
+        steps.append(newStep)
         let indexPath = IndexPath(row: steps.count - 1, section: STEP_LIST)
         tableView.insertRows(at: [indexPath], with: .automatic)
         editStep(indexPath)
@@ -153,13 +154,15 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
     }
     
     override func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        guard let r = recipe else { return nil }
         switch indexPath.section {
         case INGREDIENT_LIST:
             return UIContextMenuConfiguration(identifier: nil, previewProvider: nil, actionProvider: { _ in
                 UIMenu(children: [
                     UIAction(title: "Delete ingredient", image: UIImage(systemName: "xmark"), attributes: .destructive, handler: { _ in
                         self.promptForConfirmation(title: "Delete ingredient", message: "Are you sure you want to delete?", handler: { _ in
-                            self.ingredients.remove(at: indexPath.row)
+                            Database.updateRecipeIngredients(id: r.id, active: r.recipe.active, deletes: [self.ingredients[indexPath.row].id], adds: [])
+                            self.onChange?()
                         })
                     })
                 ])
@@ -169,7 +172,8 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
                 UIMenu(children: [
                     UIAction(title: "Delete step", image: UIImage(systemName: "xmark"), attributes: .destructive, handler: { _ in
                         self.promptForConfirmation(title: "Delete step", message: "Are you sure you want to delete?", handler: { _ in
-                            self.steps.remove(at: indexPath.row)
+                            Database.deleteRecipeStep(id: self.steps[indexPath.row].id)
+                            self.onChange?()
                         })
                     })
                 ])
