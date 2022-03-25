@@ -90,7 +90,7 @@ class AddManualController: AddDetailController {
     }
 }
 
-class AddManualTableController: UITableViewController {
+class AddManualTableController: UITableViewController, UITextViewDelegate {
     var isRecipe: Bool = false
     var isActive: Bool = true
     var name: UITextField? = nil
@@ -116,7 +116,9 @@ class AddManualTableController: UITableViewController {
             isRecipe = true
             b.setImage(UIImage(systemName: "checkmark.square"), for: .normal)
         }
-        tableView.reloadData()
+        let range = NSMakeRange(NAME, tableView.numberOfSections - NAME)
+        let sections = NSIndexSet(indexesIn: range)
+        tableView.reloadSections(sections as IndexSet, with: .automatic)
     }
     
     @objc func didTapIsActive(_ sender: Any?) {
@@ -128,6 +130,10 @@ class AddManualTableController: UITableViewController {
             isActive = true
             b.setImage(UIImage(systemName: "checkmark.square"), for: .normal)
         }
+    }
+    
+    func textViewDidEndEditing(_ textView: UITextView) {
+        tableView.reloadData()
     }
     
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -186,6 +192,7 @@ class AddManualTableController: UITableViewController {
             cell.text_.text = ingredients?.text
             cell.text_.addDoneButtonOnKeyboard()
             cell.text_.layer.cornerRadius = 10
+            cell.text_.delegate = self
             ingredients = cell.text_
             return cell
         case STEP_HEADING:
@@ -197,10 +204,19 @@ class AddManualTableController: UITableViewController {
             cell.text_.text = steps?.text
             cell.text_.addDoneButtonOnKeyboard()
             cell.text_.layer.cornerRadius = 10
+            cell.text_.delegate = self
             steps = cell.text_
             return cell
         default:
             return UITableViewCell()
+        }
+    }
+    
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        switch indexPath.section {
+        case INGREDIENTS: return max(ingredients?.contentSize.height ?? 0, 100)
+        case STEPS: return max(steps?.contentSize.height ?? 0, 100)
+        default: return UITableView.automaticDimension
         }
     }
 }
