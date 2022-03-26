@@ -96,7 +96,7 @@ class RecipeFilterController: UICollectionViewController, UICollectionViewDelega
             return UIContextMenuConfiguration(identifier: nil, previewProvider: nil, actionProvider: { _ in
                     UIMenu(children: [
                         UIAction(title: "Edit tag", image: UIImage(systemName: "pencil"), handler: { _ in
-                            self.promptGetInput(title: "Edit tag", content: tag_, completion: { (new) in
+                            self.promptGetInput(title: "Edit tag", content: tag_, configure: nil, completion: { (new) in
                                 Database.updateTag(old: tag_, new: new)
                                 self.onChange?()
                             })

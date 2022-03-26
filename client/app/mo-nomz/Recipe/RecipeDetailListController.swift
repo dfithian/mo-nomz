@@ -56,8 +56,8 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
     
     private func newStep() {
         guard let r = recipe else { return }
-        let newStep = Database.addRecipeSteps(recipeId: r.id, rawSteps: [""])[0]
-        steps.append(newStep)
+        let newSteps = Database.addRecipeSteps(recipeId: r.id, rawSteps: [""])
+        steps.append(contentsOf: newSteps)
         let indexPath = IndexPath(row: steps.count - 1, section: STEP_LIST)
         tableView.insertRows(at: [indexPath], with: .automatic)
         editStep(indexPath)
@@ -153,33 +153,40 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
         }
     }
     
-    override func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+    private func swipe(_ indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         guard let r = recipe else { return nil }
+        let delete: Subentity
         switch indexPath.section {
         case INGREDIENT_LIST:
-            return UIContextMenuConfiguration(identifier: nil, previewProvider: nil, actionProvider: { _ in
-                UIMenu(children: [
-                    UIAction(title: "Delete ingredient", image: UIImage(systemName: "xmark"), attributes: .destructive, handler: { _ in
-                        self.promptForConfirmation(title: "Delete ingredient", message: "Are you sure you want to delete?", handler: { _ in
-                            Database.updateRecipeIngredients(id: r.id, active: r.recipe.active, deletes: [self.ingredients[indexPath.row].id], adds: [])
-                            self.onChange?()
-                        })
-                    })
-                ])
-            })
+            delete = .ingredient(ingredients[indexPath.row])
+            break
         case STEP_LIST:
-            return UIContextMenuConfiguration(identifier: nil, previewProvider: nil, actionProvider: { _ in
-                UIMenu(children: [
-                    UIAction(title: "Delete step", image: UIImage(systemName: "xmark"), attributes: .destructive, handler: { _ in
-                        self.promptForConfirmation(title: "Delete step", message: "Are you sure you want to delete?", handler: { _ in
-                            Database.deleteRecipeStep(id: self.steps[indexPath.row].id)
-                            self.onChange?()
-                        })
-                    })
-                ])
-            })
+            delete = .step(steps[indexPath.row])
+            break
         default: return nil
         }
+        let action = UIContextualAction(style: .destructive, title: "Delete") { (action, view, completionHandler) in
+            switch delete {
+            case .ingredient(let ingredient):
+                Database.updateRecipeIngredients(id: r.id, active: r.recipe.active, deletes: [ingredient.id], adds: [])
+                break
+            case .step(let step):
+                Database.deleteRecipeStep(id: step.id)
+                break
+            }
+            self.onChange?()
+            completionHandler(true)
+        }
+        action.backgroundColor = .systemRed
+        return UISwipeActionsConfiguration(actions: [action])
+    }
+    
+    override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        return swipe(indexPath)
+    }
+
+    override func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        return swipe(indexPath)
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

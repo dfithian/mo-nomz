@@ -74,6 +74,7 @@ extension UIViewController {
     func promptGetInput(
         title: String,
         content: String?,
+        configure: ((UITextField) -> Void)?,
         completion: @escaping ((String) -> Void)
     ) {
         var text: UITextField? = nil
@@ -85,6 +86,7 @@ extension UIViewController {
         let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         let input = UIAlertController(title: title, message: nil, preferredStyle: .alert)
         input.addTextField(configurationHandler: {
+            configure?($0)
             text = $0
             $0.text = content
         })

@@ -814,4 +814,17 @@ class Database {
             print(error)
         }
     }
+    
+    static func uncategorizeAll() {
+        do {
+            let ctx = DataAccess.shared.managedObjectContext
+            let req = GroceryItemData.req()
+            for grocery in try ctx.fetch(req) {
+                grocery.group = nil
+            }
+            try ctx.save()
+        } catch let error as NSError {
+            print(error)
+        }
+    }
 }

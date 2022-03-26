@@ -122,7 +122,7 @@ class RecipeListController: UITableViewController, UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         search = searchText.nonEmpty()
         onFilter()
-        tableView.reloadData()
+        tableView.reloadSections(IndexSet(integer: RECIPES), with: .automatic)
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {

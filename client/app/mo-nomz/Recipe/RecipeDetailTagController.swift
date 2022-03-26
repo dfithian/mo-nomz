@@ -65,7 +65,7 @@ class RecipeDetailTagController: UICollectionViewController, UICollectionViewDel
                     self.add(tag_)
                 })
             }) + [UIAction(title: "Add tag", image: UIImage(systemName: "plus"), handler: { _ in
-                self.promptGetInput(title: "Add tag", content: nil, completion: self.add)
+                self.promptGetInput(title: "Add tag", content: nil, configure: nil, completion: self.add)
             })]
             cell.button.menu = UIMenu(children: actions)
             cell.button.showsMenuAsPrimaryAction = true

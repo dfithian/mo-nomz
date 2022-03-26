@@ -35,6 +35,21 @@ class GroceryController: UIViewController {
             present(vc, animated: true, completion: nil)
         }
     }
+    
+    @IBAction func didTapCreateGroup(_ sender: Any?) {
+        promptGetInput(title: "Create group", content: nil, configure: { $0.autocapitalizationType = .words }, completion: { (new) in
+            let group = GroceryGroupWithId(group: GroceryGroup(name: new, order: 0), id: UUID())
+            Database.insertGroups(groups: [group])
+            self.reloadData()
+        })
+    }
+    
+    @IBAction func didTapResetGroups(_ sender: Any?) {
+        promptForConfirmation(title: "Reset groups", message: "Are you sure you want to uncategorize all items?", handler: { _ in
+            Database.uncategorizeAll()
+            self.reloadData()
+        })
+    }
 
     func reloadData() {
         groceryVc?.reloadData()
