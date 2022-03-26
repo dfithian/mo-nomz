@@ -27,6 +27,10 @@ class RecipeController: UIViewController, RecipeFilterDelegate {
             promptForConfirmation(title: "Clear", message: "Are you sure you want to clear?", handler: handler)
         }
     }
+    
+    @IBAction func didTapClearTags(_ sender: Any?) {
+        filterVc?.clear()
+    }
 
     func reloadData() {
         recipeVc?.reloadData()

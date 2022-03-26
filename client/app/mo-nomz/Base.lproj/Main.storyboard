@@ -367,7 +367,7 @@
                                 </items>
                             </toolbar>
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nyB-Sd-ZFc">
-                                <rect key="frame" x="126" y="120" width="288" height="51"/>
+                                <rect key="frame" x="126" y="120" width="250" height="51"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="51" id="1fN-dC-e8a"/>
                                 </constraints>
@@ -375,6 +375,15 @@
                                     <segue destination="S8q-Rx-sS7" kind="embed" identifier="embedTags" id="b1y-nz-vhw"/>
                                 </connections>
                             </containerView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="oOx-KR-VOP">
+                                <rect key="frame" x="384" y="134.5" width="20" height="22"/>
+                                <color key="tintColor" systemColor="secondaryLabelColor"/>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" image="xmark.square" catalog="system"/>
+                                <connections>
+                                    <action selector="didTapClearTags:" destination="YMV-r0-X4W" eventType="touchUpInside" id="KVK-2A-dCO"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="lEH-cO-OP7"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -386,14 +395,16 @@
                             <constraint firstItem="mYf-bB-0W0" firstAttribute="leading" secondItem="lEH-cO-OP7" secondAttribute="leading" id="OII-QM-t2D"/>
                             <constraint firstItem="OKO-ca-LY2" firstAttribute="centerX" secondItem="eII-h4-H7F" secondAttribute="centerX" id="QZf-T6-6Uy"/>
                             <constraint firstItem="wq3-Ui-YiB" firstAttribute="bottom" secondItem="lEH-cO-OP7" secondAttribute="bottom" id="QwV-sU-nY8"/>
+                            <constraint firstItem="lEH-cO-OP7" firstAttribute="trailing" secondItem="oOx-KR-VOP" secondAttribute="trailing" constant="10" id="Sdd-66-hjq"/>
                             <constraint firstItem="q0d-Wl-JGa" firstAttribute="top" secondItem="OKO-ca-LY2" secondAttribute="bottom" id="TrR-pF-NSg"/>
+                            <constraint firstItem="oOx-KR-VOP" firstAttribute="centerY" secondItem="nyB-Sd-ZFc" secondAttribute="centerY" id="WUL-Iw-d53"/>
                             <constraint firstItem="wq3-Ui-YiB" firstAttribute="top" secondItem="mYf-bB-0W0" secondAttribute="bottom" constant="8" symbolic="YES" id="ZkN-hN-ypa"/>
                             <constraint firstItem="q0d-Wl-JGa" firstAttribute="trailing" secondItem="lEH-cO-OP7" secondAttribute="trailing" id="czT-iV-rVK"/>
-                            <constraint firstItem="nyB-Sd-ZFc" firstAttribute="trailing" secondItem="lEH-cO-OP7" secondAttribute="trailing" id="cze-GZ-L6T"/>
                             <constraint firstItem="kAj-rZ-NaQ" firstAttribute="top" secondItem="q0d-Wl-JGa" secondAttribute="bottom" id="dfp-5y-apQ"/>
                             <constraint firstItem="mYf-bB-0W0" firstAttribute="top" secondItem="nyB-Sd-ZFc" secondAttribute="bottom" constant="8" symbolic="YES" id="h2H-zG-DxL"/>
                             <constraint firstItem="mYf-bB-0W0" firstAttribute="trailing" secondItem="lEH-cO-OP7" secondAttribute="trailing" id="hML-ho-Tqk"/>
                             <constraint firstItem="nyB-Sd-ZFc" firstAttribute="top" secondItem="q0d-Wl-JGa" secondAttribute="bottom" id="rl9-mv-UOX"/>
+                            <constraint firstItem="oOx-KR-VOP" firstAttribute="leading" secondItem="nyB-Sd-ZFc" secondAttribute="trailing" constant="8" symbolic="YES" id="tIi-Mc-Ea3"/>
                             <constraint firstItem="kAj-rZ-NaQ" firstAttribute="leading" secondItem="lEH-cO-OP7" secondAttribute="leading" id="vB5-EZ-ChO"/>
                             <constraint firstItem="q0d-Wl-JGa" firstAttribute="leading" secondItem="lEH-cO-OP7" secondAttribute="leading" id="yyh-9L-dLQ"/>
                         </constraints>
@@ -883,7 +894,7 @@
             <objects>
                 <collectionViewController id="S8q-Rx-sS7" customClass="RecipeFilterController" customModule="mo_nomz" customModuleProvider="target" sceneMemberID="viewController">
                     <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="eSG-e6-940">
-                        <rect key="frame" x="0.0" y="0.0" width="288" height="51"/>
+                        <rect key="frame" x="0.0" y="0.0" width="250" height="51"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" automaticEstimatedItemSize="YES" minimumLineSpacing="10" minimumInteritemSpacing="10" id="cQF-sd-QqU">
@@ -942,34 +953,6 @@
                                 </collectionViewCellContentView>
                                 <connections>
                                     <outlet property="button" destination="OUx-kQ-cG6" id="wDr-mq-uwC"/>
-                                </connections>
-                            </collectionViewCell>
-                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" reuseIdentifier="clearButton" id="jpE-c5-XRr" customClass="OneCellButton" customModule="mo_nomz" customModuleProvider="target">
-                                <rect key="frame" x="278" y="5" width="129" height="41"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="NNq-eX-n55">
-                                    <rect key="frame" x="0.0" y="0.0" width="129" height="41"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                    <subviews>
-                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="oq1-5f-EkZ">
-                                            <rect key="frame" x="55.5" y="11.5" width="18" height="18"/>
-                                            <constraints>
-                                                <constraint firstAttribute="height" constant="18" id="6wm-v8-e45"/>
-                                                <constraint firstAttribute="width" constant="18" id="oDh-FL-aeg"/>
-                                            </constraints>
-                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                            <color key="tintColor" systemColor="systemGray2Color"/>
-                                            <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                            <state key="normal" image="xmark.square" catalog="system"/>
-                                        </button>
-                                    </subviews>
-                                    <constraints>
-                                        <constraint firstItem="oq1-5f-EkZ" firstAttribute="centerY" secondItem="NNq-eX-n55" secondAttribute="centerY" id="VhZ-wy-i52"/>
-                                        <constraint firstItem="oq1-5f-EkZ" firstAttribute="centerX" secondItem="NNq-eX-n55" secondAttribute="centerX" id="nYR-e3-lzn"/>
-                                    </constraints>
-                                </collectionViewCellContentView>
-                                <connections>
-                                    <outlet property="button" destination="oq1-5f-EkZ" id="nxI-Jx-tbI"/>
                                 </connections>
                             </collectionViewCell>
                         </cells>
@@ -1771,14 +1754,14 @@
         <systemColor name="linkColor">
             <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
+        <systemColor name="secondaryLabelColor">
+            <color red="0.23529411764705882" green="0.23529411764705882" blue="0.2627450980392157" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
         <systemColor name="secondarySystemBackgroundColor">
             <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
-        <systemColor name="systemGray2Color">
-            <color red="0.68235294117647061" green="0.68235294117647061" blue="0.69803921568627447" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGray5Color">
             <color red="0.89803921568627454" green="0.89803921568627454" blue="0.91764705882352937" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

@@ -13,24 +13,22 @@ protocol RecipeFilterDelegate {
 
 class RecipeFilterController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
     var delegate: RecipeFilterDelegate? = nil
-    var active: Bool = false
+    var active: Bool = true
     var tags: [String]? = nil
     var selected: String? = nil
     var onChange: (() -> Void)? = nil
     
     let ACTIVE = 0
     let TAGS = 1
-    let CLEAR = 2
 
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 3
+        return 2
     }
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         switch section {
         case ACTIVE: return 1
         case TAGS: return tags?.count ?? 0
-        case CLEAR: return 1
         default: return 0
         }
     }
@@ -40,8 +38,8 @@ class RecipeFilterController: UICollectionViewController, UICollectionViewDelega
         collectionView.reloadData()
     }
     
-    @objc func didTapClear(_ sender: Any?) {
-        active = false
+    func clear() {
+        active = true
         selected = nil
         sendUpdates()
     }
@@ -86,10 +84,6 @@ class RecipeFilterController: UICollectionViewController, UICollectionViewDelega
                 cell.button.backgroundColor = nil
             }
             return cell
-        case CLEAR:
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "clearButton", for: indexPath) as! OneCellButton
-            cell.button.addTarget(self, action: #selector(didTapClear), for: .touchUpInside)
-            return cell
         default:
             return UICollectionViewCell()
         }
@@ -126,9 +120,6 @@ class RecipeFilterController: UICollectionViewController, UICollectionViewDelega
             break
         case TAGS:
             toggleTag(indexPath.row)
-            break
-        case CLEAR:
-            didTapClear(nil)
             break
         default: break
         }
