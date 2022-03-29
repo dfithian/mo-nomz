@@ -280,15 +280,17 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
         collapsed.toggleGroupCollapsed(id)
         which.invalidateCount()
         let num = which.getGroupCount(id)
-        if num > 0 {
-            let reloads = Array(1...num).map({ IndexPath(row: indexPath.row + $0, section: indexPath.section) })
-            if collapsed.isGroupCollapsed(id) {
-                tableView.deleteRows(at: reloads, with: .automatic)
-            } else {
-                tableView.insertRows(at: reloads, with: .automatic)
+        DispatchQueue.main.async {
+            if num > 0 {
+                let reloads = Array(1...num).map({ IndexPath(row: indexPath.row + $0, section: indexPath.section) })
+                if collapsed.isGroupCollapsed(id) {
+                    self.tableView.deleteRows(at: reloads, with: .automatic)
+                } else {
+                    self.tableView.insertRows(at: reloads, with: .automatic)
+                }
             }
+            self.tableView.reloadRows(at: [indexPath], with: .automatic)
         }
-        tableView.reloadRows(at: [indexPath], with: .automatic)
     }
     
     @objc func didTapToBuy(_ sender: Any?) {
@@ -319,16 +321,20 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
         switch indexPath.section {
         case TO_BUY_HEADING:
             toBuyCollapsed = !toBuyCollapsed
-            tableView.reloadSections(IndexSet(integer: TO_BUY), with: .automatic)
-            tableView.reloadRows(at: [indexPath], with: .automatic)
+            DispatchQueue.main.async {
+                self.tableView.reloadSections(IndexSet(integer: self.TO_BUY), with: .automatic)
+                self.tableView.reloadRows(at: [indexPath], with: .automatic)
+            }
             break
         case TO_BUY:
             toggleSection(toBuy, toBuyGroupCollapsed, indexPath: indexPath)
             break
         case BOUGHT_HEADING:
             boughtCollapsed = !boughtCollapsed
-            tableView.reloadSections(IndexSet(integer: BOUGHT), with: .automatic)
-            tableView.reloadRows(at: [indexPath], with: .automatic)
+            DispatchQueue.main.async {
+                self.tableView.reloadSections(IndexSet(integer: self.BOUGHT), with: .automatic)
+                self.tableView.reloadRows(at: [indexPath], with: .automatic)
+            }
             break
         case BOUGHT:
             toggleSection(bought, boughtGroupCollapsed, indexPath: indexPath)
@@ -667,7 +673,9 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
     
     func reloadData() {
         loadData()
-        tableView.reloadData()
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+        }
     }
 
     override func viewDidLoad() {

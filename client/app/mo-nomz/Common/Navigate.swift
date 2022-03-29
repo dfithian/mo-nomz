@@ -9,17 +9,17 @@ import UIKit
 
 extension UIViewController {
     func withMainVc(_ f: ((SceneDelegate, UITabBarController) -> Void)?) {
-        let scene = UIApplication.shared.connectedScenes.first?.delegate as! SceneDelegate
-        let mainSb = UIStoryboard(name: "Main", bundle: nil)
-        let mainVc = mainSb.instantiateInitialViewController() as! UITabBarController
-        f?(scene, mainVc)
+        DispatchQueue.main.async {
+            let scene = UIApplication.shared.connectedScenes.first?.delegate as! SceneDelegate
+            let mainSb = UIStoryboard(name: "Main", bundle: nil)
+            let mainVc = mainSb.instantiateInitialViewController() as! UITabBarController
+            f?(scene, mainVc)
+        }
     }
     
     func loadGroceries() {
         withMainVc { scene, mainVc in
-            DispatchQueue.main.async {
-                scene.window?.rootViewController = mainVc
-            }
+            scene.window?.rootViewController = mainVc
         }
     }
     
@@ -38,29 +38,25 @@ extension UIViewController {
     func createRecipe(_ url: URL) {
         withMainVc { scene, mainVc in
             let RECIPE_TAB = 1
-            DispatchQueue.main.async {
-                scene.window?.rootViewController = mainVc
-                mainVc.selectedIndex = RECIPE_TAB
-                let vc = mainVc.viewControllers![RECIPE_TAB] as! RecipeController
-                vc.recipeVc?.addLink(link: url.absoluteString, active: true, completion: { recipe in
-                    vc.reloadData()
-                    DispatchQueue.main.async {
-                        vc.recipeVc?.performSegue(withIdentifier: "showRecipe", sender: recipe)
-                    }
-                })
-            }
+            scene.window?.rootViewController = mainVc
+            mainVc.selectedIndex = RECIPE_TAB
+            let vc = mainVc.viewControllers![RECIPE_TAB] as! RecipeController
+            vc.recipeVc?.addLink(link: url.absoluteString, active: true, completion: { recipe in
+                vc.reloadData()
+                DispatchQueue.main.async {
+                    vc.recipeVc?.performSegue(withIdentifier: "showRecipe", sender: recipe)
+                }
+            })
         }
     }
     
     func loadRecipe(_ recipe: ReadableRecipeWithId) {
         withMainVc { scene, mainVc in
             let RECIPE_TAB = 1
-            DispatchQueue.main.async {
-                scene.window?.rootViewController = mainVc
-                mainVc.selectedIndex = RECIPE_TAB
-                let vc = mainVc.viewControllers![RECIPE_TAB] as! RecipeController
-                vc.recipeVc?.performSegue(withIdentifier: "showRecipe", sender: recipe)
-            }
+            scene.window?.rootViewController = mainVc
+            mainVc.selectedIndex = RECIPE_TAB
+            let vc = mainVc.viewControllers![RECIPE_TAB] as! RecipeController
+            vc.recipeVc?.performSegue(withIdentifier: "showRecipe", sender: recipe)
         }
     }
 }

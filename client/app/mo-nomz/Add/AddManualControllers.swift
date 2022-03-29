@@ -118,7 +118,9 @@ class AddManualTableController: UITableViewController {
         }
         let range = NSMakeRange(NAME, tableView.numberOfSections - NAME)
         let sections = NSIndexSet(indexesIn: range)
-        tableView.reloadSections(sections as IndexSet, with: .automatic)
+        DispatchQueue.main.async {
+            self.tableView.reloadSections(sections as IndexSet, with: .automatic)
+        }
     }
     
     @objc func didTapIsActive(_ sender: Any?) {

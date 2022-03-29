@@ -35,7 +35,9 @@ class RecipeFilterController: UICollectionViewController, UICollectionViewDelega
     
     private func sendUpdates() {
         delegate?.updateSelectedTag(active: active, tag: selected)
-        collectionView.reloadData()
+        DispatchQueue.main.async {
+            self.collectionView.reloadData()
+        }
     }
     
     func clear() {
@@ -152,7 +154,9 @@ class RecipeFilterController: UICollectionViewController, UICollectionViewDelega
     
     func reloadData() {
         loadData()
-        collectionView.reloadData()
+        DispatchQueue.main.async {
+            self.collectionView.reloadData()
+        }
     }
     
     override func viewDidLoad() {

@@ -40,7 +40,9 @@ class RecipeController: UIViewController, RecipeFilterDelegate {
         recipeVc?.active = active
         recipeVc?.tag = tag
         recipeVc?.onFilter()
-        recipeVc?.tableView.reloadData()
+        DispatchQueue.main.async {
+            self.recipeVc?.tableView.reloadData()
+        }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

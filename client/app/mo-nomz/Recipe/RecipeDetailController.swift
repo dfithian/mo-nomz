@@ -167,7 +167,9 @@ class RecipeDetailController: UIViewController, UITextFieldDelegate, RecipeTagDe
         detailVc?.recipe = newRecipe
         detailVc?.steps = newRecipe.recipe.steps.map({ StepWithId(id: $0, step: $1) }).sorted(by: { ($0.step.order, $0.step.step) < ($1.step.order, $1.step.step) })
         detailVc?.ingredients = newRecipe.recipe.ingredients.map({ ReadableIngredientWithId(id: $0, ingredient: $1) }).sorted(by: { ($0.ingredient.order, $0.ingredient.name) < ($1.ingredient.order, $1.ingredient.name) })
-        detailVc?.tableView.reloadData()
+        DispatchQueue.main.async {
+            self.detailVc?.tableView.reloadData()
+        }
     }
     
     override func viewDidLoad() {

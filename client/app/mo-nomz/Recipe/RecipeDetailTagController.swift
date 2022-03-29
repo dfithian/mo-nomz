@@ -35,13 +35,17 @@ class RecipeDetailTagController: UICollectionViewController, UICollectionViewDel
     private func add(_ tag_: String) {
         tags.append(tag_)
         delegate?.updateRecipeTags(tags: tags)
-        collectionView.reloadData()
+        DispatchQueue.main.async {
+            self.collectionView.reloadData()
+        }
     }
     
     private func delete(_ index: Int) {
         tags.remove(at: index)
         delegate?.updateRecipeTags(tags: tags)
-        collectionView.reloadData()
+        DispatchQueue.main.async {
+            self.collectionView.reloadData()
+        }
     }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {

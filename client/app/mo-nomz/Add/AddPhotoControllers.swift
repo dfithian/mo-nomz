@@ -150,7 +150,9 @@ class PickPhotoController: UICollectionViewController, UICollectionViewDelegateF
             return UIMenu(children: [
                 UIAction(title: "Remove image", image: UIImage(systemName: "xmark"), attributes: .destructive, handler: { _ in
                     handler()
-                    self.collectionView.reloadData()
+                    DispatchQueue.main.async {
+                        self.collectionView.reloadData()
+                    }
                 })
             ])
         }

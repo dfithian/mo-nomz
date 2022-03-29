@@ -64,9 +64,13 @@ class GroceryController: UIViewController {
                 self.groceryVc?.boughtGroupCollapsed.collapseAll()
                 self.reloadData()
             }),
-            UIAction(title: "Reset all groups", image: UIImage(systemName: "arrow.clockwise"), attributes: .destructive, handler: { _ in
+            UIAction(title: "Reset groups", image: UIImage(systemName: "arrow.clockwise"), attributes: .destructive, handler: { _ in
                 self.promptForConfirmation(title: "Reset groups", message: "Are you sure you want to uncategorize all items?", handler: { _ in
                     Database.uncategorizeAll()
+                    self.groceryVc?.toBuyGroupCollapsed.collapseAll()
+                    self.groceryVc?.boughtGroupCollapsed.collapseAll()
+                    self.groceryVc?.toBuyGroupCollapsed.toggleGroupCollapsed(nil)
+                    self.groceryVc?.boughtGroupCollapsed.toggleGroupCollapsed(nil)
                     self.reloadData()
                 })
             })

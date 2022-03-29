@@ -9,7 +9,7 @@ import MobileCoreServices
 import UIKit
 
 class RecipeListController: UITableViewController, UISearchBarDelegate {
-    var active: Bool = false
+    var active: Bool = true
     var tag: String? = nil
     var search: String? = nil
     var allRecipes: [ReadableRecipeWithId] = []
@@ -122,7 +122,9 @@ class RecipeListController: UITableViewController, UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         search = searchText.nonEmpty()
         onFilter()
-        tableView.reloadSections(IndexSet(integer: RECIPES), with: .automatic)
+        DispatchQueue.main.async {
+            self.tableView.reloadSections(IndexSet(integer: self.RECIPES), with: .automatic)
+        }
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
@@ -143,7 +145,9 @@ class RecipeListController: UITableViewController, UISearchBarDelegate {
     
     func reloadData() {
         loadData()
-        tableView.reloadData()
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+        }
     }
     
     override func viewDidLoad() {
