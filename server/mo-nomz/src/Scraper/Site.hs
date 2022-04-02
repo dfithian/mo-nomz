@@ -52,7 +52,6 @@ ingredientScrapers = HashMap.fromList
   , ("therecipecritic.com", wprmI)
   , ("ambitiouskitchen.com", wprmI)
   , ("halfbakedharvest.com", wprmI)
-  , ("101cookbooks.com", wprmI)
   , ("ohsweetbasil.com", wprmI)
   , ("myfoodstory.com", wprmI)
   , ("easypeasyfoodie.com", wprmI)
@@ -70,6 +69,8 @@ ingredientScrapers = HashMap.fromList
   , ("twopeasandtheirpod.com", wprmI)
   , ("sweetandsavorymeals.com", wprmI)
   , ("melskitchencafe.com", wprmI)
+
+  , ("101cookbooks.com", cb101I)
 
   , ("glutenfreecuppatea.co.uk", mvI)
 
@@ -152,7 +153,6 @@ stepScrapers = HashMap.fromList
   , ("therecipecritic.com", wprmS)
   , ("ambitiouskitchen.com", wprmS)
   , ("halfbakedharvest.com", wprmS)
-  , ("101cookbooks.com", wprmS)
   , ("ohsweetbasil.com", wprmS)
   , ("myfoodstory.com", wprmS)
   , ("easypeasyfoodie.com", wprmS)
@@ -170,6 +170,8 @@ stepScrapers = HashMap.fromList
   , ("twopeasandtheirpod.com", wprmS)
   , ("sweetandsavorymeals.com", wprmS)
   , ("melskitchencafe.com", wprmS)
+
+  , ("101cookbooks.com", cb101S)
 
   , ("glutenfreecuppatea.co.uk", mvS)
 
@@ -330,6 +332,16 @@ wprmS :: StepScraper
 wprmS = simpleStepScraper "wprm"
   (testScrape ("div" @: [Scalpel.hasClass "wprm-recipe"]))
   ("li" @: [Scalpel.hasClass "wprm-recipe-instruction"])
+
+cb101I :: IngredientScraper
+cb101I = simpleIngredientScraper "cb101"
+  (testScrape ("div" @: [Scalpel.hasClass "cb101-recipe-main"]))
+  ("li" @: [Scalpel.hasClass "cb101-recipe-ingredient"])
+
+cb101S :: StepScraper
+cb101S = simpleStepScraper "cb101"
+  (testScrape ("div" @: [Scalpel.hasClass "cb101-recipe-main"]))
+  ("li" @: [Scalpel.hasClass "cb101-recipe-instruction"])
 
 mvI :: IngredientScraper
 mvI = simpleIngredientScraper "mv"
