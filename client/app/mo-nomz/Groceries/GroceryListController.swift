@@ -196,10 +196,6 @@ class GroceryListItems {
         return extract(count, nil)
     }
     
-    func hasData() -> Bool {
-        return !which.filter({ $0.isItem }).isEmpty
-    }
-    
     func invalidateCount() {
         self.count = effect(
             nth: { _ in false },
@@ -247,15 +243,10 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
     var toBuyCollapsed: Bool = false
     var boughtCollapsed: Bool = true
 
-    let EMPTY = 0
-    let TO_BUY_HEADING = 1
-    let TO_BUY = 2
-    let BOUGHT_HEADING = 3
-    let BOUGHT = 4
-    
-    private func hasData() -> Bool {
-        return toBuy.hasData() || bought.hasData()
-    }
+    let TO_BUY_HEADING = 0
+    let TO_BUY = 1
+    let BOUGHT_HEADING = 2
+    let BOUGHT = 3
     
     private func toggleRow(_ item: ReadableGroceryItemWithId) {
         let newItem = ReadableGroceryItem(name: item.item.name, quantity: item.item.quantity, unit: item.item.unit, active: !item.item.active, order: item.item.order, group: item.item.group)
@@ -344,24 +335,15 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
     }
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 5
+        return 4
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
-        case EMPTY: return hasData() ? 0 : 1
-        case TO_BUY_HEADING: return hasData() ? 1 : 0
-        case TO_BUY:
-            if toBuyCollapsed || !hasData() {
-                return 0
-            }
-            return toBuy.getVisibleCount()
-        case BOUGHT_HEADING: return hasData() ? 1 : 0
-        case BOUGHT:
-            if boughtCollapsed || !hasData() {
-                return 0
-            }
-            return bought.getVisibleCount()
+        case TO_BUY_HEADING: return 1
+        case TO_BUY: return toBuyCollapsed ? 0 : toBuy.getVisibleCount()
+        case BOUGHT_HEADING: return 1
+        case BOUGHT: return boughtCollapsed ? 0 : bought.getVisibleCount()
         default: return 0
         }
     }
@@ -415,9 +397,6 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch indexPath.section {
-        case EMPTY:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "emptyItem")!
-            return cell
         case TO_BUY_HEADING:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! LabelButton
             let imageName = toBuyCollapsed ? "chevron.forward.circle.fill" : "chevron.down.circle.fill"
@@ -425,7 +404,6 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
             cell.button.setImage(UIImage(systemName: imageName), for: .normal)
             return cell
         case TO_BUY:
-            // FIXME show card view
             switch toBuy.getItem(indexPath.row) {
             case .item(let item):
                 let cell = tableView.dequeueReusableCell(withIdentifier: "toBuyListItem") as! LabelButton

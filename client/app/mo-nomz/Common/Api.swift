@@ -148,8 +148,8 @@ extension UIViewController {
             "Produce",
             "Meat/Seafood",
             "Dairy/Eggs",
+            "Dry/Canned",
             "Frozen",
-            "Alcohol",
             "Household"
         ]
         var groups: [GroceryGroupWithId] = []
