@@ -201,6 +201,7 @@ stepScrapers = HashMap.fromList
   , ("uitpaulineskeuken.nl", stepLi11)
   , ("leukerecepten.nl", stepLi12)
   , ("wsj.com", stepLi13)
+  , ("eatfigsnotpigs.com", stepLi14)
 
   , ("delish.com", delishS)
   , ("thepioneerwoman.com", delishS)
@@ -542,6 +543,11 @@ stepLi13 :: StepScraper
 stepLi13 = simpleStepScraper "stepLi13"
   (testScrape ("ol" @: [Scalpel.hasClass "steps-list"]))
   ("ol" @: [Scalpel.hasClass "steps-list"] // "li")
+
+stepLi14 :: StepScraper
+stepLi14 = setStepVersion 2 $ simpleStepScraper "stepLi14"
+  (testScrape ("li" @: [Scalpel.hasClass "instruction"]))
+  ("li" @: [Scalpel.hasClass "instruction"])
 
 delishI :: IngredientScraper
 delishI = simpleIngredientScraper "delish"
