@@ -541,6 +541,13 @@ class Database {
                 ctx.delete(ingredient)
             }
             
+            // delete the steps
+            let stepReq = StepData.req()
+            stepReq.predicate = NSPredicate(format: "recipe_id = %@", id as CVarArg)
+            for step in try ctx.fetch(stepReq) {
+                ctx.delete(step)
+            }
+            
             // delete the recipe
             let recipeReq = RecipeData.req()
             recipeReq.predicate = NSPredicate(format: "id = %@", id as CVarArg)

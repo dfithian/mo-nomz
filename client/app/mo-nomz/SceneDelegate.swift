@@ -72,7 +72,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 pullSteps({
                     cleanSteps({
                         initializeGroups({
-                            self.window?.rootViewController = mainVc
+                            DispatchQueue.main.async {
+                                self.window?.rootViewController = mainVc
+                            }
                             self.window?.rootViewController?.pingUser(completion: nil)
                             completion?()
                         })
