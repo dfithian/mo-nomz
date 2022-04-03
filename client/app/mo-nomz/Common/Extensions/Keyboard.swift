@@ -71,19 +71,29 @@ extension UIViewController {
     static let MARGIN: CGFloat = 10
 
     func keyboardWillShowInternal(notification: NSNotification, keyboardView: UIView?, toolbarConstraint: NSLayoutConstraint?) {
-        guard let keyboard = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
-        if let subview = keyboardView {
-            view.frame.origin.y -= subview.frame.origin.y - UIViewController.MARGIN
-            toolbarConstraint?.constant = subview.frame.origin.y - UIViewController.MARGIN - keyboard.cgRectValue.size.height
-        } else {
-            toolbarConstraint?.constant = UITextField.TOOLBAR_HEIGHT - 2 * UIViewController.MARGIN - keyboard.cgRectValue.size.height
+        switch UIDevice.current.userInterfaceIdiom {
+        case .phone:
+            guard let keyboard = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
+            if let subview = keyboardView {
+                view.frame.origin.y -= subview.frame.origin.y - UIViewController.MARGIN
+                toolbarConstraint?.constant = subview.frame.origin.y - UIViewController.MARGIN - keyboard.cgRectValue.size.height
+            } else {
+                toolbarConstraint?.constant = UITextField.TOOLBAR_HEIGHT - 2 * UIViewController.MARGIN - keyboard.cgRectValue.size.height
+            }
+            view.layoutIfNeeded()
+            break
+        default: break
         }
-        view.layoutIfNeeded()
     }
     
     func keyboardWillHideInternal(notification: NSNotification, toolbarConstraint: NSLayoutConstraint?) {
-        view.frame.origin.y = 0
-        toolbarConstraint?.constant = 0
-        view.layoutIfNeeded()
+        switch UIDevice.current.userInterfaceIdiom {
+        case .phone:
+            view.frame.origin.y = 0
+            toolbarConstraint?.constant = 0
+            view.layoutIfNeeded()
+            break
+        default: break
+        }
     }
 }

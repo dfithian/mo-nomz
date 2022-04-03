@@ -316,7 +316,7 @@
                             <searchBar contentMode="redraw" searchBarStyle="minimal" translatesAutoresizingMaskIntoConstraints="NO" id="kAj-rZ-NaQ">
                                 <rect key="frame" x="0.0" y="120" width="126" height="51"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="126" id="Ciu-Vf-vwL"/>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="126" id="RDt-DG-H42"/>
                                 </constraints>
                                 <textInputTraits key="textInputTraits"/>
                             </searchBar>
@@ -382,6 +382,7 @@
                                 <rect key="frame" x="126" y="120" width="250" height="51"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="51" id="1fN-dC-e8a"/>
+                                    <constraint firstAttribute="width" priority="999" constant="250" id="vv1-Zl-WPE"/>
                                 </constraints>
                                 <connections>
                                     <segue destination="S8q-Rx-sS7" kind="embed" identifier="embedTags" id="b1y-nz-vhw"/>
@@ -390,6 +391,7 @@
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="oOx-KR-VOP">
                                 <rect key="frame" x="384" y="120" width="20" height="51"/>
                                 <constraints>
+                                    <constraint firstAttribute="width" constant="20" id="vLT-IX-3VF"/>
                                     <constraint firstAttribute="height" constant="51" id="w8l-F2-z0C"/>
                                 </constraints>
                                 <color key="tintColor" systemColor="secondaryLabelColor"/>
