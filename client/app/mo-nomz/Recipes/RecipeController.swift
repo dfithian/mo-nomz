@@ -11,6 +11,8 @@ class RecipeController: UIViewController, RecipeFilterDelegate {
     @IBOutlet weak var banner: UIView!
     @IBOutlet weak var toolbar: Toolbar!
     @IBOutlet weak var clear: UIButton!
+    @IBOutlet weak var export: UIButton!
+    @IBOutlet weak var options: UIButton!
     @IBOutlet weak var add: UIButton!
     @IBOutlet weak var search: UISearchBar!
 
@@ -69,6 +71,10 @@ class RecipeController: UIViewController, RecipeFilterDelegate {
         reloadData()
         clear.frame = CGRect(x: clear.frame.minX, y: clear.frame.minY, width: clear.frame.width, height: toolbar.frame.height)
         clear.alignTextUnderImage()
+        export.frame = CGRect(x: export.frame.minX, y: export.frame.minY, width: export.frame.width, height: toolbar.frame.height)
+        export.alignTextUnderImage()
+        options.frame = CGRect(x: options.frame.minX, y: options.frame.minY, width: options.frame.width, height: toolbar.frame.height)
+        options.alignTextUnderImage()
         add.frame = CGRect(x: add.frame.minX, y: add.frame.minY, width: add.frame.width, height: toolbar.frame.height)
         add.alignTextUnderImage()
         search.searchTextField.addDoneButtonOnKeyboard()
