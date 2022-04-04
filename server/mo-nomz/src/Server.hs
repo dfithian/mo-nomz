@@ -123,7 +123,7 @@ postPingUser :: AppM m => Authorization -> UserId -> UserPingRequest -> m UserPi
 postPingUser token userId UserPingRequest {..} = do
   validateUserToken token userId
   unwrapDb $ withDbConn $ \c ->
-    Database.updateUserPing c userId userPingRequestVersion
+    Database.updateUserPing c userId userPingRequestVersion userPingRequestTarget
   pure $ UserPingResponse "pong"
 
 getGroceryItems :: AppM m => Authorization -> UserId -> m ListGroceryItemResponse

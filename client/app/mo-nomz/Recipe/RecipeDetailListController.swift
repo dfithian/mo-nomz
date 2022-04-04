@@ -32,27 +32,23 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
     var steps: [StepWithId] = []
     var ingredients: [ReadableIngredientWithId] = []
     var onChange: (() -> Void)? = nil
-    var mergeItems: (ReadableIngredientWithId, ReadableIngredientWithId)? = nil
-    var editItem: ReadableIngredientWithId? = nil
     
     let ADD_INGREDIENT_TAG = 0
     let ADD_STEP_TAG = 1
 
     let INGREDIENT_LIST_HEADING = 0
-    let MERGE_TIP = 1
-    let INGREDIENT_LIST = 2
-    let ADD_INGREDIENT = 3
-    let STEP_LIST_HEADING = 4
-    let REORDER_STEP_TIP = 5
-    let STEP_LIST = 6
-    let ADD_STEP = 7
-    let NOTES_HEADING = 8
-    let NOTES = 9
+    let INGREDIENT_LIST = 1
+    let ADD_INGREDIENT = 2
+    let STEP_LIST_HEADING = 3
+    let STEP_LIST = 4
+    let ADD_STEP = 5
+    let NOTES_HEADING = 6
+    let NOTES = 7
     
     @objc func didTapAdd(_ sender: Any?) {
         guard let b = sender as? UIButton else { return }
         if b.tag == ADD_INGREDIENT_TAG {
-            performSegue(withIdentifier: "addItem", sender: nil)
+            performSegue(withIdentifier: "addItem", sender: IngredientChange.add(recipe?.recipe.ingredients.map({ $0.value.order }).max().map({ $0 + 1}) ?? 1))
         } else {
             newStep()
         }
@@ -68,22 +64,17 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
     }
     
     private func editStep(_ indexPath: IndexPath) {
-        let cell = tableView.cellForRow(at: indexPath) as! TwoLabelOneText
+        let cell = tableView.cellForRow(at: indexPath) as! LabelText
         cell.text_.becomeFirstResponder()
-        cell.text_.alpha = 1
-        cell.twoLabel.alpha = 0
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
         guard let r = recipe else { return }
         if textView.tag == Int.max {
-            Database.updateRecipe(id: r.id, recipe: ReadableRecipe(name: r.recipe.name, link: r.recipe.link, active: r.recipe.active, rating: r.recipe.rating, notes: textView.text ?? r.recipe.notes, ingredients: r.recipe.ingredients, steps: r.recipe.steps))
+            Database.updateRecipe(id: r.id, recipe: ReadableRecipe(name: r.recipe.name, link: r.recipe.link, active: r.recipe.active, rating: r.recipe.rating, notes: textView.text ?? r.recipe.notes, ingredients: r.recipe.ingredients, steps: r.recipe.steps, tags: r.recipe.tags))
         } else {
             let step = steps[textView.tag]
-            let cell = tableView.cellForRow(at: IndexPath(row: textView.tag, section: STEP_LIST)) as! TwoLabelOneText
-            cell.text_.alpha = 0
-            cell.twoLabel.alpha = 1
-            cell.twoLabel.text = cell.text_.text
+            let cell = tableView.cellForRow(at: IndexPath(row: textView.tag, section: STEP_LIST)) as! LabelText
             if let newStep = cell.text_.text?.trimmingCharacters(in: .whitespacesAndNewlines).nonEmpty() {
                 let new = StepWithId(id: step.id, step: Step(step: newStep, order: step.step.order))
                 Database.updateRecipeStep(recipeId: r.id, step: new)
@@ -95,19 +86,17 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
     }
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 10
+        return 8
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
         case NOTES_HEADING: return 1
         case NOTES: return 1
-        case MERGE_TIP: return !User.dismissedIngredientMergeTip() ? 1 : 0
         case INGREDIENT_LIST_HEADING: return 1
         case INGREDIENT_LIST: return ingredients.count
         case ADD_INGREDIENT: return 1
         case STEP_LIST_HEADING: return 1
-        case REORDER_STEP_TIP: return !User.dismissedStepReorderTip() ? 1 : 0
         case STEP_LIST: return steps.count
         case ADD_STEP: return 1
         default: return 0
@@ -128,8 +117,6 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
             cell.text_.delegate = self
             cell.text_.tag = Int.max
             return cell
-        case MERGE_TIP:
-            return tableView.dequeueReusableCell(withIdentifier: "mergeTip")!
         case INGREDIENT_LIST_HEADING:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! OneLabel
             cell.label.text = "Ingredients"
@@ -148,12 +135,9 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! OneLabel
             cell.label.text = "Steps"
             return cell
-        case REORDER_STEP_TIP:
-            return tableView.dequeueReusableCell(withIdentifier: "reorderTip")!
         case STEP_LIST:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "stepItem") as! TwoLabelOneText
-            cell.oneLabel.text = String(indexPath.row + 1)
-            cell.twoLabel.text = steps[indexPath.row].step.step
+            let cell = tableView.dequeueReusableCell(withIdentifier: "stepItem") as! LabelText
+            cell.label.text = String(indexPath.row + 1)
             cell.text_.text = steps[indexPath.row].step.step
             cell.text_.tag = indexPath.row
             cell.text_.addDoneButtonOnKeyboard()
@@ -179,10 +163,9 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
         case STEP_LIST:
             delete = .step(steps[indexPath.row])
             break
-        default:
-            return nil
+        default: return nil
         }
-        let action = UIContextualAction(style: .destructive, title: "Delete") { [weak self] (action, view, completionHandler) in
+        let action = UIContextualAction(style: .destructive, title: "Delete") { (action, view, completionHandler) in
             switch delete {
             case .ingredient(let ingredient):
                 Database.updateRecipeIngredients(id: r.id, active: r.recipe.active, deletes: [ingredient.id], adds: [])
@@ -191,7 +174,7 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
                 Database.deleteRecipeStep(id: step.id)
                 break
             }
-            self?.onChange?()
+            self.onChange?()
             completionHandler(true)
         }
         action.backgroundColor = .systemRed
@@ -201,37 +184,18 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         return swipe(indexPath)
     }
-    
+
     override func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         return swipe(indexPath)
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.section {
-        case MERGE_TIP:
-            let handler = { (action: UIAlertAction) -> Void in
-                User.setDidDismissIngredientMergeTip()
-                DispatchQueue.main.async {
-                    self.tableView.reloadData()
-                }
-            }
-            promptForConfirmation(title: "Dismiss this tip", message: "Drag items to merge", handler: handler)
-            break
         case INGREDIENT_LIST:
-            editItem = ingredients[indexPath.row]
-            performSegue(withIdentifier: "editItem", sender: nil)
+            performSegue(withIdentifier: "editItem", sender: IngredientChange.edit(ingredients[indexPath.row]))
             break
         case ADD_INGREDIENT:
-            performSegue(withIdentifier: "addItem", sender: nil)
-            break
-        case REORDER_STEP_TIP:
-            let handler = { (action: UIAlertAction) -> Void in
-                User.setDidDismissStepReorderTip()
-                DispatchQueue.main.async {
-                    self.tableView.reloadData()
-                }
-            }
-            promptForConfirmation(title: "Dismiss this tip", message: "Drag steps to reorder", handler: handler)
+            performSegue(withIdentifier: "addItem", sender: IngredientChange.add(recipe?.recipe.ingredients.map({ $0.value.order }).max().map({ $0 + 1}) ?? 1))
             break
         case STEP_LIST:
             editStep(indexPath)
@@ -324,8 +288,7 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
                     let run = { () -> Void in
                         switch (existing, new) {
                         case (.ingredient(let x), .ingredient(let y)):
-                            self.mergeItems = (x, y)
-                            self.performSegue(withIdentifier: "mergeItems", sender: nil)
+                            self.performSegue(withIdentifier: "mergeItems", sender: IngredientChange.merge(x, y))
                             break
                         case (_, .step(let y)):
                             guard let r = self.recipe else { break }
@@ -362,21 +325,10 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let vc = segue.destination as? IngredientChangeController {
+        if let vc = segue.destination as? IngredientChangeController, ["mergeItems", "editItem", "addItem"].contains(segue.identifier), let change = sender as? IngredientChange {
             vc.recipe = recipe
             vc.onChange = onChange
-            switch segue.identifier {
-            case "mergeItems":
-                vc.change = .merge(mergeItems!.0, mergeItems!.1)
-                break
-            case "editItem":
-                vc.change = .edit(editItem!)
-                break
-            case "addItem":
-                vc.change = .add(recipe?.recipe.ingredients.map({ $0.value.order }).max().map({ $0 + 1}) ?? 1)
-                break
-            default: break
-            }
+            vc.change = change
         }
     }
     

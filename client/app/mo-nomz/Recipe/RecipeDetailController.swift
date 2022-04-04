@@ -7,7 +7,7 @@
 
 import UIKit
 
-class RecipeDetailController: UIViewController, UITextViewDelegate, UITextFieldDelegate {
+class RecipeDetailController: UIViewController, UITextFieldDelegate, RecipeTagDelegate {
     @IBOutlet weak var nameRead: UILabel!
     @IBOutlet weak var nameWrite: UITextField!
     @IBOutlet weak var star1: UIButton!
@@ -19,6 +19,7 @@ class RecipeDetailController: UIViewController, UITextViewDelegate, UITextFieldD
     
     var recipe: ReadableRecipeWithId? = nil
     var onChange: (() -> Void)? = nil
+    var tagVc: RecipeDetailTagController? = nil
     var detailVc: RecipeDetailListController? = nil
     
     @IBAction func didTapLabel(_ sender: UITapGestureRecognizer) {
@@ -33,7 +34,7 @@ class RecipeDetailController: UIViewController, UITextViewDelegate, UITextFieldD
         nameWrite.resignFirstResponder()
         nameRead.text = name
         nameRead.alpha = 1
-        Database.updateRecipe(id: r.id, recipe: ReadableRecipe(name: name, link: r.recipe.link, active: r.recipe.active, rating: r.recipe.rating, notes: r.recipe.notes, ingredients: r.recipe.ingredients, steps: r.recipe.steps))
+        Database.updateRecipe(id: r.id, recipe: ReadableRecipe(name: name, link: r.recipe.link, active: r.recipe.active, rating: r.recipe.rating, notes: r.recipe.notes, ingredients: r.recipe.ingredients, steps: r.recipe.steps, tags: r.recipe.tags))
         onChange?()
     }
     
@@ -80,7 +81,7 @@ class RecipeDetailController: UIViewController, UITextViewDelegate, UITextFieldD
             star5.setImage(filledStar, for: .normal)
         }
         if which != r.recipe.rating && which > 0 {
-            let newRecipe = ReadableRecipe(name: r.recipe.name, link: r.recipe.link, active: r.recipe.active, rating: which, notes: r.recipe.notes, ingredients: r.recipe.ingredients, steps: r.recipe.steps)
+            let newRecipe = ReadableRecipe(name: r.recipe.name, link: r.recipe.link, active: r.recipe.active, rating: which, notes: r.recipe.notes, ingredients: r.recipe.ingredients, steps: r.recipe.steps, tags: r.recipe.tags)
             Database.updateRecipe(id: r.id, recipe: newRecipe)
             loadData()
             onChange?()
@@ -134,11 +135,21 @@ class RecipeDetailController: UIViewController, UITextViewDelegate, UITextFieldD
         }
     }
     
+    func updateRecipeTags(tags: [String]) {
+        guard let r = recipe else { return }
+        Database.updateRecipe(id: r.id, recipe: ReadableRecipe(name: r.recipe.name, link: r.recipe.link, active: r.recipe.active, rating: r.recipe.rating, notes: r.recipe.notes, ingredients: r.recipe.ingredients, steps: r.recipe.steps, tags: tags))
+        onChange?()
+    }
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         guard let r = recipe else { return }
+        if let vc = segue.destination as? RecipeDetailTagController, segue.identifier == "embedTags" {
+            tagVc = vc
+            vc.tags = r.recipe.tags
+            vc.delegate = self
+        }
         if let vc = segue.destination as? RecipeDetailListController, segue.identifier == "embedDetail" {
             detailVc = vc
-            loadData()
             vc.recipe = r
             vc.steps = r.recipe.steps.map({ StepWithId(id: $0, step: $1) }).sorted(by: { $0.step.order < $1.step.order })
             vc.ingredients = r.recipe.ingredients.map({ ReadableIngredientWithId(id: $0, ingredient: $1) }).sorted(by: { $0.ingredient.order < $1.ingredient.order })

@@ -40,7 +40,12 @@ extension UIViewController {
         req.httpMethod = "POST"
         let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as! String
         let bundle = Bundle.main.infoDictionary?["CFBundleVersion"] as! String
-        req.httpBody = try? JSONEncoder().encode(UserPingRequest(version: "\(version).\(bundle)"))
+        #if targetEnvironment(simulator)
+        let target = "simulator"
+        #else
+        let target = "device"
+        #endif
+        req.httpBody = try? JSONEncoder().encode(UserPingRequest(version: "\(version).\(bundle)", target: target))
         let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
             completion?()
         })
@@ -138,6 +143,26 @@ extension UIViewController {
         completion?()
     }
     
+    func initializeGroups(completion: (() -> Void)?) {
+        let rawGroups = [
+            "Produce",
+            "Meat/Seafood",
+            "Dairy/Eggs",
+            "Dry/Canned",
+            "Frozen",
+            "Household"
+        ]
+        var groups: [GroceryGroupWithId] = []
+        var order = 0
+        for rawGroup in rawGroups {
+            groups.append(GroceryGroupWithId(group: GroceryGroup(name: rawGroup, order: order), id: UUID()))
+            order += 1
+        }
+        Database.insertGroups(groups: groups)
+        User.setDidInitializeGroups()
+        completion?()
+    }
+    
     func addBlob(content: String, completion: (([ReadableIngredient]) -> Void)?) {
         let spinner = startLoading()
         guard let state = User.loadState() else { return }
@@ -191,13 +216,13 @@ extension UIViewController {
                     ingredients.append(ReadableIngredient(name: ingredient, quantity: ReadableQuantity(whole: nil, fraction: nil), unit: nil, order: order))
                     order += 1
                 }
-                let recipe = Database.insertRecipe(response: ParseBlobResponse(ingredients: ingredients), name: name, link: link, rawSteps: rawSteps, active: active)
+                let recipe = Database.insertRecipe(response: ParseBlobResponse(ingredients: ingredients), name: name, link: link, rawSteps: rawSteps, active: active, tags: [])
                 completion?(recipe)
             }
             let onSuccess = { (d: Data) -> Void in
                 do {
                     let output = try JSONDecoder().decode(ParseBlobResponse.self, from: d)
-                    let recipe = Database.insertRecipe(response: output, name: name, link: link, rawSteps: rawSteps, active: active)
+                    let recipe = Database.insertRecipe(response: output, name: name, link: link, rawSteps: rawSteps, active: active, tags: [])
                     completion?(recipe)
                 } catch {
                     
@@ -223,7 +248,7 @@ extension UIViewController {
             let onSuccess = { (d: Data) -> Void in
                 do {
                     let output = try JSONDecoder().decode(ParseLinkResponse.self, from: d)
-                    let recipe = Database.insertRecipe(response: output, link: link, active: active)
+                    let recipe = Database.insertRecipe(response: output, link: link, active: active, tags: [])
                     completion?(recipe)
                 } catch {
                     onError()

@@ -148,9 +148,11 @@ class PickPhotoController: UICollectionViewController, UICollectionViewDelegateF
         }
         let actions: UIContextMenuActionProvider = { _ in
             return UIMenu(children: [
-                UIAction(title: "Remove", attributes: .destructive, handler: { _ in
+                UIAction(title: "Remove image", image: UIImage(systemName: "xmark"), attributes: .destructive, handler: { _ in
                     handler()
-                    self.collectionView.reloadData()
+                    DispatchQueue.main.async {
+                        self.collectionView.reloadData()
+                    }
                 })
             ])
         }

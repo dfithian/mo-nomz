@@ -13,15 +13,6 @@ extension UIViewController {
             self.dismiss(animated: true, completion: nil)
         }
     }
-    
-    @IBAction func didTapExport(_ sender: Any) {
-        let items: [ReadableGroceryItemWithId] = Database.selectGroceries().filter({ $0.item.active })
-        if !items.isEmpty {
-            let exportText: String = items.map({ $0.item.render() }).joined(separator: "\n")
-            let vc = UIActivityViewController(activityItems: [exportText], applicationActivities: nil)
-            present(vc, animated: true, completion: nil)
-        }
-    }
 }
 
 extension UIViewController {
@@ -77,6 +68,32 @@ extension UIViewController {
         confirmation.addAction(action)
         DispatchQueue.main.async {
             self.present(confirmation, animated: true, completion: nil)
+        }
+    }
+    
+    func promptGetInput(
+        title: String,
+        content: String?,
+        configure: ((UITextField) -> Void)?,
+        completion: @escaping ((String) -> Void)
+    ) {
+        var text: UITextField? = nil
+        let handler = { (_: UIAlertAction) -> Void in
+            guard let str = text?.text else { return }
+            completion(str)
+        }
+        let action = UIAlertAction(title: "OK", style: .default, handler: handler)
+        let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        let input = UIAlertController(title: title, message: nil, preferredStyle: .alert)
+        input.addTextField(configurationHandler: {
+            configure?($0)
+            text = $0
+            $0.text = content
+        })
+        input.addAction(action)
+        input.addAction(cancel)
+        DispatchQueue.main.async {
+            self.present(input, animated: true, completion: nil)
         }
     }
 }

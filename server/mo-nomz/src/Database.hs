@@ -49,13 +49,13 @@ fetchToken conn userId = do
   void $ execute conn "update nomz.user set last_active = now() where id = ?" (Only userId)
   pure token
 
-updateUserPing :: Connection -> UserId -> Text -> IO ()
-updateUserPing conn userId version = do
-  void $ execute conn "update nomz.user set version = ? where id = ?" (version, userId)
+updateUserPing :: Connection -> UserId -> Text -> Maybe Text -> IO ()
+updateUserPing conn userId version targetMay = do
+  void $ execute conn "update nomz.user set version = ?, target = ? where id = ?" (version, targetMay, userId)
 
 selectRecentUsers :: Connection -> IO (Int, Int, Int, Int)
 selectRecentUsers conn = do
-  let q interval = maybe 0 fromOnly . headMay <$> query_ conn ("select count(id) from nomz.user where last_active >= now () - interval '" <> interval <> "'")
+  let q interval = maybe 0 fromOnly . headMay <$> query_ conn ("select count(id) from nomz.user where last_active >= now () - interval '" <> interval <> "' and coalesce(target, 'device') <> 'simulator'")
   (,,,)
     <$> q "1 day"
     <*> q "7 day"

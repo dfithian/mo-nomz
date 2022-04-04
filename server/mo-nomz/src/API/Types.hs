@@ -38,6 +38,7 @@ data UserCreateResponse = UserCreateResponse
 
 data UserPingRequest = UserPingRequest
   { userPingRequestVersion :: Text
+  , userPingRequestTarget  :: Maybe Text
   }
   deriving (Eq, Ord, Show)
 

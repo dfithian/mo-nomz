@@ -26,14 +26,17 @@ class GroceryChangeController: SimpleController, UIPickerViewDataSource, UIPicke
     @IBOutlet weak var existingInfo: UILabel!
     @IBOutlet weak var newInfo: UILabel!
     
+    let WHOLE = 0
+    let FRACTION = 1
+    
     @IBAction func didTapSave(_ sender: Any?) {
         switch change {
         case .merge(let existing, let new):
-            let item = ReadableGroceryItemWithId(item: ReadableGroceryItem(name: name.text!, quantity: ReadableQuantity(whole: currentWholeQuantity, fraction: currentFractionQuantity), unit: unit.text?.nonEmpty(), active: existing.item.active, order: existing.item.order), id: UUID())
+            let item = ReadableGroceryItemWithId(item: ReadableGroceryItem(name: name.text!, quantity: ReadableQuantity(whole: currentWholeQuantity, fraction: currentFractionQuantity), unit: unit.text?.nonEmpty(), active: existing.item.active, order: existing.item.order, group: existing.item.group), id: UUID())
             Database.mergeGroceries(ids: [existing.id, new.id], grocery: item)
             break
         case .edit(let existing):
-            let item = ReadableGroceryItem(name: name.text!, quantity: ReadableQuantity(whole: currentWholeQuantity, fraction: currentFractionQuantity), unit: unit.text?.nonEmpty(), active: existing.item.active, order: existing.item.order)
+            let item = ReadableGroceryItem(name: name.text!, quantity: ReadableQuantity(whole: currentWholeQuantity, fraction: currentFractionQuantity), unit: unit.text?.nonEmpty(), active: existing.item.active, order: existing.item.order, group: existing.item.group)
             Database.updateGrocery(grocery: ReadableGroceryItemWithId(item: item, id: existing.id))
             break
         default: break
@@ -46,12 +49,13 @@ class GroceryChangeController: SimpleController, UIPickerViewDataSource, UIPicke
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         switch component {
-        case 0:
+        case WHOLE:
             currentWholeQuantity = row
             break
-        default:
+        case FRACTION:
             currentFractionQuantity = ReadableFraction.fromInt(x: row)
             break
+        default: break
         }
     }
     
@@ -61,15 +65,17 @@ class GroceryChangeController: SimpleController, UIPickerViewDataSource, UIPicke
     
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         switch component {
-        case 0: return 100
-        default: return 6
+        case WHOLE: return 100
+        case FRACTION: return 6
+        default: return 0
         }
     }
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         switch component {
-        case 0: return String(row)
-        default: return ReadableFraction.fromInt(x: row)?.render() ?? "0"
+        case WHOLE: return String(row)
+        case FRACTION: return ReadableFraction.fromInt(x: row)?.render() ?? "0"
+        default: return nil
         }
     }
     

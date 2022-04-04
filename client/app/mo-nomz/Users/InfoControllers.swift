@@ -72,7 +72,7 @@ class InfoTableController: UITableViewController {
                 self.unboughtProducts = unbought
                 DispatchQueue.main.async {
                     self.tableView.reloadData()
-                }
+                } 
                 break
             }
         })
