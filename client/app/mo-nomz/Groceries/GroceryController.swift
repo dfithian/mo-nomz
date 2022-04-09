@@ -24,7 +24,7 @@ class GroceryController: UIViewController {
                 Database.clearAll()
                 self.reloadData()
             }
-            promptForConfirmation(title: "Clear", message: "Are you sure you want to clear?", handler: handler)
+            promptForConfirmation(title: "Clear", message: "This will delete all groceries and deactivate all recipes. Do you want to continue?", handler: handler)
         }
     }
 
@@ -35,9 +35,6 @@ class GroceryController: UIViewController {
             let vc = UIActivityViewController(activityItems: [exportText], applicationActivities: nil)
             present(vc, animated: true, completion: nil)
         }
-    }
-    
-    @IBAction func didTapCreateGroup(_ sender: Any?) {
     }
 
     func reloadData() {
@@ -65,7 +62,7 @@ class GroceryController: UIViewController {
                 self.reloadData()
             }),
             UIAction(title: "Reset groups", image: UIImage(systemName: "arrow.clockwise"), attributes: .destructive, handler: { _ in
-                self.promptForConfirmation(title: "Reset groups", message: "Are you sure you want to uncategorize all items?", handler: { _ in
+                self.promptForConfirmation(title: "Reset groups", message: "This will uncategorize all items. Do you want to continue?", handler: { _ in
                     Database.uncategorizeAll()
                     self.groceryVc?.toBuyGroupCollapsed.collapseAll()
                     self.groceryVc?.boughtGroupCollapsed.collapseAll()

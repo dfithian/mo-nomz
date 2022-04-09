@@ -25,7 +25,7 @@ class RecipeController: UIViewController, RecipeFilterDelegate {
                 Database.clearAll()
                 self.reloadData()
             }
-            promptForConfirmation(title: "Clear", message: "Are you sure you want to clear?", handler: handler)
+            promptForConfirmation(title: "Clear", message: "This will delete all groceries and deactivate all recipes. Do you want to continue?", handler: handler)
         }
     }
     

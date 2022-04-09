@@ -20,7 +20,7 @@ class Database {
         newGrocery.ordering = Int32(grocery.item.order)
         newGrocery.group = grocery.item.group?.id
     }
-    
+
     private static func insertIngredientRaw(_ ctx: NSManagedObjectContext, ingredient: ReadableIngredientWithId, recipeId: UUID?, groceryId: UUID?) {
         let newIngredient = NSEntityDescription.insertNewObject(forEntityName: "IngredientData", into: ctx) as! IngredientData
         newIngredient.id = ingredient.id
@@ -31,7 +31,7 @@ class Database {
         newIngredient.unit = ingredient.ingredient.unit
         newIngredient.ordering = Int32(ingredient.ingredient.order)
     }
-    
+
     private static func insertRecipeRaw(_ ctx: NSManagedObjectContext, recipe: ReadableRecipeWithId) {
         let newRecipe = NSEntityDescription.insertNewObject(forEntityName: "RecipeData", into: ctx) as! RecipeData
         newRecipe.id = recipe.id
@@ -41,12 +41,12 @@ class Database {
         newRecipe.rating = Int32(recipe.recipe.rating)
         newRecipe.notes = recipe.recipe.notes
         newRecipe.tags = recipe.recipe.tags
-        
+
         for (id, step) in recipe.recipe.steps {
             insertStepRaw(ctx, step: StepWithId(id: id, step: step), recipeId: recipe.id)
         }
     }
-    
+
     private static func insertStepRaw(_ ctx: NSManagedObjectContext, step: StepWithId, recipeId: UUID) {
         let newStep = NSEntityDescription.insertNewObject(forEntityName: "StepData", into: ctx) as! StepData
         newStep.id = step.id
@@ -54,7 +54,7 @@ class Database {
         newStep.step = step.step.step
         newStep.ordering = Int32(step.step.order)
     }
-    
+
     private static func selectRecipeIngredientsRaw(_ ctx: NSManagedObjectContext, recipeId: UUID) throws -> [IngredientData] {
         let ingredientReq = IngredientData.req()
         ingredientReq.predicate = NSPredicate(format: "recipe_id = %@", recipeId as CVarArg)
@@ -64,7 +64,7 @@ class Database {
         ]
         return try ctx.fetch(ingredientReq)
     }
-    
+
     private static func selectRecipeStepsRaw(_ ctx: NSManagedObjectContext, recipeId: UUID) throws -> [StepData] {
         let stepReq = StepData.req()
         stepReq.predicate = NSPredicate(format: "recipe_id = %@", recipeId as CVarArg)
@@ -74,7 +74,7 @@ class Database {
         ]
         return try ctx.fetch(stepReq)
     }
-    
+
     private static func insertGroceryGroupRaw(_ ctx: NSManagedObjectContext, group: GroceryGroupWithId) {
         let newGroup = NSEntityDescription.insertNewObject(forEntityName: "GroceryGroupData", into: ctx) as! GroceryGroupData
         newGroup.id = group.id
@@ -90,7 +90,7 @@ class Database {
                 NSSortDescriptor(key: "ordering", ascending: true),
                 NSSortDescriptor(key: "name", ascending: true)
             ]
-            
+
             return try ctx.fetch(req).map({ (grocery) in
                 let groupData = try groceryGroupForRaw(ctx, grocery: grocery)
                 return grocery.toReadableGroceryItemWithId(groupData: groupData)
@@ -100,7 +100,7 @@ class Database {
         }
         return []
     }
-    
+
     static func selectMaxOrderRaw(_ ctx: NSManagedObjectContext) throws -> Int {
         let req = GroceryItemData.req()
         req.sortDescriptors = [NSSortDescriptor(key: "ordering", ascending: false)]
@@ -111,7 +111,7 @@ class Database {
             return 1
         }
     }
-    
+
     static func selectMaxStepOrderRaw(_ ctx: NSManagedObjectContext, recipeId: UUID) throws -> Int {
         let req = StepData.req()
         req.predicate = NSPredicate(format: "recipe_id = %@", recipeId as CVarArg)
@@ -123,7 +123,7 @@ class Database {
             return 1
         }
     }
-    
+
     static func selectMaxGroupOrderRaw(_ ctx: NSManagedObjectContext) throws -> Int {
         let req = GroceryGroupData.req()
         req.sortDescriptors = [NSSortDescriptor(key: "ordering", ascending: false)]
@@ -134,7 +134,7 @@ class Database {
             return 1
         }
     }
-    
+
     static func insertGroceries(ingredients: [ReadableIngredient]) {
         do {
             let ctx = DataAccess.shared.managedObjectContext
@@ -152,7 +152,7 @@ class Database {
             print(error)
         }
     }
-    
+
     static func updateGrocery(grocery: ReadableGroceryItemWithId) {
         do {
             let ctx = DataAccess.shared.managedObjectContext
@@ -181,7 +181,7 @@ class Database {
             print(error)
         }
     }
-    
+
     static func updateGroup(group: GroceryGroupWithId) {
         do {
             let ctx = DataAccess.shared.managedObjectContext
@@ -206,38 +206,38 @@ class Database {
             print(error)
         }
     }
-    
+
     static func mergeGroceries(ids: [UUID], grocery: ReadableGroceryItemWithId) {
         do {
             let ctx = DataAccess.shared.managedObjectContext
-            
+
             // insert new grocery
             insertGroceryRaw(ctx, grocery: grocery)
-            
+
             // set new grocery id for ingredient
             let ingredientReq = IngredientData.req()
             ingredientReq.predicate = NSPredicate(format: "grocery_id in %@", ids as CVarArg)
             for ingredient in try ctx.fetch(ingredientReq) {
                 ingredient.grocery_id = grocery.id
             }
-            
+
             // delete old grocery
             let groceryReq = GroceryItemData.req()
             groceryReq.predicate = NSPredicate(format: "id in %@", ids as CVarArg)
             for grocery in try ctx.fetch(groceryReq) {
                 ctx.delete(grocery)
             }
-            
+
             try ctx.save()
         } catch let error as NSError {
             print(error)
         }
     }
-    
+
     static func deleteGrocery(id: UUID) {
         do {
             let ctx = DataAccess.shared.managedObjectContext
-            
+
             // set grocery id as null for recipe ingredient, otherwise delete ingredient
             let ingredientReq = IngredientData.req()
             ingredientReq.predicate = NSPredicate(format: "grocery_id = %@", id as CVarArg)
@@ -248,20 +248,20 @@ class Database {
                     ingredient.grocery_id = nil
                 }
             }
-            
+
             // delete grocery
             let groceryReq = GroceryItemData.req()
             groceryReq.predicate = NSPredicate(format: "id = %@", id as CVarArg)
             for grocery in try ctx.fetch(groceryReq) {
                 ctx.delete(grocery)
             }
-            
+
             try ctx.save()
         } catch let error as NSError {
             print(error)
         }
     }
-    
+
     static func selectRecipes() -> [ReadableRecipeWithId] {
         do {
             let ctx = DataAccess.shared.managedObjectContext
@@ -280,7 +280,7 @@ class Database {
         }
         return []
     }
-    
+
     static func findRecipeByLink(host: String, path: String) -> ReadableRecipeWithId? {
         do {
             let ctx = DataAccess.shared.managedObjectContext
@@ -298,13 +298,13 @@ class Database {
         }
         return nil
     }
-    
+
     static func getRecipe(id: UUID) -> ReadableRecipeWithId? {
         do {
             let ctx = DataAccess.shared.managedObjectContext
             let ingredients = try selectRecipeIngredientsRaw(ctx, recipeId: id)
             let steps = try selectRecipeStepsRaw(ctx, recipeId: id)
-            
+
             let recipeReq = RecipeData.req()
             recipeReq.predicate = NSPredicate(format: "id = %@", id as CVarArg)
             recipeReq.fetchLimit = 1
@@ -314,7 +314,7 @@ class Database {
         }
         return nil
     }
-    
+
     static func insertRecipe(response: ParseLinkResponse, link: String, active: Bool, tags: [String]) -> ReadableRecipeWithId {
         var ingredients = [UUID:ReadableIngredient]()
         for ingredient in response.ingredients {
@@ -329,7 +329,7 @@ class Database {
         let recipe = ReadableRecipe(name: response.name, link: link, active: active, rating: 0, notes: "", ingredients: ingredients, steps: steps, tags: tags)
         return insertRecipe(recipe: recipe)
     }
-    
+
     static func insertRecipe(response: ParseBlobResponse, name: String, link: String?, rawSteps: [String], active: Bool, tags: [String]) -> ReadableRecipeWithId {
         var ingredients = [UUID:ReadableIngredient]()
         for ingredient in response.ingredients {
@@ -344,15 +344,15 @@ class Database {
         let recipe = ReadableRecipe(name: name, link: link, active: active, rating: 0, notes: "", ingredients: ingredients, steps: steps, tags: tags)
         return insertRecipe(recipe: recipe)
     }
-    
+
     static func insertRecipe(recipe: ReadableRecipe) -> ReadableRecipeWithId {
         let recipeWithId = ReadableRecipeWithId(recipe: recipe, id: UUID())
         do {
             let ctx = DataAccess.shared.managedObjectContext
-            
+
             // insert recipe
             insertRecipeRaw(ctx, recipe: recipeWithId)
-            
+
             // insert ingredients and groceries
             var maxOrder = try selectMaxOrderRaw(ctx)
             for (ingredientId, ingredient) in recipe.ingredients {
@@ -372,7 +372,7 @@ class Database {
         }
         return recipeWithId
     }
-    
+
     private static func activateRecipeRaw(_ ctx: NSManagedObjectContext, id: UUID) throws {
         // setting recipe active bit handled by caller
         let ingredientReq = IngredientData.req()
@@ -389,7 +389,7 @@ class Database {
             ingredient.grocery_id = grocery.id
         }
     }
-    
+
     private static func deactivateRecipeRaw(_ ctx: NSManagedObjectContext, id: UUID) throws {
         // setting recipe active bit handled by caller
         let ingredientReq = IngredientData.req()
@@ -400,7 +400,7 @@ class Database {
         }
         try unmergeGroceriesRaw(ctx, ingredientIds: Array(ingredientIds))
     }
-    
+
     static func updateRecipe(id: UUID, recipe: ReadableRecipe) {
         do {
             let ctx = DataAccess.shared.managedObjectContext
@@ -428,21 +428,21 @@ class Database {
             print(error)
         }
     }
-    
+
     static func updateRecipeIngredients(id: UUID, active: Bool, deletes: [UUID], adds: [ReadableIngredientWithId]) {
         do {
             let ctx = DataAccess.shared.managedObjectContext
-            
+
             // unmerge groceries
             try unmergeGroceriesRaw(ctx, ingredientIds: deletes)
-            
+
             // delete the deletes
             let req = IngredientData.req()
             req.predicate = NSPredicate(format: "id in %@", deletes as CVarArg)
             for ingredient in try ctx.fetch(req) {
                 ctx.delete(ingredient)
             }
-            
+
             // insert the adds
             var maxOrder = try selectMaxOrderRaw(ctx)
             for ingredient in adds {
@@ -455,16 +455,16 @@ class Database {
                     insertIngredientRaw(ctx, ingredient: ingredient, recipeId: id, groceryId: nil)
                 }
             }
-            
+
             // automerge
             try automergeGroceriesRaw(ctx)
-            
+
             try ctx.save()
         } catch let error as NSError {
             print(error)
         }
     }
-    
+
     static func addRecipeSteps(recipeId: UUID, rawSteps: [String]) -> [StepWithId] {
         do {
             let ctx = DataAccess.shared.managedObjectContext
@@ -477,14 +477,14 @@ class Database {
                 ordering += 1
             }
             try ctx.save()
-            
+
             return steps
         } catch let error as NSError {
             print(error)
         }
         return []
     }
-    
+
     static func deleteRecipeStep(id: UUID) {
         do {
             let ctx = DataAccess.shared.managedObjectContext
@@ -498,14 +498,14 @@ class Database {
             print(error)
         }
     }
-    
+
     static func updateRecipeStep(recipeId: UUID, step: StepWithId) {
         do {
             let ctx = DataAccess.shared.managedObjectContext
             let req = StepData.req()
             req.predicate = NSPredicate(format: "id = %@", step.id as CVarArg)
             req.fetchLimit = 1
-            
+
             if let fetched = try ctx.fetch(req).first {
                 if fetched.ordering != Int32(step.step.order) {
                     let reorderReq = StepData.req()
@@ -520,17 +520,17 @@ class Database {
                 fetched.step = step.step.step
                 fetched.ordering = Int32(step.step.order)
             }
-            
+
             try ctx.save()
         } catch let error as NSError {
             print(error)
         }
     }
-    
+
     static func deleteRecipe(id: UUID) {
         do {
             let ctx = DataAccess.shared.managedObjectContext
-            
+
             // unmerge groceries with ingredients for this recipe and delete the ingredients
             let ingredientReq = IngredientData.req()
             ingredientReq.predicate = NSPredicate(format: "recipe_id = %@", id as CVarArg)
@@ -540,27 +540,27 @@ class Database {
             for ingredient in ingredients {
                 ctx.delete(ingredient)
             }
-            
+
             // delete the steps
             let stepReq = StepData.req()
             stepReq.predicate = NSPredicate(format: "recipe_id = %@", id as CVarArg)
             for step in try ctx.fetch(stepReq) {
                 ctx.delete(step)
             }
-            
+
             // delete the recipe
             let recipeReq = RecipeData.req()
             recipeReq.predicate = NSPredicate(format: "id = %@", id as CVarArg)
             for recipe in try ctx.fetch(recipeReq) {
                 ctx.delete(recipe)
             }
-            
+
             try ctx.save()
         } catch let error as NSError {
             print(error)
         }
     }
-    
+
     private static func groceryGroupForRaw(_ ctx: NSManagedObjectContext, grocery: GroceryItemData) throws -> GroceryGroupData? {
         if let groupId = grocery.group {
             let groupReq = GroceryGroupData.req()
@@ -569,13 +569,13 @@ class Database {
         }
         return nil
     }
-    
+
     private static func automergeGroceriesRaw(_ ctx: NSManagedObjectContext, active: Bool, groceries: [ReadableGroceryItemWithId]) throws {
         struct NameAndUnit: Hashable {
             let name: String
             let unit: String?
         }
-        
+
         // aggregate groceries by name and unit
         var byNameAndUnit = [NameAndUnit:([UUID], ReadableQuantity, Int, GroceryGroupWithId?)]()
         for grocery in groceries {
@@ -583,20 +583,20 @@ class Database {
             let (ids, quantity, order, group) = byNameAndUnit[nameAndUnit] ?? ([], ReadableQuantity(whole: 0, fraction: nil), Int.max, nil)
             byNameAndUnit[nameAndUnit] = (ids + [grocery.id], quantity + grocery.item.quantity, min(grocery.item.order, order), group ?? grocery.item.group)
         }
-        
+
         for (nameAndUnit, (ids, quantity, order, group)) in byNameAndUnit {
             if ids.count >= 2 {
                 // insert new grocery for merge
                 let newGrocery = ReadableGroceryItemWithId(item: ReadableGroceryItem(name: nameAndUnit.name, quantity: quantity, unit: nameAndUnit.unit, active: active, order: order, group: group), id: UUID())
                 insertGroceryRaw(ctx, grocery: newGrocery)
-                
+
                 // update the ingredient grocery id
                 let ingredientReq = IngredientData.req()
                 ingredientReq.predicate = NSPredicate(format: "grocery_id in %@", ids as CVarArg)
                 for ingredient in try ctx.fetch(ingredientReq) {
                     ingredient.grocery_id = newGrocery.id
                 }
-                
+
                 // delete the old groceries
                 let groceryReq2 = GroceryItemData.req()
                 groceryReq2.predicate = NSPredicate(format: "id in %@", ids as CVarArg)
@@ -606,7 +606,7 @@ class Database {
             }
         }
     }
-    
+
     private static func automergeGroceriesRaw(_ ctx: NSManagedObjectContext) throws {
         // select the existing groceries
         var activeGroceries: [ReadableGroceryItemWithId] = []
@@ -619,11 +619,11 @@ class Database {
                 inactiveGroceries.append(grocery.toReadableGroceryItemWithId(groupData: groupData))
             }
         }
-        
+
         try automergeGroceriesRaw(ctx, active: true, groceries: activeGroceries)
         try automergeGroceriesRaw(ctx, active: false, groceries: inactiveGroceries)
     }
-    
+
     private static func unmergeGroceriesRaw(_ ctx: NSManagedObjectContext, ingredientIds: [UUID]) throws {
         // unset the grocery id for the existing ingredients
         let ingredientReq = IngredientData.req()
@@ -635,7 +635,7 @@ class Database {
             }
             ingredient.grocery_id = nil
         }
-        
+
         // select old groceries to delete
         let groceryReq = GroceryItemData.req()
         groceryReq.predicate = NSPredicate(format: "id in %@", Array(oldGroceryIds) as CVarArg)
@@ -644,7 +644,7 @@ class Database {
             let groupData = try groceryGroupForRaw(ctx, grocery: grocery)
             oldGroceries[grocery.id!] = (grocery.toReadableGroceryItemWithId(groupData: groupData), grocery)
         }
-        
+
         // insert new groceries from unmerged old groceries
         let ingredientReq2 = IngredientData.req()
         ingredientReq2.predicate = NSPredicate(format: "grocery_id in %@", Array(oldGroceryIds) as CVarArg)
@@ -655,20 +655,20 @@ class Database {
                 ingredient.grocery_id = newGrocery.id
             }
         }
-        
+
         // delete old groceries
         for (_, grocery) in oldGroceries.values {
             ctx.delete(grocery)
         }
-        
+
         // automerge
         try automergeGroceriesRaw(ctx)
     }
-    
+
     static func clearAll() {
         do {
             let ctx = DataAccess.shared.managedObjectContext
-            
+
             // delete ingredients not belonging to recipes, otherwise set the grocery to null
             for ingredient in try ctx.fetch(IngredientData.req()) {
                 if ingredient.recipe_id == nil {
@@ -677,30 +677,30 @@ class Database {
                     ingredient.grocery_id = nil
                 }
             }
-            
+
             // deactivate all recipes
             for recipe in try ctx.fetch(RecipeData.req()) {
                 recipe.active = false
             }
-            
+
             // delete all groceries
             try ctx.execute(NSBatchDeleteRequest(fetchRequest: NSFetchRequest(entityName: "GroceryItemData")))
-            
+
             try ctx.save()
         } catch let error as NSError {
             print(error)
         }
     }
-    
+
     static func overwrite(export: ExportResponse) {
         do {
             let ctx = DataAccess.shared.managedObjectContext
-            
+
             // delete all data
             try ctx.execute(NSBatchDeleteRequest(fetchRequest: NSFetchRequest(entityName: "RecipeData")))
             try ctx.execute(NSBatchDeleteRequest(fetchRequest: NSFetchRequest(entityName: "GroceryItemData")))
             try ctx.execute(NSBatchDeleteRequest(fetchRequest: NSFetchRequest(entityName: "IngredientData")))
-            
+
             // insert recipes
             var recipeIds = [Int:UUID]()
             for (recipeKey, recipe) in export.recipes {
@@ -708,7 +708,7 @@ class Database {
                 insertRecipeRaw(ctx, recipe: recipeWithId)
                 recipeIds[recipeKey] = recipeWithId.id
             }
-            
+
             // insert groceries
             var groceryIds = [Int:UUID]()
             for (groceryKey, grocery) in export.groceries {
@@ -716,7 +716,7 @@ class Database {
                 insertGroceryRaw(ctx, grocery: groceryWithId)
                 groceryIds[groceryKey] = groceryWithId.id
             }
-            
+
             // insert ingredients
             export.ingredients.forEach({ (ingredientKey, ingredient) -> () in
                 let ingredientWithId = ReadableIngredientWithId(id: UUID(), ingredient: ReadableIngredient(name: ingredient.name, quantity: ingredient.quantity, unit: ingredient.unit, order: ingredient.order))
@@ -724,24 +724,24 @@ class Database {
                 let groceryId = ingredient.groceryItemId.map({ groceryIds[$0]! })
                 insertIngredientRaw(ctx, ingredient: ingredientWithId, recipeId: recipeId, groceryId: groceryId)
             })
-            
+
             try ctx.save()
         } catch let error as NSError {
             print(error)
         }
     }
-    
-    static func getTopTags() -> [String] {
+
+    static func getAllTags() -> [String] {
         do {
             let ctx = DataAccess.shared.managedObjectContext
             let rawTags = try ctx.fetch(RecipeData.req()).compactMap({ $0.tags }).flatMap({ $0 })
-            return Array(Array(Dictionary(rawTags.map({ ($0, 1) }), uniquingKeysWith: +)).sorted(by: { $0.1 > $1.1 }).map({ $0.0 }).prefix(5))
+            return Array(Array(Dictionary(rawTags.map({ ($0, 1) }), uniquingKeysWith: +)).sorted(by: { ($0.1, $0.0) < ($1.1, $1.0) }).reversed().map({ $0.0 }))
         } catch let error as NSError {
             print(error)
         }
         return []
     }
-    
+
     static func selectGroups() -> [GroceryGroupWithId] {
         do {
             let ctx = DataAccess.shared.managedObjectContext
@@ -752,12 +752,11 @@ class Database {
         }
         return []
     }
-    
+
     static func updateTag(old: String, new: String) {
         do {
             let ctx = DataAccess.shared.managedObjectContext
             let req = RecipeData.req()
-            req.predicate = NSPredicate(format: "tags contains[c] %@", old as CVarArg)
             for recipe in try ctx.fetch(req) {
                 recipe.tags = recipe.tags?.map({ $0 == old ? new : $0 })
             }
@@ -766,12 +765,11 @@ class Database {
             print(error)
         }
     }
-    
+
     static func deleteTag(old: String) {
         do {
             let ctx = DataAccess.shared.managedObjectContext
             let req = RecipeData.req()
-            req.predicate = NSPredicate(format: "tags contains[c] %@", old as CVarArg)
             for recipe in try ctx.fetch(req) {
                 recipe.tags = recipe.tags?.filter({ $0 != old })
             }
@@ -780,7 +778,7 @@ class Database {
             print(error)
         }
     }
-    
+
     static func selectMaxGroupOrder() -> Int {
         do {
             let ctx = DataAccess.shared.managedObjectContext
@@ -790,7 +788,7 @@ class Database {
         }
         return 1
     }
-    
+
     static func insertGroups(groups: [GroceryGroupWithId]) {
         do {
             let ctx = DataAccess.shared.managedObjectContext
@@ -802,7 +800,7 @@ class Database {
             print(error)
         }
     }
-    
+
     static func deleteGroup(id: UUID) {
         do {
             let ctx = DataAccess.shared.managedObjectContext
@@ -821,7 +819,7 @@ class Database {
             print(error)
         }
     }
-    
+
     static func uncategorizeAll() {
         do {
             let ctx = DataAccess.shared.managedObjectContext

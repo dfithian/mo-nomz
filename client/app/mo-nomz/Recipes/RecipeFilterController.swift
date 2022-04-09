@@ -17,14 +17,14 @@ class RecipeFilterController: UICollectionViewController, UICollectionViewDelega
     var tags: [String]? = nil
     var selected: String? = nil
     var onChange: (() -> Void)? = nil
-    
+
     let ACTIVE = 0
     let TAGS = 1
 
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 2
     }
-    
+
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         switch section {
         case ACTIVE: return 1
@@ -32,25 +32,25 @@ class RecipeFilterController: UICollectionViewController, UICollectionViewDelega
         default: return 0
         }
     }
-    
+
     private func sendUpdates() {
         delegate?.updateSelectedTag(active: active, tag: selected)
         DispatchQueue.main.async {
             self.collectionView.reloadData()
         }
     }
-    
+
     func clear() {
         active = true
         selected = nil
         sendUpdates()
     }
-    
+
     @objc func didTapActive(_ sender: Any?) {
         active = !active
         sendUpdates()
     }
-    
+
     private func toggleTag(_ index: Int) {
         let tag_ = tags![index]
         if selected == tag_ {
@@ -60,7 +60,7 @@ class RecipeFilterController: UICollectionViewController, UICollectionViewDelega
         }
         sendUpdates()
     }
-    
+
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         switch indexPath.section {
         case ACTIVE:
@@ -90,7 +90,7 @@ class RecipeFilterController: UICollectionViewController, UICollectionViewDelega
             return UICollectionViewCell()
         }
     }
-    
+
     override func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         switch indexPath.section {
         case TAGS:
@@ -104,7 +104,7 @@ class RecipeFilterController: UICollectionViewController, UICollectionViewDelega
                             })
                         }),
                         UIAction(title: "Delete tag", image: UIImage(systemName: "xmark"), attributes: .destructive, handler: { _ in
-                            self.promptForConfirmation(title: "Delete tag", message: "Are you sure you want to delete?", handler: { _ in
+                            self.promptForConfirmation(title: "Delete tag", message: "This tag will be removed from all recipes. Do you want to continue?", handler: { _ in
                                 Database.deleteTag(old: tag_)
                                 self.onChange?()
                             })
@@ -114,7 +114,7 @@ class RecipeFilterController: UICollectionViewController, UICollectionViewDelega
         default: return nil
         }
     }
-    
+
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         switch indexPath.section {
         case ACTIVE:
@@ -126,7 +126,7 @@ class RecipeFilterController: UICollectionViewController, UICollectionViewDelega
         default: break
         }
     }
-    
+
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let text: String
         switch indexPath.section {
@@ -147,18 +147,18 @@ class RecipeFilterController: UICollectionViewController, UICollectionViewDelega
         let height = view.frame.size.height - 10
         return CGSize(width: width, height: height)
     }
-    
+
     private func loadData() {
-        tags = Database.getTopTags()
+        tags = Database.getAllTags()
     }
-    
+
     func reloadData() {
         loadData()
         DispatchQueue.main.async {
             self.collectionView.reloadData()
         }
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         loadData()
