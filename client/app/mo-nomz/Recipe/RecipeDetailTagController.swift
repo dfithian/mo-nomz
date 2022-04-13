@@ -14,7 +14,7 @@ protocol RecipeTagDelegate {
 class RecipeDetailTagController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
     var tags: [String] = []
     var delegate: RecipeTagDelegate? = nil
-    
+
     let HEADER = 0
     let TAGS = 1
     let ADD = 2
@@ -22,7 +22,7 @@ class RecipeDetailTagController: UICollectionViewController, UICollectionViewDel
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 3
     }
-    
+
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         switch section {
         case HEADER: return 1
@@ -31,15 +31,16 @@ class RecipeDetailTagController: UICollectionViewController, UICollectionViewDel
         default: return 0
         }
     }
-    
+
     private func add(_ tag_: String) {
+        guard !tags.contains(tag_) else { return }
         tags.append(tag_)
         delegate?.updateRecipeTags(tags: tags)
         DispatchQueue.main.async {
             self.collectionView.reloadData()
         }
     }
-    
+
     private func delete(_ index: Int) {
         tags.remove(at: index)
         delegate?.updateRecipeTags(tags: tags)
@@ -47,7 +48,7 @@ class RecipeDetailTagController: UICollectionViewController, UICollectionViewDel
             self.collectionView.reloadData()
         }
     }
-    
+
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         switch indexPath.section {
         case HEADER:
@@ -64,7 +65,7 @@ class RecipeDetailTagController: UICollectionViewController, UICollectionViewDel
             return cell
         case ADD:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "addItem", for: indexPath) as! OneCellButton
-            let actions = Database.getTopTags().filter({ !tags.contains($0) }).map({
+            let actions = Database.getAllTags().filter({ !tags.contains($0) }).map({
                 (tag_) in UIAction(title: tag_, handler: { _ in
                     self.add(tag_)
                 })
@@ -78,7 +79,7 @@ class RecipeDetailTagController: UICollectionViewController, UICollectionViewDel
             return UICollectionViewCell()
         }
     }
-    
+
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let text: String
         switch indexPath.section {
