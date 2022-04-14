@@ -8,46 +8,32 @@
 import UIKit
 
 protocol RecipeFilterDelegate {
-    func updateSelectedTag(active: Bool, tag: String?)
+    func updateSelectedTag(tag: String?)
 }
 
 class RecipeFilterController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
     var delegate: RecipeFilterDelegate? = nil
-    var active: Bool = true
     var tags: [String]? = nil
     var selected: String? = nil
     var onChange: (() -> Void)? = nil
 
-    let ACTIVE = 0
-    let TAGS = 1
-
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 2
+        return 1
     }
 
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        switch section {
-        case ACTIVE: return 1
-        case TAGS: return tags?.count ?? 0
-        default: return 0
-        }
+        return tags?.count ?? 0
     }
 
     private func sendUpdates() {
-        delegate?.updateSelectedTag(active: active, tag: selected)
+        delegate?.updateSelectedTag(tag: selected)
         DispatchQueue.main.async {
             self.collectionView.reloadData()
         }
     }
 
     func clear() {
-        active = true
         selected = nil
-        sendUpdates()
-    }
-
-    @objc func didTapActive(_ sender: Any?) {
-        active = !active
         sendUpdates()
     }
 
@@ -62,84 +48,45 @@ class RecipeFilterController: UICollectionViewController, UICollectionViewDelega
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        switch indexPath.section {
-        case ACTIVE:
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "activeButton", for: indexPath) as! OneCellButton
-            cell.button.setTitle("active", for: .normal)
-            cell.button.layer.cornerRadius = 5
-            if active {
-                cell.button.backgroundColor = UIColor.systemGray5
-            } else {
-                cell.button.backgroundColor = nil
-            }
-            cell.button.addTarget(self, action: #selector(didTapActive), for: .touchUpInside)
-            return cell
-        case TAGS:
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "tagButton", for: indexPath) as! OneCellButton
-            let tag_ = tags![indexPath.row]
-            cell.button.tag = indexPath.row
-            cell.button.setTitle(tag_, for: .normal)
-            cell.button.layer.cornerRadius = 5
-            if selected == tag_ {
-                cell.button.backgroundColor = UIColor.systemGray5
-            } else {
-                cell.button.backgroundColor = nil
-            }
-            return cell
-        default:
-            return UICollectionViewCell()
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "tagButton", for: indexPath) as! OneCellButton
+        let tag_ = tags![indexPath.row]
+        cell.button.tag = indexPath.row
+        cell.button.setTitle(tag_, for: .normal)
+        cell.button.layer.cornerRadius = 5
+        if selected == tag_ {
+            cell.button.backgroundColor = UIColor.systemGray5
+        } else {
+            cell.button.backgroundColor = nil
         }
+        return cell
     }
 
     override func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-        switch indexPath.section {
-        case TAGS:
-            guard let tag_ = tags?[indexPath.row] else { return nil }
-            return UIContextMenuConfiguration(identifier: nil, previewProvider: nil, actionProvider: { _ in
-                    UIMenu(children: [
-                        UIAction(title: "Edit tag", image: UIImage(systemName: "pencil"), handler: { _ in
-                            self.promptGetInput(title: "Edit tag", content: tag_, configure: nil, completion: { (new) in
-                                Database.updateTag(old: tag_, new: new)
-                                self.onChange?()
-                            })
-                        }),
-                        UIAction(title: "Delete tag", image: UIImage(systemName: "xmark"), attributes: .destructive, handler: { _ in
-                            self.promptForConfirmation(title: "Delete tag", message: "This tag will be removed from all recipes. Do you want to continue?", handler: { _ in
-                                Database.deleteTag(old: tag_)
-                                self.onChange?()
-                            })
+        guard let tag_ = tags?[indexPath.row] else { return nil }
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil, actionProvider: { _ in
+                UIMenu(children: [
+                    UIAction(title: "Edit tag", image: UIImage(systemName: "pencil"), handler: { _ in
+                        self.promptGetInput(title: "Edit tag", content: tag_, configure: nil, completion: { (new) in
+                            Database.updateTag(old: tag_, new: new)
+                            self.onChange?()
                         })
-                    ])
-            })
-        default: return nil
-        }
+                    }),
+                    UIAction(title: "Delete tag", image: UIImage(systemName: "xmark"), attributes: .destructive, handler: { _ in
+                        self.promptForConfirmation(title: "Delete tag", message: "This tag will be removed from all recipes. Do you want to continue?", handler: { _ in
+                            Database.deleteTag(old: tag_)
+                            self.onChange?()
+                        })
+                    })
+                ])
+        })
     }
 
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        switch indexPath.section {
-        case ACTIVE:
-            didTapActive(nil)
-            break
-        case TAGS:
-            toggleTag(indexPath.row)
-            break
-        default: break
-        }
+        toggleTag(indexPath.row)
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let text: String
-        switch indexPath.section {
-        case ACTIVE:
-            text = "active"
-            break
-        case TAGS:
-            text = tags?[indexPath.row] ?? ""
-            break
-        default:
-            text = ""
-            break
-        }
+        let text = tags?[indexPath.row] ?? ""
         let font = UIFont.systemFont(ofSize: 12)
         let fontAttributes = [NSAttributedString.Key.font: font]
         let buttonWidth = 25.0
