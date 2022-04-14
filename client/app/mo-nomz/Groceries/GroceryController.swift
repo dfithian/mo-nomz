@@ -51,23 +51,9 @@ class GroceryController: UIViewController {
                     self.reloadData()
                 })
             }),
-            UIAction(title: "Expand all groups", image: UIImage(systemName: "arrowtriangle.left.and.line.vertical.and.arrowtriangle.right"), handler: { _ in
-                self.groceryVc?.toBuyGroupCollapsed.expandAll()
-                self.groceryVc?.boughtGroupCollapsed.expandAll()
-                self.reloadData()
-            }),
-            UIAction(title: "Collapse all groups", image: UIImage(systemName: "arrowtriangle.right.and.line.vertical.and.arrowtriangle.left"), handler: { _ in
-                self.groceryVc?.toBuyGroupCollapsed.collapseAll()
-                self.groceryVc?.boughtGroupCollapsed.collapseAll()
-                self.reloadData()
-            }),
             UIAction(title: "Reset groups", image: UIImage(systemName: "arrow.clockwise"), attributes: .destructive, handler: { _ in
                 self.promptForConfirmation(title: "Reset groups", message: "This will uncategorize all items. Do you want to continue?", handler: { _ in
                     Database.uncategorizeAll()
-                    self.groceryVc?.toBuyGroupCollapsed.collapseAll()
-                    self.groceryVc?.boughtGroupCollapsed.collapseAll()
-                    self.groceryVc?.toBuyGroupCollapsed.toggleGroupCollapsed(nil)
-                    self.groceryVc?.boughtGroupCollapsed.toggleGroupCollapsed(nil)
                     self.reloadData()
                 })
             })

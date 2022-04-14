@@ -80,8 +80,8 @@ class GroceryGroupCollapsed {
             if let c = collapsed[x] {
                 return c
             } else {
-                collapsed[x] = false
-                return false
+                collapsed[x] = true
+                return true
             }
         case .none: return uncategorized
         }
