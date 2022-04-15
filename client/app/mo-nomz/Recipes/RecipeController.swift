@@ -38,8 +38,7 @@ class RecipeController: UIViewController, RecipeFilterDelegate {
         filterVc?.reloadData()
     }
 
-    func updateSelectedTag(active: Bool, tag: String?) {
-        recipeVc?.active = active
+    func updateSelectedTag(tag: String?) {
         recipeVc?.tag = tag
         recipeVc?.onFilter()
         DispatchQueue.main.async {
