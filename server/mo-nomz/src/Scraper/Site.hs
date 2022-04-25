@@ -138,6 +138,7 @@ stepScrapers = HashMap.fromList
   , ("alexandracooks.com", tastyS2)
   , ("naturallyella.com", tastyS2)
   , ("brownedbutterblondie.com", tastyS3)
+  , ("simple-veganista.com", tastyS4)
 
   , ("foodnetwork.com", foodNetworkS)
 
@@ -315,6 +316,11 @@ tastyS3 :: StepScraper
 tastyS3 = simpleStepScraper "tasty3"
   (testScrape ("div" @: [Scalpel.hasClass "tasty-recipes-instructions"]))
   ("div" @: [Scalpel.hasClass "tasty-recipes-instructions"] // "div" @: [Scalpel.hasClass "tasty-recipes-instructions-body"])
+
+tastyS4 :: StepScraper
+tastyS4 = simpleStepScraper "tasty4"
+  (testScrape ("div" @: [Scalpel.hasClass "tasty-recipe-instructions"]))
+  ("div" @: [Scalpel.hasClass "tasty-recipe-instructions"] // "p")
 
 foodNetworkI :: IngredientScraper
 foodNetworkI = IngredientScraper (ScrapeInfo (ScrapeName "foodNetwork") inception) denyAll $

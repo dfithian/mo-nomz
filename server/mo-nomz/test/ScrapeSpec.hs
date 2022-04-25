@@ -251,6 +251,8 @@ spec env = describe "Scrape" $ do
       it "handles joythebaker" $ scrapeAndParseConfig defCfg "https://joythebaker.com/2019/03/chili-and-cheese-buttery-biscuits/"
     describe "Tasty 3" $ do
       it "handles ourbestbites" $ scrapeAndParseConfig (defCfg { requiredIngredients = 1 }) "https://ourbestbites.com/greek-pasta-salad/#tasty-recipes-45657"
+    describe "Tasty 4" $ do
+      it "handles simple-veganista" $ scrapeAndParseConfig (defCfg { requiredIngredients = 1 }) "https://simple-veganista.com/vegan-stuffed-peppers/#tasty-recipes-28732-jump-target"
     describe "Eating Well" $ do
       it "handles bhg" $ scrapeAndParseConfig (defCfg { requireOneQuantityUnit = False }) "https://www.bhg.com/recipe/air-fried-ginger-glazed-pork-ribs/"
     describe "Simply Recipes" $ do
