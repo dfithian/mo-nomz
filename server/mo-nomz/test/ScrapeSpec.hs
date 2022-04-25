@@ -200,7 +200,8 @@ spec env = describe "Scrape" $ do
     it "handles glutenfreecuppatea" $ scrapeAndParseConfig defCfg "https://glutenfreecuppatea.co.uk/2021/04/13/toblerone-millionaires-shortbread-recipe/"
     it "handles thelastfoodblog" $ scrapeAndParseConfig defCfg "https://www.thelastfoodblog.com/spinach-and-ricotta-cannelloni/"
     it "handles hemsleyandhemsley" $ scrapeAndParseConfig defCfg "https://hemsleyandhemsley.com/recipe/apple-rocket-and-feta-buckwheat-galettes/"
-    it "handles localmilkblog" $ scrapeAndParseConfig defCfg "https://localmilkblog.com/2019/11/turkey-buttermilk-sage-dumpling-soup.html"
+    -- certificate is invalid
+    xit "handles localmilkblog" $ scrapeAndParseConfig defCfg "https://localmilkblog.com/2019/11/turkey-buttermilk-sage-dumpling-soup.html"
     it "handles thefoodblog" $ scrapeAndParseConfig defCfg "https://www.thefoodblog.net/air-fryer-salmon-recipe/"
     it "handles onceuponafoodblog" $ scrapeAndParseConfig defCfg "https://onceuponafoodblog.com/cheesy-bacon-spring-greens/"
     it "handles anotherfoodblogger" $ scrapeAndParseConfig defCfg "https://www.anotherfoodblogger.com/recipes/meatball-marinara/#wprm-recipe-container-6560"
