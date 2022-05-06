@@ -96,7 +96,7 @@ spec env = describe "Scrape" $ do
       scrapeAndParse
         env
         "https://www.food.com/recipe/hearty-tuscan-white-bean-soup-192495"
-        "Hearty Tuscan White Bean Soup Recipe  - Food.com"
+        "Hearty Tuscan White Bean Soup Recipe - Food.com"
         (foodIngredients, foodSteps)
 
     it "can parse pillsbury" $

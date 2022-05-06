@@ -22,9 +22,9 @@ ingredientScrapers = HashMap.fromList
 
   , ("cooking.nytimes.com", nytimesI)
 
-  , ("food.com", geniusKitchenI)
-  , ("geniuskitchen.com", geniusKitchenI)
-  , ("tasteofhome.com", geniusKitchenI)
+  , ("food.com", geniusKitchen2I)
+  , ("geniuskitchen.com", geniusKitchen1I)
+  , ("tasteofhome.com", geniusKitchen1I)
 
   , ("rachlmansfield.com", tastyI2)
   , ("cookieandkate.com", tastyI1)
@@ -123,9 +123,9 @@ stepScrapers = HashMap.fromList
 
   , ("cooking.nytimes.com", nytimesS)
 
-  , ("food.com", geniusKitchenS)
-  , ("geniuskitchen.com", geniusKitchenS)
-  , ("tasteofhome.com", geniusKitchenS)
+  , ("food.com", geniusKitchen2S)
+  , ("geniuskitchen.com", geniusKitchen1S)
+  , ("tasteofhome.com", geniusKitchen1S)
 
   , ("rachlmansfield.com", tastyS1)
   , ("cookieandkate.com", tastyS1)
@@ -277,15 +277,25 @@ nytimesS = simpleStepScraper "nytimes"
   (testScrape ("meta" @: ["content" @= "NYT Cooking"]))
   ("ol" @: [Scalpel.hasClass "recipe-steps"] // "li")
 
-geniusKitchenI :: IngredientScraper
-geniusKitchenI = simpleIngredientScraper "geniusKitchen"
+geniusKitchen1I :: IngredientScraper
+geniusKitchen1I = setIngredientVersion 2 $ simpleIngredientScraper "geniusKitchen1"
   (testScrape ("div" @: [Scalpel.hasClass "recipe-ingredients"]))
   ("div" @: [Scalpel.hasClass "recipe-ingredients"] // "li")
 
-geniusKitchenS :: StepScraper
-geniusKitchenS = simpleStepScraper "geniusKitchen"
+geniusKitchen2I :: IngredientScraper
+geniusKitchen2I = setIngredientVersion 2 $ simpleIngredientScraper "geniusKitchen2"
+  (testScrape ("ul" @: [Scalpel.hasClass "ingredients"]))
+  ("ul" @: [Scalpel.hasClass "ingredients"] // "li")
+
+geniusKitchen1S :: StepScraper
+geniusKitchen1S = setStepVersion 2 $ simpleStepScraper "geniusKitchen1"
   (testScrape ("div" @: [Scalpel.hasClass "recipe-directions"]))
   ("div" @: [Scalpel.hasClass "recipe-directions"] // "li")
+
+geniusKitchen2S :: StepScraper
+geniusKitchen2S = setStepVersion 2 $ simpleStepScraper "geniusKitchen2"
+  (testScrape ("ul" @: [Scalpel.hasClass "directions"]))
+  ("ul" @: [Scalpel.hasClass "directions"] // "li")
 
 tastyI1 :: IngredientScraper
 tastyI1 = simpleIngredientScraper "tasty1"
