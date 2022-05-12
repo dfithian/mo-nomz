@@ -69,10 +69,11 @@ ingredientScrapers = HashMap.fromList
   , ("twopeasandtheirpod.com", wprmI)
   , ("sweetandsavorymeals.com", wprmI)
   , ("melskitchencafe.com", wprmI)
+  , ("glutenfreecuppatea.co.uk", wprmI)
 
   , ("101cookbooks.com", cb101I)
 
-  , ("glutenfreecuppatea.co.uk", mvI)
+  , ("bakerella.com", mvI)
 
   , ("localmilkblog.com", zlI)
 
@@ -171,10 +172,11 @@ stepScrapers = HashMap.fromList
   , ("twopeasandtheirpod.com", wprmS)
   , ("sweetandsavorymeals.com", wprmS)
   , ("melskitchencafe.com", wprmS)
+  , ("glutenfreecuppatea.co.uk", wprmS)
 
   , ("101cookbooks.com", cb101S)
 
-  , ("glutenfreecuppatea.co.uk", mvS)
+  , ("bakerella.com", mvS)
 
   , ("localmilkblog.com", zlS)
 
