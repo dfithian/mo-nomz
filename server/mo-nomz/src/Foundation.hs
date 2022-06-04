@@ -1,18 +1,8 @@
 module Foundation where
 
-import Prelude
+import NomzPrelude
 
-import Control.Exception (SomeException, catch)
-import Control.Monad.Except (ExceptT, MonadError, mapExceptT)
-import Control.Monad.IO.Class (MonadIO, liftIO)
-import Control.Monad.Logger
-  ( Loc, LogLevel, LogSource, LogStr, LoggingT, MonadLoggerIO, askLoggerIO, logError, runLoggingT
-  )
-import Control.Monad.Reader (MonadReader, asks)
-import Control.Monad.Trans.Reader (ReaderT, runReaderT)
-import Data.ByteString (ByteString)
-import Data.Pool (Pool, withResource)
-import Data.Time.Clock (UTCTime)
+import Control.Monad.Logger (Loc, LogLevel, LogSource, LogStr, logError)
 import Database.PostgreSQL.Simple (Connection, withTransaction)
 import Network.HTTP.Client (Manager, managerModifyRequest, requestHeaders)
 import Network.HTTP.Client.TLS (newTlsManagerWith, tlsManagerSettings)
@@ -20,9 +10,8 @@ import Network.HTTP.Types (hUserAgent)
 import Servant.Server (Handler(Handler), ServerError)
 
 import Settings (AppSettings, CacheSettings, appCache)
-import Utils (tshow)
 
-type AppM m = (MonadError ServerError m, MonadIO m, MonadLoggerIO m, MonadReader App m)
+type AppM m = (MonadCatch m, MonadError ServerError m, MonadIO m, MonadLoggerIO m, MonadReader App m)
 
 type LogFunc = Loc -> LogSource -> LogLevel -> LogStr -> IO ()
 
@@ -74,6 +63,13 @@ instance HasCacheSettings AppSettings where
 
 instance HasCacheSettings CacheSettings where
   cacheSettings = id
+
+logErrors :: (MonadCatch m, MonadLoggerIO m) => m a -> m a
+logErrors ma = do
+  logFunc <- askLoggerIO
+  ma `catch` \(se :: SomeException) -> do
+    runLoggingT ($logError (tshow se)) logFunc
+    throwM se
 
 withDbConn :: (HasDatabase r, MonadIO m, MonadLoggerIO m, MonadReader r m) => (Connection -> IO a) -> m (Either SomeException a)
 withDbConn f = do

@@ -1,25 +1,20 @@
 module Conversion where
 
-import Prelude
+import NomzPrelude
 
-import Control.Arrow (second)
-import Data.List (find, sortBy)
-import Data.Map.Strict (Map)
-import Data.Monoid (Sum(..))
+import Chez.Grater.Readable.Types
+  ( ReadableFraction(..), ReadableQuantity(..), ReadableUnit(..), mkReadableQuantity, mkReadableUnit
+  )
+import Chez.Grater.Types
+  ( Ingredient(..), Quantity(..), Step(..), Unit(..), cup, gram, liter, milligram, milliliter, ounce
+  , pinch, tablespoon, teaspoon
+  )
 import qualified Data.Map.Strict as Map
 import qualified Data.Set as Set
 
-import API.Types
-  ( ReadableGroceryItem(..), ReadableIngredient(..), ReadableIngredientV1(..), ReadableRecipe(..)
-  , ReadableRecipeV1(..)
-  )
+import API.Types (ReadableIngredient(..), ReadableStep(..))
 import Combinable (Constant(..), Combinable)
-import Types
-  ( GroceryItem(..), Ingredient(..), OrderedGroceryItem(..), OrderedIngredient(..), Quantity(..)
-  , ReadableFraction(..), ReadableQuantity(..), ReadableUnit(..), Recipe(..), Unit(..), IngredientId
-  , cup, gram, liter, milligram, milliliter, ounce, pinch, tablespoon, teaspoon
-  )
-import Utils (headMay)
+import Types (OrderedIngredient(..))
 import qualified Combinable as C
 
 data UnitHierarchy
@@ -97,41 +92,6 @@ combineItems =
         in Map.singleton name [(unit, (quantity, sidecar))]
       )
 
-readableQuantityPrecision :: Double
-readableQuantityPrecision = 0.01
-
-readableQuantities :: [((Double, Double), (Int, Int))]
-readableQuantities =
-  [ ((quarter - readableQuantityPrecision, quarter + readableQuantityPrecision), (1, 4))
-  , ((third - readableQuantityPrecision, third + readableQuantityPrecision), (1, 3))
-  , ((half - readableQuantityPrecision, half + readableQuantityPrecision), (1, 2))
-  , ((twoThird - readableQuantityPrecision, twoThird + readableQuantityPrecision), (2, 3))
-  , ((threeQuarter - readableQuantityPrecision, threeQuarter + readableQuantityPrecision), (3, 4))
-  ]
-  where
-    quarter = 0.25
-    third = 1 / 3
-    half = 0.5
-    twoThird = 2 / 3
-    threeQuarter = 0.75
-
-splitQuantity :: Quantity -> Maybe (Int, Double)
-splitQuantity = \case
-  QuantityMissing -> Nothing
-  Quantity q -> case abs (fromIntegral (round q :: Int) - q) < readableQuantityPrecision of
-    True -> Just (round q, 0.0)
-    False -> let whole = truncate q in Just (whole, q - fromIntegral whole)
-
-mkReadableQuantity :: Quantity -> ReadableQuantity
-mkReadableQuantity q = case splitQuantity q of
-  Nothing -> ReadableQuantity Nothing Nothing
-  Just (whole, decimal) ->
-    case (whole == 0, find (\((lo, hi), _) -> lo <= decimal && decimal <= hi) readableQuantities) of
-      (False, Just (_, (numerator, denominator))) -> ReadableQuantity (Just whole) (Just (ReadableFraction numerator denominator))
-      (True, Just (_, (numerator, denominator))) -> ReadableQuantity Nothing (Just (ReadableFraction numerator denominator))
-      (False, Nothing) -> ReadableQuantity (Just whole) Nothing
-      (True, Nothing) -> ReadableQuantity Nothing Nothing
-
 mkQuantity :: ReadableQuantity -> Quantity
 mkQuantity q =
   let raw = case q of
@@ -141,41 +101,10 @@ mkQuantity q =
         ReadableQuantity Nothing Nothing -> 0
   in if raw == 0 then QuantityMissing else Quantity raw
 
-mkReadableUnit :: Unit -> Maybe ReadableUnit
-mkReadableUnit = \case
-  Unit x -> Just (ReadableUnit x)
-  UnitMissing -> Nothing
-
 mkUnit :: Maybe ReadableUnit -> Unit
 mkUnit = \case
   Just (ReadableUnit x) | x /= "" -> Unit x
   _ -> UnitMissing
-
-mkReadableGroceryItem :: OrderedGroceryItem -> ReadableGroceryItem
-mkReadableGroceryItem OrderedGroceryItem {..} =
-  let GroceryItem {..} = orderedGroceryItemItem
-  in ReadableGroceryItem
-    { readableGroceryItemName = groceryItemName
-    , readableGroceryItemQuantity = mkReadableQuantity groceryItemQuantity
-    , readableGroceryItemUnit = mkReadableUnit groceryItemUnit
-    , readableGroceryItemActive = groceryItemActive
-    , readableGroceryItemOrder = orderedGroceryItemOrder
-    }
-
-mkGroceryItem :: ReadableGroceryItem -> GroceryItem
-mkGroceryItem ReadableGroceryItem {..} = GroceryItem
-  { groceryItemName = readableGroceryItemName
-  , groceryItemQuantity = mkQuantity readableGroceryItemQuantity
-  , groceryItemUnit = mkUnit readableGroceryItemUnit
-  , groceryItemActive = readableGroceryItemActive
-  }
-
-mkReadableIngredientV1 :: Ingredient -> ReadableIngredientV1
-mkReadableIngredientV1 Ingredient {..} = ReadableIngredientV1
-  { readableIngredientV1Name = ingredientName
-  , readableIngredientV1Quantity = mkReadableQuantity ingredientQuantity
-  , readableIngredientV1Unit = mkReadableUnit ingredientUnit
-  }
 
 mkReadableIngredient :: OrderedIngredient -> ReadableIngredient
 mkReadableIngredient OrderedIngredient {..} = ReadableIngredient
@@ -187,13 +116,6 @@ mkReadableIngredient OrderedIngredient {..} = ReadableIngredient
   where
     Ingredient {..} = orderedIngredientIngredient
 
-mkIngredientV1 :: ReadableIngredientV1 -> Ingredient
-mkIngredientV1 ReadableIngredientV1 {..} = Ingredient
-  { ingredientName = readableIngredientV1Name
-  , ingredientQuantity = mkQuantity readableIngredientV1Quantity
-  , ingredientUnit = mkUnit readableIngredientV1Unit
-  }
-
 mkOrderedIngredient :: ReadableIngredient -> OrderedIngredient
 mkOrderedIngredient ReadableIngredient {..} = OrderedIngredient
   { orderedIngredientIngredient = Ingredient
@@ -204,22 +126,5 @@ mkOrderedIngredient ReadableIngredient {..} = OrderedIngredient
   , orderedIngredientOrder = readableIngredientOrder
   }
 
-mkReadableRecipeV1 :: [Ingredient] -> Recipe -> ReadableRecipeV1
-mkReadableRecipeV1 ingredients Recipe {..} = ReadableRecipeV1
-  { readableRecipeV1Name = recipeName
-  , readableRecipeV1Link = recipeLink
-  , readableRecipeV1Active = recipeActive
-  , readableRecipeV1Rating = recipeRating
-  , readableRecipeV1Notes = recipeNotes
-  , readableRecipeV1Ingredients = mkReadableIngredientV1 <$> ingredients
-  }
-
-mkReadableRecipe :: Map IngredientId OrderedIngredient -> Recipe -> ReadableRecipe
-mkReadableRecipe ingredients Recipe {..} = ReadableRecipe
-  { readableRecipeName = recipeName
-  , readableRecipeLink = recipeLink
-  , readableRecipeActive = recipeActive
-  , readableRecipeRating = recipeRating
-  , readableRecipeNotes = recipeNotes
-  , readableRecipeIngredients = mkReadableIngredient <$> ingredients
-  }
+mkReadableStep :: Step -> ReadableStep
+mkReadableStep = ReadableStep . unStep

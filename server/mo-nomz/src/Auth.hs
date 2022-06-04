@@ -1,16 +1,10 @@
 module Auth where
 
-import Prelude
+import NomzPrelude
 
-import Control.Monad (replicateM)
 import Crypto.KDF.BCrypt (bcrypt, validatePassword)
 import Data.Aeson (FromJSON, ToJSON)
 import Data.ByteArray.Encoding (Base(Base64), convertFromBase, convertToBase)
-import Data.ByteString (ByteString)
-import Data.CaseInsensitive (CI)
-import Data.List (find)
-import Data.Proxy (Proxy(Proxy))
-import Data.Text (Text)
 import Database.PostgreSQL.Simple.FromField (FromField)
 import Database.PostgreSQL.Simple.ToField (ToField)
 import Network.Wai (requestHeaders)

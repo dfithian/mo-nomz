@@ -1,13 +1,9 @@
 module Application where
 
-import Prelude
+import NomzPrelude
 
-import Control.Monad.Logger (defaultOutput, runLoggingT)
-import Control.Monad.Trans.Reader (runReaderT)
-import Data.Default (def)
-import Data.Pool (Pool, createPool)
+import Control.Monad.Logger (defaultOutput)
 import Data.Tagged (Tagged(..))
-import Data.Time.Clock (getCurrentTime)
 import Data.Yaml.Config (loadYamlSettingsArgs, useEnv)
 import Database.PostgreSQL.Simple (Connection, close, connectPostgreSQL)
 import Database.PostgreSQL.Simple.Migration
@@ -29,16 +25,10 @@ import qualified Data.Text.Encoding as Text
 import qualified Network.Wai.Middleware.EnforceHTTPS as EnforceHTTPS
 
 import Foundation (App(..), LogFunc, NomzServer, createManager, runNomzServer, withDbConn)
-import Scrape (isInvalidScraper)
+import Scraper.Site (isInvalidScraper)
 import Servant (NomzApi, nomzApi, wholeApi)
-import Server
-  ( deleteGroceryItem, deleteRecipes, getExport, getGroceryItems, getHealth, getRecipe, getRecipes
-  , getRecipesV1, postClearGroceryItems, postCreateUser, postGroceryImportBlob, postMergeGroceryItem
-  , postParseBlob, postParseLink, postPingUser, postRecipeImportLink, postUpdateGroceryItem
-  , postUpdateRecipe, postUpdateRecipeIngredients
-  )
+import Server (getExport, getHealth, postCreateUser, postParseBlob, postParseLink, postPingUser)
 import Settings (AppSettings(..), DatabaseSettings(..), staticSettingsValue)
-import Utils (headMay)
 import qualified Database
 
 nomzServer :: ServerT NomzApi NomzServer
@@ -46,19 +36,6 @@ nomzServer =
   getHealth
     :<|> postCreateUser
     :<|> postPingUser
-    :<|> getGroceryItems
-    :<|> postUpdateGroceryItem
-    :<|> postMergeGroceryItem
-    :<|> deleteGroceryItem
-    :<|> postClearGroceryItems
-    :<|> postGroceryImportBlob
-    :<|> postRecipeImportLink
-    :<|> postUpdateRecipe
-    :<|> postUpdateRecipeIngredients
-    :<|> getRecipesV1
-    :<|> getRecipes
-    :<|> getRecipe
-    :<|> deleteRecipes
     :<|> postParseBlob
     :<|> postParseLink
     :<|> getExport

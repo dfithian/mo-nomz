@@ -4,3 +4,4 @@ packages:
 extra-deps:
 - base64-bytestring-1.0.0.3
 - postgresql-simple-migration-0.1.15.0
+- chez-grater-0.0.4
