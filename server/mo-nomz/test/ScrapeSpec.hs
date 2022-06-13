@@ -8,17 +8,14 @@ import Control.Monad.Logger (runNoLoggingT)
 import Control.Monad.Trans.Reader (runReaderT)
 import Data.List (intercalate)
 import Network.URI (parseURI)
-import Test.Hspec
-  ( Expectation, Spec, describe, expectationFailure, it, shouldBe, shouldMatchList, shouldSatisfy
-  , xit
-  )
+import Test.Hspec (Expectation, Spec, describe, expectationFailure, it, shouldSatisfy, xit)
 import qualified Data.CaseInsensitive as CI
 import qualified Data.Map.Strict as Map
 import qualified Data.Text as Text
 
 import Scraper.Types (ScrapedRecipe(..))
 import TestEnv (Env(..))
-import Types (Ingredient(..), IngredientName(..), Quantity(..), RecipeName(..), Step(..), Unit(..))
+import Types (Ingredient(..), IngredientName(..), Quantity(..), RecipeName(..), Unit(..))
 
 import Scrape
 
