@@ -7,10 +7,7 @@ import Chez.Grater.Types
   ( Ingredient(..), IngredientName(..), Quantity(..), RecipeName(..), Step(..), Unit(..)
   )
 import Network.URI (parseURI)
-import Test.Hspec
-  ( Expectation, Spec, describe, expectationFailure, it, shouldBe, shouldMatchList, shouldSatisfy
-  , xit
-  )
+import Test.Hspec (Expectation, Spec, describe, expectationFailure, it, shouldSatisfy, xit)
 import qualified Data.CaseInsensitive as CI
 import qualified Data.Map.Strict as Map
 import qualified Data.Text as Text
