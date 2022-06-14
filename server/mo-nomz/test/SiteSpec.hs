@@ -1,23 +1,20 @@
-module ScrapeSpec where
+module SiteSpec where
 
-import Prelude
+import NomzPrelude
 
-import Control.Monad (when)
-import Control.Monad.Except (runExceptT)
-import Control.Monad.Logger (runNoLoggingT)
-import Control.Monad.Trans.Reader (runReaderT)
-import Data.List (intercalate)
+import Chez.Grater (scrapeAndParseUrl)
+import Chez.Grater.Types
+  ( Ingredient(..), IngredientName(..), Quantity(..), RecipeName(..), Step(..), Unit(..)
+  )
 import Network.URI (parseURI)
 import Test.Hspec (Expectation, Spec, describe, expectationFailure, it, shouldSatisfy, xit)
 import qualified Data.CaseInsensitive as CI
 import qualified Data.Map.Strict as Map
 import qualified Data.Text as Text
 
-import Scraper.Types (ScrapedRecipe(..))
 import TestEnv (Env(..))
-import Types (Ingredient(..), IngredientName(..), Quantity(..), RecipeName(..), Unit(..))
 
-import Scrape
+import Scraper.Site (allScrapers)
 
 data TestCfg = TestCfg
   { requireOneQuantityUnit :: Bool
@@ -40,13 +37,13 @@ scrapeAndParseConfig :: TestCfg -> String -> Expectation
 scrapeAndParseConfig TestCfg {..} url = do
   let Env {..} = env
   uri <- maybe (fail "Invalid URL") pure $ parseURI url
-  ScrapedRecipe {..} <- either (fail . Text.unpack) (pure . fst) =<< runNoLoggingT (runReaderT (runExceptT (scrapeUrl uri)) envManager)
-  unRecipeName scrapedRecipeName `shouldSatisfy` not . Text.null
-  scrapedRecipeIngredients `shouldSatisfy` (\xs -> length xs >= requiredIngredients)
-  scrapedRecipeIngredients `shouldSatisfy` any hasQuantityAndUnit
-  scrapedRecipeIngredients `shouldSatisfy` duplicates
-  lessThanThreePrefixes scrapedRecipeIngredients
-  scrapedRecipeSteps `shouldSatisfy` (\xs -> length xs >= requiredSteps)
+  (name, ingredients, steps, _) <- scrapeAndParseUrl allScrapers envManager uri
+  unRecipeName name `shouldSatisfy` not . Text.null
+  ingredients `shouldSatisfy` (\xs -> length xs >= requiredIngredients)
+  ingredients `shouldSatisfy` any hasQuantityAndUnit
+  ingredients `shouldSatisfy` duplicates
+  lessThanThreePrefixes ingredients
+  steps `shouldSatisfy` (\xs -> length xs >= requiredSteps)
   where
     hasQuantityAndUnit Ingredient {..} = if requireOneQuantityUnit then ingredientQuantity /= QuantityMissing && ingredientUnit /= UnitMissing else True
     duplicates = (< allowedDuplicates) . length . filter ((> 1) . length . snd) . Map.toList . foldr (\x@Ingredient {..} -> Map.insertWith (<>) ingredientName [x]) mempty

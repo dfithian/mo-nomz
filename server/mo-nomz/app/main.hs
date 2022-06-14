@@ -1,6 +1,6 @@
 import Application (appMain)
 
-import Prelude
+import NomzPrelude
 
 main :: IO ()
 main = appMain

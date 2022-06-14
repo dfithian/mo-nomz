@@ -1,19 +1,17 @@
 module ConversionSpec where
 
-import Prelude
+import NomzPrelude
 
-import Data.List (sortBy)
-import Data.Monoid (Sum(..))
+import Chez.Grater.Test.ParsedIngredients
+  ( allParsedIngredients, pureIngredient, pureIngredientName, pureIngredientNoQuantity
+  , pureIngredientNoUnit
+  )
+import Chez.Grater.Types (Unit(..), cup, ounce, pinch, tablespoon, teaspoon, whole)
 import Test.Hspec (Spec, describe, it, shouldBe, shouldMatchList)
 import Test.QuickCheck (forAll, shuffle)
 import qualified Data.Map.Strict as Map
 
 import Combinable (Constant(..))
-import ParsedIngredients
-  ( allParsedIngredients, pureIngredient, pureIngredientName, pureIngredientNoQuantity
-  , pureIngredientNoUnit
-  )
-import Types (Unit(..), cup, ounce, pinch, tablespoon, teaspoon, whole)
 
 import Conversion
 
