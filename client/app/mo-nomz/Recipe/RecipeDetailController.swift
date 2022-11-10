@@ -178,10 +178,6 @@ class RecipeDetailController: UIViewController, UITextFieldDelegate, RecipeTagDe
         didTapStar(which: recipe?.recipe.rating ?? 0)
         nameWrite.addDoneButtonOnKeyboard()
         setupOptions()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
         loadData()
     }
 }

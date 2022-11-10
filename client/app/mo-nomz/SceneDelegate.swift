@@ -24,36 +24,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 cont()
             }
             if User.loadState() == nil {
-                User.setDidExport()
-                User.setDidPullSteps()
-                User.setDidCleanSteps()
                 self.window?.rootViewController?.loadUser(completion: completion)
-            } else {
-                cont()
-            }
-        }
-        
-        let export = { (cont: @escaping (() -> Void)) in
-            if !User.exported() {
-                User.setDidPullSteps()
-                User.setDidCleanSteps()
-                self.window?.rootViewController?.loadExport(completion: cont)
-            } else {
-                cont()
-            }
-        }
-        
-        let pullSteps = { (cont: @escaping (() -> Void)) in
-            if !User.stepsPulled() {
-                self.window?.rootViewController?.pullSteps(completion: cont)
-            } else {
-                cont()
-            }
-        }
-        
-        let cleanSteps = { (cont: @escaping (() -> Void)) in
-            if !User.stepsCleaned() {
-                self.window?.rootViewController?.cleanSteps(completion: cont)
             } else {
                 cont()
             }
@@ -68,18 +39,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
         
         loadState({
-            export({
-                pullSteps({
-                    cleanSteps({
-                        initializeGroups({
-                            DispatchQueue.main.async {
-                                self.window?.rootViewController = mainVc
-                            }
-                            self.window?.rootViewController?.pingUser(completion: nil)
-                            completion?()
-                        })
-                    })
-                })
+            initializeGroups({
+                DispatchQueue.main.async {
+                    self.window?.rootViewController = mainVc
+                }
+                self.window?.rootViewController?.pingUser(completion: nil)
+                completion?()
             })
         })
     }

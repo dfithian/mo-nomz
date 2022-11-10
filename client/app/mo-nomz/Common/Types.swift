@@ -202,18 +202,8 @@ struct ParseBlobRequest: Codable {
     let content: String
 }
 
-struct ParseLinkRequest: Codable {
-    let link: String
-}
-
 struct ParseBlobResponse: Codable {
     let ingredients: [ReadableIngredient]
-}
-
-struct ParseLinkResponse: Codable {
-    let name: String
-    let ingredients: [ReadableIngredient]
-    let steps: [String]
 }
 
 public extension CodingUserInfoKey {
@@ -284,37 +274,6 @@ extension RecipeData {
     func toReadableRecipeWithId(ingredientsData: [IngredientData], stepsData: [StepData]) -> ReadableRecipeWithId {
         return ReadableRecipeWithId(recipe: toReadableRecipe(ingredientsData: ingredientsData, stepsData: stepsData), id: id!)
     }
-}
-
-struct ExportGroceryItem: Codable {
-    let name: String
-    let quantity: ReadableQuantity
-    let unit: String?
-    let active: Bool
-    let order: Int
-}
-
-struct ExportRecipe: Codable {
-    let name: String
-    let link: String?
-    let active: Bool
-    let rating: Int
-    let notes: String
-}
-
-struct ExportIngredient: Codable {
-    let groceryItemId: Int?
-    let recipeId: Int?
-    let name: String
-    let quantity: ReadableQuantity
-    let unit: String?
-    let order: Int
-}
-
-struct ExportResponse: Codable {
-    let groceries: [Int:ExportGroceryItem]
-    let recipes: [Int:ExportRecipe]
-    let ingredients: [Int:ExportIngredient]
 }
 
 struct UserPingRequest: Codable {

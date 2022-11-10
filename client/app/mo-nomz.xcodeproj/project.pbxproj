@@ -31,7 +31,8 @@
 		376095D926212FBB0015B6F0 /* GroceryController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 376095D826212FBB0015B6F0 /* GroceryController.swift */; };
 		3774A5A12623EE430029E35D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3774A59F2623EE430029E35D /* LaunchScreen.storyboard */; };
 		3774A5A82624769F0029E35D /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3774A5A72624769F0029E35D /* User.swift */; };
-		3774A5C92624B3E90029E35D /* AddLinkController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3774A5C82624B3E90029E35D /* AddLinkController.swift */; };
+		3774A5C92624B3E90029E35D /* AddLinkControllers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3774A5C82624B3E90029E35D /* AddLinkControllers.swift */; };
+		377AB736291CAE3D00A81098 /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 377AB735291CAE3D00A81098 /* TabBarController.swift */; };
 		378EBD5126214A41008FF6C4 /* Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = 378EBD5026214A41008FF6C4 /* Types.swift */; };
 		378EBD5726214DFE008FF6C4 /* GroceryListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 378EBD5626214DFE008FF6C4 /* GroceryListController.swift */; };
 		379D479826264D47003DD2C6 /* RecipeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 379D479726264D47003DD2C6 /* RecipeController.swift */; };
@@ -98,7 +99,8 @@
 		376095D826212FBB0015B6F0 /* GroceryController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroceryController.swift; sourceTree = "<group>"; };
 		3774A5A02623EE430029E35D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		3774A5A72624769F0029E35D /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
-		3774A5C82624B3E90029E35D /* AddLinkController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddLinkController.swift; sourceTree = "<group>"; };
+		3774A5C82624B3E90029E35D /* AddLinkControllers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddLinkControllers.swift; sourceTree = "<group>"; };
+		377AB735291CAE3D00A81098 /* TabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = TabBarController.swift; path = "/Users/dan/git/mo-nomz/client/app/mo-nomz/TabBarController.swift"; sourceTree = "<absolute>"; };
 		378EBD5026214A41008FF6C4 /* Types.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Types.swift; sourceTree = "<group>"; };
 		378EBD5626214DFE008FF6C4 /* GroceryListController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroceryListController.swift; sourceTree = "<group>"; };
 		379D479726264D47003DD2C6 /* RecipeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeController.swift; sourceTree = "<group>"; };
@@ -209,6 +211,7 @@
 				3774A59F2623EE430029E35D /* LaunchScreen.storyboard */,
 				3728B0CC2635BCF00055D2E1 /* AddItems.storyboard */,
 				376095C5262125C10015B6F0 /* Main.storyboard */,
+				377AB735291CAE3D00A81098 /* TabBarController.swift */,
 				376095BF262125C10015B6F0 /* AppDelegate.swift */,
 				376095C1262125C10015B6F0 /* SceneDelegate.swift */,
 				376095C8262125C10015B6F0 /* Assets.xcassets */,
@@ -284,7 +287,7 @@
 			children = (
 				37E103392794F6D80064C193 /* AddControllers.swift */,
 				3724EFCE27A82F360094574E /* AddPhotoControllers.swift */,
-				3774A5C82624B3E90029E35D /* AddLinkController.swift */,
+				3774A5C82624B3E90029E35D /* AddLinkControllers.swift */,
 				3724EFD827A8BDDE0094574E /* AddManualControllers.swift */,
 			);
 			path = Add;
@@ -443,6 +446,7 @@
 				37E1034B279EE8FE0064C193 /* IngredientChangeController.swift in Sources */,
 				3716947727C5376D0002BD64 /* Browser.swift in Sources */,
 				3724EFFA27ACD7CE0094574E /* ViewController.swift in Sources */,
+				377AB736291CAE3D00A81098 /* TabBarController.swift in Sources */,
 				376095C0262125C10015B6F0 /* AppDelegate.swift in Sources */,
 				37E1DC1D2631B7C000330C5B /* UserDefaults.swift in Sources */,
 				3716947C27C67E890002BD64 /* URL.swift in Sources */,
@@ -454,7 +458,7 @@
 				3724EFEE27ACD5A90094574E /* TableCells.swift in Sources */,
 				3728B0A42633B40D0055D2E1 /* BannerController.swift in Sources */,
 				37B979A32693DB0D002B677F /* RecipeDetailController.swift in Sources */,
-				3774A5C92624B3E90029E35D /* AddLinkController.swift in Sources */,
+				3774A5C92624B3E90029E35D /* AddLinkControllers.swift in Sources */,
 				37E55B5226F2CDB700207FFE /* Purchases.swift in Sources */,
 				37FE86EF2648CC7200E0B85F /* InfoControllers.swift in Sources */,
 				3724EFF027ACD63F0094574E /* CollectionCells.swift in Sources */,
@@ -613,7 +617,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 8.2;
+				MARKETING_VERSION = 9.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-l\"c++\"",
@@ -696,7 +700,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 8.2;
+				MARKETING_VERSION = 9.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-l\"c++\"",

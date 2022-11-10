@@ -9,18 +9,24 @@ import UIKit
 
 enum ManualChange {
     case add
-    case photoReview(String, String?)
+    case link(String?, String?, String, String?)
+    case photo(String, String?)
 }
 
 class AddManualController: AddDetailController {
-    @IBOutlet weak var back: UIButton!
+    @IBOutlet weak var header: UITextView!
+    @IBOutlet weak var helper: UIButton!
+    @IBOutlet weak var noHelperConstraint: NSLayoutConstraint!
+    @IBOutlet weak var helperConstraint: NSLayoutConstraint!
 
-    var change: ManualChange? = nil
+    var change: ManualChange = .add
     var manualVc: AddManualTableController? = nil
     
-    @IBAction func didTapBack(_ sender: Any?) {
-        DispatchQueue.main.async {
-            self.navigationVc?.popViewController(animated: true)
+    override func addType() -> AddType {
+        switch (change) {
+        case .add: return .manual
+        case .link(_, _, _, _): return .link
+        case .photo(_, _): return .photo
         }
     }
     
@@ -54,25 +60,26 @@ class AddManualController: AddDetailController {
         }
     }
     
-    override func addType() -> AddType {
-        switch change {
-        case .photoReview(_, _): return .photo
-        default: return .manual
-        }
-    }
-    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let vc = segue.destination as? AddManualTableController, segue.identifier == "embedManual" {
             manualVc = vc
             switch change {
-            case .photoReview(let ingredients, let steps):
+            case .link(let link, let name, let ingredients, let steps):
+                vc.link = UITextField()
+                vc.link?.text = link
+                vc.name = UITextField()
+                vc.name?.text = name
                 vc.ingredients = UITextView()
                 vc.ingredients?.text = ingredients
                 vc.steps = UITextView()
                 vc.steps?.text = steps
-                if steps?.nonEmpty() != nil {
-                    vc.isRecipe = true
-                }
+                vc.isRecipe = true
+            case .photo(let ingredients, let steps):
+                vc.ingredients = UITextView()
+                vc.ingredients?.text = ingredients
+                vc.steps = UITextView()
+                vc.steps?.text = steps
+                vc.isRecipe = true
                 break
             default: break
             }
@@ -81,11 +88,23 @@ class AddManualController: AddDetailController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        switch change {
-        case .photoReview(_, _):
-            back.alpha = 1
+        switch (change) {
+        case .link(_, _, _, _):
+            header.text = "Review selections."
+            helper.removeFromSuperview()
+            noHelperConstraint.isActive = true
+            helperConstraint.isActive = false
             break
-        default: break
+        case .photo(_, _):
+            header.text = "Review selections."
+            helper.removeFromSuperview()
+            noHelperConstraint.isActive = true
+            helperConstraint.isActive = false
+            break
+        case .add:
+            header.text = "Add ingredients or a recipe to your list."
+            helper.menu = switcherMenu()
+            break
         }
     }
 }
@@ -98,14 +117,13 @@ class AddManualTableController: UITableViewController {
     var ingredients: UITextView? = nil
     var steps: UITextView? = nil
     
-    let HEADER = 0
-    let IS_RECIPE__IS_ACTIVE = 1
-    let NAME = 2
-    let LINK = 3
-    let INGREDIENT_HEADING = 4
-    let INGREDIENTS = 5
-    let STEP_HEADING = 6
-    let STEPS = 7
+    let IS_RECIPE__IS_ACTIVE = 0
+    let NAME = 1
+    let LINK = 2
+    let INGREDIENT_HEADING = 3
+    let INGREDIENTS = 4
+    let STEP_HEADING = 5
+    let STEPS = 6
     
     @objc func didTapIsRecipe(_ sender: Any?) {
         let b = sender as! UIButton
@@ -135,12 +153,11 @@ class AddManualTableController: UITableViewController {
     }
     
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 8
+        return 7
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
-        case HEADER: return 1
         case IS_RECIPE__IS_ACTIVE: return 1
         case NAME: return isRecipe ? 1 : 0
         case LINK: return isRecipe ? 1 : 0
@@ -154,8 +171,6 @@ class AddManualTableController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch indexPath.section {
-        case HEADER:
-            return tableView.dequeueReusableCell(withIdentifier: "header")!
         case IS_RECIPE__IS_ACTIVE:
             let cell = tableView.dequeueReusableCell(withIdentifier: "checkboxItem") as! TwoButton
             cell.one.setImage(UIImage(systemName: isActive ? "checkmark.square" : "square"), for: .normal)
