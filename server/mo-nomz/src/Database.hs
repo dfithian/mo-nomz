@@ -86,11 +86,6 @@ selectIngredients conn userId ingredientIds = do
     . zip [1..]
     $ ingredients
 
-exportConfirm :: Connection -> UserId -> IO ()
-exportConfirm conn userId = do
-  now <- getCurrentTime
-  void $ execute conn "insert into nomz.export (user_id, confirmed_at) values (?, ?)" (userId, now)
-
 selectCachedRecipe :: Connection -> RecipeLink -> IO (Maybe ScrapedRecipe)
 selectCachedRecipe conn link = do
   query conn "select data from nomz.recipe_cache where link = ?" (Only link) >>= \case

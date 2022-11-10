@@ -12,8 +12,7 @@ import Servant.Server (ServerError, err400, err401, err403, err500, errReasonPhr
 import qualified Data.Text as Text
 
 import API.Types
-  ( ExportGroceryItem(..), ExportIngredient(..), ExportRecipe(..), ExportResponse(..)
-  , GetHealthResponse(..), ParseBlobRequest(..), ParseBlobResponse(..), ParseLinkRequest(..)
+  ( GetHealthResponse(..), ParseBlobRequest(..), ParseBlobResponse(..), ParseLinkRequest(..)
   , ParseLinkResponse(..), UserCreateResponse(..), UserPingRequest(..), UserPingResponse(..)
   )
 import Auth (Authorization, generateToken, validateToken)
@@ -129,47 +128,4 @@ postParseLink token userId ParseLinkRequest {..} = do
     { parseLinkResponseName = scrapedRecipeName
     , parseLinkResponseIngredients = mkReadableIngredient <$> zipWith OrderedIngredient scrapedRecipeIngredients [1..]
     , parseLinkResponseSteps = mkReadableStep <$> scrapedRecipeSteps
-    }
-
--- export data
-getExport :: AppM m => Authorization -> UserId -> m ExportResponse
-getExport token userId = do
-  validateUserToken token userId
-  (groceries, recipes, ingredients) <- unwrapDb $ withDbConn $ \c -> do
-    groceries <- Database.selectGroceryItems c userId []
-    recipes <- Database.selectRecipes c userId []
-    ingredients <- Database.selectIngredients c userId []
-    Database.exportConfirm c userId
-    pure (groceries, recipes, ingredients)
-  pure ExportResponse
-    { exportResponseGroceries = fmap (\OrderedGroceryItem {..} ->
-        let GroceryItem {..} = orderedGroceryItemItem
-        in ExportGroceryItem
-          { exportGroceryItemName = groceryItemName
-          , exportGroceryItemQuantity = mkReadableQuantity groceryItemQuantity
-          , exportGroceryItemUnit = mkReadableUnit groceryItemUnit
-          , exportGroceryItemActive = groceryItemActive
-          , exportGroceryItemOrder = orderedGroceryItemOrder
-          }
-      ) groceries
-    , exportResponseRecipes = fmap (\Recipe {..} ->
-        ExportRecipe
-          { exportRecipeName = recipeName
-          , exportRecipeLink = recipeLink
-          , exportRecipeActive = recipeActive
-          , exportRecipeRating = recipeRating
-          , exportRecipeNotes = recipeNotes
-          }
-      ) recipes
-    , exportResponseIngredients = fmap (\(recipeId, groceryItemId, OrderedIngredient {..}) ->
-        let Ingredient {..} = orderedIngredientIngredient
-        in ExportIngredient
-          { exportIngredientGroceryItemId = groceryItemId
-          , exportIngredientRecipeId = recipeId
-          , exportIngredientName = ingredientName
-          , exportIngredientQuantity = mkReadableQuantity ingredientQuantity
-          , exportIngredientUnit = mkReadableUnit ingredientUnit
-          , exportIngredientOrder = orderedIngredientOrder
-          }
-      ) ingredients
     }

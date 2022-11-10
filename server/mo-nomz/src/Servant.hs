@@ -4,8 +4,8 @@ import NomzPrelude
 import Servant.API ((:<|>), (:>), Capture, Get, JSON, Post, Raw, ReqBody)
 
 import API.Types
-  ( ExportResponse, GetHealthResponse, ParseBlobRequest, ParseBlobResponse, ParseLinkRequest
-  , ParseLinkResponse, UserCreateResponse, UserPingRequest, UserPingResponse
+  ( GetHealthResponse, ParseBlobRequest, ParseBlobResponse, ParseLinkRequest, ParseLinkResponse
+  , UserCreateResponse, UserPingRequest, UserPingResponse
   )
 import Auth (Authorized)
 import Types (UserId)
@@ -31,6 +31,3 @@ type NomzApi =
     -- parsing only
     :<|> Authorized :> "api" :> "v2" :> "user" :> Capture "user-id" UserId :> "blob" :> ReqBody '[JSON] ParseBlobRequest :> Post '[JSON] ParseBlobResponse
     :<|> Authorized :> "api" :> "v2" :> "user" :> Capture "user-id" UserId :> "link" :> ReqBody '[JSON] ParseLinkRequest :> Post '[JSON] ParseLinkResponse
-
-    -- export data
-    :<|> Authorized :> "api" :> "v2" :> "user" :> Capture "user-id" UserId :> "export" :> Get '[JSON] ExportResponse

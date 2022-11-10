@@ -27,7 +27,7 @@ import qualified Network.Wai.Middleware.EnforceHTTPS as EnforceHTTPS
 import Foundation (App(..), LogFunc, NomzServer, createManager, runNomzServer, withDbConn)
 import Scraper.Site (isInvalidScraper)
 import Servant (NomzApi, nomzApi, wholeApi)
-import Server (getExport, getHealth, postCreateUser, postParseBlob, postParseLink, postPingUser)
+import Server (getHealth, postCreateUser, postParseBlob, postParseLink, postPingUser)
 import Settings (AppSettings(..), DatabaseSettings(..), staticSettingsValue)
 import qualified Database
 
@@ -38,7 +38,6 @@ nomzServer =
     :<|> postPingUser
     :<|> postParseBlob
     :<|> postParseLink
-    :<|> getExport
 
 migrateDatabase :: Pool Connection -> LogFunc -> AppSettings -> IO ()
 migrateDatabase pool logFunc settings = do
