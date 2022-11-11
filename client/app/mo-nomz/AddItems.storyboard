@@ -549,17 +549,17 @@
                         <outlet property="helper" destination="Sfe-D0-ZAp" id="x7Y-P5-8g1"/>
                         <outlet property="link" destination="aj8-Xh-1Xd" id="x6w-CW-tDS"/>
                         <outlet property="toolbarConstraint" destination="DaV-Vx-aAU" id="YAa-GI-P3f"/>
-                        <segue destination="w8W-fw-PoM" kind="show" identifier="review" id="L4h-je-agx"/>
+                        <segue destination="w8W-fw-PoM" kind="show" identifier="reviewIngredients" id="L4h-je-agx"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="saK-nY-dDP" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1000" y="132"/>
         </scene>
-        <!--Select Link Data Controller-->
+        <!--Select Link Ingredients Controller-->
         <scene sceneID="0Fa-Bn-xW4">
             <objects>
-                <viewController id="w8W-fw-PoM" customClass="SelectLinkDataController" customModule="mo_nomz" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="w8W-fw-PoM" customClass="SelectLinkIngredientsController" customModule="mo_nomz" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="gAv-ad-UiP">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -569,21 +569,16 @@
                                 <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <wkWebViewConfiguration key="configuration">
                                     <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
-                                    <wkPreferences key="preferences"/>
+                                    <wkPreferences key="preferences" javaScriptEnabled="NO"/>
                                 </wkWebViewConfiguration>
                             </wkWebView>
                             <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ahx-u9-lXO">
                                 <rect key="frame" x="0.0" y="798" width="414" height="44"/>
                                 <items>
-                                    <barButtonItem enabled="NO" title="Skip" id="07l-fw-1oJ">
-                                        <connections>
-                                            <action selector="didTapSkip:" destination="w8W-fw-PoM" id="Mnz-Lp-ovi"/>
-                                        </connections>
-                                    </barButtonItem>
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="j7J-jK-Vp7"/>
                                     <barButtonItem image="chevron.right" catalog="system" id="AdA-mV-UhY">
                                         <connections>
-                                            <action selector="didTapSubmit:" destination="w8W-fw-PoM" id="MG4-sm-d89"/>
+                                            <action selector="didTapSubmit:" destination="w8W-fw-PoM" id="7L9-fY-aVe"/>
                                         </connections>
                                     </barButtonItem>
                                 </items>
@@ -618,19 +613,88 @@
                     </view>
                     <navigationItem key="navigationItem" id="BLn-4H-dVj"/>
                     <connections>
-                        <outlet property="header" destination="jmx-XT-VPc" id="uPd-wx-1NB"/>
-                        <outlet property="skip" destination="07l-fw-1oJ" id="P5F-UW-K2x"/>
                         <outlet property="web" destination="v65-OD-mwC" id="fEu-Gn-miM"/>
-                        <segue destination="PPy-YC-O80" kind="show" identifier="pushManualRecipe" id="OQw-Sx-OTX"/>
+                        <segue destination="fp9-nT-KSo" kind="show" identifier="reviewSteps" id="BZ0-AZ-v2q"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="LSG-3a-Wmg" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1879.7101449275365" y="131.91964285714286"/>
+            <point key="canvasLocation" x="1880" y="132"/>
+        </scene>
+        <!--Select Link Steps Controller-->
+        <scene sceneID="l3O-DG-dIE">
+            <objects>
+                <viewController id="fp9-nT-KSo" customClass="SelectLinkStepsController" customModule="mo_nomz" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="rHF-Ue-7BS">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <wkWebView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="xqv-WX-iFx">
+                                <rect key="frame" x="0.0" y="95" width="414" height="703"/>
+                                <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <wkWebViewConfiguration key="configuration">
+                                    <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
+                                    <wkPreferences key="preferences" javaScriptEnabled="NO"/>
+                                </wkWebViewConfiguration>
+                            </wkWebView>
+                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="F4i-to-XbX">
+                                <rect key="frame" x="0.0" y="798" width="414" height="44"/>
+                                <items>
+                                    <barButtonItem title="Skip" id="wbV-YE-mGB">
+                                        <connections>
+                                            <action selector="didTapSkip:" destination="fp9-nT-KSo" id="sOD-vX-PFf"/>
+                                        </connections>
+                                    </barButtonItem>
+                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="JA5-Tz-UIW"/>
+                                    <barButtonItem image="chevron.right" catalog="system" id="abZ-kC-dE0">
+                                        <connections>
+                                            <action selector="didTapSubmit:" destination="fp9-nT-KSo" id="ODt-pL-LNm"/>
+                                        </connections>
+                                    </barButtonItem>
+                                </items>
+                            </toolbar>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" text="Copy steps to clipboard." textAlignment="natural" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bMA-oS-0xs">
+                                <rect key="frame" x="10" y="10" width="394" height="75"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="75" id="uIO-j0-Fq4"/>
+                                </constraints>
+                                <color key="textColor" systemColor="labelColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="aF7-3s-yIW"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="aF7-3s-yIW" firstAttribute="trailing" secondItem="bMA-oS-0xs" secondAttribute="trailing" constant="10" id="7IQ-Bb-Iyc"/>
+                            <constraint firstItem="F4i-to-XbX" firstAttribute="trailing" secondItem="aF7-3s-yIW" secondAttribute="trailing" id="84T-Rl-0t0"/>
+                            <constraint firstItem="xqv-WX-iFx" firstAttribute="trailing" secondItem="aF7-3s-yIW" secondAttribute="trailing" id="D5O-a0-2j6"/>
+                            <constraint firstItem="F4i-to-XbX" firstAttribute="trailing" secondItem="aF7-3s-yIW" secondAttribute="trailing" id="FcP-Bb-uqI"/>
+                            <constraint firstItem="bMA-oS-0xs" firstAttribute="top" secondItem="rHF-Ue-7BS" secondAttribute="top" constant="10" id="HCr-yG-kNY"/>
+                            <constraint firstItem="F4i-to-XbX" firstAttribute="bottom" secondItem="aF7-3s-yIW" secondAttribute="bottom" id="Hv2-YN-Dy0"/>
+                            <constraint firstItem="bMA-oS-0xs" firstAttribute="leading" secondItem="rHF-Ue-7BS" secondAttribute="leading" constant="10" id="Juh-L7-vN1"/>
+                            <constraint firstItem="F4i-to-XbX" firstAttribute="leading" secondItem="aF7-3s-yIW" secondAttribute="leading" id="Qwc-Iz-GhM"/>
+                            <constraint firstItem="F4i-to-XbX" firstAttribute="top" secondItem="xqv-WX-iFx" secondAttribute="bottom" symbolic="YES" id="TiD-3z-8UM"/>
+                            <constraint firstItem="xqv-WX-iFx" firstAttribute="top" secondItem="bMA-oS-0xs" secondAttribute="bottom" constant="10" id="rIr-YP-Nmh"/>
+                            <constraint firstItem="xqv-WX-iFx" firstAttribute="leading" secondItem="aF7-3s-yIW" secondAttribute="leading" id="uwQ-p2-iZh"/>
+                            <constraint firstItem="F4i-to-XbX" firstAttribute="leading" secondItem="aF7-3s-yIW" secondAttribute="leading" id="xoz-yu-eH4"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="Pnc-gM-ZCD"/>
+                    <connections>
+                        <outlet property="skip" destination="wbV-YE-mGB" id="Mwo-r5-bQI"/>
+                        <outlet property="web" destination="xqv-WX-iFx" id="dRV-y7-1JS"/>
+                        <segue destination="PPy-YC-O80" kind="show" identifier="pushManualRecipe" id="a46-hu-Fa1"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="xHX-t7-iTl" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2700" y="132"/>
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="Cr3-JZ-za4"/>
+        <segue reference="a46-hu-Fa1"/>
     </inferredMetricsTieBreakers>
     <resources>
         <image name="checkmark" catalog="system" width="128" height="114"/>

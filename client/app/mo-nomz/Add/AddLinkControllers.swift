@@ -22,14 +22,14 @@ class AddLinkController: AddDetailController {
     @IBAction func didTapSubmit(_ sender: Any?) {
         if let text = link.text?.nonEmpty(), let u = URL(string: text) {
             url = u.toRecipeUrl() ?? u
-            performSegue(withIdentifier: "review", sender: nil)
+            performSegue(withIdentifier: "reviewIngredients", sender: nil)
         } else {
             alertUnsuccessful("Please provide a link to a recipe.")
         }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let vc = segue.destination as? SelectLinkDataController, segue.identifier == "review" {
+        if let vc = segue.destination as? SelectLinkIngredientsController, segue.identifier == "reviewIngredients" {
             vc.url = url
         }
     }
@@ -41,57 +41,95 @@ class AddLinkController: AddDetailController {
     }
 }
 
-class SelectLinkDataController: SimpleController {
-    @IBOutlet weak var header: UITextView!
+protocol SelectLinkDelegate {
+    func selectionWasEmpty() -> Void
+    func selectionWasSuccess(_ selection: String) -> Void
+}
+
+class SelectLinkController: SimpleController, WKNavigationDelegate {
     @IBOutlet weak var web: WKWebView!
-    @IBOutlet weak var skip: UIBarButtonItem!
     
+    var delegate: SelectLinkDelegate? = nil
+    
+    var progress: UIActivityIndicatorView? = nil
     var url: URL? = nil
-    var scrapeType: ScrapeType = .ingredient
-    var ingredients: String? = nil
-    var steps: String? = nil
     
     @IBAction func didTapSubmit(_ sender: Any?) {
         let str = UIPasteboard.general.string
         UIPasteboard.general.string = nil
-        if (str?.nonEmpty()?.isEmpty ?? true) {
-            switch scrapeType {
-            case .ingredient:
-                alertUnsuccessful("Copy ingredients to clipboard")
-                break
-            case .step:
-                alertUnsuccessful("Copy steps to clipboard or select Skip")
-            }
+        guard let scraped = str?.nonEmpty() else {
+            delegate?.selectionWasEmpty()
             return
         }
-        switch (scrapeType) {
-        case .ingredient:
-            ingredients = str
-            scrapeType = .step
-            header.text = "Copy steps to clipboard."
-            skip.isEnabled = true
-            break
-        case .step:
-            steps = str
-            performSegue(withIdentifier: "pushManualRecipe", sender: nil)
-        }
+        delegate?.selectionWasSuccess(scraped)
     }
     
-    @IBAction func didTapSkip(_ sender: Any?) {
-        steps = nil
-        performSegue(withIdentifier: "pushManualRecipe", sender: nil)
+    func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!) {
+        guard let p = progress else { return }
+        stopLoading(p)
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        progress = startLoading()
+        web.navigationDelegate = self
+        web.load(URLRequest(url: url!))
+        UIPasteboard.general.string = nil
+    }
+}
+
+class SelectLinkIngredientsController: SelectLinkController, SelectLinkDelegate {
+    var scraped: String? = nil
+    
+    func selectionWasEmpty() {
+        alertUnsuccessful("Copy ingredients to clipboard")
+    }
+    
+    func selectionWasSuccess(_ selection: String) {
+        scraped = selection
+        performSegue(withIdentifier: "reviewSteps", sender: nil)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let vc = segue.destination as? AddManualController, segue.identifier == "pushManualRecipe" {
-            vc.change = .link(url?.absoluteString, web.title, ingredients ?? "", steps)
+        if let vc = segue.destination as? SelectLinkStepsController, segue.identifier == "reviewSteps" {
+            vc.url = url
+            vc.ingredients = scraped
         }
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        web.load(URLRequest(url: url!))
-        UIPasteboard.general.string = nil
-        header.text = "Copy ingredients to clipboard."
+        delegate = self
+    }
+}
+
+class SelectLinkStepsController: SelectLinkController, SelectLinkDelegate {
+    @IBOutlet weak var skip: UIBarButtonItem!
+    
+    var ingredients: String? = nil
+    var scraped: String? = nil
+    
+    func selectionWasEmpty() {
+        alertUnsuccessful("Copy steps to clipboard or select Skip")
+    }
+    
+    func selectionWasSuccess(_ selection: String) {
+        scraped = selection
+        performSegue(withIdentifier: "pushManualRecipe", sender: nil)
+    }
+    
+    @IBAction func didTapSkip(_ sender: Any?) {
+        performSegue(withIdentifier: "pushManualRecipe", sender: nil)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let vc = segue.destination as? AddManualController, segue.identifier == "pushManualRecipe" {
+            vc.change = .link(url?.absoluteString, web.title, ingredients ?? "", scraped)
+        }
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        delegate = self
     }
 }
