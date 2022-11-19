@@ -198,6 +198,16 @@ struct ReadableRecipeWithId: Codable, Indexable {
     }
 }
 
+struct ParseLinkRequest: Codable {
+    let link: String
+}
+
+struct ParseLinkResponse: Codable {
+    let name: String
+    let ingredients: [ReadableIngredient]
+    let steps: [String]
+}
+
 struct ParseBlobRequest: Codable {
     let content: String
 }

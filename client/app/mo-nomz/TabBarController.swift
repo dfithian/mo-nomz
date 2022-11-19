@@ -13,6 +13,10 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
     let INFO = 2
 
     override func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
+        reloadData()
+    }
+    
+    func reloadData() {
         guard let index = tabBar.selectedItem?.tag else { return }
         switch index {
         case GROCERIES:

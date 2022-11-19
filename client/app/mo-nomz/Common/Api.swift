@@ -71,7 +71,32 @@ extension UIViewController {
         User.setDidInitializeGroups()
         completion?()
     }
-    
+
+    func addLink(link: String, completion: ((ParseLinkResponse) -> Void)?) {
+        let spinner = startLoading()
+        guard let state = User.loadState() else { return }
+        var req = URLRequest(url: URL(string: Configuration.baseURL + "api/v2/user/" + String(state.userId) + "/link")!)
+        req.addValue(state.apiToken, forHTTPHeaderField: "X-Mo-Nomz-API-Token")
+        req.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        req.httpMethod = "POST"
+        req.httpBody = try? JSONEncoder().encode(ParseLinkRequest(link: link))
+        let task = URLSession.shared.dataTask(with: req, completionHandler: { data, resp, error -> Void in
+            self.stopLoading(spinner)
+            let onError = { self.alertUnsuccessful("Unable to import recipe. Please select photos or enter ingredients manually.")
+            }
+            let onSuccess = { (d: Data) -> Void in
+                do {
+                    let output = try JSONDecoder().decode(ParseLinkResponse.self, from: d)
+                    completion?(output)
+                } catch {
+                    onError()
+                }
+            }
+            self.withCompletion(data: data, resp: resp, error: error, completion: onSuccess, onError: onError)
+        })
+        task.resume()
+    }
+
     func addBlob(content: String, completion: (([ReadableIngredient]) -> Void)?) {
         let spinner = startLoading()
         guard let state = User.loadState() else { return }

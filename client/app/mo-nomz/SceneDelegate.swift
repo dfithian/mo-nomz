@@ -14,7 +14,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let launchSb = UIStoryboard(name: "LaunchScreen", bundle: nil)
         let launchVc = launchSb.instantiateInitialViewController()
         let mainSb = UIStoryboard(name: "Main", bundle: nil)
-        let mainVc = mainSb.instantiateInitialViewController() as! UITabBarController
+        let mainVc = mainSb.instantiateInitialViewController() as! TabBarController
         mainVc.selectedIndex = User.preference(.mealsDefaultTab) ? 1 : 0
         window?.rootViewController = launchVc
         
@@ -42,6 +42,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             initializeGroups({
                 DispatchQueue.main.async {
                     self.window?.rootViewController = mainVc
+                    mainVc.reloadData()
                 }
                 self.window?.rootViewController?.pingUser(completion: nil)
                 completion?()

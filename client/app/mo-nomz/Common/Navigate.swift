@@ -41,13 +41,13 @@ extension UIViewController {
             scene.window?.rootViewController = mainVc
             mainVc.selectedIndex = RECIPE_TAB
             let vc = mainVc.viewControllers![RECIPE_TAB] as! RecipeController
-            // FIXME this should add the link
-//            vc.recipeVc?.addBlob(content: <#T##String#>, name: <#T##String#>, link: url.absoluteString, rawSteps: <#T##[String]#>, active: true, completion: { recipe in
-//                vc.reloadData()
-//                DispatchQueue.main.async {
-//                    vc.recipeVc?.performSegue(withIdentifier: "showRecipe", sender: recipe)
-//                }
-//            })
+            vc.recipeVc?.addLink(link: url.absoluteString, completion: { response in
+                let recipe = Database.insertRecipe(response: response, link: url.absoluteString, active: true, tags: [])
+                vc.reloadData()
+                DispatchQueue.main.async {
+                    vc.recipeVc?.performSegue(withIdentifier: "showRecipe", sender: recipe)
+                }
+            })
         }
     }
     

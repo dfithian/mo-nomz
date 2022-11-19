@@ -45,10 +45,10 @@ class AddManualController: AddDetailController {
             self.navigationVc?.onChange?()
             self.loadGroceries()
         }
-        if let i = manualVc?.ingredients?.text?.nonEmpty() {
+        if let i = manualVc?.ingredients?.nonEmpty() {
             if manualVc?.isRecipe ?? false {
-                if let n = manualVc?.name?.text?.nonEmpty() {
-                    addBlob(content: i, name: n, link: manualVc?.link?.text?.nonEmpty(), rawSteps: manualVc?.steps?.text?.nonEmpty()?.components(separatedBy: "\n").compactMap({ $0.nonEmpty() }) ?? [], active: manualVc?.isActive ?? true, completion: recipeCompletion)
+                if let n = manualVc?.name?.nonEmpty() {
+                    addBlob(content: i, name: n, link: manualVc?.link?.nonEmpty(), rawSteps: manualVc?.steps?.nonEmpty()?.components(separatedBy: "\n").compactMap({ $0.nonEmpty() }) ?? [], active: manualVc?.isActive ?? true, completion: recipeCompletion)
                 } else {
                     alertUnsuccessful("Please provide a name.")
                 }
@@ -65,21 +65,15 @@ class AddManualController: AddDetailController {
             manualVc = vc
             switch change {
             case .link(let link, let name, let ingredients, let steps):
-                vc.link = UITextField()
-                vc.link?.text = link
-                vc.name = UITextField()
-                vc.name?.text = name
-                vc.ingredients = UITextView()
-                vc.ingredients?.text = ingredients
-                vc.steps = UITextView()
-                vc.steps?.text = steps
                 vc.isRecipe = true
+                vc.link = link
+                vc.name = name
+                vc.ingredients = ingredients
+                vc.steps = steps
             case .photo(let ingredients, let steps):
-                vc.ingredients = UITextView()
-                vc.ingredients?.text = ingredients
-                vc.steps = UITextView()
-                vc.steps?.text = steps
                 vc.isRecipe = true
+                vc.ingredients = ingredients
+                vc.steps = steps
                 break
             default: break
             }
@@ -109,13 +103,13 @@ class AddManualController: AddDetailController {
     }
 }
 
-class AddManualTableController: UITableViewController {
+class AddManualTableController: UITableViewController, UITextFieldDelegate, UITextViewDelegate {
     var isRecipe: Bool = false
     var isActive: Bool = true
-    var name: UITextField? = nil
-    var link: UITextField? = nil
-    var ingredients: UITextView? = nil
-    var steps: UITextView? = nil
+    var name: String? = nil
+    var link: String? = nil
+    var ingredients: String? = nil
+    var steps: String? = nil
     
     let IS_RECIPE__IS_ACTIVE = 0
     let NAME = 1
@@ -152,6 +146,30 @@ class AddManualTableController: UITableViewController {
         }
     }
     
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        switch (textField.tag) {
+        case NAME:
+            name = textField.text
+            break
+        case LINK:
+            link = textField.text
+            break
+        default: break
+        }
+    }
+    
+    func textViewDidChange(_ textView: UITextView) {
+        switch (textView.tag) {
+        case INGREDIENTS:
+            ingredients = textView.text
+            break
+        case STEPS:
+            steps = textView.text
+            break
+        default: break
+        }
+    }
+    
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 7
     }
@@ -181,31 +199,30 @@ class AddManualTableController: UITableViewController {
         case NAME:
             let cell = tableView.dequeueReusableCell(withIdentifier: "textFieldItem") as! OneTextField
             cell.text_.placeholder = "Recipe name"
-            cell.text_.text = name?.text
+            cell.text_.text = name
             cell.text_.addDoneButtonOnKeyboard()
-            name = cell.text_
+            cell.text_.tag = NAME
+            cell.text_.delegate = self
             return cell
         case LINK:
             let cell = tableView.dequeueReusableCell(withIdentifier: "textFieldItem") as! OneTextField
             cell.text_.placeholder = "Recipe link (optional)"
-            cell.text_.text = link?.text
+            cell.text_.text = link
             cell.text_.addDoneButtonOnKeyboard()
-            link = cell.text_
+            cell.text_.tag = LINK
+            cell.text_.delegate = self
             return cell
         case INGREDIENT_HEADING:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! OneLabel
-            if isRecipe {
-                cell.label.text = "Ingredients"
-            } else {
-                cell.label.text = "Groceries"
-            }
+            cell.label.text = isRecipe ? "Ingredients" : "Groceries"
             return cell
         case INGREDIENTS:
             let cell = tableView.dequeueReusableCell(withIdentifier: "textItem") as! OneText
-            cell.text_.text = ingredients?.text
+            cell.text_.text = ingredients
             cell.text_.addDoneButtonOnKeyboard()
             cell.text_.layer.cornerRadius = 10
-            ingredients = cell.text_
+            cell.text_.tag = INGREDIENTS
+            cell.text_.delegate = self
             return cell
         case STEP_HEADING:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! OneLabel
@@ -213,10 +230,11 @@ class AddManualTableController: UITableViewController {
             return cell
         case STEPS:
             let cell = tableView.dequeueReusableCell(withIdentifier: "textItem") as! OneText
-            cell.text_.text = steps?.text
+            cell.text_.text = steps
             cell.text_.addDoneButtonOnKeyboard()
             cell.text_.layer.cornerRadius = 10
-            steps = cell.text_
+            cell.text_.tag = STEPS
+            cell.text_.delegate = self
             return cell
         default:
             return UITableViewCell()

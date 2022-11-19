@@ -314,6 +314,21 @@ class Database {
         }
         return nil
     }
+    
+    static func insertRecipe(response: ParseLinkResponse, link: String, active: Bool, tags: [String]) -> ReadableRecipeWithId {
+        var ingredients = [UUID:ReadableIngredient]()
+        for ingredient in response.ingredients {
+            ingredients[UUID()] = ingredient
+        }
+        var order = 0
+        var steps = [UUID:Step]()
+        for step in response.steps {
+            steps[UUID()] = Step(step: step, order: order)
+            order += 1
+        }
+        let recipe = ReadableRecipe(name: response.name, link: link, active: active, rating: 0, notes: "", ingredients: ingredients, steps: steps, tags: tags)
+        return insertRecipe(recipe: recipe)
+    }
 
     static func insertRecipe(response: ParseBlobResponse, name: String, link: String?, rawSteps: [String], active: Bool, tags: [String]) -> ReadableRecipeWithId {
         var ingredients = [UUID:ReadableIngredient]()
