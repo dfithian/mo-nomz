@@ -6,8 +6,6 @@
 //
 
 import UIKit
-import WebKit
-import SafariServices
 
 class AddLinkController: AddDetailController {
     @IBOutlet weak var link: UITextField!
