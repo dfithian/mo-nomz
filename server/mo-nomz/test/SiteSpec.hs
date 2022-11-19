@@ -3,9 +3,7 @@ module SiteSpec where
 import NomzPrelude
 
 import Chez.Grater (scrapeAndParseUrl)
-import Chez.Grater.Types
-  ( Ingredient(..), IngredientName(..), Quantity(..), RecipeName(..), Step(..), Unit(..)
-  )
+import Chez.Grater.Types (Ingredient(..), IngredientName(..), Quantity(..), RecipeName(..), Unit(..))
 import Network.URI (parseURI)
 import Test.Hspec (Expectation, Spec, describe, expectationFailure, it, shouldSatisfy, xit)
 import qualified Data.CaseInsensitive as CI

@@ -138,7 +138,6 @@ test-suite tests
     , hspec
     , mo-nomz
     , monad-logger
-    , mtl
     , network-uri
     , postgresql-simple
     , resource-pool

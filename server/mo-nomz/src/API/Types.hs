@@ -9,7 +9,7 @@ import Data.Aeson (FromJSON, ToJSON)
 import Data.Aeson.TH (deriveJSON)
 
 import Auth (Authorization)
-import Types (GroceryItemId, IngredientId, RecipeId, RecipeLink, UserId)
+import Types (RecipeLink, UserId)
 
 data GetHealthResponse = GetHealthResponse
   { getHealthResponseStatus           :: Text

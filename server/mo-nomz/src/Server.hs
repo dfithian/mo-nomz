@@ -3,8 +3,6 @@ module Server where
 import NomzPrelude
 
 import Chez.Grater (scrapeAndParseUrl)
-import Chez.Grater.Readable.Types (mkReadableQuantity, mkReadableUnit)
-import Chez.Grater.Types (Ingredient(..))
 import Control.Monad.Logger (logError)
 import Data.Version (showVersion)
 import Network.URI (parseURI)
@@ -22,10 +20,7 @@ import Foundation (App(..), AppM, appLogFunc, cacheSettings, logErrors, settings
 import Paths_mo_nomz (version)
 import Scraper.Site (allScrapers)
 import Settings (AppSettings(..), CacheSettings(..))
-import Types
-  ( GroceryItem(..), OrderedGroceryItem(..), OrderedIngredient(..), Recipe(..), RecipeLink(..)
-  , ScrapedRecipe(..), UserId
-  )
+import Types (OrderedIngredient(..), RecipeLink(..), ScrapedRecipe(..), UserId)
 import qualified Database
 
 scrapeUrlCached :: AppM m => RecipeLink -> m ScrapedRecipe
@@ -40,7 +35,7 @@ scrapeUrlCached link = do
   case cacheSettingsEnabled of
     False -> fst <$> logErrors (liftIO scrape)
     True -> unwrapDb $ withDbConn $ \c -> do
-      Database.refreshCachedRecipes c cacheSettingsValidSeconds cacheSettingsMaxSize
+      Database.refreshCachedRecipes c cacheSettingsMaxSize
       Database.selectCachedRecipe c link >>= \case
         Just cached -> pure cached
         Nothing -> do

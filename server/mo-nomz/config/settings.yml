@@ -9,6 +9,5 @@ static-dir: "_env:STATIC_DIR:client/web/build/"
 bcrypt-cost: "_env:BCRYPT_COST:4"
 cache:
   enabled: "_env:CACHE_ENABLED:false"
-  valid-seconds: "_env:CACHE_VALID_SECONDS:604800"
   max-size: "_env:CACHE_MAX_SIZE:10000"
 force-ssl: "_env:FORCE_SSL:true"
