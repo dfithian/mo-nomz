@@ -62,7 +62,7 @@ spec :: Env -> Spec
 spec env = describe "Scrape" $ do
   let defCfg = defaultTestCfg env
   describe "Smoke Test" $ do
-    it "handles nytimes" $ scrapeAndParseConfig defCfg "https://cooking.nytimes.com/recipes/1017256-french-onion-soup"
+    it "handles nytimes" $ scrapeAndParseConfig (defCfg { requireOneQuantityUnit = False, requiredIngredients = 0 }) "https://cooking.nytimes.com/recipes/1017256-french-onion-soup"
     it "handles yummly" $ scrapeAndParseConfig defCfg "https://www.yummly.com/recipe/Barbecue-Baked-Chicken-Legs-9073054"
     -- this one can't parse anymore
     xit "handles epicurious" $ scrapeAndParseConfig defCfg "https://www.epicurious.com/recipes/food/views/cashew-chicken"
@@ -150,6 +150,7 @@ spec env = describe "Scrape" $ do
       it "handles loveandoliveoil" $ scrapeAndParseConfig defCfg "https://www.loveandoliveoil.com/2021/04/stuffed-cherry-amaretti-cookies.html"
       it "handles ohsheglows" $ scrapeAndParseConfig defCfg "https://ohsheglows.com/2020/09/20/perfect-little-pumpkin-cookies-with-spiced-buttercream/"
       it "handles shutterbean" $ scrapeAndParseConfig (defCfg { requiredSteps = 0 }) "https://www.shutterbean.com/2019/polenta-cornbread/"
+      it "handles bhg" $ scrapeAndParseConfig (defCfg { requireOneQuantityUnit = False }) "https://www.bhg.com/recipe/air-fried-ginger-glazed-pork-ribs/"
     describe "MV" $ do
       it "handles bakerella" $ scrapeAndParseConfig defCfg "https://www.bakerella.com/secret-ingredient-chocolate-chip-cookies/"
       it "handles mybakingaddiction" $ scrapeAndParseConfig defCfg "https://www.mybakingaddiction.com/flank-steak-tacos/"
@@ -161,7 +162,5 @@ spec env = describe "Scrape" $ do
       it "handles ourbestbites" $ scrapeAndParseConfig (defCfg { requiredIngredients = 1 }) "https://ourbestbites.com/greek-pasta-salad/#tasty-recipes-45657"
     describe "Tasty 4" $ do
       it "handles simple-veganista" $ scrapeAndParseConfig (defCfg { requiredIngredients = 1 }) "https://simple-veganista.com/vegan-stuffed-peppers/#tasty-recipes-28732-jump-target"
-    describe "Eating Well" $ do
-      it "handles bhg" $ scrapeAndParseConfig (defCfg { requireOneQuantityUnit = False }) "https://www.bhg.com/recipe/air-fried-ginger-glazed-pork-ribs/"
     describe "Simply Recipes" $ do
       it "handles simplyrecipes" $ scrapeAndParseConfig defCfg "https://www.simplyrecipes.com/recipes/easy_green_chicken_chili/"

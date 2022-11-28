@@ -35,7 +35,6 @@ scrapeUrlCached link = do
   case cacheSettingsEnabled of
     False -> fst <$> logErrors (liftIO scrape)
     True -> unwrapDb $ withDbConn $ \c -> do
-      Database.refreshCachedRecipes c cacheSettingsMaxSize
       Database.selectCachedRecipe c link >>= \case
         Just cached -> pure cached
         Nothing -> do
