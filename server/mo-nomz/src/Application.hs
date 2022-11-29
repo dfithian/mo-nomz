@@ -25,11 +25,9 @@ import qualified Data.Text.Encoding as Text
 import qualified Network.Wai.Middleware.EnforceHTTPS as EnforceHTTPS
 
 import Foundation (App(..), LogFunc, NomzServer, createManager, runNomzServer, withDbConn)
-import Scraper.Site (isInvalidScraper)
 import Servant (NomzApi, nomzApi, wholeApi)
-import Server (getExport, getHealth, postCreateUser, postParseBlob, postParseLink, postPingUser)
+import Server (getHealth, postCreateUser, postParseBlob, postParseLink, postPingUser)
 import Settings (AppSettings(..), DatabaseSettings(..), staticSettingsValue)
-import qualified Database
 
 nomzServer :: ServerT NomzApi NomzServer
 nomzServer =
@@ -38,17 +36,14 @@ nomzServer =
     :<|> postPingUser
     :<|> postParseBlob
     :<|> postParseLink
-    :<|> getExport
 
 migrateDatabase :: Pool Connection -> LogFunc -> AppSettings -> IO ()
 migrateDatabase pool logFunc settings = do
-  result <- flip runLoggingT logFunc $ flip runReaderT pool $ withDbConn $ \c -> do
-    inner <- runMigrations True c $
+  result <- flip runLoggingT logFunc $ flip runReaderT pool $ withDbConn $ \c ->
+    runMigrations True c $
       [ MigrationInitialization
       , MigrationDirectory (appMigrationDir settings)
       ]
-    Database.invalidateCachedRecipes c isInvalidScraper
-    pure inner
   case result of
     Left err -> fail $ "Failed to run migrations due to database exception " <> show err
     Right (MigrationError str) -> fail $ "Failed to run migrations due to " <> str

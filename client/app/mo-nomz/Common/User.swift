@@ -49,24 +49,6 @@ class User {
         var ref: AnyObject?
         SecItemAdd(query, &ref)
     }
-    static func exported() -> Bool {
-        return UserDefaults.shared.bool(forKey: "exported")
-    }
-    static func setDidExport() {
-        UserDefaults.shared.set(true, forKey: "exported")
-    }
-    static func stepsPulled() -> Bool {
-        return UserDefaults.shared.bool(forKey: "pulledSteps")
-    }
-    static func setDidPullSteps() {
-        UserDefaults.shared.set(true, forKey: "pulledSteps")
-    }
-    static func stepsCleaned() -> Bool {
-        return UserDefaults.shared.bool(forKey: "cleanedSteps")
-    }
-    static func setDidCleanSteps() {
-        UserDefaults.shared.set(true, forKey: "cleanedSteps")
-    }
     static func groupsInitialized() -> Bool {
         return UserDefaults.shared.bool(forKey: "groupsInitialized")
     }

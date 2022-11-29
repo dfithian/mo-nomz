@@ -11,26 +11,16 @@ import Vision
 import PhotosUI
 import QCropper
 
-enum ScrapeType {
-    case ingredient
-    case step
-}
-
-struct ScrapeInfo {
-    var image: UIImage
-    var value: String
-    let type: ScrapeType
-}
-
-struct Scrape {
-    var ingredients: [ScrapeInfo]
-    var steps: [ScrapeInfo]
-}
-
 class AddPhotoController: AddDetailController {
-    var scrape: Scrape = Scrape(ingredients: [], steps: [])
-    var current: ScrapeInfo? = nil
+    @IBOutlet weak var helper: UIButton!
+
+    var scrape: Scrape = Scrape<ScrapeImageInfo>(ingredients: [], steps: [])
+    var current: ScrapeImageInfo? = nil
     var pickVc: PickPhotoController? = nil
+    
+    override func addType() -> AddType {
+        return .photo
+    }
     
     @IBAction func didTapSubmit(_ sender: Any?) {
         performSegue(withIdentifier: "pushManualRecipe", sender: nil)
@@ -43,11 +33,8 @@ class AddPhotoController: AddDetailController {
         }
         if let vc = segue.destination as? AddManualController, segue.identifier == "pushManualRecipe" {
             let ingredients = scrape.ingredients.map({ $0.value }).joined(separator: "\n")
-            if let steps = scrape.steps.map({ $0.value }).joined(separator: "\n").nonEmpty() {
-                vc.change = .photoReview(ingredients, steps)
-            } else {
-                vc.change = .photoReview(ingredients, nil)
-            }
+            let steps = scrape.steps.map({ $0.value }).joined(separator: "\n").nonEmpty()
+            vc.change = .photo(ingredients, steps)
         }
         if let vc = segue.destination as? ReviewPhotoController, segue.identifier == "reviewScrape" {
             vc.addVc = self
@@ -55,8 +42,9 @@ class AddPhotoController: AddDetailController {
         }
     }
     
-    override func addType() -> AddType {
-        return .photo
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        helper.menu = switcherMenu()
     }
 }
 
@@ -97,7 +85,7 @@ class PickPhotoController: UICollectionViewController, UICollectionViewDelegateF
         }
     }
     
-    private func imageCell(_ collectionView: UICollectionView, indexPath: IndexPath, scrapeInfos: [ScrapeInfo]) -> UICollectionViewCell {
+    private func imageCell(_ collectionView: UICollectionView, indexPath: IndexPath, scrapeInfos: [ScrapeImageInfo]) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "imageItem", for: indexPath) as! OneCellImage
         cell.layer.cornerRadius = 10
         cell.image.image = scrapeInfos[indexPath.row].image
@@ -212,7 +200,7 @@ class PickPhotoController: UICollectionViewController, UICollectionViewDelegateF
             self.stopLoading(progress)
             guard let observations = req.results as? [VNRecognizedTextObservation] else { return }
             let recognized = observations.compactMap({ $0.topCandidates(1).first?.string }).joined(separator: "\n")
-            self.addVc?.current = ScrapeInfo(image: cropped, value: recognized, type: self.scrapeType ?? .ingredient)
+            self.addVc?.current = ScrapeImageInfo(image: cropped, value: recognized, type: self.scrapeType ?? .ingredient)
             self.addVc?.performSegue(withIdentifier: "reviewScrape", sender: nil)
         }
         let handler = VNImageRequestHandler(cgImage: cropped.cgImage!)
@@ -227,11 +215,10 @@ class PickPhotoController: UICollectionViewController, UICollectionViewDelegateF
 }
 
 class ReviewPhotoController: SimpleController, UITextViewDelegate, UIContextMenuInteractionDelegate {
-    @IBOutlet weak var help: UILabel!
     @IBOutlet weak var image: UIImageView!
     @IBOutlet weak var text: UITextView!
     
-    var scrapeInfo: ScrapeInfo? = nil
+    var scrapeInfo: ScrapeImageInfo? = nil
     var navigationVc: AddController? = nil
     var addVc: AddPhotoController? = nil
     
@@ -271,15 +258,6 @@ class ReviewPhotoController: SimpleController, UITextViewDelegate, UIContextMenu
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        switch scrapeInfo?.type {
-        case .ingredient:
-            help.text = "Review ingredients"
-            break
-        case .step:
-            help.text = "Review steps"
-            break
-        default: break
-        }
         text.text = scrapeInfo?.value
         text.addDoneButtonOnKeyboard()
         text.layer.cornerRadius = 10

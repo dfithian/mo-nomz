@@ -4,4 +4,5 @@ packages:
 extra-deps:
 - base64-bytestring-1.0.0.3
 - postgresql-simple-migration-0.1.15.0
-- chez-grater-0.0.4
+- git: https://github.com/dfithian/chez-grater.git
+  commit: 5a35cd1008f3a1997bc7cde4da343ba681ca083b

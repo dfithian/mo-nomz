@@ -3,22 +3,6 @@ on:
   schedule:
     - cron: "0 5 * * *"
 jobs:
-  build-app:
-    if: ${{ github.event_name == 'push' }}
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Build
-        run: |
-          pod install \
-            --project-directory=client/app
-          xcodebuild clean build \
-            -workspace "client/app/mo-nomz.xcworkspace" \
-            -scheme "mo-nomz" \
-            -destination "platform=iOS Simulator,name=iPhone 13 Pro Max" \
-            CODE_SIGN_IDENTITY="" \
-            CODE_SIGNING_REQUIRED=NO \
-            ONLY_ACTIVE_ARCH=NO
   build-web:
     if: ${{ github.event_name == 'push' }}
     runs-on: ubuntu-latest

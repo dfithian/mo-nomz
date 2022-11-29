@@ -79,9 +79,4 @@ class RecipeController: UIViewController, RecipeFilterDelegate {
         search.searchTextField.addDoneButtonOnKeyboard()
         search.searchTextField.font = UIFont.systemFont(ofSize: 14)
     }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        reloadData()
-    }
 }

@@ -85,9 +85,4 @@ class GroceryController: UIViewController {
         add.alignTextUnderImage()
         setupOptions()
     }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        reloadData()
-    }
 }

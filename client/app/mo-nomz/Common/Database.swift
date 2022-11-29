@@ -314,7 +314,7 @@ class Database {
         }
         return nil
     }
-
+    
     static func insertRecipe(response: ParseLinkResponse, link: String, active: Bool, tags: [String]) -> ReadableRecipeWithId {
         var ingredients = [UUID:ReadableIngredient]()
         for ingredient in response.ingredients {
@@ -685,45 +685,6 @@ class Database {
 
             // delete all groceries
             try ctx.execute(NSBatchDeleteRequest(fetchRequest: NSFetchRequest(entityName: "GroceryItemData")))
-
-            try ctx.save()
-        } catch let error as NSError {
-            print(error)
-        }
-    }
-
-    static func overwrite(export: ExportResponse) {
-        do {
-            let ctx = DataAccess.shared.managedObjectContext
-
-            // delete all data
-            try ctx.execute(NSBatchDeleteRequest(fetchRequest: NSFetchRequest(entityName: "RecipeData")))
-            try ctx.execute(NSBatchDeleteRequest(fetchRequest: NSFetchRequest(entityName: "GroceryItemData")))
-            try ctx.execute(NSBatchDeleteRequest(fetchRequest: NSFetchRequest(entityName: "IngredientData")))
-
-            // insert recipes
-            var recipeIds = [Int:UUID]()
-            for (recipeKey, recipe) in export.recipes {
-                let recipeWithId = ReadableRecipeWithId(recipe: ReadableRecipe(name: recipe.name, link: recipe.link, active: recipe.active, rating: recipe.rating, notes: recipe.notes, ingredients: [:], steps: [:], tags: []), id: UUID())
-                insertRecipeRaw(ctx, recipe: recipeWithId)
-                recipeIds[recipeKey] = recipeWithId.id
-            }
-
-            // insert groceries
-            var groceryIds = [Int:UUID]()
-            for (groceryKey, grocery) in export.groceries {
-                let groceryWithId = ReadableGroceryItemWithId(item: ReadableGroceryItem(name: grocery.name, quantity: grocery.quantity, unit: grocery.unit, active: grocery.active, order: grocery.order, group: nil), id: UUID())
-                insertGroceryRaw(ctx, grocery: groceryWithId)
-                groceryIds[groceryKey] = groceryWithId.id
-            }
-
-            // insert ingredients
-            export.ingredients.forEach({ (ingredientKey, ingredient) -> () in
-                let ingredientWithId = ReadableIngredientWithId(id: UUID(), ingredient: ReadableIngredient(name: ingredient.name, quantity: ingredient.quantity, unit: ingredient.unit, order: ingredient.order))
-                let recipeId = ingredient.recipeId.map({ recipeIds[$0]! })
-                let groceryId = ingredient.groceryItemId.map({ groceryIds[$0]! })
-                insertIngredientRaw(ctx, ingredient: ingredientWithId, recipeId: recipeId, groceryId: groceryId)
-            })
 
             try ctx.save()
         } catch let error as NSError {

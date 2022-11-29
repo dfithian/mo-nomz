@@ -63,17 +63,13 @@ spec env = describe "Database" $ do
         stepMeta = ScrapeMeta (ScrapeName "fooS") inception
         recipe = ScrapedRecipe name ingredients steps
         info = ScrapeMetaWrapperIngredientAndStep ingredientMeta stepMeta
-    (actualInvalidTime, actualTooBig, actualValid) <- runEnv env $ \c -> do
+    (actualTooBig, actualValid) <- runEnv env $ \c -> do
       repsertCachedRecipe c link1 recipe info
       repsertCachedRecipe c link2 recipe info
-      refreshCachedRecipes c 0 1000
-      invalidTime <- selectCachedRecipe c link1
-      repsertCachedRecipe c link1 recipe info
-      refreshCachedRecipes c 1000 1
+      refreshCachedRecipes c 1
       tooBig <- selectCachedRecipe c link2
       valid <- selectCachedRecipe c link1
-      pure (invalidTime, tooBig, valid)
-    actualInvalidTime `shouldBe` Nothing
+      pure (tooBig, valid)
     actualTooBig `shouldBe` Nothing
     actualValid `shouldBe` Just recipe
 

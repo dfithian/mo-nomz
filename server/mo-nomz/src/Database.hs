@@ -3,19 +3,14 @@ module Database where
 import NomzPrelude
 
 import Chez.Grater.Scraper.Types (ScrapeMeta(..), ScrapeMetaWrapper(..), ScrapeName, ScrapeVersion)
-import Chez.Grater.Types (Ingredient(..))
 import Data.Serialize (decode, encode)
 import Database.PostgreSQL.Simple
   ( Binary(Binary), In(In), Only(Only), Connection, execute, fromOnly, query, query_, returning
   )
-import qualified Data.Map.Strict as Map
 
 import Auth (BcryptedAuthorization)
 import Postgres.Orphans ()
-import Types
-  ( GroceryItem(..), OrderedGroceryItem(..), OrderedIngredient(..), Recipe(..), ScrapedRecipe(..)
-  , GroceryItemId, IngredientId, RecipeId, RecipeLink, UserId
-  )
+import Types (ScrapedRecipe(..), RecipeLink, UserId)
 
 data DatabaseException = DatabaseException Text
   deriving (Eq, Show)
@@ -58,39 +53,6 @@ selectCacheStats conn = do
   fromMaybe (0, Nothing, Nothing) . headMay
     <$> query_ conn "select count(*), max(updated), min(updated) from nomz.recipe_cache"
 
-selectGroceryItems :: Connection -> UserId -> [GroceryItemId] -> IO (Map GroceryItemId OrderedGroceryItem)
-selectGroceryItems conn userId groceryItemIds = do
-  groceryItems <- case null groceryItemIds of
-    True -> query conn "select id, name, quantity, unit, active, ordering from nomz.grocery_item where user_id = ? order by ordering, name" (Only userId)
-    False -> query conn "select id, name, quantity, unit, active, ordering from nomz.grocery_item where user_id = ? and id in ? order by ordering, name" (userId, In groceryItemIds)
-  pure $ foldr (\(groceryItemId, name, quantity, unit, active, order) acc -> Map.insert groceryItemId (OrderedGroceryItem (GroceryItem name quantity unit active) order) acc) mempty groceryItems
-
-selectRecipes :: Connection -> UserId -> [RecipeId] -> IO (Map RecipeId Recipe)
-selectRecipes conn userId recipeIds = do
-  case null recipeIds of
-    True -> do
-      recipes <- query conn "select id, name, link, active, rating, notes from nomz.recipe where user_id = ? order by id" (Only userId)
-      pure . Map.fromList . fmap (\(recipeId, name, link, active, rating, notes) -> (recipeId, Recipe name link active rating notes)) $ recipes
-    False -> do
-      recipes <- query conn "select id, name, link, active, rating, notes from nomz.recipe where user_id = ? and id in ? order by id" (userId, In recipeIds)
-      pure . Map.fromList . fmap (\(recipeId, name, link, active, rating, notes) -> (recipeId, Recipe name link active rating notes)) $ recipes
-
-selectIngredients :: Connection -> UserId -> [IngredientId] -> IO (Map IngredientId (Maybe RecipeId, Maybe GroceryItemId, OrderedIngredient))
-selectIngredients conn userId ingredientIds = do
-  ingredients <- case null ingredientIds of
-    True -> query conn "select id, recipe_id, grocery_id, name, quantity, unit, ordering from nomz.ingredient where user_id = ? order by recipe_id, ordering, name" (Only userId)
-    False -> query conn "select id, recipe_id, grocery_id, name, quantity, unit, ordering from nomz.ingredient where user_id = ? and id in ?" (userId, In ingredientIds)
-  pure
-    . Map.fromList
-    . fmap (\(defaultOrder, (ingredientId, recipeId, groceryItemId, name, quantity, unit, order)) -> (ingredientId, (recipeId, groceryItemId, OrderedIngredient (Ingredient name quantity unit) (fromMaybe defaultOrder order))))
-    . zip [1..]
-    $ ingredients
-
-exportConfirm :: Connection -> UserId -> IO ()
-exportConfirm conn userId = do
-  now <- getCurrentTime
-  void $ execute conn "insert into nomz.export (user_id, confirmed_at) values (?, ?)" (userId, now)
-
 selectCachedRecipe :: Connection -> RecipeLink -> IO (Maybe ScrapedRecipe)
 selectCachedRecipe conn link = do
   query conn "select data from nomz.recipe_cache where link = ?" (Only link) >>= \case
@@ -111,10 +73,8 @@ repsertCachedRecipe conn link recipe info = do
         "insert into nomz.recipe_cache (link, data, updated, ingredient_scrape_name, ingredient_scrape_version, step_scrape_name, step_scrape_version) values (?, ?, ?, ?, ?, ?, ?)"
         (link, Binary (encode recipe), now, scrapeMetaName ingredient, scrapeMetaVersion ingredient, scrapeMetaName step, scrapeMetaVersion step)
 
-refreshCachedRecipes :: Connection -> Int -> Int -> IO ()
-refreshCachedRecipes conn validityWindow maxSize = do
-  validTime <- addUTCTime (negate (fromIntegral validityWindow)) <$> getCurrentTime
-  void $ execute conn "delete from nomz.recipe_cache where updated < ?" (Only validTime)
+refreshCachedRecipes :: Connection -> Int -> IO ()
+refreshCachedRecipes conn maxSize = do
   void $ execute conn "delete from nomz.recipe_cache where link in (select link from nomz.recipe_cache order by updated desc offset ?)" (Only maxSize)
 
 invalidateCachedRecipes :: Connection -> (ScrapeMetaWrapper -> Bool) -> IO ()

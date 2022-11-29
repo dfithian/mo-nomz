@@ -8,14 +8,6 @@
 import UIKit
 
 extension UIViewController {
-    @IBAction func didTapCancel(_ sender: Any?) {
-        DispatchQueue.main.async {
-            self.dismiss(animated: true, completion: nil)
-        }
-    }
-}
-
-extension UIViewController {
     func buyPrompt(title: String, message: String, price: String, handler: @escaping ((UIAlertAction) -> Void)) {
         let ok = UIAlertAction(title: "Buy for \(price)", style: .default, handler: handler)
         let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)

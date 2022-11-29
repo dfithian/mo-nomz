@@ -9,7 +9,7 @@ import Data.Aeson (FromJSON, ToJSON)
 import Data.Aeson.TH (deriveJSON)
 
 import Auth (Authorization)
-import Types (GroceryItemId, IngredientId, RecipeId, RecipeLink, UserId)
+import Types (RecipeLink, UserId)
 
 data GetHealthResponse = GetHealthResponse
   { getHealthResponseStatus           :: Text
@@ -76,41 +76,6 @@ data ParseLinkResponse = ParseLinkResponse
   }
   deriving (Eq, Ord, Show)
 
-data ExportGroceryItem = ExportGroceryItem
-  { exportGroceryItemName     :: IngredientName
-  , exportGroceryItemQuantity :: ReadableQuantity
-  , exportGroceryItemUnit     :: Maybe ReadableUnit
-  , exportGroceryItemActive   :: Bool
-  , exportGroceryItemOrder    :: Int
-  }
-  deriving (Eq, Ord, Show)
-
-data ExportRecipe = ExportRecipe
-  { exportRecipeName   :: RecipeName
-  , exportRecipeLink   :: Maybe RecipeLink
-  , exportRecipeActive :: Bool
-  , exportRecipeRating :: Int
-  , exportRecipeNotes  :: Text
-  }
-  deriving (Eq, Ord, Show)
-
-data ExportIngredient = ExportIngredient
-  { exportIngredientGroceryItemId :: Maybe GroceryItemId
-  , exportIngredientRecipeId      :: Maybe RecipeId
-  , exportIngredientName          :: IngredientName
-  , exportIngredientQuantity      :: ReadableQuantity
-  , exportIngredientUnit          :: Maybe ReadableUnit
-  , exportIngredientOrder         :: Int
-  }
-  deriving (Eq, Ord, Show)
-
-data ExportResponse = ExportResponse
-  { exportResponseGroceries   :: Map GroceryItemId ExportGroceryItem
-  , exportResponseRecipes     :: Map RecipeId ExportRecipe
-  , exportResponseIngredients :: Map IngredientId ExportIngredient
-  }
-  deriving (Eq, Ord, Show)
-
 deriveJSON (jsonOptions "getHealthResponse") ''GetHealthResponse
 deriveJSON (jsonOptions "userCreateResponse") ''UserCreateResponse
 deriveJSON (jsonOptions "userPingRequest") ''UserPingRequest
@@ -120,7 +85,3 @@ deriveJSON (jsonOptions "parseBlobRequest") ''ParseBlobRequest
 deriveJSON (jsonOptions "parseLinkRequest") ''ParseLinkRequest
 deriveJSON (jsonOptions "parseBlobResponse") ''ParseBlobResponse
 deriveJSON (jsonOptions "parseLinkResponse") ''ParseLinkResponse
-deriveJSON (jsonOptions "exportGroceryItem") ''ExportGroceryItem
-deriveJSON (jsonOptions "exportRecipe") ''ExportRecipe
-deriveJSON (jsonOptions "exportIngredient") ''ExportIngredient
-deriveJSON (jsonOptions "exportResponse") ''ExportResponse
