@@ -1,0 +1,10 @@
+packages:
+  server/mo-nomz
+
+source-repository-package
+  type: git
+  location: https://github.com/dfithian/chez-grater.git
+  tag: 5a35cd1008f3a1997bc7cde4da343ba681ca083b
+
+package postgresql-libpq
+  flags: +use-pkg-config
