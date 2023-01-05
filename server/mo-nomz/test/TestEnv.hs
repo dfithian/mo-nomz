@@ -2,7 +2,7 @@ module TestEnv where
 
 import NomzPrelude
 
-import Database.PostgreSQL.Simple (Connection, close, connectPostgreSQL, execute_)
+import Database.PostgreSQL.Simple (Connection, close, connectPostgreSQL)
 import Network.HTTP.Client (Manager)
 
 import Auth (Authorization, generateToken)
@@ -30,18 +30,11 @@ runServer Env {..} ma = do
     <$> getCurrentTime
   either (fail . show) pure =<< runLoggingT (runReaderT (runExceptT ma) app) mempty
 
-wipeDb :: Env -> IO ()
-wipeDb env = runEnv env $ \c ->
-  void $ execute_ c "truncate nomz.export, nomz.ingredient, nomz.recipe, nomz.grocery_item, nomz.recipe_cache restart identity"
-
 loadEnv :: IO Env
 loadEnv = do
   pool <- createPool (connectPostgreSQL "dbname=postgres host=localhost user=postgres") close 3 15 1
   (token, bcryptedToken) <- generateToken 4
-  userId <- either (fail . show) pure =<< runLoggingT ( runReaderT (
-    withDbConn $ \c -> do
-      void $ execute_ c "truncate nomz.export, nomz.ingredient, nomz.recipe, nomz.grocery_item, nomz.user restart identity"
-      insertToken c bcryptedToken ) pool ) mempty
+  userId <- either (fail . show) pure =<< runLoggingT (runReaderT (withDbConn $ \c -> insertToken c bcryptedToken) pool) mempty
   manager <- createManager
   pure $ Env pool userId token manager
 

@@ -9,18 +9,12 @@ data DatabaseSettings = DatabaseSettings
   , databaseSettingsPoolsize :: Int
   }
 
-data CacheSettings = CacheSettings
-  { cacheSettingsEnabled :: Bool
-  , cacheSettingsMaxSize :: Int
-  }
-
 data AppSettings = AppSettings
   { appPort         :: Int -- ^ The port to serve the application on.
   , appDatabase     :: DatabaseSettings -- ^ The database settings.
   , appMigrationDir :: FilePath -- ^ Where the migrations are located.
   , appStaticDir    :: FilePath -- ^ Where the static files are located.
   , appBcryptCost   :: Int -- ^ Bcrypt cost.
-  , appCache        :: CacheSettings -- ^ Settings for caching.
   , appForceSsl     :: Bool -- ^ Whether to force SSL.
   }
 
@@ -36,18 +30,6 @@ instance ToJSON DatabaseSettings where
     , "poolsize" .= databaseSettingsPoolsize
     ]
 
-instance FromJSON CacheSettings where
-  parseJSON = withObject "CacheSettings" $ \obj ->
-    CacheSettings
-      <$> obj .: "enabled"
-      <*> obj .: "max-size"
-
-instance ToJSON CacheSettings where
-  toJSON CacheSettings {..} = object
-    [ "enabled" .= cacheSettingsEnabled
-    , "max-size" .= cacheSettingsMaxSize
-    ]
-
 instance FromJSON AppSettings where
   parseJSON = withObject "AppSettings" $ \obj ->
     AppSettings
@@ -56,7 +38,6 @@ instance FromJSON AppSettings where
       <*> obj .: "migration-dir"
       <*> obj .: "static-dir"
       <*> obj .: "bcrypt-cost"
-      <*> obj .: "cache"
       <*> obj .: "force-ssl"
 
 instance ToJSON AppSettings where
@@ -66,7 +47,6 @@ instance ToJSON AppSettings where
     , "migration-dir" .= appMigrationDir
     , "static-dir" .= appStaticDir
     , "bcrypt-cost" .= appBcryptCost
-    , "cache" .= appCache
     , "force-ssl" .= appForceSsl
     ]
 
@@ -80,19 +60,11 @@ staticSettings = AppSettings
   , appMigrationDir = "server/mo-nomz/sql/migrations/"
   , appStaticDir = "client/web/build/"
   , appBcryptCost = 4
-  , appCache = CacheSettings
-    { cacheSettingsEnabled = False
-    , cacheSettingsMaxSize = 10000
-    }
   , appForceSsl = False
   }
 
 testSettings :: AppSettings
 testSettings = staticSettings
-  { appCache = (appCache staticSettings)
-      { cacheSettingsEnabled = True
-      }
-  }
 
 staticSettingsValue :: Value
 staticSettingsValue = toJSON staticSettings

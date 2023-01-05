@@ -7,7 +7,4 @@ database:
 migration-dir: "_env:MIGRATION_DIR:server/mo-nomz/sql/migrations/"
 static-dir: "_env:STATIC_DIR:client/web/build/"
 bcrypt-cost: "_env:BCRYPT_COST:4"
-cache:
-  enabled: "_env:CACHE_ENABLED:false"
-  max-size: "_env:CACHE_MAX_SIZE:10000"
 force-ssl: "_env:FORCE_SSL:true"

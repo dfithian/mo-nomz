@@ -9,7 +9,7 @@ import Network.HTTP.Client.TLS (newTlsManagerWith, tlsManagerSettings)
 import Network.HTTP.Types (hUserAgent)
 import Servant.Server (Handler(Handler), ServerError)
 
-import Settings (AppSettings, CacheSettings, appCache)
+import Settings (AppSettings)
 
 type AppM m = (MonadCatch m, MonadError ServerError m, MonadIO m, MonadLoggerIO m, MonadReader App m)
 
@@ -51,18 +51,6 @@ instance HasSettings App where
 
 instance HasSettings AppSettings where
   settings = id
-
-class HasCacheSettings a where
-  cacheSettings :: a -> CacheSettings
-
-instance HasCacheSettings App where
-  cacheSettings = cacheSettings . settings
-
-instance HasCacheSettings AppSettings where
-  cacheSettings = appCache
-
-instance HasCacheSettings CacheSettings where
-  cacheSettings = id
 
 logErrors :: (MonadCatch m, MonadLoggerIO m) => m a -> m a
 logErrors ma = do
