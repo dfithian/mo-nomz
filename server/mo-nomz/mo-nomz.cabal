@@ -58,7 +58,6 @@ library
       NomzPrelude
       Postgres.Orphans
       Scraper.Site
-      Serialize.Orphans
       Servant
       Server
       Settings
@@ -72,7 +71,6 @@ library
     , base
     , bytestring
     , case-insensitive
-    , cereal
     , chez-grater
     , containers
     , cryptonite
@@ -122,7 +120,6 @@ test-suite tests
   other-modules:
       ConversionSpec
       DatabaseSpec
-      ServerSpec
       SiteSpec
       TestEnv
       Paths_mo_nomz
@@ -131,7 +128,6 @@ test-suite tests
   build-depends:
       base
     , case-insensitive
-    , cereal
     , chez-grater
     , containers
     , http-client

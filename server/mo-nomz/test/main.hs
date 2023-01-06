@@ -1,13 +1,12 @@
 import NomzPrelude
 
 import System.Environment (lookupEnv)
-import Test.Hspec (before_, hspec)
+import Test.Hspec (hspec)
 
-import TestEnv (loadEnv, loadEnvNoDb, wipeDb)
+import TestEnv (loadEnv, loadEnvNoDb)
 
 import qualified ConversionSpec
 import qualified DatabaseSpec
-import qualified ServerSpec
 import qualified SiteSpec
 
 main :: IO ()
@@ -20,8 +19,7 @@ main = do
         SiteSpec.spec env
     _ -> do
       env <- loadEnv
-      hspec $ before_ (wipeDb env) $ do
-        ServerSpec.cacheSpec env
+      hspec $ do
         DatabaseSpec.spec env
         ConversionSpec.spec
         SiteSpec.spec env

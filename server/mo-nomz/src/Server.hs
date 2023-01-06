@@ -16,31 +16,21 @@ import API.Types
 import Auth (Authorization, generateToken, validateToken)
 import Chez.Grater.Parser (mkIngredients, parseRawIngredients)
 import Conversion (mkReadableIngredient, mkReadableStep)
-import Foundation (App(..), AppM, appLogFunc, cacheSettings, logErrors, settings, withDbConn)
+import Foundation (App(..), AppM, appLogFunc, logErrors, settings, withDbConn)
 import Paths_mo_nomz (version)
 import Scraper.Site (allScrapers)
-import Settings (AppSettings(..), CacheSettings(..))
+import Settings (AppSettings(..))
 import Types (OrderedIngredient(..), RecipeLink(..), ScrapedRecipe(..), UserId)
 import qualified Database
 
-scrapeUrlCached :: AppM m => RecipeLink -> m ScrapedRecipe
-scrapeUrlCached link = do
-  app <- ask
-  let CacheSettings {..} = cacheSettings app
-      manager = appManager app
-      scrape = do
+scrapeUrl :: AppM m => RecipeLink -> m ScrapedRecipe
+scrapeUrl link = do
+  App {..} <- ask
+  let scrape = do
         uri <- maybe (throwM err400 { errReasonPhrase = "Invalid link" }) pure $ parseURI (Text.unpack $ unRecipeLink link)
-        (name, ingredients, steps, meta) <- scrapeAndParseUrl allScrapers manager uri
+        (name, ingredients, steps, meta) <- scrapeAndParseUrl allScrapers appManager uri
         pure (ScrapedRecipe name ingredients steps, meta)
-  case cacheSettingsEnabled of
-    False -> fst <$> logErrors (liftIO scrape)
-    True -> unwrapDb $ withDbConn $ \c -> do
-      Database.selectCachedRecipe c link >>= \case
-        Just cached -> pure cached
-        Nothing -> do
-          (cached, meta) <- scrape
-          Database.repsertCachedRecipe c link cached meta
-          pure cached
+  fst <$> logErrors (liftIO scrape)
 
 unwrapDb :: AppM m => m (Either SomeException a) -> m a
 unwrapDb ma = ma >>= \case
@@ -58,7 +48,6 @@ getHealth = do
   unwrapDb $ withDbConn $ \c -> do
     Database.health c
     (day, week, month, year) <- Database.selectRecentUsers c
-    (cacheSize, mostRecent, leastRecent) <- Database.selectCacheStats c
     pure GetHealthResponse
       { getHealthResponseStatus = "OK"
       , getHealthResponseVersion = Text.pack (showVersion version)
@@ -68,9 +57,6 @@ getHealth = do
       , getHealthResponseUserWeek = week
       , getHealthResponseUserMonth = month
       , getHealthResponseUserYear = year
-      , getHealthResponseCacheSize = cacheSize
-      , getHealthResponseCacheMostRecent = mostRecent
-      , getHealthResponseCacheLeastRecent = leastRecent
       }
 
 postCreateUser :: AppM m => m UserCreateResponse
@@ -117,7 +103,7 @@ postParseBlob token userId ParseBlobRequest {..} = do
 postParseLink :: AppM m => Authorization -> UserId -> ParseLinkRequest -> m ParseLinkResponse
 postParseLink token userId ParseLinkRequest {..} = do
   validateUserToken token userId
-  ScrapedRecipe {..} <- scrapeUrlCached parseLinkRequestLink
+  ScrapedRecipe {..} <- scrapeUrl parseLinkRequestLink
   pure ParseLinkResponse
     { parseLinkResponseName = scrapedRecipeName
     , parseLinkResponseIngredients = mkReadableIngredient <$> zipWith OrderedIngredient scrapedRecipeIngredients [1..]

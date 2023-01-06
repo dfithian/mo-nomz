@@ -59,39 +59,6 @@ Non food related tags:
 - http://mynameisyeh.com/
 - http://www.sproutedkitchen.com/
 
-## Test plan
-
-* Export from service
-* Profile
-    * Contact support
-    * Support form
-    * Email directly
-* Grocery list
-    * Export
-        * To buy only
-    * Add
-        * Link
-        * Pasted with name and link
-        * Pasted
-    * Move to bought
-    * Move to to buy
-    * Edit
-    * Merge
-    * Delete
-    * Clear
-    * Reorder
-* Recipe list
-    * Move to saved
-    * Move to active
-    * Delete
-* Recipe
-    * Edit ingredient
-    * Merge ingredients
-    * Add ingredient
-    * Add notes
-    * Rating
-    * Go to link
-
 ## Keywords
 
 Name and subtitle: `recipe,organizer,simple,meals,groceries`

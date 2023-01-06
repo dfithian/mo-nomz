@@ -63,18 +63,6 @@ class Status extends React.Component {
                 <td>Users this year</td>
                 <td><b>{this.state.status.userYear}</b></td>
               </tr>
-              <tr>
-                <td>Cache size</td>
-                <td><b>{this.state.status.cacheSize}</b></td>
-              </tr>
-              <tr>
-                <td>Cache most recent</td>
-                <td><b>{dateFormatter(this.state.status.cacheMostRecent)}</b></td>
-              </tr>
-              <tr>
-                <td>Cache least recent</td>
-                <td><b>{dateFormatter(this.state.status.cacheLeastRecent)}</b></td>
-              </tr>
             </tbody>
           </table>
         </ContentRow>

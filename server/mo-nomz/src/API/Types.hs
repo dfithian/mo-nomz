@@ -12,17 +12,14 @@ import Auth (Authorization)
 import Types (RecipeLink, UserId)
 
 data GetHealthResponse = GetHealthResponse
-  { getHealthResponseStatus           :: Text
-  , getHealthResponseVersion          :: Text
-  , getHealthResponseStarted          :: UTCTime
-  , getHealthResponseFetched          :: UTCTime
-  , getHealthResponseUserDay          :: Int
-  , getHealthResponseUserWeek         :: Int
-  , getHealthResponseUserMonth        :: Int
-  , getHealthResponseUserYear         :: Int
-  , getHealthResponseCacheSize        :: Int
-  , getHealthResponseCacheMostRecent  :: Maybe UTCTime
-  , getHealthResponseCacheLeastRecent :: Maybe UTCTime
+  { getHealthResponseStatus    :: Text
+  , getHealthResponseVersion   :: Text
+  , getHealthResponseStarted   :: UTCTime
+  , getHealthResponseFetched   :: UTCTime
+  , getHealthResponseUserDay   :: Int
+  , getHealthResponseUserWeek  :: Int
+  , getHealthResponseUserMonth :: Int
+  , getHealthResponseUserYear  :: Int
   }
   deriving (Eq, Ord, Show)
 
