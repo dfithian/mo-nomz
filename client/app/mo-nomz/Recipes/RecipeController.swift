@@ -8,26 +8,12 @@
 import UIKit
 
 class RecipeController: UIViewController, RecipeFilterDelegate {
+    @IBOutlet weak var hamburger: UIButton!
     @IBOutlet weak var banner: UIView!
-    @IBOutlet weak var toolbar: Toolbar!
-    @IBOutlet weak var clear: UIButton!
-    @IBOutlet weak var export: UIButton!
-    @IBOutlet weak var options: UIButton!
-    @IBOutlet weak var add: UIButton!
     @IBOutlet weak var search: UISearchBar!
 
     var filterVc: RecipeFilterController? = nil
     var recipeVc: RecipeListController? = nil
-    
-    @IBAction func didTapClear(_ sender: Any?) {
-        if !Database.selectGroceries().isEmpty {
-            let handler = { (action: UIAlertAction) -> Void in
-                Database.clearAll()
-                self.reloadData()
-            }
-            promptForConfirmation(title: "Clear", message: "This will delete all groceries and deactivate all recipes. Do you want to continue?", handler: handler)
-        }
-    }
     
     @IBAction func didTapClearTags(_ sender: Any?) {
         filterVc?.clear()
@@ -44,6 +30,21 @@ class RecipeController: UIViewController, RecipeFilterDelegate {
         DispatchQueue.main.async {
             self.recipeVc?.tableView.reloadData()
         }
+    }
+    
+    private func setupHamburger() {
+        hamburger.showsMenuAsPrimaryAction = true
+        hamburger.menu = UIMenu(children: [
+            UIAction(title: "Clear List", image: UIImage(systemName: "archivebox"), attributes: .destructive, handler: { _ in
+                if !Database.selectGroceries().isEmpty {
+                    let handler = { (action: UIAlertAction) -> Void in
+                        Database.clearAll()
+                        self.reloadData()
+                    }
+                    self.promptForConfirmation(title: "Clear", message: "This will delete all groceries and deactivate all recipes. Do you want to continue?", handler: handler)
+                }
+            })
+        ])
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -68,14 +69,7 @@ class RecipeController: UIViewController, RecipeFilterDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         reloadData()
-        clear.frame = CGRect(x: clear.frame.minX, y: clear.frame.minY, width: clear.frame.width, height: toolbar.frame.height)
-        clear.alignTextUnderImage()
-        export.frame = CGRect(x: export.frame.minX, y: export.frame.minY, width: export.frame.width, height: toolbar.frame.height)
-        export.alignTextUnderImage()
-        options.frame = CGRect(x: options.frame.minX, y: options.frame.minY, width: options.frame.width, height: toolbar.frame.height)
-        options.alignTextUnderImage()
-        add.frame = CGRect(x: add.frame.minX, y: add.frame.minY, width: add.frame.width, height: toolbar.frame.height)
-        add.alignTextUnderImage()
+        setupHamburger()
         search.searchTextField.addDoneButtonOnKeyboard()
         search.searchTextField.font = UIFont.systemFont(ofSize: 14)
     }

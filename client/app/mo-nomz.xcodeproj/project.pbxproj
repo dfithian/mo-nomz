@@ -117,7 +117,6 @@
 		37E10342279AF6CA0064C193 /* Preferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
 		37E1034A279EE8FE0064C193 /* IngredientChangeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IngredientChangeController.swift; sourceTree = "<group>"; };
 		37E1034C279EEE9D0064C193 /* GroceryChangeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroceryChangeController.swift; sourceTree = "<group>"; };
-		37E1DC022631B00300330C5B /* mo-nomzDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "mo-nomzDebug.entitlements"; sourceTree = "<group>"; };
 		37E1DC1C2631B7C000330C5B /* UserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaults.swift; sourceTree = "<group>"; };
 		37E55B4C26F2CD2D00207FFE /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		37E55B4F26F2CD7E00207FFE /* Purchases.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Purchases.plist; sourceTree = "<group>"; };
@@ -201,7 +200,6 @@
 			isa = PBXGroup;
 			children = (
 				37EAACF726339C14006D9184 /* mo-nomzRelease.entitlements */,
-				37E1DC022631B00300330C5B /* mo-nomzDebug.entitlements */,
 				37E1033F2799CB7F0064C193 /* Add */,
 				37B979B326C36B96002B677F /* Recipe */,
 				379D479526264B05003DD2C6 /* Recipes */,
@@ -552,7 +550,7 @@
 				CODE_SIGN_ENTITLEMENTS = "mo-nomz/mo-nomzRelease.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_TEAM = 5A6Y383S44;
 				INFOPLIST_FILE = "mo-nomz/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
