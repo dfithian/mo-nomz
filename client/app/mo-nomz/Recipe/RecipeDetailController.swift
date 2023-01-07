@@ -7,9 +7,8 @@
 
 import UIKit
 
-class RecipeDetailController: UIViewController, UITextFieldDelegate, RecipeTagDelegate {
-    @IBOutlet weak var nameRead: UILabel!
-    @IBOutlet weak var nameWrite: UITextField!
+class RecipeDetailController: UIViewController, UITextViewDelegate, RecipeTagDelegate {
+    @IBOutlet weak var name: UITextView!
     @IBOutlet weak var star1: UIButton!
     @IBOutlet weak var star2: UIButton!
     @IBOutlet weak var star3: UIButton!
@@ -22,19 +21,9 @@ class RecipeDetailController: UIViewController, UITextFieldDelegate, RecipeTagDe
     var tagVc: RecipeDetailTagController? = nil
     var detailVc: RecipeDetailListController? = nil
     
-    @IBAction func didTapLabel(_ sender: UITapGestureRecognizer) {
-        nameWrite.becomeFirstResponder()
-        nameWrite.alpha = 1
-        nameRead.alpha = 0
-    }
-    
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        guard let r = recipe, let name = nameWrite.text else { return }
-        nameWrite.alpha = 0
-        nameWrite.resignFirstResponder()
-        nameRead.text = name
-        nameRead.alpha = 1
-        Database.updateRecipe(id: r.id, recipe: ReadableRecipe(name: name, link: r.recipe.link, active: r.recipe.active, rating: r.recipe.rating, notes: r.recipe.notes, ingredients: r.recipe.ingredients, steps: r.recipe.steps, tags: r.recipe.tags))
+    func textViewDidEndEditing(_ textView: UITextView) {
+        guard let r = recipe, let newName = name.text else { return }
+        Database.updateRecipe(id: r.id, recipe: ReadableRecipe(name: newName, link: r.recipe.link, active: r.recipe.active, rating: r.recipe.rating, notes: r.recipe.notes, ingredients: r.recipe.ingredients, steps: r.recipe.steps, tags: r.recipe.tags))
         onChange?()
     }
     
@@ -173,10 +162,9 @@ class RecipeDetailController: UIViewController, UITextFieldDelegate, RecipeTagDe
     }
     
     override func viewDidLoad() {
-        nameRead.text = recipe?.recipe.name
-        nameWrite.text = recipe?.recipe.name
+        name.text = recipe?.recipe.name
+        name.addDoneButtonOnKeyboard()
         didTapStar(which: recipe?.recipe.rating ?? 0)
-        nameWrite.addDoneButtonOnKeyboard()
         setupOptions()
         loadData()
     }

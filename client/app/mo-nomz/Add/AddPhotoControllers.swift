@@ -214,7 +214,7 @@ class PickPhotoController: UICollectionViewController, UICollectionViewDelegateF
     }
 }
 
-class ReviewPhotoController: SimpleController, UITextViewDelegate, UIContextMenuInteractionDelegate {
+class ReviewPhotoController: UIViewController, UITextViewDelegate, UIContextMenuInteractionDelegate {
     @IBOutlet weak var image: UIImageView!
     @IBOutlet weak var text: UITextView!
     

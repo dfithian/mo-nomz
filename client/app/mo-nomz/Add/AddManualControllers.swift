@@ -14,7 +14,7 @@ enum ManualChange {
 }
 
 class AddManualController: AddDetailController {
-    @IBOutlet weak var header: UITextView!
+    @IBOutlet weak var header: UILabel!
     @IBOutlet weak var helper: UIButton!
     @IBOutlet weak var noHelperConstraint: NSLayoutConstraint!
     @IBOutlet weak var helperConstraint: NSLayoutConstraint!
@@ -84,19 +84,19 @@ class AddManualController: AddDetailController {
         super.viewDidLoad()
         switch (change) {
         case .link(_, _, _, _):
-            header.text = "Review selections."
+            header.text = "Review selections"
             helper.removeFromSuperview()
             noHelperConstraint.isActive = true
             helperConstraint.isActive = false
             break
         case .photo(_, _):
-            header.text = "Review selections."
+            header.text = "Review selections"
             helper.removeFromSuperview()
             noHelperConstraint.isActive = true
             helperConstraint.isActive = false
             break
         case .add:
-            header.text = "Add ingredients or a recipe to your list."
+            header.text = "Add groceries or recipe"
             helper.menu = switcherMenu()
             break
         }
@@ -137,6 +137,7 @@ class AddManualTableController: UITableViewController, UITextFieldDelegate, UITe
     
     @objc func didTapIsActive(_ sender: Any?) {
         let b = sender as! UIButton
+        guard isRecipe else { return }
         if isActive {
             isActive = false
             b.setImage(UIImage(systemName: "square"), for: .normal)

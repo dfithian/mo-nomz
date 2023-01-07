@@ -13,7 +13,7 @@ enum IngredientChange {
     case merge(ReadableIngredientWithId, ReadableIngredientWithId)
 }
 
-class IngredientChangeController: SimpleController, UIPickerViewDataSource, UIPickerViewDelegate {
+class IngredientChangeController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate {
     var recipe: ReadableRecipeWithId? = nil
     var change: IngredientChange? = nil
     var onChange: (() -> Void)? = nil
@@ -21,7 +21,6 @@ class IngredientChangeController: SimpleController, UIPickerViewDataSource, UIPi
     var currentFractionQuantity: ReadableFraction? = nil
     
     @IBOutlet weak var heading: UILabel!
-    @IBOutlet weak var synopsis: UILabel!
     @IBOutlet weak var quantity: UIPickerView!
     @IBOutlet weak var unit: UITextField!
     @IBOutlet weak var name: UITextField!
@@ -84,8 +83,7 @@ class IngredientChangeController: SimpleController, UIPickerViewDataSource, UIPi
         super.viewDidLoad()
         switch change {
         case .merge(let existing, let new):
-            heading.text = "Merge"
-            synopsis.text = "Merge ingredients"
+            heading.text = "Merge ingredients"
             existingInfo.text = existing.ingredient.render()
             newInfo.text = new.ingredient.render()
             unit.text = existing.ingredient.unit
@@ -97,8 +95,7 @@ class IngredientChangeController: SimpleController, UIPickerViewDataSource, UIPi
             quantity.selectRow(q.fraction?.toInt() ?? 0, inComponent: 1, animated: true)
             break
         case .edit(let existing):
-            heading.text = "Edit"
-            synopsis.text = "Edit ingredients"
+            heading.text = "Edit ingredient"
             existingInfo.text = existing.ingredient.render()
             newInfo.alpha = 0
             unit.text = existing.ingredient.unit
@@ -109,8 +106,7 @@ class IngredientChangeController: SimpleController, UIPickerViewDataSource, UIPi
             quantity.selectRow(existing.ingredient.quantity.fraction?.toInt() ?? 0, inComponent: 1, animated: true)
             break
         case .add(_):
-            heading.text = "Add"
-            synopsis.text = "Add ingredients"
+            heading.text = "Add ingredient"
             existingInfo.alpha = 0
             newInfo.alpha = 0
             currentWholeQuantity = 1

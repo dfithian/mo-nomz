@@ -93,7 +93,7 @@ class AddController: UINavigationController, UINavigationControllerDelegate {
     }
 }
 
-class AddDetailController: SimpleController {
+class AddDetailController: UIViewController {
     var navigationVc: AddController? = nil
     
     func addType() -> AddType {

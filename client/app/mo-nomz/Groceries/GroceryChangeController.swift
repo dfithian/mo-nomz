@@ -12,14 +12,13 @@ enum GroceryChange {
     case merge(ReadableGroceryItemWithId, ReadableGroceryItemWithId)
 }
 
-class GroceryChangeController: SimpleController, UIPickerViewDataSource, UIPickerViewDelegate {
+class GroceryChangeController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate {
     var change: GroceryChange? = nil
     var onChange: (() -> Void)? = nil
     var currentWholeQuantity: Int? = nil
     var currentFractionQuantity: ReadableFraction? = nil
     
     @IBOutlet weak var heading: UILabel!
-    @IBOutlet weak var synopsis: UILabel!
     @IBOutlet weak var quantity: UIPickerView!
     @IBOutlet weak var unit: UITextField!
     @IBOutlet weak var name: UITextField!
@@ -83,8 +82,7 @@ class GroceryChangeController: SimpleController, UIPickerViewDataSource, UIPicke
         super.viewDidLoad()
         switch change {
         case .merge(let existing, let new):
-            heading.text = "Merge"
-            synopsis.text = "Merge ingredients"
+            heading.text = "Merge ingredients"
             existingInfo.text = existing.item.render()
             newInfo.text = new.item.render()
             unit.text = existing.item.unit
@@ -96,8 +94,7 @@ class GroceryChangeController: SimpleController, UIPickerViewDataSource, UIPicke
             quantity.selectRow(q.fraction?.toInt() ?? 0, inComponent: 1, animated: true)
             break
         case .edit(let existing):
-            heading.text = "Edit"
-            synopsis.text = "Edit ingredients"
+            heading.text = "Edit ingredient"
             existingInfo.text = existing.item.render()
             newInfo.alpha = 0
             unit.text = existing.item.unit

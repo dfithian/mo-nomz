@@ -64,7 +64,7 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
     }
     
     private func editStep(_ indexPath: IndexPath) {
-        let cell = tableView.cellForRow(at: indexPath) as! LabelText
+        let cell = tableView.cellForRow(at: indexPath) as! OneText
         cell.text_.becomeFirstResponder()
     }
     
@@ -74,7 +74,7 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
             Database.updateRecipe(id: r.id, recipe: ReadableRecipe(name: r.recipe.name, link: r.recipe.link, active: r.recipe.active, rating: r.recipe.rating, notes: textView.text ?? r.recipe.notes, ingredients: r.recipe.ingredients, steps: r.recipe.steps, tags: r.recipe.tags))
         } else {
             let step = steps[textView.tag]
-            let cell = tableView.cellForRow(at: IndexPath(row: textView.tag, section: STEP_LIST)) as! LabelText
+            let cell = tableView.cellForRow(at: IndexPath(row: textView.tag, section: STEP_LIST)) as! OneText
             if let newStep = cell.text_.text?.trimmingCharacters(in: .whitespacesAndNewlines).nonEmpty() {
                 let new = StepWithId(id: step.id, step: Step(step: newStep, order: step.step.order))
                 Database.updateRecipeStep(recipeId: r.id, step: new)
@@ -136,8 +136,7 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
             cell.label.text = "Steps"
             return cell
         case STEP_LIST:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "stepItem") as! LabelText
-            cell.label.text = String(indexPath.row + 1)
+            let cell = tableView.dequeueReusableCell(withIdentifier: "stepItem") as! OneText
             cell.text_.text = steps[indexPath.row].step.step
             cell.text_.tag = indexPath.row
             cell.text_.addDoneButtonOnKeyboard()
