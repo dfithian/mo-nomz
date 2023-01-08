@@ -59,14 +59,14 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		37E1DBDD262FA1CE00330C5B /* Embed App Extensions */ = {
+		37E1DBDD262FA1CE00330C5B /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
 			);
-			name = "Embed App Extensions";
+			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -310,7 +310,7 @@
 				376095B8262125C00015B6F0 /* Sources */,
 				376095B9262125C00015B6F0 /* Frameworks */,
 				376095BA262125C00015B6F0 /* Resources */,
-				37E1DBDD262FA1CE00330C5B /* Embed App Extensions */,
+				37E1DBDD262FA1CE00330C5B /* Embed Foundation Extensions */,
 				ED9B4B628CAA4687CB682315 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
@@ -329,7 +329,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1240;
-				LastUpgradeCheck = 1240;
+				LastUpgradeCheck = 1420;
 				TargetAttributes = {
 					376095BB262125C00015B6F0 = {
 						CreatedOnToolsVersion = 12.4;
@@ -546,7 +546,7 @@
 				CODE_SIGN_ENTITLEMENTS = "mo-nomz/mo-nomzRelease.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 10;
+				CURRENT_PROJECT_VERSION = 11;
 				DEVELOPMENT_TEAM = 5A6Y383S44;
 				INFOPLIST_FILE = "mo-nomz/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (

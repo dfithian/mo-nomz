@@ -180,20 +180,20 @@
                                 </connections>
                             </tableViewCell>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="purchase" id="Bsq-lS-lek" customClass="LabelButton" customModule="mo_nomz" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="224" width="414" height="48.5"/>
+                                <rect key="frame" x="0.0" y="224" width="414" height="47.5"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Bsq-lS-lek" id="PSr-fR-QYK">
-                                    <rect key="frame" x="0.0" y="0.0" width="414" height="48.5"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="414" height="47.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ocR-qg-Vsp">
-                                            <rect key="frame" x="20" y="13.5" width="347" height="22"/>
+                                            <rect key="frame" x="20" y="13.5" width="347" height="21"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3H3-YY-OAH">
-                                            <rect key="frame" x="375" y="13.5" width="19" height="22"/>
+                                            <rect key="frame" x="375" y="13" width="19" height="22"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="22" id="REX-dG-QHU"/>
                                                 <constraint firstAttribute="width" constant="19" id="fce-Ko-5sg"/>
@@ -217,14 +217,14 @@
                                 </connections>
                             </tableViewCell>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="preference" id="jyj-wR-DeK" customClass="LabelSwitch" customModule="mo_nomz" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="272.5" width="414" height="47.5"/>
+                                <rect key="frame" x="0.0" y="271.5" width="414" height="48"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="jyj-wR-DeK" id="McP-MK-f2o">
-                                    <rect key="frame" x="0.0" y="0.0" width="414" height="47.5"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="414" height="48"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HEl-7T-tjP">
-                                            <rect key="frame" x="20" y="13.5" width="317" height="21"/>
+                                            <rect key="frame" x="20" y="13.5" width="317" height="21.5"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
@@ -343,7 +343,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="IHH-9s-qeU">
-                                <rect key="frame" x="330" y="73.5" width="23" height="21"/>
+                                <rect key="frame" x="330.5" y="73.5" width="23" height="21"/>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                 <state key="normal" image="plus" catalog="system"/>
                                 <connections>
@@ -351,10 +351,10 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ulj-dT-cLa">
-                                <rect key="frame" x="373" y="73" width="21" height="22"/>
+                                <rect key="frame" x="373.5" y="73" width="20.5" height="22"/>
                                 <color key="tintColor" systemColor="systemRedColor"/>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                <state key="normal" image="archivebox" catalog="system"/>
+                                <state key="normal" image="arrow.3.trianglepath" catalog="system"/>
                                 <connections>
                                     <action selector="didTapClear:" destination="YMV-r0-X4W" eventType="touchUpInside" id="R2Z-yS-6OB"/>
                                 </connections>
@@ -430,7 +430,7 @@
                                 <state key="normal" image="ellipsis" catalog="system"/>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kfQ-SK-sbN">
-                                <rect key="frame" x="286" y="73.5" width="23" height="21"/>
+                                <rect key="frame" x="286.5" y="73.5" width="23" height="21"/>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                 <state key="normal" image="plus" catalog="system"/>
                                 <connections>
@@ -438,10 +438,10 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KtW-aX-cMF">
-                                <rect key="frame" x="329" y="73" width="21" height="22"/>
+                                <rect key="frame" x="329.5" y="73" width="20.5" height="22"/>
                                 <color key="tintColor" systemColor="systemRedColor"/>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                <state key="normal" image="archivebox" catalog="system"/>
+                                <state key="normal" image="arrow.3.trianglepath" catalog="system"/>
                                 <connections>
                                     <action selector="didTapClear:" destination="6IF-YC-SCE" eventType="touchUpInside" id="qya-n0-42m"/>
                                 </connections>
@@ -611,20 +611,20 @@
                                 </connections>
                             </tableViewCell>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="toBuyListItem" id="DEN-dL-TUT" customClass="LabelButton" customModule="mo_nomz" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="180.5" width="414" height="48.5"/>
+                                <rect key="frame" x="0.0" y="180.5" width="414" height="47.5"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="DEN-dL-TUT" id="xKe-Y1-9J0">
-                                    <rect key="frame" x="0.0" y="0.0" width="414" height="48.5"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="414" height="47.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="L4U-h1-qis">
-                                            <rect key="frame" x="58" y="13.5" width="336" height="22"/>
+                                            <rect key="frame" x="58" y="13.5" width="336" height="21"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DpR-JW-DVO">
-                                            <rect key="frame" x="10" y="4.5" width="40" height="40"/>
+                                            <rect key="frame" x="10" y="4" width="40" height="40"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="40" id="MfZ-bl-mNe"/>
                                                 <constraint firstAttribute="width" constant="40" id="ymt-nP-TsI"/>
@@ -648,14 +648,14 @@
                                 </connections>
                             </tableViewCell>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="boughtListItem" id="TSw-Hc-Wa2" customClass="LabelButton" customModule="mo_nomz" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="229" width="414" height="47.5"/>
+                                <rect key="frame" x="0.0" y="228" width="414" height="48"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="TSw-Hc-Wa2" id="8Gj-St-3KK">
-                                    <rect key="frame" x="0.0" y="0.0" width="414" height="47.5"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="414" height="48"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" enabled="NO" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ta1-MQ-6f9">
-                                            <rect key="frame" x="58" y="13.5" width="336" height="21"/>
+                                            <rect key="frame" x="58" y="13.5" width="336" height="21.5"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
@@ -1286,14 +1286,14 @@
                                 </connections>
                             </tableViewCell>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="stepItem" id="JKa-sw-ldL" customClass="OneText" customModule="mo_nomz" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="97.5" width="414" height="38"/>
+                                <rect key="frame" x="0.0" y="97.5" width="414" height="37"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="JKa-sw-ldL" id="dDH-Ha-CLV">
-                                    <rect key="frame" x="0.0" y="0.0" width="414" height="38"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="414" height="37"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="iLd-yg-uTU">
-                                            <rect key="frame" x="20" y="0.0" width="374" height="38"/>
+                                            <rect key="frame" x="20" y="0.0" width="374" height="37"/>
                                             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                             <color key="textColor" systemColor="labelColor"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
@@ -1313,7 +1313,7 @@
                                 </connections>
                             </tableViewCell>
                             <tableViewCell clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="sectionHeader" id="wWk-Vn-qE8" customClass="OneLabel" customModule="mo_nomz" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="135.5" width="414" height="43.5"/>
+                                <rect key="frame" x="0.0" y="134.5" width="414" height="43.5"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="wWk-Vn-qE8" id="9ks-Vz-Paf">
                                     <rect key="frame" x="0.0" y="0.0" width="414" height="43.5"/>
@@ -1338,7 +1338,7 @@
                                 </connections>
                             </tableViewCell>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="noteItem" rowHeight="176" id="Nxf-Nq-76a" customClass="OneText" customModule="mo_nomz" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="179" width="414" height="176"/>
+                                <rect key="frame" x="0.0" y="178" width="414" height="176"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Nxf-Nq-76a" id="80x-dg-vd7">
                                     <rect key="frame" x="0.0" y="0.0" width="414" height="176"/>
@@ -1367,7 +1367,7 @@
                                 </connections>
                             </tableViewCell>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="addItem" id="8Qf-CW-RIU" customClass="OneButton" customModule="mo_nomz" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="355" width="414" height="43.5"/>
+                                <rect key="frame" x="0.0" y="354" width="414" height="43.5"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="8Qf-CW-RIU" id="udR-xr-Oo4">
                                     <rect key="frame" x="0.0" y="0.0" width="414" height="43.5"/>
@@ -1553,7 +1553,7 @@
         <segue reference="w9r-p2-QGm"/>
     </inferredMetricsTieBreakers>
     <resources>
-        <image name="archivebox" catalog="system" width="128" height="107"/>
+        <image name="arrow.3.trianglepath" catalog="system" width="128" height="123"/>
         <image name="cart" catalog="system" width="128" height="102"/>
         <image name="checkmark" catalog="system" width="128" height="114"/>
         <image name="chevron.forward.circle.fill" catalog="system" width="128" height="123"/>
