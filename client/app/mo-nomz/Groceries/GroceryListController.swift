@@ -596,7 +596,7 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let defaultHeadingHeight = 44.5
-        let groupHeadingHeight = 32.0
+        let groupHeadingHeight = 36.0
         switch indexPath.section {
         case TO_BUY:
             switch toBuy.getItem(indexPath.row) {

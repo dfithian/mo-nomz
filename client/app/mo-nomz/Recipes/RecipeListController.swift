@@ -16,21 +16,19 @@ class RecipeListController: UITableViewController, UISearchBarDelegate {
     var saved: [ReadableRecipeWithId] = []
     var onChange: (() -> Void)?
     
-    let EMPTY = 0
-    let ACTIVE = 1
-    let SAVED = 2
+    let ACTIVE = 0
+    let SAVED = 1
     
     private func hasData() -> Bool {
         return allRecipes.count > 0
     }
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 3
+        return 2
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
-        case EMPTY: return hasData() ? 0 : 1
         case ACTIVE: return active.count
         case SAVED: return saved.count
         default: return 0
@@ -99,9 +97,6 @@ class RecipeListController: UITableViewController, UISearchBarDelegate {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch indexPath.section {
-        case EMPTY:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "emptyItem")!
-            return cell
         case ACTIVE:
             let recipe = active[indexPath.row].recipe
             let cell = tableView.dequeueReusableCell(withIdentifier: "recipeListItem") as! TwoLabelOneButton

@@ -21,21 +21,12 @@ class GroceryController: UIViewController {
     private func setupHamburger() {
         hamburger.showsMenuAsPrimaryAction = true
         hamburger.menu = UIMenu(options: .displayInline, children: [
-            UIAction(title: "Share Groceries", image: UIImage(systemName: "square.and.arrow.up"), handler: { _ in
+            UIAction(title: "Share groceries", image: UIImage(systemName: "square.and.arrow.up"), handler: { _ in
                 let items = Database.selectGroceries().filter({ $0.item.active })
                 if !items.isEmpty {
                     let exportText: String = items.map({ $0.item.render() }).joined(separator: "\n")
                     let vc = UIActivityViewController(activityItems: [exportText], applicationActivities: nil)
                     self.present(vc, animated: true, completion: nil)
-                }
-            }),
-            UIAction(title: "Clear List", image: UIImage(systemName: "archivebox"), attributes: .destructive, handler: { _ in
-                if !Database.selectGroceries().isEmpty {
-                    let handler = { (action: UIAlertAction) -> Void in
-                        Database.clearAll()
-                        self.reloadData()
-                    }
-                    self.promptForConfirmation(title: "Clear", message: "This will delete all groceries and deactivate all recipes. Do you want to continue?", handler: handler)
                 }
             }),
             UIMenu(options: .displayInline, children: [
@@ -48,6 +39,16 @@ class GroceryController: UIViewController {
                 })
             ])
         ])
+    }
+    
+    @IBAction func didTapClear(_ sender: Any?) {
+        if !Database.selectGroceries().isEmpty {
+            let handler = { (action: UIAlertAction) -> Void in
+                Database.clearAll()
+                self.reloadData()
+            }
+            self.promptForConfirmation(title: "Clear", message: "This will delete all groceries and deactivate all recipes. Do you want to continue?", handler: handler)
+        }
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

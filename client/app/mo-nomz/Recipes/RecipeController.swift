@@ -8,7 +8,6 @@
 import UIKit
 
 class RecipeController: UIViewController, RecipeFilterDelegate {
-    @IBOutlet weak var hamburger: UIButton!
     @IBOutlet weak var banner: UIView!
     @IBOutlet weak var search: UISearchBar!
 
@@ -32,19 +31,14 @@ class RecipeController: UIViewController, RecipeFilterDelegate {
         }
     }
     
-    private func setupHamburger() {
-        hamburger.showsMenuAsPrimaryAction = true
-        hamburger.menu = UIMenu(children: [
-            UIAction(title: "Clear List", image: UIImage(systemName: "archivebox"), attributes: .destructive, handler: { _ in
-                if !Database.selectGroceries().isEmpty {
-                    let handler = { (action: UIAlertAction) -> Void in
-                        Database.clearAll()
-                        self.reloadData()
-                    }
-                    self.promptForConfirmation(title: "Clear", message: "This will delete all groceries and deactivate all recipes. Do you want to continue?", handler: handler)
-                }
-            })
-        ])
+    @IBAction func didTapClear(_ sender: Any?) {
+        if !Database.selectGroceries().isEmpty {
+            let handler = { (action: UIAlertAction) -> Void in
+                Database.clearAll()
+                self.reloadData()
+            }
+            self.promptForConfirmation(title: "Clear", message: "This will delete all groceries and deactivate all recipes. Do you want to continue?", handler: handler)
+        }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -69,7 +63,6 @@ class RecipeController: UIViewController, RecipeFilterDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         reloadData()
-        setupHamburger()
         search.searchTextField.addDoneButtonOnKeyboard()
         search.searchTextField.font = UIFont.systemFont(ofSize: 14)
     }
