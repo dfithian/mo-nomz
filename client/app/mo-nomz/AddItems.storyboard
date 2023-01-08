@@ -112,7 +112,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="pAp-0s-hMR">
-                                <rect key="frame" x="0.0" y="813" width="414" height="49"/>
+                                <rect key="frame" x="0.0" y="818" width="414" height="44"/>
                                 <items>
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="0Ux-m3-Orn"/>
                                     <barButtonItem image="chevron.right" catalog="system" id="YUZ-oc-mdd">
@@ -123,7 +123,7 @@
                                 </items>
                             </toolbar>
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="CzB-9K-qHO">
-                                <rect key="frame" x="10" y="172.5" width="394" height="640.5"/>
+                                <rect key="frame" x="10" y="172.5" width="394" height="645.5"/>
                                 <connections>
                                     <segue destination="8yY-5H-YJI" kind="embed" identifier="embedPhotos" id="ehc-Y1-27H"/>
                                 </connections>
@@ -205,7 +205,7 @@
                                 <rect key="frame" x="20" y="187" width="374" height="587"/>
                                 <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
                                 <color key="textColor" systemColor="labelColor"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                                 <connections>
                                     <outlet property="delegate" destination="fSD-ow-YI0" id="5RO-pq-rKU"/>
@@ -252,7 +252,7 @@
             <objects>
                 <collectionViewController id="8yY-5H-YJI" customClass="PickPhotoController" customModule="mo_nomz" customModuleProvider="target" sceneMemberID="viewController">
                     <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="8rq-R0-7sO">
-                        <rect key="frame" x="0.0" y="0.0" width="394" height="640.5"/>
+                        <rect key="frame" x="0.0" y="0.0" width="394" height="645.5"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="Iud-4F-t3z">
@@ -292,7 +292,7 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="i3k-Cp-Yw7">
-                                            <rect key="frame" x="53" y="53.5" width="22.5" height="21.5"/>
+                                            <rect key="frame" x="52.5" y="53.5" width="23" height="21"/>
                                             <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                             <state key="normal" image="plus" catalog="system"/>
                                         </button>
@@ -313,7 +313,7 @@
                             <autoresizingMask key="autoresizingMask"/>
                             <subviews>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="a6s-Lv-pb0">
-                                    <rect key="frame" x="8" y="15" width="41.5" height="20.5"/>
+                                    <rect key="frame" x="8" y="14.5" width="41.5" height="21"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                     <nil key="textColor"/>
                                     <nil key="highlightedColor"/>
