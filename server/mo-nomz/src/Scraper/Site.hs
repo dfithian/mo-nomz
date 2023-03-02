@@ -29,7 +29,6 @@ ingredientScrapers = HashMap.fromList
   , ("rachlmansfield.com", tastyI2)
   , ("cookieandkate.com", tastyI1)
   , ("eatyourselfskinny.com", tastyI1)
-  , ("lexiscleankitchen.com", tastyI2)
   , ("sallysbakingaddiction.com", tastyI2)
   , ("gimmesomeoven.com", tastyI2)
   , ("pinchofyum.com", tastyI2)
@@ -39,6 +38,7 @@ ingredientScrapers = HashMap.fromList
 
   , ("foodnetwork.com", foodNetworkI)
 
+  , ("lexiscleankitchen.com", wprmI)
   , ("cafedelites.com", wprmI)
   , ("budgetbytes.com", wprmI)
   , ("daringgourmet.com", wprmI)
@@ -135,7 +135,6 @@ stepScrapers = HashMap.fromList
   , ("rachlmansfield.com", tastyS1)
   , ("cookieandkate.com", tastyS1)
   , ("eatyourselfskinny.com", tastyS1)
-  , ("lexiscleankitchen.com", tastyS1)
   , ("naturallyella.com", tastyS1)
   , ("sallysbakingaddiction.com", tastyS2)
   , ("gimmesomeoven.com", tastyS2)
@@ -146,6 +145,7 @@ stepScrapers = HashMap.fromList
 
   , ("foodnetwork.com", foodNetworkS)
 
+  , ("lexiscleankitchen.com", wprmS)
   , ("cafedelites.com", wprmS)
   , ("budgetbytes.com", wprmS)
   , ("daringgourmet.com", wprmS)
