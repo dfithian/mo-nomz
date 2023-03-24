@@ -8,6 +8,14 @@
 import UIKit
 
 extension UIViewController {
+    func toast(title: String, message: String?) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.view.alpha = 0.6
+        alert.view.layer.cornerRadius = 5
+        self.present(alert, animated: true)
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5, execute: { alert.dismiss(animated: true) })
+    }
+
     func buyPrompt(title: String, message: String, price: String, handler: @escaping ((UIAlertAction) -> Void)) {
         let ok = UIAlertAction(title: "Buy for \(price)", style: .default, handler: handler)
         let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)

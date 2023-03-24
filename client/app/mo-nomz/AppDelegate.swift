@@ -48,4 +48,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, shouldRestoreSecureApplicationState coder: NSCoder) -> Bool {
         return true
     }
+    
+    func applicationWillResignActive(_ application: UIApplication) {
+        UIApplication.shared.isIdleTimerDisabled = false
+    }
 }

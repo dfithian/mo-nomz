@@ -15,16 +15,34 @@ class RecipeDetailController: UIViewController, UITextViewDelegate, RecipeTagDel
     @IBOutlet weak var star4: UIButton!
     @IBOutlet weak var star5: UIButton!
     @IBOutlet weak var options: UIButton!
+    @IBOutlet weak var cookMode: UIButton!
     
     var recipe: ReadableRecipeWithId? = nil
     var onChange: (() -> Void)? = nil
     var tagVc: RecipeDetailTagController? = nil
     var detailVc: RecipeDetailListController? = nil
+    var inCookMode: Bool = false
     
     func textViewDidEndEditing(_ textView: UITextView) {
         guard let r = recipe, let newName = name.text else { return }
         Database.updateRecipe(id: r.id, recipe: ReadableRecipe(name: newName, link: r.recipe.link, active: r.recipe.active, rating: r.recipe.rating, notes: r.recipe.notes, ingredients: r.recipe.ingredients, steps: r.recipe.steps, tags: r.recipe.tags))
         onChange?()
+    }
+    
+    @IBAction func didTapCookMode(_ sender: Any?) {
+        if inCookMode {
+            inCookMode = false
+            cookMode.setImage(UIImage(systemName: "cooktop"), for: .normal)
+            cookMode.setTitle("Off", for: .normal)
+            UIApplication.shared.isIdleTimerDisabled = false
+            self.toast(title: "Cook Mode Off", message: nil)
+        } else {
+            inCookMode = true
+            cookMode.setImage(UIImage(systemName: "cooktop.fill"), for: .normal)
+            cookMode.setTitle("On", for: .normal)
+            UIApplication.shared.isIdleTimerDisabled = true
+            self.toast(title: "Cook Mode On", message: nil)
+        }
     }
     
     private func didTapStar(which: Int) {
@@ -161,9 +179,14 @@ class RecipeDetailController: UIViewController, UITextViewDelegate, RecipeTagDel
         }
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        UIApplication.shared.isIdleTimerDisabled = false
+    }
+    
     override func viewDidLoad() {
         name.text = recipe?.recipe.name
         name.addDoneButtonOnKeyboard()
+        UIApplication.shared.isIdleTimerDisabled = false
         didTapStar(which: recipe?.recipe.rating ?? 0)
         setupOptions()
         loadData()
