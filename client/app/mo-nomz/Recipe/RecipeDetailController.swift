@@ -120,6 +120,7 @@ class RecipeDetailController: UIViewController, UITextViewDelegate, RecipeTagDel
     
     private func export(_ str: String) {
         let vc = UIActivityViewController(activityItems: [str], applicationActivities: nil)
+        vc.popoverPresentationController?.sourceView = self.options.imageView
         present(vc, animated: true, completion: nil)
     }
     
