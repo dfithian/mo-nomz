@@ -22,14 +22,6 @@ class AddManualController: AddDetailController {
     var change: ManualChange = .add
     var manualVc: AddManualTableController? = nil
     
-    override func addType() -> AddType {
-        switch (change) {
-        case .add: return .manual
-        case .link(_, _, _, _): return .link
-        case .photo(_, _): return .photo
-        }
-    }
-    
     @IBAction func didTapSubmit(_ sender: Any?) {
         let recipeCompletion = { (recipe: ReadableRecipeWithId) in
             DispatchQueue.main.async {
@@ -97,7 +89,6 @@ class AddManualController: AddDetailController {
             break
         case .add:
             header.text = "Add groceries or recipe"
-            helper.menu = switcherMenu()
             break
         }
     }

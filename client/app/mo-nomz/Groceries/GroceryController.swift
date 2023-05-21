@@ -9,6 +9,7 @@ import GoogleMobileAds
 import UIKit
 
 class GroceryController: UIViewController {
+    @IBOutlet weak var add: UIButton!
     @IBOutlet weak var hamburger: UIButton!
     @IBOutlet weak var banner: UIView!
 
@@ -16,6 +17,21 @@ class GroceryController: UIViewController {
 
     func reloadData() {
         groceryVc?.reloadData()
+    }
+    
+    private func setupAdd() {
+        add.showsMenuAsPrimaryAction = true
+        add.menu = UIMenu(options: .displayInline, children: [
+            UIAction(title: "Add recipe link", image: UIImage(systemName: "link"), handler: { _ in
+                self.performSegue(withIdentifier: "addLink", sender: nil)
+            }),
+            UIAction(title: "Add manually", image: UIImage(systemName: "pencil"), handler: { _ in
+                self.performSegue(withIdentifier: "addManual", sender: nil)
+            }),
+            UIAction(title: "Add recipe photos", image: UIImage(systemName: "photo"), handler: { _ in
+                self.performSegue(withIdentifier: "addPhoto", sender: nil)
+            })
+        ])
     }
     
     private func setupHamburger() {
@@ -52,7 +68,13 @@ class GroceryController: UIViewController {
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let vc = segue.destination as? AddController, segue.identifier == "addGroceries" {
+        if let vc = segue.destination as? AddController, segue.identifier == "addLink" {
+            vc.onChange = reloadData
+        }
+        if let vc = segue.destination as? AddController, segue.identifier == "addManual" {
+            vc.onChange = reloadData
+        }
+        if let vc = segue.destination as? AddController, segue.identifier == "addPhoto" {
             vc.onChange = reloadData
         }
         if let vc = segue.destination as? GroceryListController, segue.identifier == "embedGroceryItems" {
@@ -66,6 +88,7 @@ class GroceryController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         reloadData()
+        setupAdd()
         setupHamburger()
     }
 }

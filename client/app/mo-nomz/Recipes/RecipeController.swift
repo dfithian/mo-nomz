@@ -8,6 +8,7 @@
 import UIKit
 
 class RecipeController: UIViewController, RecipeFilterDelegate {
+    @IBOutlet weak var add: UIButton!
     @IBOutlet weak var banner: UIView!
     @IBOutlet weak var search: UISearchBar!
 
@@ -21,6 +22,21 @@ class RecipeController: UIViewController, RecipeFilterDelegate {
     func reloadData() {
         recipeVc?.reloadData()
         filterVc?.reloadData()
+    }
+    
+    private func setupAdd() {
+        add.showsMenuAsPrimaryAction = true
+        add.menu = UIMenu(options: .displayInline, children: [
+            UIAction(title: "Add recipe link", image: UIImage(systemName: "link"), handler: { _ in
+                self.performSegue(withIdentifier: "addLink", sender: nil)
+            }),
+            UIAction(title: "Add manually", image: UIImage(systemName: "pencil"), handler: { _ in
+                self.performSegue(withIdentifier: "addManual", sender: nil)
+            }),
+            UIAction(title: "Add recipe photos", image: UIImage(systemName: "photo"), handler: { _ in
+                self.performSegue(withIdentifier: "addPhoto", sender: nil)
+            })
+        ])
     }
 
     func updateSelectedTag(tag: String?) {
@@ -63,6 +79,7 @@ class RecipeController: UIViewController, RecipeFilterDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         reloadData()
+        setupAdd()
         search.searchTextField.addDoneButtonOnKeyboard()
         search.searchTextField.font = UIFont.systemFont(ofSize: 14)
     }

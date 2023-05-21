@@ -18,10 +18,6 @@ class AddPhotoController: AddDetailController {
     var current: ScrapeImageInfo? = nil
     var pickVc: PickPhotoController? = nil
     
-    override func addType() -> AddType {
-        return .photo
-    }
-    
     @IBAction func didTapSubmit(_ sender: Any?) {
         performSegue(withIdentifier: "pushManualRecipe", sender: nil)
     }
@@ -40,11 +36,6 @@ class AddPhotoController: AddDetailController {
             vc.addVc = self
             vc.scrapeInfo = current
         }
-    }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        helper.menu = switcherMenu()
     }
 }
 

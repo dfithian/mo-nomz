@@ -9,13 +9,8 @@ import UIKit
 
 class AddLinkController: AddDetailController {
     @IBOutlet weak var link: UITextField!
-    @IBOutlet weak var helper: UIButton!
 
     var response: ParseLinkResponse? = nil
-    
-    override func addType() -> AddType {
-        return .link
-    }
     
     @IBAction func didTapSubmit(_ sender: Any?) {
         if let text = link.text?.nonEmpty() {
@@ -39,6 +34,5 @@ class AddLinkController: AddDetailController {
     override func viewDidLoad() {
         super.viewDidLoad()
         link.addDoneButtonOnKeyboard()
-        helper.menu = switcherMenu()
     }
 }

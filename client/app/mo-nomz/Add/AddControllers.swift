@@ -95,19 +95,4 @@ class AddController: UINavigationController, UINavigationControllerDelegate {
 
 class AddDetailController: UIViewController {
     var navigationVc: AddController? = nil
-    
-    func addType() -> AddType {
-        preconditionFailure("Must override addType()")
-    }
-    
-    func switcherMenu() -> UIMenu {
-        let f = { (type: AddType) -> UIMenuElement.State in
-            self.addType() == type ? .on : .off
-        }
-        return UIMenu(options: .displayInline, children: [
-            UIAction(title: AddType.link.title, image: UIImage(systemName: AddType.link.imageName), state: f(.link), handler: { _ in self.navigationVc?.switchToLink() }),
-            UIAction(title: AddType.manual.title, image: UIImage(systemName: AddType.manual.imageName), state: f(.manual), handler: { _ in self.navigationVc?.switchToManual() }),
-            UIAction(title: AddType.photo.title, image: UIImage(systemName: AddType.photo.imageName), state: f(.photo), handler: { _ in self.navigationVc?.switchToPhoto() })
-        ])
-    }
 }
