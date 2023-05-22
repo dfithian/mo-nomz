@@ -73,10 +73,4 @@ class User {
     static func setDidPurchase(_ x: ProductRole) {
         UserDefaults.shared.set(true, forKey: x.productIdentifier)
     }
-    static func preference(_ key: PreferenceRole) -> Bool {
-        return UserDefaults.shared.bool(forKey: key.identifier)
-    }
-    static func setPreference(_ key: PreferenceRole, value: Bool) {
-        UserDefaults.shared.set(value, forKey: key.identifier)
-    }
 }

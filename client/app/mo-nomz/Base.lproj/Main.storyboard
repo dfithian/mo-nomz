@@ -180,14 +180,14 @@
                                 </connections>
                             </tableViewCell>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="purchase" id="Bsq-lS-lek" customClass="LabelButton" customModule="mo_nomz" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="224" width="414" height="47.5"/>
+                                <rect key="frame" x="0.0" y="224" width="414" height="48"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Bsq-lS-lek" id="PSr-fR-QYK">
-                                    <rect key="frame" x="0.0" y="0.0" width="414" height="47.5"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="414" height="48"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ocR-qg-Vsp">
-                                            <rect key="frame" x="20" y="13.5" width="347" height="21"/>
+                                            <rect key="frame" x="20" y="13.5" width="347" height="21.5"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
@@ -214,38 +214,6 @@
                                 <connections>
                                     <outlet property="button" destination="3H3-YY-OAH" id="qtF-Tc-qfW"/>
                                     <outlet property="label" destination="ocR-qg-Vsp" id="uNC-80-xac"/>
-                                </connections>
-                            </tableViewCell>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="preference" id="jyj-wR-DeK" customClass="LabelSwitch" customModule="mo_nomz" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="271.5" width="414" height="48"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="jyj-wR-DeK" id="McP-MK-f2o">
-                                    <rect key="frame" x="0.0" y="0.0" width="414" height="48"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                    <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HEl-7T-tjP">
-                                            <rect key="frame" x="20" y="13.5" width="317" height="21.5"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                            <nil key="textColor"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
-                                        <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SYy-GF-egt">
-                                            <rect key="frame" x="345" y="8.5" width="51" height="31"/>
-                                        </switch>
-                                    </subviews>
-                                    <constraints>
-                                        <constraint firstItem="HEl-7T-tjP" firstAttribute="top" secondItem="McP-MK-f2o" secondAttribute="topMargin" constant="2.5" id="1pG-ql-Yyx"/>
-                                        <constraint firstAttribute="trailing" secondItem="SYy-GF-egt" secondAttribute="trailing" constant="20" id="CJ7-Qh-IFP"/>
-                                        <constraint firstItem="SYy-GF-egt" firstAttribute="leading" secondItem="HEl-7T-tjP" secondAttribute="trailing" constant="8" symbolic="YES" id="OJ1-Rx-sQ3"/>
-                                        <constraint firstItem="SYy-GF-egt" firstAttribute="centerY" secondItem="McP-MK-f2o" secondAttribute="centerY" id="YTs-CC-Tq9"/>
-                                        <constraint firstItem="HEl-7T-tjP" firstAttribute="leading" secondItem="McP-MK-f2o" secondAttribute="leading" constant="20" id="Yr4-A1-IvQ"/>
-                                        <constraint firstAttribute="bottomMargin" secondItem="HEl-7T-tjP" secondAttribute="bottom" constant="2" id="o0d-zc-YF4"/>
-                                    </constraints>
-                                </tableViewCellContentView>
-                                <accessibility key="accessibilityConfiguration" identifier="ingredientListItem"/>
-                                <connections>
-                                    <outlet property="label" destination="HEl-7T-tjP" id="hJo-yz-ktV"/>
-                                    <outlet property="switch_" destination="SYy-GF-egt" id="sHB-H5-krP"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>

@@ -45,7 +45,6 @@
 		37B979EC26ED0B66002B677F /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37B979EB26ED0B66002B677F /* Database.swift */; };
 		37B979F526EEB9FC002B677F /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37B979F426EEB9FC002B677F /* String.swift */; };
 		37E1033A2794F6D80064C193 /* AddControllers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37E103392794F6D80064C193 /* AddControllers.swift */; };
-		37E10343279AF6CA0064C193 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37E10342279AF6CA0064C193 /* Preferences.swift */; };
 		37E1034B279EE8FE0064C193 /* IngredientChangeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37E1034A279EE8FE0064C193 /* IngredientChangeController.swift */; };
 		37E1034D279EEE9D0064C193 /* GroceryChangeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37E1034C279EEE9D0064C193 /* GroceryChangeController.swift */; };
 		37E1DC1D2631B7C000330C5B /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37E1DC1C2631B7C000330C5B /* UserDefaults.swift */; };
@@ -112,7 +111,6 @@
 		37B979EB26ED0B66002B677F /* Database.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
 		37B979F426EEB9FC002B677F /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		37E103392794F6D80064C193 /* AddControllers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddControllers.swift; sourceTree = "<group>"; };
-		37E10342279AF6CA0064C193 /* Preferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
 		37E1034A279EE8FE0064C193 /* IngredientChangeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IngredientChangeController.swift; sourceTree = "<group>"; };
 		37E1034C279EEE9D0064C193 /* GroceryChangeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroceryChangeController.swift; sourceTree = "<group>"; };
 		37E1DC1C2631B7C000330C5B /* UserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaults.swift; sourceTree = "<group>"; };
@@ -251,7 +249,6 @@
 				37FE86EE2648CC7200E0B85F /* InfoControllers.swift */,
 				37E55B4F26F2CD7E00207FFE /* Purchases.plist */,
 				37E55B5126F2CDB700207FFE /* Purchases.swift */,
-				37E10342279AF6CA0064C193 /* Preferences.swift */,
 			);
 			path = Users;
 			sourceTree = "<group>";
@@ -445,7 +442,6 @@
 				376095C0262125C10015B6F0 /* AppDelegate.swift in Sources */,
 				37E1DC1D2631B7C000330C5B /* UserDefaults.swift in Sources */,
 				3716947C27C67E890002BD64 /* URL.swift in Sources */,
-				37E10343279AF6CA0064C193 /* Preferences.swift in Sources */,
 				376095C2262125C10015B6F0 /* SceneDelegate.swift in Sources */,
 				372DDC40262B435400CA83A8 /* Keyboard.swift in Sources */,
 				379D479826264D47003DD2C6 /* RecipeController.swift in Sources */,

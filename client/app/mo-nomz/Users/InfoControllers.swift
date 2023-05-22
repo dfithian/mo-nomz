@@ -35,18 +35,15 @@ class InfoController: UIViewController {
 class InfoTableController: UITableViewController {
     var boughtProducts: [SKProduct] = []
     var unboughtProducts: [SKProduct] = []
-    var preferences: [PreferenceRole] = [.mealsDefaultTab, .noTips]
     var onChange: (() -> Void)? = nil
     
     let SUPPORT_HEADING = 0
     let VERSION = 1
     let HELP = 2
-    let PREFERENCE_HEADING = 3
-    let PREFERENCES = 4
-    let PURCHASE_HEADING = 5
-    let PURCHASES = 6
-    let AVAILABLE_PURCHASES = 7
-    let RESTORE_PURCHASES = 8
+    let PURCHASE_HEADING = 3
+    let PURCHASES = 4
+    let AVAILABLE_PURCHASES = 5
+    let RESTORE_PURCHASES = 6
     
     private func loadData() {
         let spinner = startLoading()
@@ -78,13 +75,8 @@ class InfoTableController: UITableViewController {
         })
     }
     
-    @objc func didTapPreference(_ sender: Any?) {
-        guard let s = sender as? UISwitch else { return }
-        User.setPreference(preferences[s.tag], value: s.isOn)
-    }
-    
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 9
+        return 7
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -96,8 +88,6 @@ class InfoTableController: UITableViewController {
         case PURCHASES: return boughtProducts.count
         case AVAILABLE_PURCHASES: return unboughtProducts.count
         case RESTORE_PURCHASES: return 1
-        case PREFERENCE_HEADING: return 1
-        case PREFERENCES: return preferences.count
         default: return 0
         }
     }
@@ -139,18 +129,6 @@ class InfoTableController: UITableViewController {
             return cell
         case RESTORE_PURCHASES:
             return tableView.dequeueReusableCell(withIdentifier: "restore")!
-        case PREFERENCE_HEADING:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! OneLabel
-            cell.label.text = "Preferences"
-            return cell
-        case PREFERENCES:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "preference") as! LabelSwitch
-            let preference = preferences[indexPath.row]
-            cell.label.text = preference.description
-            cell.switch_.tag = indexPath.row
-            cell.switch_.isOn = User.preference(preference)
-            cell.switch_.addTarget(self, action: #selector(didTapPreference), for: .touchUpInside)
-            return cell
         default:
             return tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! OneLabel
         }
