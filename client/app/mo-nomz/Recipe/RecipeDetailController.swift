@@ -126,6 +126,25 @@ class RecipeDetailController: UIViewController, UITextViewDelegate, RecipeTagDel
     
     private func setupOptions() {
         var actions = [UIAction]()
+        if let r = recipe {
+            if r.recipe.active {
+                actions.append(UIAction(title: "Deactivate", image: UIImage(systemName: "eye.slash"), handler: { _ in
+                    let new = ReadableRecipe(name: r.recipe.name, link: r.recipe.link, active: false, rating: r.recipe.rating, notes: r.recipe.notes, ingredients: r.recipe.ingredients, steps: r.recipe.steps, tags: r.recipe.tags)
+                    Database.updateRecipe(id: r.id, recipe: new)
+                    self.onChange?()
+                    self.recipe = ReadableRecipeWithId(recipe: new, id: r.id)
+                    self.setupOptions()
+                }))
+            } else {
+                actions.append(UIAction(title: "Activate", image: UIImage(systemName: "eye"), handler: { _ in
+                    let new = ReadableRecipe(name: r.recipe.name, link: r.recipe.link, active: true, rating: r.recipe.rating, notes: r.recipe.notes, ingredients: r.recipe.ingredients, steps: r.recipe.steps, tags: r.recipe.tags)
+                    Database.updateRecipe(id: r.id, recipe: new)
+                    self.onChange?()
+                    self.recipe = ReadableRecipeWithId(recipe: new, id: r.id)
+                    self.setupOptions()
+                }))
+            }
+        }
         if let link = recipe?.recipe.link, let encodedLink = link.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) {
             let linkUrl = Configuration.baseURL + "#/recipe?recipe_url=" + encodedLink
             actions.append(UIAction(title: "Open in Browser", image: UIImage(systemName: "safari"), handler: { _ in Browser.visitLink(link) }))
