@@ -9,6 +9,7 @@ import UIKit
 
 class RecipeController: UIViewController, RecipeFilterDelegate {
     @IBOutlet weak var add: UIButton!
+    @IBOutlet weak var hamburger: UIButton!
     @IBOutlet weak var banner: UIView!
     @IBOutlet weak var search: UISearchBar!
 
@@ -33,8 +34,26 @@ class RecipeController: UIViewController, RecipeFilterDelegate {
             UIAction(title: "Add manually", image: UIImage(systemName: "pencil"), handler: { _ in
                 self.performSegue(withIdentifier: "addManual", sender: nil)
             }),
-            UIAction(title: "Add recipe photos", image: UIImage(systemName: "photo"), handler: { _ in
+            UIAction(title: "Add recipe photos", image: UIImage(systemName: "photo.on.rectangle"), handler: { _ in
                 self.performSegue(withIdentifier: "addPhoto", sender: nil)
+            })
+        ])
+    }
+    
+    private func setupHamburger() {
+        hamburger.showsMenuAsPrimaryAction = true
+        hamburger.menu = UIMenu(options: .displayInline, children: [
+            UIAction(title: "Clear", image: UIImage(systemName: "arrow.3.trianglepath"), attributes: .destructive, handler: { _ in
+                if !Database.selectGroceries().isEmpty {
+                    let handler = { (action: UIAlertAction) -> Void in
+                        Database.clearAll()
+                        self.reloadData()
+                    }
+                    self.promptForConfirmation(title: "Clear", message: "This will delete all groceries and deactivate all recipes. Do you want to continue?", handler: handler)
+                }
+            }),
+            UIAction(title: "Settings", image: UIImage(systemName: "gear"), handler: { _ in
+                self.performSegue(withIdentifier: "showSettings", sender: nil)
             })
         ])
     }
@@ -47,18 +66,17 @@ class RecipeController: UIViewController, RecipeFilterDelegate {
         }
     }
     
-    @IBAction func didTapClear(_ sender: Any?) {
-        if !Database.selectGroceries().isEmpty {
-            let handler = { (action: UIAlertAction) -> Void in
-                Database.clearAll()
-                self.reloadData()
-            }
-            self.promptForConfirmation(title: "Clear", message: "This will delete all groceries and deactivate all recipes. Do you want to continue?", handler: handler)
-        }
-    }
-    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let vc = segue.destination as? AddController, segue.identifier == "addGroceries" {
+        if let vc = segue.destination as? AddController, segue.identifier == "addLink" {
+            vc.addType = .link
+            vc.onChange = reloadData
+        }
+        if let vc = segue.destination as? AddController, segue.identifier == "addManual" {
+            vc.addType = .manualRecipes
+            vc.onChange = reloadData
+        }
+        if let vc = segue.destination as? AddController, segue.identifier == "addPhoto" {
+            vc.addType = .photo
             vc.onChange = reloadData
         }
         if let vc = segue.destination as? RecipeFilterController, segue.identifier == "embedTags" {
@@ -74,12 +92,16 @@ class RecipeController: UIViewController, RecipeFilterDelegate {
         if let vc = segue.destination as? BannerController, segue.identifier == "embedBanner" {
             vc.height = banner.constraints.filter({ $0.identifier == "height" }).first
         }
+        if let vc = segue.destination as? GroceryController, segue.identifier == "showGroceries" {
+            vc.onChange = reloadData
+        }
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         reloadData()
         setupAdd()
+        setupHamburger()
         search.searchTextField.addDoneButtonOnKeyboard()
         search.searchTextField.font = UIFont.systemFont(ofSize: 14)
     }

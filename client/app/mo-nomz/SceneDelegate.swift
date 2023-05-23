@@ -14,8 +14,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let launchSb = UIStoryboard(name: "LaunchScreen", bundle: nil)
         let launchVc = launchSb.instantiateInitialViewController()
         let mainSb = UIStoryboard(name: "Main", bundle: nil)
-        let mainVc = mainSb.instantiateInitialViewController() as! TabBarController
-        mainVc.selectedIndex = 1
+        let mainVc = mainSb.instantiateInitialViewController() as! RecipeController
         window?.rootViewController = launchVc
         
         let loadState = { (cont: @escaping (() -> Void)) in

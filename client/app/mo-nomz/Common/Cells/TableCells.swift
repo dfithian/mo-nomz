@@ -23,16 +23,6 @@ class OneTextField: UITableViewCell {
     @IBOutlet weak var text_: UITextField!
 }
 
-class TwoButton: UITableViewCell {
-    @IBOutlet weak var one: UIButton!
-    @IBOutlet weak var two: UIButton!
-}
-
-class LabelSwitch: UITableViewCell {
-    @IBOutlet weak var label: UILabel!
-    @IBOutlet weak var switch_: UISwitch!
-}
-
 class LabelButton: UITableViewCell {
     @IBOutlet weak var label: UILabel!
     @IBOutlet weak var button: UIButton!

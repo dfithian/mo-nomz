@@ -9,29 +9,15 @@ import GoogleMobileAds
 import UIKit
 
 class GroceryController: UIViewController {
-    @IBOutlet weak var add: UIButton!
     @IBOutlet weak var hamburger: UIButton!
     @IBOutlet weak var banner: UIView!
 
     var groceryVc: GroceryListController? = nil
+    var onChange: (() -> Void)? = nil
 
     func reloadData() {
         groceryVc?.reloadData()
-    }
-    
-    private func setupAdd() {
-        add.showsMenuAsPrimaryAction = true
-        add.menu = UIMenu(options: .displayInline, children: [
-            UIAction(title: "Add recipe link", image: UIImage(systemName: "link"), handler: { _ in
-                self.performSegue(withIdentifier: "addLink", sender: nil)
-            }),
-            UIAction(title: "Add manually", image: UIImage(systemName: "pencil"), handler: { _ in
-                self.performSegue(withIdentifier: "addManual", sender: nil)
-            }),
-            UIAction(title: "Add recipe photos", image: UIImage(systemName: "photo"), handler: { _ in
-                self.performSegue(withIdentifier: "addPhoto", sender: nil)
-            })
-        ])
+        onChange?()
     }
     
     private func setupHamburger() {
@@ -45,36 +31,28 @@ class GroceryController: UIViewController {
                     self.present(vc, animated: true, completion: nil)
                 }
             }),
-            UIMenu(options: .displayInline, children: [
-                UIAction(title: "Add group", image: UIImage(systemName: "plus"), handler: { _ in
-                    self.promptGetInput(title: "Create group", content: nil, configure: { $0.autocapitalizationType = .words }, completion: { (new) in
-                        let group = GroceryGroupWithId(group: GroceryGroup(name: new, order: 0), id: UUID())
-                        Database.insertGroups(groups: [group])
-                        self.reloadData()
-                    })
+            UIAction(title: "Add group", image: UIImage(systemName: "plus"), handler: { _ in
+                self.promptGetInput(title: "Create group", content: nil, configure: { $0.autocapitalizationType = .words }, completion: { (new) in
+                    let group = GroceryGroupWithId(group: GroceryGroup(name: new, order: 0), id: UUID())
+                    Database.insertGroups(groups: [group])
+                    self.reloadData()
                 })
-            ])
+            }),
+            UIAction(title: "Clear", image: UIImage(systemName: "arrow.3.trianglepath"), attributes: .destructive, handler: { _ in
+                if !Database.selectGroceries().isEmpty {
+                    let handler = { (action: UIAlertAction) -> Void in
+                        Database.clearAll()
+                        self.reloadData()
+                    }
+                    self.promptForConfirmation(title: "Clear", message: "This will delete all groceries and deactivate all recipes. Do you want to continue?", handler: handler)
+                }
+            })
         ])
-    }
-    
-    @IBAction func didTapClear(_ sender: Any?) {
-        if !Database.selectGroceries().isEmpty {
-            let handler = { (action: UIAlertAction) -> Void in
-                Database.clearAll()
-                self.reloadData()
-            }
-            self.promptForConfirmation(title: "Clear", message: "This will delete all groceries and deactivate all recipes. Do you want to continue?", handler: handler)
-        }
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let vc = segue.destination as? AddController, segue.identifier == "addLink" {
-            vc.onChange = reloadData
-        }
         if let vc = segue.destination as? AddController, segue.identifier == "addManual" {
-            vc.onChange = reloadData
-        }
-        if let vc = segue.destination as? AddController, segue.identifier == "addPhoto" {
+            vc.addType = .manualGroceries
             vc.onChange = reloadData
         }
         if let vc = segue.destination as? GroceryListController, segue.identifier == "embedGroceryItems" {
@@ -88,7 +66,6 @@ class GroceryController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         reloadData()
-        setupAdd()
         setupHamburger()
     }
 }

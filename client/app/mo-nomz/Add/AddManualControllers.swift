@@ -8,18 +8,16 @@
 import UIKit
 
 enum ManualChange {
-    case add
+    case addRecipe
+    case addGroceries
     case link(String?, String?, String, String?)
     case photo(String, String?)
 }
 
 class AddManualController: AddDetailController {
     @IBOutlet weak var header: UILabel!
-    @IBOutlet weak var helper: UIButton!
-    @IBOutlet weak var noHelperConstraint: NSLayoutConstraint!
-    @IBOutlet weak var helperConstraint: NSLayoutConstraint!
 
-    var change: ManualChange = .add
+    var change: ManualChange = .addRecipe
     var manualVc: AddManualTableController? = nil
     
     @IBAction func didTapSubmit(_ sender: Any?) {
@@ -35,7 +33,6 @@ class AddManualController: AddDetailController {
                 self.dismiss(animated: true, completion: nil)
             }
             self.navigationVc?.onChange?()
-            self.loadGroceries()
         }
         if let i = manualVc?.ingredients?.nonEmpty() {
             if manualVc?.isRecipe ?? false {
@@ -67,7 +64,12 @@ class AddManualController: AddDetailController {
                 vc.ingredients = ingredients
                 vc.steps = steps
                 break
-            default: break
+            case .addRecipe:
+                vc.isRecipe = true
+                break
+            default:
+                vc.isRecipe = false
+                break
             }
         }
     }
@@ -77,18 +79,15 @@ class AddManualController: AddDetailController {
         switch (change) {
         case .link(_, _, _, _):
             header.text = "Review selections"
-            helper.removeFromSuperview()
-            noHelperConstraint.isActive = true
-            helperConstraint.isActive = false
             break
         case .photo(_, _):
             header.text = "Review selections"
-            helper.removeFromSuperview()
-            noHelperConstraint.isActive = true
-            helperConstraint.isActive = false
             break
-        case .add:
-            header.text = "Add groceries or recipe"
+        case .addRecipe:
+            header.text = "Add recipe"
+            break
+        case .addGroceries:
+            header.text = "Add groceries"
             break
         }
     }
@@ -102,29 +101,13 @@ class AddManualTableController: UITableViewController, UITextFieldDelegate, UITe
     var ingredients: String? = nil
     var steps: String? = nil
     
-    let IS_RECIPE__IS_ACTIVE = 0
+    let IS_ACTIVE = 0
     let NAME = 1
     let LINK = 2
     let INGREDIENT_HEADING = 3
     let INGREDIENTS = 4
     let STEP_HEADING = 5
     let STEPS = 6
-    
-    @objc func didTapIsRecipe(_ sender: Any?) {
-        let b = sender as! UIButton
-        if isRecipe {
-            isRecipe = false
-            b.setImage(UIImage(systemName: "square"), for: .normal)
-        } else {
-            isRecipe = true
-            b.setImage(UIImage(systemName: "checkmark.square"), for: .normal)
-        }
-        let range = NSMakeRange(NAME, tableView.numberOfSections - NAME)
-        let sections = NSIndexSet(indexesIn: range)
-        DispatchQueue.main.async {
-            self.tableView.reloadSections(sections as IndexSet, with: .automatic)
-        }
-    }
     
     @objc func didTapIsActive(_ sender: Any?) {
         let b = sender as! UIButton
@@ -168,7 +151,7 @@ class AddManualTableController: UITableViewController, UITextFieldDelegate, UITe
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
-        case IS_RECIPE__IS_ACTIVE: return 1
+        case IS_ACTIVE: return isRecipe ? 1 : 0
         case NAME: return isRecipe ? 1 : 0
         case LINK: return isRecipe ? 1 : 0
         case INGREDIENT_HEADING: return 1
@@ -181,12 +164,10 @@ class AddManualTableController: UITableViewController, UITextFieldDelegate, UITe
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch indexPath.section {
-        case IS_RECIPE__IS_ACTIVE:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "checkboxItem") as! TwoButton
-            cell.one.setImage(UIImage(systemName: isActive ? "checkmark.square" : "square"), for: .normal)
-            cell.one.addTarget(self, action: #selector(didTapIsActive), for: .touchUpInside)
-            cell.two.setImage(UIImage(systemName: isRecipe ? "checkmark.square" : "square"), for: .normal)
-            cell.two.addTarget(self, action: #selector(didTapIsRecipe), for: .touchUpInside)
+        case IS_ACTIVE:
+            let cell = tableView.dequeueReusableCell(withIdentifier: "checkboxItem") as! OneButton
+            cell.button.setImage(UIImage(systemName: isActive ? "checkmark.square" : "square"), for: .normal)
+            cell.button.addTarget(self, action: #selector(didTapIsActive), for: .touchUpInside)
             return cell
         case NAME:
             let cell = tableView.dequeueReusableCell(withIdentifier: "textFieldItem") as! OneTextField
@@ -209,7 +190,8 @@ class AddManualTableController: UITableViewController, UITextFieldDelegate, UITe
             cell.label.text = isRecipe ? "Ingredients" : "Groceries"
             return cell
         case INGREDIENTS:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "textItem") as! OneText
+            let identifier = isRecipe ? "textItem" : "groceryItem"
+            let cell = tableView.dequeueReusableCell(withIdentifier: identifier) as! OneText
             cell.text_.text = ingredients
             cell.text_.addDoneButtonOnKeyboard()
             cell.text_.layer.cornerRadius = 10

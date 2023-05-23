@@ -32,13 +32,13 @@ class RecipeDetailController: UIViewController, UITextViewDelegate, RecipeTagDel
     @IBAction func didTapCookMode(_ sender: Any?) {
         if inCookMode {
             inCookMode = false
-            cookMode.setImage(UIImage(systemName: "cooktop"), for: .normal)
+            cookMode.setImage(UIImage(systemName: "flame"), for: .normal)
             cookMode.setTitle("Off", for: .normal)
             UIApplication.shared.isIdleTimerDisabled = false
             self.toast(title: "Cook Mode Off", message: nil)
         } else {
             inCookMode = true
-            cookMode.setImage(UIImage(systemName: "cooktop.fill"), for: .normal)
+            cookMode.setImage(UIImage(systemName: "flame.fill"), for: .normal)
             cookMode.setTitle("On", for: .normal)
             UIApplication.shared.isIdleTimerDisabled = true
             self.toast(title: "Cook Mode On", message: nil)

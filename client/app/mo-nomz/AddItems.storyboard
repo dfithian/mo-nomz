@@ -36,8 +36,8 @@
                                     </barButtonItem>
                                 </items>
                             </toolbar>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Add groceries or recipe" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EAA-zn-j2R">
-                                <rect key="frame" x="20" y="20" width="258.5" height="32"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Add recipe" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EAA-zn-j2R">
+                                <rect key="frame" x="20" y="20" width="121" height="32"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="26"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -66,7 +66,6 @@
                     <navigationItem key="navigationItem" id="LoS-Q6-t25"/>
                     <connections>
                         <outlet property="header" destination="EAA-zn-j2R" id="abc-99-2EH"/>
-                        <outlet property="noHelperConstraint" destination="eLp-cF-guM" id="KrJ-eP-VMp"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="NjI-HE-Yxz" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -349,7 +348,7 @@
                                     <outlet property="text_" destination="2ve-6t-Tc3" id="Xye-Wq-zJB"/>
                                 </connections>
                             </tableViewCell>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="checkboxItem" id="Yiv-pL-DtB" customClass="TwoButton" customModule="mo_nomz" customModuleProvider="target">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="checkboxItem" id="Yiv-pL-DtB" customClass="OneButton" customModule="mo_nomz" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="105" width="414" height="43.5"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Yiv-pL-DtB" id="V9j-kW-6ZV">
@@ -363,25 +362,15 @@
                                                 <color key="titleColor" name="AccentColor"/>
                                             </state>
                                         </button>
-                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Xli-h2-4gq">
-                                            <rect key="frame" x="322.5" y="11.5" width="71.5" height="21"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                            <state key="normal" title="Recipe" image="square" catalog="system">
-                                                <color key="titleColor" name="AccentColor"/>
-                                            </state>
-                                        </button>
                                     </subviews>
                                     <constraints>
-                                        <constraint firstAttribute="trailing" secondItem="Xli-h2-4gq" secondAttribute="trailing" constant="20" id="0ZE-QA-kL8"/>
                                         <constraint firstItem="zrI-dK-Ijk" firstAttribute="centerY" secondItem="V9j-kW-6ZV" secondAttribute="centerY" id="6l3-uw-WKk"/>
-                                        <constraint firstItem="Xli-h2-4gq" firstAttribute="centerY" secondItem="V9j-kW-6ZV" secondAttribute="centerY" id="FN5-jU-deX"/>
                                         <constraint firstItem="zrI-dK-Ijk" firstAttribute="leading" secondItem="V9j-kW-6ZV" secondAttribute="leading" constant="20" id="RF1-pP-rI1"/>
                                     </constraints>
                                 </tableViewCellContentView>
                                 <accessibility key="accessibilityConfiguration" identifier="ingredientListItem"/>
                                 <connections>
-                                    <outlet property="one" destination="zrI-dK-Ijk" id="Nn2-xP-NgH"/>
-                                    <outlet property="two" destination="Xli-h2-4gq" id="hfk-V4-6C3"/>
+                                    <outlet property="button" destination="zrI-dK-Ijk" id="U0x-HA-7vp"/>
                                 </connections>
                             </tableViewCell>
                             <tableViewCell clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="sectionHeader" id="q12-g6-FEv" customClass="OneLabel" customModule="mo_nomz" customModuleProvider="target">
@@ -436,6 +425,35 @@
                                 </tableViewCellContentView>
                                 <connections>
                                     <outlet property="text_" destination="ueK-af-XMq" id="ZEl-rf-wj1"/>
+                                </connections>
+                            </tableViewCell>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="groceryItem" rowHeight="390" id="oC0-jW-hPR" customClass="OneText" customModule="mo_nomz" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="377" width="414" height="390"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="oC0-jW-hPR" id="Z5n-Z3-eLF">
+                                    <rect key="frame" x="0.0" y="0.0" width="414" height="390"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" keyboardDismissMode="onDrag" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="6di-2z-rrQ">
+                                            <rect key="frame" x="20" y="5" width="374" height="380"/>
+                                            <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="380" id="dpa-54-W0U"/>
+                                            </constraints>
+                                            <color key="textColor" systemColor="labelColor"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                        </textView>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstAttribute="bottom" secondItem="6di-2z-rrQ" secondAttribute="bottom" constant="5" id="FcN-pF-7rr"/>
+                                        <constraint firstItem="6di-2z-rrQ" firstAttribute="leading" secondItem="Z5n-Z3-eLF" secondAttribute="leading" constant="20" id="I6Q-V5-2Nu"/>
+                                        <constraint firstItem="6di-2z-rrQ" firstAttribute="top" secondItem="Z5n-Z3-eLF" secondAttribute="top" constant="5" id="MMh-C8-pR1"/>
+                                        <constraint firstAttribute="trailing" secondItem="6di-2z-rrQ" secondAttribute="trailing" constant="20" id="ybf-9K-2e9"/>
+                                    </constraints>
+                                </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="text_" destination="6di-2z-rrQ" id="a79-lS-0cn"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -506,7 +524,7 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="Cr3-JZ-za4"/>
+        <segue reference="Vje-ei-Tdw"/>
     </inferredMetricsTieBreakers>
     <resources>
         <image name="checkmark" catalog="system" width="128" height="114"/>
@@ -514,7 +532,6 @@
         <image name="chevron.left" catalog="system" width="97" height="128"/>
         <image name="chevron.right" catalog="system" width="97" height="128"/>
         <image name="plus" catalog="system" width="128" height="113"/>
-        <image name="square" catalog="system" width="128" height="114"/>
         <namedColor name="AccentColor">
             <color red="0.0" green="0.46000000000000002" blue="0.89000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>

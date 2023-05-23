@@ -9,24 +9,9 @@ import UIKit
 
 enum AddType {
     case link
-    case manual
+    case manualRecipes
+    case manualGroceries
     case photo
-    
-    var title: String {
-        switch self {
-        case .link: return "Add link"
-        case .manual: return "Add manual"
-        case .photo: return "Add photos"
-        }
-    }
-    
-    var imageName: String {
-        switch self {
-        case .link: return "link"
-        case .manual: return "pencil"
-        case .photo: return "photo.on.rectangle"
-        }
-    }
 }
 
 enum ScrapeType {
@@ -52,6 +37,7 @@ struct Scrape<A> {
 
 class AddController: UINavigationController, UINavigationControllerDelegate {
     var onChange: (() -> Void)?
+    var addType: AddType = .link
 
     func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
         if let vc = viewController as? AddLinkController {
@@ -68,28 +54,28 @@ class AddController: UINavigationController, UINavigationControllerDelegate {
         }
     }
     
-    func switchToLink() {
-        let storyboard = UIStoryboard(name: "AddItems", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "addLink") as! AddLinkController
-        setViewControllers([vc], animated: false)
-    }
-    
-    func switchToManual() {
-        let storyboard = UIStoryboard(name: "AddItems", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "addManual") as! AddManualController
-        setViewControllers([vc], animated: false)
-    }
-    
-    func switchToPhoto() {
-        let storyboard = UIStoryboard(name: "AddItems", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "addPhoto") as! AddPhotoController
-        setViewControllers([vc], animated: false)
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.delegate = self
-        switchToLink()
+        let storyboard = UIStoryboard(name: "AddItems", bundle: nil)
+        let vc: UIViewController
+        switch addType {
+        case .link:
+            vc = storyboard.instantiateViewController(withIdentifier: "addLink")
+            break
+        case .manualRecipes:
+            vc = storyboard.instantiateViewController(withIdentifier: "addManual")
+            (vc as! AddManualController).change = .addRecipe
+            break
+        case .manualGroceries:
+            vc = storyboard.instantiateViewController(withIdentifier: "addManual")
+            (vc as! AddManualController).change = .addGroceries
+            break
+        case .photo:
+            vc = storyboard.instantiateViewController(withIdentifier: "addPhoto")
+            break
+        }
+        setViewControllers([vc], animated: false)
     }
 }
 
