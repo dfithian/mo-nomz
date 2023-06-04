@@ -14,7 +14,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let launchSb = UIStoryboard(name: "LaunchScreen", bundle: nil)
         let launchVc = launchSb.instantiateInitialViewController()
         let mainSb = UIStoryboard(name: "Main", bundle: nil)
-        let mainVc = mainSb.instantiateInitialViewController() as! RecipeController
+        let mainVc: UIViewController
+        if User.useClassicView() {
+            mainVc = mainSb.instantiateViewController(withIdentifier: "tab") as! UITabBarController
+        } else {
+            mainVc = mainSb.instantiateViewController(withIdentifier: "recipe") as! RecipeController
+        }
         window?.rootViewController = launchVc
         
         let loadState = { (cont: @escaping (() -> Void)) in
@@ -41,7 +46,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             initializeGroups({
                 DispatchQueue.main.async {
                     self.window?.rootViewController = mainVc
-                    mainVc.reloadData()
                 }
                 self.window?.rootViewController?.pingUser(completion: nil)
                 completion?()

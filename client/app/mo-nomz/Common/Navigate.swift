@@ -7,14 +7,63 @@
 
 import UIKit
 
+protocol MainViewController: UIViewController {
+    func mainVcShowGroceries() -> Void
+    func mainVcShowRecipe(r: ReadableRecipeWithId) -> Void
+}
+
+extension UITabBarController: MainViewController {
+    func mainVcShowGroceries() {
+        DispatchQueue.main.async {
+            self.selectedIndex = 0
+        }
+    }
+    
+    func mainVcShowRecipe(r: ReadableRecipeWithId) {
+        let recipe = self.viewControllers![1] as! RecipeController
+        recipe.reloadData()
+        DispatchQueue.main.async {
+            self.selectedIndex = 1
+            recipe.recipeVc?.performSegue(withIdentifier: "showRecipe", sender: r)
+        }
+    }
+}
+
+extension RecipeController: MainViewController {
+    func mainVcShowGroceries() {
+        DispatchQueue.main.async {
+            self.performSegue(withIdentifier: "showGroceries", sender: nil)
+        }
+    }
+    
+    func mainVcShowRecipe(r: ReadableRecipeWithId) {
+        self.reloadData()
+        DispatchQueue.main.async {
+            self.recipeVc?.performSegue(withIdentifier: "showRecipe", sender: r)
+        }
+    }
+}
+
 extension UIViewController {
-    func withMainVc(_ f: ((SceneDelegate, RecipeController) -> Void)?) {
+    func withMainVc(_ f: ((SceneDelegate, MainViewController) -> Void)?) {
         DispatchQueue.main.async {
             let scene = UIApplication.shared.connectedScenes.first?.delegate as! SceneDelegate
             let mainSb = UIStoryboard(name: "Main", bundle: nil)
-            let mainVc = mainSb.instantiateInitialViewController() as! RecipeController
+            let mainVc: MainViewController
+            if User.useClassicView() {
+                mainVc = mainSb.instantiateViewController(withIdentifier: "tab") as! UITabBarController
+            } else {
+                mainVc = mainSb.instantiateViewController(withIdentifier: "recipe") as! RecipeController
+            }
             f?(scene, mainVc)
         }
+    }
+    
+    func loadGroceries() {
+        withMainVc({ scene, mainVc in
+            scene.window?.rootViewController = mainVc
+            mainVc.mainVcShowGroceries()
+        })
     }
     
     func createOrLoadRecipe(_ url: URL) {
@@ -32,11 +81,10 @@ extension UIViewController {
     func createRecipe(_ url: URL) {
         withMainVc { scene, mainVc in
             scene.window?.rootViewController = mainVc
-            mainVc.recipeVc?.addLink(link: url.absoluteString, completion: { response in
+            mainVc.addLink(link: url.absoluteString, completion: { response in
                 let recipe = Database.insertRecipe(response: response, link: url.absoluteString, active: true, tags: [])
-                mainVc.reloadData()
                 DispatchQueue.main.async {
-                    mainVc.recipeVc?.performSegue(withIdentifier: "showRecipe", sender: recipe)
+                    mainVc.mainVcShowRecipe(r: recipe)
                 }
             })
         }
@@ -45,7 +93,7 @@ extension UIViewController {
     func loadRecipe(_ recipe: ReadableRecipeWithId) {
         withMainVc { scene, mainVc in
             scene.window?.rootViewController = mainVc
-            mainVc.recipeVc?.performSegue(withIdentifier: "showRecipe", sender: recipe)
+            mainVc.mainVcShowRecipe(r: recipe)
         }
     }
 }

@@ -33,6 +33,7 @@ class AddManualController: AddDetailController {
                 self.dismiss(animated: true, completion: nil)
             }
             self.navigationVc?.onChange?()
+            self.loadGroceries()
         }
         if let i = manualVc?.ingredients?.nonEmpty() {
             if manualVc?.isRecipe ?? false {
@@ -67,7 +68,7 @@ class AddManualController: AddDetailController {
             case .addRecipe:
                 vc.isRecipe = true
                 break
-            default:
+            case .addGroceries:
                 vc.isRecipe = false
                 break
             }

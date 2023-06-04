@@ -37,13 +37,19 @@ class InfoTableController: UITableViewController {
     var unboughtProducts: [SKProduct] = []
     var onChange: (() -> Void)? = nil
     
-    let SUPPORT_HEADING = 0
+    let SETTINGS_HEADING = 0
     let VERSION = 1
-    let HELP = 2
-    let PURCHASE_HEADING = 3
-    let PURCHASES = 4
-    let AVAILABLE_PURCHASES = 5
-    let RESTORE_PURCHASES = 6
+    let CLASSIC_VIEW = 2
+    let HELP = 3
+    let PURCHASE_HEADING = 4
+    let PURCHASES = 5
+    let AVAILABLE_PURCHASES = 6
+    let RESTORE_PURCHASES = 7
+    
+    @objc func didChangeClassicView(_ sender: UISwitch) {
+        User.setUseClassicView(sender.isOn)
+        self.promptAcknowledgement(title: "Restart needed", message: "For changes to take effect, please close and reopen Nomz.", completion: { _ in })
+    }
     
     private func loadData() {
         let spinner = startLoading()
@@ -76,13 +82,14 @@ class InfoTableController: UITableViewController {
     }
     
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 7
+        return 8
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
-        case SUPPORT_HEADING: return 1
+        case SETTINGS_HEADING: return 1
         case VERSION: return 1
+        case CLASSIC_VIEW: return 1
         case HELP: return 1
         case PURCHASE_HEADING: return 1
         case PURCHASES: return boughtProducts.count
@@ -94,15 +101,21 @@ class InfoTableController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch indexPath.section {
-        case SUPPORT_HEADING:
+        case SETTINGS_HEADING:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! OneLabel
-            cell.label.text = "Support"
+            cell.label.text = "Settings"
             return cell
         case VERSION:
             let cell = tableView.dequeueReusableCell(withIdentifier: "version") as! OneLabel
             let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as! String
             let bundle = Bundle.main.infoDictionary?["CFBundleVersion"] as! String
             cell.label.text = "\(version).\(bundle)"
+            return cell
+        case CLASSIC_VIEW:
+            let cell = tableView.dequeueReusableCell(withIdentifier: "preference") as! LabelSwitch
+            cell.label.text = "Use classic view"
+            cell.switch_.isOn = User.useClassicView()
+            cell.switch_.addTarget(self, action: #selector(didChangeClassicView), for: .valueChanged)
             return cell
         case HELP:
             return tableView.dequeueReusableCell(withIdentifier: "help")!

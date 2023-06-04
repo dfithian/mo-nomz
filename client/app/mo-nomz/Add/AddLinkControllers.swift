@@ -34,5 +34,6 @@ class AddLinkController: AddDetailController {
     override func viewDidLoad() {
         super.viewDidLoad()
         link.addDoneButtonOnKeyboard()
+        link.becomeFirstResponder()
     }
 }
