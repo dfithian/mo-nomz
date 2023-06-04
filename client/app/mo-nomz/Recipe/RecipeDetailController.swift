@@ -8,6 +8,7 @@
 import UIKit
 
 class RecipeDetailController: UIViewController, UITextViewDelegate, RecipeTagDelegate {
+    @IBOutlet weak var banner: UIView!
     @IBOutlet weak var name: UITextView!
     @IBOutlet weak var star1: UIButton!
     @IBOutlet weak var star2: UIButton!
@@ -169,6 +170,9 @@ class RecipeDetailController: UIViewController, UITextViewDelegate, RecipeTagDel
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let vc = segue.destination as? BannerController, segue.identifier == "embedBanner" {
+            vc.height = banner.constraints.filter({ $0.identifier == "height" }).first
+        }
         guard let r = recipe else { return }
         if let vc = segue.destination as? RecipeDetailTagController, segue.identifier == "embedTags" {
             tagVc = vc
