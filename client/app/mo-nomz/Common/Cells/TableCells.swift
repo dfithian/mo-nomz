@@ -33,3 +33,8 @@ class TwoLabelOneButton: UITableViewCell {
     @IBOutlet weak var button: UIButton!
     @IBOutlet weak var twoLabel: UILabel!
 }
+
+class LabelSwitch: UITableViewCell {
+    @IBOutlet weak var label: UILabel!
+    @IBOutlet weak var switch_: UISwitch!
+}
