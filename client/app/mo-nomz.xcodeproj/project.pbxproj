@@ -37,6 +37,7 @@
 		379D479826264D47003DD2C6 /* RecipeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 379D479726264D47003DD2C6 /* RecipeController.swift */; };
 		379D479B26264D6E003DD2C6 /* RecipeListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 379D479A26264D6E003DD2C6 /* RecipeListController.swift */; };
 		37AEE6382623D5710052304F /* Api.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37AEE6372623D5710052304F /* Api.swift */; };
+		37B535672A2D5D84008C7281 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37B535662A2D5D84008C7281 /* Preferences.swift */; };
 		37B979A32693DB0D002B677F /* RecipeDetailController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37B979A22693DB0D002B677F /* RecipeDetailController.swift */; };
 		37B979AB269BB3C6002B677F /* RecipeDetailListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37B979AA269BB3C6002B677F /* RecipeDetailListController.swift */; };
 		37B979E426EC204B002B677F /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 37B979E226EC204B002B677F /* Model.xcdatamodeld */; };
@@ -53,7 +54,7 @@
 		37E55B5226F2CDB700207FFE /* Purchases.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37E55B5126F2CDB700207FFE /* Purchases.swift */; };
 		37E861E927D58ECA0048B874 /* RecipeFilterController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37E861E827D58EC90048B874 /* RecipeFilterController.swift */; };
 		37E861EB27D645F60048B874 /* RecipeDetailTagController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37E861EA27D645F50048B874 /* RecipeDetailTagController.swift */; };
-		37FE86EF2648CC7200E0B85F /* InfoControllers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37FE86EE2648CC7200E0B85F /* InfoControllers.swift */; };
+		37FE86EF2648CC7200E0B85F /* SettingsControllers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37FE86EE2648CC7200E0B85F /* SettingsControllers.swift */; };
 		A5AA8FF560BE489F2712D24F /* Pods_mo_nomz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D8E6C91D35B99778B838A8A /* Pods_mo_nomz.framework */; };
 /* End PBXBuildFile section */
 
@@ -103,6 +104,7 @@
 		379D479726264D47003DD2C6 /* RecipeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeController.swift; sourceTree = "<group>"; };
 		379D479A26264D6E003DD2C6 /* RecipeListController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeListController.swift; sourceTree = "<group>"; };
 		37AEE6372623D5710052304F /* Api.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Api.swift; sourceTree = "<group>"; };
+		37B535662A2D5D84008C7281 /* Preferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
 		37B979A22693DB0D002B677F /* RecipeDetailController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeDetailController.swift; sourceTree = "<group>"; };
 		37B979AA269BB3C6002B677F /* RecipeDetailListController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeDetailListController.swift; sourceTree = "<group>"; };
 		37B979E326EC204B002B677F /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
@@ -120,7 +122,7 @@
 		37E861E827D58EC90048B874 /* RecipeFilterController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeFilterController.swift; sourceTree = "<group>"; };
 		37E861EA27D645F50048B874 /* RecipeDetailTagController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeDetailTagController.swift; sourceTree = "<group>"; };
 		37EAACF726339C14006D9184 /* mo-nomzRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "mo-nomzRelease.entitlements"; sourceTree = "<group>"; };
-		37FE86EE2648CC7200E0B85F /* InfoControllers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoControllers.swift; sourceTree = "<group>"; };
+		37FE86EE2648CC7200E0B85F /* SettingsControllers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsControllers.swift; sourceTree = "<group>"; };
 		3D8E6C91D35B99778B838A8A /* Pods_mo_nomz.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_mo_nomz.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8B42BB1752081B70021712E4 /* Pods-mo-nomz.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mo-nomz.debug.xcconfig"; path = "Target Support Files/Pods-mo-nomz/Pods-mo-nomz.debug.xcconfig"; sourceTree = "<group>"; };
 		9EA20680D1BFF2CC6FA28660 /* Pods-mo-nomz.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mo-nomz.release.xcconfig"; path = "Target Support Files/Pods-mo-nomz/Pods-mo-nomz.release.xcconfig"; sourceTree = "<group>"; };
@@ -246,9 +248,10 @@
 		3774A5D02624B53E0029E35D /* Users */ = {
 			isa = PBXGroup;
 			children = (
-				37FE86EE2648CC7200E0B85F /* InfoControllers.swift */,
+				37FE86EE2648CC7200E0B85F /* SettingsControllers.swift */,
 				37E55B4F26F2CD7E00207FFE /* Purchases.plist */,
 				37E55B5126F2CDB700207FFE /* Purchases.swift */,
+				37B535662A2D5D84008C7281 /* Preferences.swift */,
 			);
 			path = Users;
 			sourceTree = "<group>";
@@ -416,6 +419,7 @@
 			files = (
 				37B979E726EC2057002B677F /* DataAccess.swift in Sources */,
 				3724EFCD27A6F8930094574E /* Search.swift in Sources */,
+				37B535672A2D5D84008C7281 /* Preferences.swift in Sources */,
 				37AEE6382623D5710052304F /* Api.swift in Sources */,
 				37B979AB269BB3C6002B677F /* RecipeDetailListController.swift in Sources */,
 				3716947A27C539790002BD64 /* Navigate.swift in Sources */,
@@ -451,7 +455,7 @@
 				37B979A32693DB0D002B677F /* RecipeDetailController.swift in Sources */,
 				3774A5C92624B3E90029E35D /* AddLinkControllers.swift in Sources */,
 				37E55B5226F2CDB700207FFE /* Purchases.swift in Sources */,
-				37FE86EF2648CC7200E0B85F /* InfoControllers.swift in Sources */,
+				37FE86EF2648CC7200E0B85F /* SettingsControllers.swift in Sources */,
 				3724EFF027ACD63F0094574E /* CollectionCells.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -543,7 +547,7 @@
 				CODE_SIGN_ENTITLEMENTS = "mo-nomz/mo-nomzRelease.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_TEAM = 5A6Y383S44;
 				INFOPLIST_FILE = "mo-nomz/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (

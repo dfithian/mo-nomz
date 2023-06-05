@@ -1,5 +1,5 @@
 //
-//  InfoControllers.swift
+//  SettingsControllers.swift
 //  mo-nomz
 //
 //  Created by Dan Fithian on 5/9/21.
@@ -8,11 +8,11 @@
 import StoreKit
 import UIKit
 
-class InfoController: UIViewController {
+class SettingsController: UIViewController {
     @IBOutlet weak var banner: UIView!
     
     var bannerVc: BannerController? = nil
-    var profileVc: InfoTableController? = nil
+    var profileVc: SettingsTableController? = nil
     
     override func reloadInputViews() {
         super.reloadInputViews()
@@ -25,31 +25,27 @@ class InfoController: UIViewController {
             vc.height = banner.constraints.filter({ $0.identifier == "height" }).first
             bannerVc = vc
         }
-        if let vc = segue.destination as? InfoTableController, segue.identifier == "embedProfile" {
+        if let vc = segue.destination as? SettingsTableController, segue.identifier == "embedProfile" {
             profileVc = vc
             vc.onChange = reloadInputViews
         }
     }
 }
 
-class InfoTableController: UITableViewController {
+class SettingsTableController: UITableViewController {
     var boughtProducts: [SKProduct] = []
     var unboughtProducts: [SKProduct] = []
+    var preferences: [PreferenceRole] = [.mealsDefaultTab]
     var onChange: (() -> Void)? = nil
     
     let SETTINGS_HEADING = 0
     let VERSION = 1
-    let CLASSIC_VIEW = 2
+    let PREFERENCES = 2
     let HELP = 3
     let PURCHASE_HEADING = 4
     let PURCHASES = 5
     let AVAILABLE_PURCHASES = 6
     let RESTORE_PURCHASES = 7
-    
-    @objc func didChangeClassicView(_ sender: UISwitch) {
-        User.setUseClassicView(sender.isOn)
-        self.promptAcknowledgement(title: "Restart needed", message: "For changes to take effect, please close and reopen Nomz.", completion: { _ in })
-    }
     
     private func loadData() {
         let spinner = startLoading()
@@ -81,6 +77,11 @@ class InfoTableController: UITableViewController {
         })
     }
     
+    @objc func didTapPreference(_ sender: Any?) {
+        guard let s = sender as? UISwitch else { return }
+        User.setPreference(preferences[s.tag], s.isOn)
+    }
+    
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 8
     }
@@ -89,7 +90,7 @@ class InfoTableController: UITableViewController {
         switch section {
         case SETTINGS_HEADING: return 1
         case VERSION: return 1
-        case CLASSIC_VIEW: return 1
+        case PREFERENCES: return preferences.count
         case HELP: return 1
         case PURCHASE_HEADING: return 1
         case PURCHASES: return boughtProducts.count
@@ -111,11 +112,13 @@ class InfoTableController: UITableViewController {
             let bundle = Bundle.main.infoDictionary?["CFBundleVersion"] as! String
             cell.label.text = "\(version).\(bundle)"
             return cell
-        case CLASSIC_VIEW:
+        case PREFERENCES:
             let cell = tableView.dequeueReusableCell(withIdentifier: "preference") as! LabelSwitch
-            cell.label.text = "Use classic view"
-            cell.switch_.isOn = User.useClassicView()
-            cell.switch_.addTarget(self, action: #selector(didChangeClassicView), for: .valueChanged)
+            let preference = preferences[indexPath.row]
+            cell.label.text = preference.description
+            cell.switch_.tag = indexPath.row
+            cell.switch_.isOn = User.preference(preference)
+            cell.switch_.addTarget(self, action: #selector(didTapPreference), for: .touchUpInside)
             return cell
         case HELP:
             return tableView.dequeueReusableCell(withIdentifier: "help")!

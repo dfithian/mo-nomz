@@ -10,7 +10,6 @@ import UIKit
 class RecipeController: UIViewController, RecipeFilterDelegate {
     @IBOutlet weak var add: UIButton!
     @IBOutlet weak var hamburger: UIButton!
-    @IBOutlet weak var cart: UIButton!
     @IBOutlet weak var banner: UIView!
     @IBOutlet weak var search: UISearchBar!
 
@@ -52,9 +51,6 @@ class RecipeController: UIViewController, RecipeFilterDelegate {
                     }
                     self.promptForConfirmation(title: "Clear", message: "This will delete all groceries and deactivate all recipes. Do you want to continue?", handler: handler)
                 }
-            }),
-            UIAction(title: "Settings", image: UIImage(systemName: "gear"), handler: { _ in
-                self.performSegue(withIdentifier: "showSettings", sender: nil)
             })
         ])
     }
@@ -105,8 +101,5 @@ class RecipeController: UIViewController, RecipeFilterDelegate {
         setupHamburger()
         search.searchTextField.addDoneButtonOnKeyboard()
         search.searchTextField.font = UIFont.systemFont(ofSize: 14)
-        if User.useClassicView() {
-            cart.isEnabled = false
-        }
     }
 }
