@@ -52,7 +52,7 @@ class GroceryController: UIViewController {
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let vc = segue.destination as? AddController, segue.identifier == "addManual" {
+        if let vc = segue.destination as? AddController, segue.identifier == "addGrocery" {
             vc.addType = .manualGroceries
             vc.onChange = reloadData
         }

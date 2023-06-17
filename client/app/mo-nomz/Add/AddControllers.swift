@@ -40,6 +40,9 @@ class AddController: UINavigationController, UINavigationControllerDelegate {
     var addType: AddType = .link
 
     func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+        if let vc = viewController as? AddGroceryController {
+            vc.navigationVc = self
+        }
         if let vc = viewController as? AddLinkController {
             vc.navigationVc = self
         }
@@ -68,8 +71,7 @@ class AddController: UINavigationController, UINavigationControllerDelegate {
             (vc as! AddManualController).change = .addRecipe
             break
         case .manualGroceries:
-            vc = storyboard.instantiateViewController(withIdentifier: "addManual")
-            (vc as! AddManualController).change = .addGroceries
+            vc = storyboard.instantiateViewController(withIdentifier: "addGrocery")
             break
         case .photo:
             vc = storyboard.instantiateViewController(withIdentifier: "addPhoto")

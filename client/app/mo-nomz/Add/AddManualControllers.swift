@@ -9,7 +9,6 @@ import UIKit
 
 enum ManualChange {
     case addRecipe
-    case addGroceries
     case link(String?, String?, String, String?)
     case photo(String, String?)
 }
@@ -28,22 +27,11 @@ class AddManualController: AddDetailController {
             self.navigationVc?.onChange?()
             self.loadRecipe(recipe)
         }
-        let groceryCompletion = {
-            DispatchQueue.main.async {
-                self.dismiss(animated: true, completion: nil)
-            }
-            self.navigationVc?.onChange?()
-            self.loadGroceries()
-        }
         if let i = manualVc?.ingredients?.nonEmpty() {
-            if manualVc?.isRecipe ?? false {
-                if let n = manualVc?.name?.nonEmpty() {
-                    addBlob(content: i, name: n, link: manualVc?.link?.nonEmpty(), rawSteps: manualVc?.steps?.nonEmpty()?.components(separatedBy: "\n").compactMap({ $0.nonEmpty() }) ?? [], active: manualVc?.isActive ?? true, completion: recipeCompletion)
-                } else {
-                    alertUnsuccessful("Please provide a name.")
-                }
+            if let n = manualVc?.name?.nonEmpty() {
+                addBlob(content: i, name: n, link: manualVc?.link?.nonEmpty(), rawSteps: manualVc?.steps?.nonEmpty()?.components(separatedBy: "\n").compactMap({ $0.nonEmpty() }) ?? [], active: manualVc?.isActive ?? true, completion: recipeCompletion)
             } else {
-                addBlob(content: i, completion: { _ in groceryCompletion() })
+                alertUnsuccessful("Please provide a name.")
             }
         } else {
             alertUnsuccessful("Please provide ingredients.")
@@ -55,21 +43,18 @@ class AddManualController: AddDetailController {
             manualVc = vc
             switch change {
             case .link(let link, let name, let ingredients, let steps):
-                vc.isRecipe = true
+                vc.startEditing = false
                 vc.link = link
                 vc.name = name
                 vc.ingredients = ingredients
                 vc.steps = steps
             case .photo(let ingredients, let steps):
-                vc.isRecipe = true
+                vc.startEditing = false
                 vc.ingredients = ingredients
                 vc.steps = steps
                 break
             case .addRecipe:
-                vc.isRecipe = true
-                break
-            case .addGroceries:
-                vc.isRecipe = false
+                vc.startEditing = true
                 break
             }
         }
@@ -87,32 +72,27 @@ class AddManualController: AddDetailController {
         case .addRecipe:
             header.text = "Add recipe"
             break
-        case .addGroceries:
-            header.text = "Add groceries"
-            break
         }
     }
 }
 
 class AddManualTableController: UITableViewController, UITextFieldDelegate, UITextViewDelegate {
-    var isRecipe: Bool = false
+    var startEditing: Bool = false
     var isActive: Bool = true
     var name: String? = nil
     var link: String? = nil
     var ingredients: String? = nil
     var steps: String? = nil
-    
-    let IS_ACTIVE = 0
-    let NAME = 1
-    let LINK = 2
-    let INGREDIENT_HEADING = 3
-    let INGREDIENTS = 4
-    let STEP_HEADING = 5
-    let STEPS = 6
+
+    let NAME = 0
+    let LINK = 1
+
+    let INFO = 0
+    let INGREDIENTS = 1
+    let STEPS = 2
     
     @objc func didTapIsActive(_ sender: Any?) {
         let b = sender as! UIButton
-        guard isRecipe else { return }
         if isActive {
             isActive = false
             b.setImage(UIImage(systemName: "square"), for: .normal)
@@ -147,67 +127,58 @@ class AddManualTableController: UITableViewController, UITextFieldDelegate, UITe
     }
     
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 7
+        return 3
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
-        case IS_ACTIVE: return isRecipe ? 1 : 0
-        case NAME: return isRecipe ? 1 : 0
-        case LINK: return isRecipe ? 1 : 0
-        case INGREDIENT_HEADING: return 1
+        case INFO: return 1
         case INGREDIENTS: return 1
-        case STEP_HEADING: return isRecipe ? 1 : 0
-        case STEPS: return isRecipe ? 1 : 0
+        case STEPS: return 1
         default: return 0
+        }
+    }
+    
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        switch section {
+        case INFO: return "Info"
+        case INGREDIENTS: return "Ingredients"
+        case STEPS: return "Steps"
+        default: return nil
         }
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch indexPath.section {
-        case IS_ACTIVE:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "checkboxItem") as! OneButton
+        case INFO:
+            let cell = tableView.dequeueReusableCell(withIdentifier: "infoItem") as! TwoTextOneButton
             cell.button.setImage(UIImage(systemName: isActive ? "checkmark.square" : "square"), for: .normal)
             cell.button.addTarget(self, action: #selector(didTapIsActive), for: .touchUpInside)
-            return cell
-        case NAME:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "textFieldItem") as! OneTextField
-            cell.text_.placeholder = "Recipe name"
-            cell.text_.text = name
-            cell.text_.addDoneButtonOnKeyboard()
-            cell.text_.tag = NAME
-            cell.text_.delegate = self
-            return cell
-        case LINK:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "textFieldItem") as! OneTextField
-            cell.text_.placeholder = "Recipe link (optional)"
-            cell.text_.text = link
-            cell.text_.addDoneButtonOnKeyboard()
-            cell.text_.tag = LINK
-            cell.text_.delegate = self
-            return cell
-        case INGREDIENT_HEADING:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! OneLabel
-            cell.label.text = isRecipe ? "Ingredients" : "Groceries"
+            cell.oneText.placeholder = "Recipe name"
+            cell.oneText.text = name
+            cell.oneText.addDoneButtonOnKeyboard()
+            cell.oneText.tag = NAME
+            cell.oneText.delegate = self
+            cell.twoText.placeholder = "Recipe link (optional)"
+            cell.twoText.text = link
+            cell.twoText.addDoneButtonOnKeyboard()
+            cell.twoText.tag = LINK
+            cell.twoText.delegate = self
+            if (startEditing) {
+                cell.oneText.becomeFirstResponder()
+            }
             return cell
         case INGREDIENTS:
-            let identifier = isRecipe ? "textItem" : "groceryItem"
-            let cell = tableView.dequeueReusableCell(withIdentifier: identifier) as! OneText
+            let cell = tableView.dequeueReusableCell(withIdentifier: "textItem") as! OneText
             cell.text_.text = ingredients
             cell.text_.addDoneButtonOnKeyboard()
-            cell.text_.layer.cornerRadius = 10
             cell.text_.tag = INGREDIENTS
             cell.text_.delegate = self
-            return cell
-        case STEP_HEADING:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! OneLabel
-            cell.label.text = "Steps"
             return cell
         case STEPS:
             let cell = tableView.dequeueReusableCell(withIdentifier: "textItem") as! OneText
             cell.text_.text = steps
             cell.text_.addDoneButtonOnKeyboard()
-            cell.text_.layer.cornerRadius = 10
             cell.text_.tag = STEPS
             cell.text_.delegate = self
             return cell
