@@ -33,19 +33,13 @@ class SettingsController: UIViewController {
 }
 
 class SettingsTableController: UITableViewController {
-    var boughtProducts: [SKProduct] = []
-    var unboughtProducts: [SKProduct] = []
     var preferences: [PreferenceRole] = [.mealsDefaultTab]
+    var products: [(SKProduct, Bool)] = []
     var onChange: (() -> Void)? = nil
-    
-    let SETTINGS_HEADING = 0
-    let VERSION = 1
-    let PREFERENCES = 2
-    let HELP = 3
-    let PURCHASE_HEADING = 4
-    let PURCHASES = 5
-    let AVAILABLE_PURCHASES = 6
-    let RESTORE_PURCHASES = 7
+
+    let SUPPORT = 0
+    let PREFERENCES = 1
+    let PURCHASES = 2
     
     private func loadData() {
         let spinner = startLoading()
@@ -55,20 +49,16 @@ class SettingsTableController: UITableViewController {
             case .failure(let err):
                 print(err.errorDescription ?? "Failed to get products")
                 break
-            case .success(let products):
-                var bought: [SKProduct] = []
-                var unbought: [SKProduct] = []
-                for product in products {
-                    if let role = ProductRole.fromString(product.productIdentifier), !role.isConsumable, User.purchased(role) {
-                        bought.append(product)
+            case .success(let ps):
+                self.products = []
+                for p in ps {
+                    if let role = ProductRole.fromString(p.productIdentifier), !role.isConsumable, User.purchased(role) {
+                        self.products.append((p, true))
                     } else {
-                        unbought.append(product)
+                        self.products.append((p, false))
                     }
                 }
-                bought.sort(by: { $0.productIdentifier < $1.productIdentifier })
-                unbought.sort(by: { $0.productIdentifier < $1.productIdentifier })
-                self.boughtProducts = bought
-                self.unboughtProducts = unbought
+                self.products.sort(by: { $0.0.productIdentifier < $1.0.productIdentifier })
                 DispatchQueue.main.async {
                     self.tableView.reloadData()
                 } 
@@ -83,35 +73,39 @@ class SettingsTableController: UITableViewController {
     }
     
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 8
+        return 3
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
-        case SETTINGS_HEADING: return 1
-        case VERSION: return 1
+        case SUPPORT: return 2
         case PREFERENCES: return preferences.count
-        case HELP: return 1
-        case PURCHASE_HEADING: return 1
-        case PURCHASES: return boughtProducts.count
-        case AVAILABLE_PURCHASES: return unboughtProducts.count
-        case RESTORE_PURCHASES: return 1
+        case PURCHASES: return products.count + 1
         default: return 0
+        }
+    }
+    
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        switch section {
+        case SUPPORT: return "Support"
+        case PREFERENCES: return "Preferences"
+        case PURCHASES: return "Purchases"
+        default: return nil
         }
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch indexPath.section {
-        case SETTINGS_HEADING:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! OneLabel
-            cell.label.text = "Settings"
-            return cell
-        case VERSION:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "version") as! OneLabel
-            let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as! String
-            let bundle = Bundle.main.infoDictionary?["CFBundleVersion"] as! String
-            cell.label.text = "\(version).\(bundle)"
-            return cell
+        case SUPPORT:
+            if (indexPath.row == 0) {
+                let cell = tableView.dequeueReusableCell(withIdentifier: "version") as! OneLabel
+                let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as! String
+                let bundle = Bundle.main.infoDictionary?["CFBundleVersion"] as! String
+                cell.label.text = "\(version).\(bundle)"
+                return cell
+            } else {
+                return tableView.dequeueReusableCell(withIdentifier: "help")!
+            }
         case PREFERENCES:
             let cell = tableView.dequeueReusableCell(withIdentifier: "preference") as! LabelSwitch
             let preference = preferences[indexPath.row]
@@ -120,31 +114,19 @@ class SettingsTableController: UITableViewController {
             cell.switch_.isOn = User.preference(preference)
             cell.switch_.addTarget(self, action: #selector(didTapPreference), for: .touchUpInside)
             return cell
-        case HELP:
-            return tableView.dequeueReusableCell(withIdentifier: "help")!
-        case PURCHASE_HEADING:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! OneLabel
-            cell.label.text = "Purchases"
-            return cell
         case PURCHASES:
-            let product = boughtProducts[indexPath.row]
-            let price = Purchases.shared.getPriceFormatted(for: product) ?? ""
-            let cell = tableView.dequeueReusableCell(withIdentifier: "purchase") as! LabelButton
-            cell.label.text = "\(product.localizedTitle) - \(price)"
-            cell.label.isEnabled = false
-            let image = UIImage(systemName: "lock.open.fill")
-            cell.button.setImage(image, for: .normal)
-            return cell
-        case AVAILABLE_PURCHASES:
-            let product = unboughtProducts[indexPath.row]
-            let price = Purchases.shared.getPriceFormatted(for: product) ?? ""
-            let cell = tableView.dequeueReusableCell(withIdentifier: "purchase") as! LabelButton
-            cell.label.text = "\(product.localizedTitle) - \(price)"
-            let image = UIImage(systemName: "lock.fill")
-            cell.button.setImage(image, for: .normal)
-            return cell
-        case RESTORE_PURCHASES:
-            return tableView.dequeueReusableCell(withIdentifier: "restore")!
+            if (products.count > indexPath.row) {
+                let (product, bought) = products[indexPath.row]
+                let price = Purchases.shared.getPriceFormatted(for: product) ?? ""
+                let cell = tableView.dequeueReusableCell(withIdentifier: "purchase") as! LabelButton
+                cell.label.text = "\(product.localizedTitle) - \(price)"
+                cell.label.isEnabled = !bought
+                let image = UIImage(systemName: bought ? "lock.open.fill" : "lock.fill")
+                cell.button.setImage(image, for: .normal)
+                return cell
+            } else {
+                return tableView.dequeueReusableCell(withIdentifier: "restore")!
+            }
         default:
             return tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! OneLabel
         }
@@ -168,21 +150,23 @@ class SettingsTableController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.section {
-        case HELP:
-            needHelp()
+        case SUPPORT:
+            if (indexPath.row == 1) { needHelp() }
             break
-        case AVAILABLE_PURCHASES:
-            let product = unboughtProducts[indexPath.row]
-            guard let price = Purchases.shared.getPriceFormatted(for: product) else { return }
-            guard Purchases.shared.canMakePayments() else { return }
-            let handler = { (action: UIAlertAction) -> Void in
-                Purchases.shared.buy(product: product, withHandler: self.purchaseHandler)
+        case PURCHASES:
+            if (products.count > indexPath.row) {
+                let (product, bought) = products[indexPath.row]
+                guard !bought else { return }
+                guard let price = Purchases.shared.getPriceFormatted(for: product) else { return }
+                guard Purchases.shared.canMakePayments() else { return }
+                let handler = { (action: UIAlertAction) -> Void in
+                    Purchases.shared.buy(product: product, withHandler: self.purchaseHandler)
+                }
+                buyPrompt(title: product.localizedTitle, message: product.localizedDescription, price: price, handler: handler)
+            } else {
+                guard Purchases.shared.canMakePayments() else { return }
+                Purchases.shared.restore(withHandler: self.purchaseHandler)
             }
-            buyPrompt(title: product.localizedTitle, message: product.localizedDescription, price: price, handler: handler)
-            break
-        case RESTORE_PURCHASES:
-            guard Purchases.shared.canMakePayments() else { return }
-            Purchases.shared.restore(withHandler: self.purchaseHandler)
             break
         default: break
         }
