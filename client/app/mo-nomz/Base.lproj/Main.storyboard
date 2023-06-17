@@ -342,33 +342,38 @@
                                     <action selector="didTapClearTags:" destination="YMV-r0-X4W" eventType="touchUpInside" id="KVK-2A-dCO"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Fx0-K3-FsN">
-                                <rect key="frame" x="375" y="73" width="19" height="22"/>
-                                <state key="normal" image="ellipsis" catalog="system"/>
-                            </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="IHH-9s-qeU">
-                                <rect key="frame" x="332" y="73.5" width="23" height="21"/>
+                                <rect key="frame" x="336" y="73.5" width="23" height="21"/>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                 <state key="normal" image="plus" catalog="system"/>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" role="destructive" translatesAutoresizingMaskIntoConstraints="NO" id="iWD-Qs-tLH">
+                                <rect key="frame" x="367" y="70" width="27" height="28"/>
+                                <color key="tintColor" systemColor="systemRedColor"/>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" image="arrow.3.trianglepath" catalog="system"/>
+                                <connections>
+                                    <action selector="didTapClear:" destination="YMV-r0-X4W" eventType="touchUpInside" id="hKA-gN-QZL"/>
+                                </connections>
                             </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="lEH-cO-OP7"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="nyB-Sd-ZFc" firstAttribute="top" secondItem="OKO-ca-LY2" secondAttribute="bottom" constant="20" id="1cz-if-SzU"/>
-                            <constraint firstItem="Fx0-K3-FsN" firstAttribute="leading" secondItem="IHH-9s-qeU" secondAttribute="trailing" constant="20" id="3eG-H8-rQo"/>
                             <constraint firstItem="IHH-9s-qeU" firstAttribute="centerY" secondItem="OKO-ca-LY2" secondAttribute="centerY" id="7br-wS-K8c"/>
                             <constraint firstItem="wq3-Ui-YiB" firstAttribute="leading" secondItem="lEH-cO-OP7" secondAttribute="leading" id="CaP-Sm-5zx"/>
-                            <constraint firstItem="lEH-cO-OP7" firstAttribute="trailing" secondItem="Fx0-K3-FsN" secondAttribute="trailing" constant="20" id="ChX-pP-OVa"/>
                             <constraint firstItem="nyB-Sd-ZFc" firstAttribute="leading" secondItem="kAj-rZ-NaQ" secondAttribute="trailing" id="Cy8-Av-G1O"/>
+                            <constraint firstItem="iWD-Qs-tLH" firstAttribute="leading" secondItem="IHH-9s-qeU" secondAttribute="trailing" constant="8" symbolic="YES" id="HtE-LO-n2q"/>
                             <constraint firstItem="wq3-Ui-YiB" firstAttribute="trailing" secondItem="lEH-cO-OP7" secondAttribute="trailing" id="JyY-11-hYe"/>
                             <constraint firstItem="OKO-ca-LY2" firstAttribute="top" secondItem="lEH-cO-OP7" secondAttribute="top" constant="20" id="LYZ-7H-Ef9"/>
                             <constraint firstItem="mYf-bB-0W0" firstAttribute="leading" secondItem="lEH-cO-OP7" secondAttribute="leading" id="OII-QM-t2D"/>
                             <constraint firstItem="wq3-Ui-YiB" firstAttribute="bottom" secondItem="lEH-cO-OP7" secondAttribute="bottom" id="QwV-sU-nY8"/>
                             <constraint firstItem="lEH-cO-OP7" firstAttribute="trailing" secondItem="oOx-KR-VOP" secondAttribute="trailing" constant="20" id="Sdd-66-hjq"/>
                             <constraint firstItem="mYf-bB-0W0" firstAttribute="top" secondItem="oOx-KR-VOP" secondAttribute="bottom" constant="8" symbolic="YES" id="Sh0-eI-ocx"/>
-                            <constraint firstItem="Fx0-K3-FsN" firstAttribute="centerY" secondItem="OKO-ca-LY2" secondAttribute="centerY" id="Yy1-nL-lDV"/>
+                            <constraint firstItem="lEH-cO-OP7" firstAttribute="trailing" secondItem="iWD-Qs-tLH" secondAttribute="trailing" constant="20" id="VUS-hf-0Hk"/>
                             <constraint firstItem="wq3-Ui-YiB" firstAttribute="top" secondItem="mYf-bB-0W0" secondAttribute="bottom" constant="8" symbolic="YES" id="ZkN-hN-ypa"/>
+                            <constraint firstItem="iWD-Qs-tLH" firstAttribute="centerY" secondItem="OKO-ca-LY2" secondAttribute="centerY" id="csO-Nx-Icb"/>
                             <constraint firstItem="nyB-Sd-ZFc" firstAttribute="centerY" secondItem="kAj-rZ-NaQ" secondAttribute="centerY" id="gav-vw-ahA"/>
                             <constraint firstItem="mYf-bB-0W0" firstAttribute="top" secondItem="nyB-Sd-ZFc" secondAttribute="bottom" constant="8" symbolic="YES" id="h2H-zG-DxL"/>
                             <constraint firstItem="mYf-bB-0W0" firstAttribute="trailing" secondItem="lEH-cO-OP7" secondAttribute="trailing" id="hML-ho-Tqk"/>
@@ -382,7 +387,6 @@
                     <connections>
                         <outlet property="add" destination="IHH-9s-qeU" id="Jdj-ql-033"/>
                         <outlet property="banner" destination="wq3-Ui-YiB" id="QM2-JT-yqW"/>
-                        <outlet property="hamburger" destination="Fx0-K3-FsN" id="kLP-ga-fvZ"/>
                         <outlet property="search" destination="kAj-rZ-NaQ" id="iRC-NZ-PIz"/>
                         <segue destination="G6h-5j-u4H" kind="show" identifier="addLink" id="gZn-r8-WZs"/>
                         <segue destination="WIE-EV-vPm" kind="show" identifier="addManual" id="I2g-nD-ajP"/>
@@ -428,11 +432,20 @@
                                 <state key="normal" image="ellipsis" catalog="system"/>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kfQ-SK-sbN">
-                                <rect key="frame" x="327" y="73.5" width="23" height="21"/>
+                                <rect key="frame" x="304" y="73.5" width="23" height="21"/>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                 <state key="normal" image="plus" catalog="system"/>
                                 <connections>
                                     <segue destination="h4A-hb-V1S" kind="show" identifier="addManual" id="WVr-Rt-SBc"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" role="destructive" translatesAutoresizingMaskIntoConstraints="NO" id="WfJ-eS-RpJ">
+                                <rect key="frame" x="335" y="70" width="27" height="28"/>
+                                <color key="tintColor" systemColor="systemRedColor"/>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" image="arrow.3.trianglepath" catalog="system"/>
+                                <connections>
+                                    <action selector="didTapClear:" destination="6IF-YC-SCE" eventType="touchUpInside" id="a0Q-C3-9ER"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -445,13 +458,15 @@
                             <constraint firstItem="TVo-0J-usG" firstAttribute="bottom" secondItem="o2T-mH-jqp" secondAttribute="bottom" id="KoK-9I-4aF"/>
                             <constraint firstItem="TVo-0J-usG" firstAttribute="top" secondItem="Hmb-wi-Kz8" secondAttribute="bottom" constant="8" symbolic="YES" id="M8r-JL-PbH"/>
                             <constraint firstItem="VL9-oc-dHF" firstAttribute="centerY" secondItem="kfQ-SK-sbN" secondAttribute="centerY" id="OHQ-a7-zEF"/>
+                            <constraint firstItem="WfJ-eS-RpJ" firstAttribute="leading" secondItem="kfQ-SK-sbN" secondAttribute="trailing" constant="8" symbolic="YES" id="QTJ-FC-6Zy"/>
                             <constraint firstItem="Qnv-G4-Huf" firstAttribute="top" secondItem="o2T-mH-jqp" secondAttribute="top" constant="20" id="QZ7-PM-MMn"/>
                             <constraint firstItem="Qnv-G4-Huf" firstAttribute="leading" secondItem="o2T-mH-jqp" secondAttribute="leading" constant="20" id="Tge-xD-r9O"/>
                             <constraint firstItem="TVo-0J-usG" firstAttribute="leading" secondItem="o2T-mH-jqp" secondAttribute="leading" id="bld-oY-zLy"/>
-                            <constraint firstItem="VL9-oc-dHF" firstAttribute="leading" secondItem="kfQ-SK-sbN" secondAttribute="trailing" constant="20" id="ern-C0-yqw"/>
+                            <constraint firstItem="VL9-oc-dHF" firstAttribute="leading" secondItem="WfJ-eS-RpJ" secondAttribute="trailing" constant="8" symbolic="YES" id="bqO-uS-PIR"/>
                             <constraint firstItem="kfQ-SK-sbN" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Qnv-G4-Huf" secondAttribute="trailing" constant="20" id="lsG-WI-907"/>
                             <constraint firstItem="VL9-oc-dHF" firstAttribute="centerY" secondItem="Qnv-G4-Huf" secondAttribute="centerY" id="qV3-jM-IMp"/>
                             <constraint firstItem="o2T-mH-jqp" firstAttribute="trailing" secondItem="VL9-oc-dHF" secondAttribute="trailing" constant="20" id="soD-iC-WvU"/>
+                            <constraint firstItem="WfJ-eS-RpJ" firstAttribute="centerY" secondItem="Qnv-G4-Huf" secondAttribute="centerY" id="uEy-LK-qaw"/>
                             <constraint firstItem="Hmb-wi-Kz8" firstAttribute="trailing" secondItem="o2T-mH-jqp" secondAttribute="trailing" id="wfV-7W-ADc"/>
                         </constraints>
                     </view>
@@ -500,15 +515,22 @@
                                             </constraints>
                                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                             <color key="tintColor" systemColor="labelColor"/>
-                                            <state key="normal" image="chevron.forward.circle.fill" catalog="system"/>
+                                            <state key="normal" image="chevron.forward" catalog="system"/>
                                         </button>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kK5-V7-YdK">
                                             <rect key="frame" x="20" y="11.5" width="347" height="20.5"/>
                                             <fontDescription key="fontDescription" type="system" weight="medium" pointSize="17"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                                                <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                    <integer key="value" value="5"/>
+                                                </userDefinedRuntimeAttribute>
+                                            </userDefinedRuntimeAttributes>
                                         </label>
                                     </subviews>
+                                    <color key="backgroundColor" systemColor="systemGray6Color"/>
                                     <constraints>
                                         <constraint firstAttribute="trailing" secondItem="5Cj-kJ-QzS" secondAttribute="trailing" constant="20" id="1v6-Ol-A0Z"/>
                                         <constraint firstItem="kK5-V7-YdK" firstAttribute="centerY" secondItem="3b6-BE-ADB" secondAttribute="centerY" id="8ED-A5-uSH"/>
@@ -517,7 +539,6 @@
                                         <constraint firstItem="5Cj-kJ-QzS" firstAttribute="leading" secondItem="kK5-V7-YdK" secondAttribute="trailing" constant="8" symbolic="YES" id="ptl-Wj-a81"/>
                                     </constraints>
                                 </tableViewCellContentView>
-                                <color key="backgroundColor" systemColor="systemGray5Color"/>
                                 <connections>
                                     <outlet property="button" destination="5Cj-kJ-QzS" id="dbg-s0-doT"/>
                                     <outlet property="label" destination="kK5-V7-YdK" id="PcK-cm-wGw"/>
@@ -544,7 +565,7 @@
                                             </constraints>
                                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                             <color key="tintColor" systemColor="labelColor"/>
-                                            <state key="normal" image="chevron.forward.circle.fill" catalog="system"/>
+                                            <state key="normal" image="chevron.forward" catalog="system"/>
                                         </button>
                                     </subviews>
                                     <constraints>
@@ -582,7 +603,7 @@
                                             </constraints>
                                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                             <color key="tintColor" systemColor="labelColor"/>
-                                            <state key="normal" image="chevron.forward.circle.fill" catalog="system"/>
+                                            <state key="normal" image="chevron.forward" catalog="system"/>
                                         </button>
                                     </subviews>
                                     <constraints>
@@ -1605,9 +1626,10 @@
         <segue reference="w9r-p2-QGm"/>
     </inferredMetricsTieBreakers>
     <resources>
+        <image name="arrow.3.trianglepath" catalog="system" width="128" height="123"/>
         <image name="cart" catalog="system" width="128" height="102"/>
         <image name="checkmark" catalog="system" width="128" height="114"/>
-        <image name="chevron.forward.circle.fill" catalog="system" width="128" height="123"/>
+        <image name="chevron.forward" catalog="system" width="97" height="128"/>
         <image name="circle" catalog="system" width="128" height="123"/>
         <image name="circle.fill" catalog="system" width="128" height="123"/>
         <image name="ellipsis" catalog="system" width="128" height="37"/>
@@ -1641,6 +1663,12 @@
         </systemColor>
         <systemColor name="systemGray5Color">
             <color red="0.89803921568627454" green="0.89803921568627454" blue="0.91764705882352937" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="systemGray6Color">
+            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="systemRedColor">
+            <color red="1" green="0.23137254901960785" blue="0.18823529411764706" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

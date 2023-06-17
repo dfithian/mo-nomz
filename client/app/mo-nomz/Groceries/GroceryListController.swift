@@ -399,7 +399,7 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
         switch indexPath.section {
         case TO_BUY_HEADING:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! LabelButton
-            let imageName = toBuyCollapsed ? "chevron.forward.circle.fill" : "chevron.down.circle.fill"
+            let imageName = toBuyCollapsed ? "chevron.forward" : "chevron.down"
             cell.label.text = "To buy (\(toBuy.getAllItemCount()))"
             cell.button.setImage(UIImage(systemName: imageName), for: .normal)
             return cell
@@ -413,13 +413,13 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
                 return cell
             case .group(let group):
                 let cell = tableView.dequeueReusableCell(withIdentifier: "groupHeader") as! LabelButton
-                let imageName = toBuyGroupCollapsed.isGroupCollapsed(group.id) ? "chevron.forward.circle.fill" : "chevron.down.circle.fill"
+                let imageName = toBuyGroupCollapsed.isGroupCollapsed(group.id) ? "chevron.forward" : "chevron.down"
                 cell.button.setImage(UIImage(systemName: imageName), for: .normal)
                 cell.label.text = "\(group.group.name) (\(toBuy.getGroupCount(group.id)))"
                 return cell
             case .uncategorized:
                 let cell = tableView.dequeueReusableCell(withIdentifier: "groupHeader") as! LabelButton
-                let imageName = toBuyGroupCollapsed.isGroupCollapsed(nil) ? "chevron.forward.circle.fill" : "chevron.down.circle.fill"
+                let imageName = toBuyGroupCollapsed.isGroupCollapsed(nil) ? "chevron.forward" : "chevron.down"
                 cell.button.setImage(UIImage(systemName: imageName), for: .normal)
                 cell.label.text = "Uncategorized (\(toBuy.getGroupCount(nil)))"
                 return cell
@@ -427,7 +427,7 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
             }
         case BOUGHT_HEADING:
             let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! LabelButton
-            let imageName = boughtCollapsed ? "chevron.forward.circle.fill" : "chevron.down.circle.fill"
+            let imageName = boughtCollapsed ? "chevron.forward" : "chevron.down"
             cell.label.text = "Bought (\(bought.getAllItemCount()))"
             cell.button.setImage(UIImage(systemName: imageName), for: .normal)
             return cell
@@ -441,13 +441,13 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
                 return cell
             case .group(let group):
                 let cell = tableView.dequeueReusableCell(withIdentifier: "boughtGroupHeader") as! LabelButton
-                let imageName = boughtGroupCollapsed.isGroupCollapsed(group.id) ? "chevron.forward.circle.fill" : "chevron.down.circle.fill"
+                let imageName = boughtGroupCollapsed.isGroupCollapsed(group.id) ? "chevron.forward" : "chevron.down"
                 cell.button.setImage(UIImage(systemName: imageName), for: .normal)
                 cell.label.text = "\(group.group.name) (\(bought.getGroupCount(group.id)))"
                 return cell
             case .uncategorized:
                 let cell = tableView.dequeueReusableCell(withIdentifier: "boughtGroupHeader") as! LabelButton
-                let imageName = boughtGroupCollapsed.isGroupCollapsed(nil) ? "chevron.forward.circle.fill" : "chevron.down.circle.fill"
+                let imageName = boughtGroupCollapsed.isGroupCollapsed(nil) ? "chevron.forward" : "chevron.down"
                 cell.button.setImage(UIImage(systemName: imageName), for: .normal)
                 cell.label.text = "Uncategorized (\(bought.getGroupCount(nil)))"
                 return cell

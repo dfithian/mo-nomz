@@ -9,7 +9,6 @@ import UIKit
 
 class RecipeController: UIViewController, RecipeFilterDelegate {
     @IBOutlet weak var add: UIButton!
-    @IBOutlet weak var hamburger: UIButton!
     @IBOutlet weak var banner: UIView!
     @IBOutlet weak var search: UISearchBar!
 
@@ -18,6 +17,16 @@ class RecipeController: UIViewController, RecipeFilterDelegate {
     
     @IBAction func didTapClearTags(_ sender: Any?) {
         filterVc?.clear()
+    }
+    
+    @IBAction func didTapClear(_ sender: Any?) {
+        if !Database.selectGroceries().isEmpty {
+            let handler = { (action: UIAlertAction) -> Void in
+                Database.clearAll()
+                self.reloadData()
+            }
+            self.promptForConfirmation(title: "Clear", message: "This will delete all groceries and deactivate all recipes. Do you want to continue?", handler: handler)
+        }
     }
 
     func reloadData() {
@@ -36,21 +45,6 @@ class RecipeController: UIViewController, RecipeFilterDelegate {
             }),
             UIAction(title: "Add recipe photos", image: UIImage(systemName: "photo.on.rectangle"), handler: { _ in
                 self.performSegue(withIdentifier: "addPhoto", sender: nil)
-            })
-        ])
-    }
-    
-    private func setupHamburger() {
-        hamburger.showsMenuAsPrimaryAction = true
-        hamburger.menu = UIMenu(options: .displayInline, children: [
-            UIAction(title: "Clear", image: UIImage(systemName: "arrow.3.trianglepath"), attributes: .destructive, handler: { _ in
-                if !Database.selectGroceries().isEmpty {
-                    let handler = { (action: UIAlertAction) -> Void in
-                        Database.clearAll()
-                        self.reloadData()
-                    }
-                    self.promptForConfirmation(title: "Clear", message: "This will delete all groceries and deactivate all recipes. Do you want to continue?", handler: handler)
-                }
             })
         ])
     }
@@ -98,7 +92,6 @@ class RecipeController: UIViewController, RecipeFilterDelegate {
         super.viewDidLoad()
         reloadData()
         setupAdd()
-        setupHamburger()
         search.searchTextField.addDoneButtonOnKeyboard()
         search.searchTextField.font = UIFont.systemFont(ofSize: 14)
     }
