@@ -36,14 +36,11 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
     let ADD_INGREDIENT_TAG = 0
     let ADD_STEP_TAG = 1
 
-    let INGREDIENT_LIST_HEADING = 0
-    let INGREDIENT_LIST = 1
-    let ADD_INGREDIENT = 2
-    let STEP_LIST_HEADING = 3
-    let STEP_LIST = 4
-    let ADD_STEP = 5
-    let NOTES_HEADING = 6
-    let NOTES = 7
+    let INGREDIENT_LIST = 0
+    let ADD_INGREDIENT = 1
+    let STEP_LIST = 2
+    let ADD_STEP = 3
+    let NOTES = 4
     
     @objc func didTapAdd(_ sender: Any?) {
         guard let b = sender as? UIButton else { return }
@@ -86,29 +83,31 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
     }
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 8
+        return 5
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
-        case NOTES_HEADING: return 1
         case NOTES: return 1
-        case INGREDIENT_LIST_HEADING: return 1
         case INGREDIENT_LIST: return ingredients.count
         case ADD_INGREDIENT: return 1
-        case STEP_LIST_HEADING: return 1
         case STEP_LIST: return steps.count
         case ADD_STEP: return 1
         default: return 0
         }
     }
+    
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        switch section {
+        case NOTES: return "Notes"
+        case INGREDIENT_LIST: return "Ingredients"
+        case STEP_LIST: return "Steps"
+        default: return nil
+        }
+    }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch indexPath.section {
-        case NOTES_HEADING:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! OneLabel
-            cell.label.text = "Notes"
-            return cell
         case NOTES:
             let cell = tableView.dequeueReusableCell(withIdentifier: "noteItem") as! OneText
             cell.text_.text = recipe?.recipe.notes ?? ""
@@ -116,10 +115,6 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
             cell.text_.layer.cornerRadius = 10
             cell.text_.delegate = self
             cell.text_.tag = Int.max
-            return cell
-        case INGREDIENT_LIST_HEADING:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! OneLabel
-            cell.label.text = "Ingredients"
             return cell
         case INGREDIENT_LIST:
             let cell = tableView.dequeueReusableCell(withIdentifier: "listItem") as! OneLabel
@@ -130,10 +125,6 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
             let cell = tableView.dequeueReusableCell(withIdentifier: "addItem") as! OneButton
             cell.button.tag = ADD_INGREDIENT_TAG
             cell.button.addTarget(self, action: #selector(didTapAdd), for: .touchUpInside)
-            return cell
-        case STEP_LIST_HEADING:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! OneLabel
-            cell.label.text = "Steps"
             return cell
         case STEP_LIST:
             let cell = tableView.dequeueReusableCell(withIdentifier: "stepItem") as! OneText
@@ -147,8 +138,7 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
             cell.button.tag = ADD_STEP_TAG
             cell.button.addTarget(self, action: #selector(didTapAdd), for: .touchUpInside)
             return cell
-        default:
-            return tableView.dequeueReusableCell(withIdentifier: "sectionHeader")!
+        default: return UITableViewCell()
         }
     }
     
@@ -234,10 +224,8 @@ class RecipeDetailListController: UITableViewController, UITextViewDelegate, UIT
         guard let indexPath = destinationIndexPath else { return cancel }
         guard session.items.count == 1 else { return cancel }
         switch indexPath.section {
-        case INGREDIENT_LIST:
-            break
-        case STEP_LIST:
-            break
+        case INGREDIENT_LIST: break
+        case STEP_LIST: break
         default: return cancel
         }
         if tableView.hasActiveDrag {

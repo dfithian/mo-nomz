@@ -20,6 +20,16 @@ class GroceryController: UIViewController {
         onChange?()
     }
     
+    @IBAction func didTapClear(_ sender: Any?) {
+        if !Database.selectGroceries().isEmpty {
+            let handler = { (action: UIAlertAction) -> Void in
+                Database.clearAll()
+                self.reloadData()
+            }
+            self.promptForConfirmation(title: "Clear", message: "This will delete all groceries and deactivate all recipes. Do you want to continue?", handler: handler)
+        }
+    }
+    
     private func setupHamburger() {
         hamburger.showsMenuAsPrimaryAction = true
         hamburger.menu = UIMenu(options: .displayInline, children: [
@@ -37,21 +47,12 @@ class GroceryController: UIViewController {
                     Database.insertGroups(groups: [group])
                     self.reloadData()
                 })
-            }),
-            UIAction(title: "Clear", image: UIImage(systemName: "arrow.3.trianglepath"), attributes: .destructive, handler: { _ in
-                if !Database.selectGroceries().isEmpty {
-                    let handler = { (action: UIAlertAction) -> Void in
-                        Database.clearAll()
-                        self.reloadData()
-                    }
-                    self.promptForConfirmation(title: "Clear", message: "This will delete all groceries and deactivate all recipes. Do you want to continue?", handler: handler)
-                }
             })
         ])
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let vc = segue.destination as? AddController, segue.identifier == "addManual" {
+        if let vc = segue.destination as? AddController, segue.identifier == "addGrocery" {
             vc.addType = .manualGroceries
             vc.onChange = reloadData
         }
