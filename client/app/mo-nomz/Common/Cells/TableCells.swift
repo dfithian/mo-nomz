@@ -19,10 +19,6 @@ class OneText: UITableViewCell {
     @IBOutlet weak var text_: UITextView!
 }
 
-class OneTextField: UITableViewCell {
-    @IBOutlet weak var text_: UITextField!
-}
-
 class LabelButton: UITableViewCell {
     @IBOutlet weak var label: UILabel!
     @IBOutlet weak var button: UIButton!

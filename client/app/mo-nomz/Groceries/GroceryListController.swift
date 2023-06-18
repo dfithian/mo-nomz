@@ -440,13 +440,13 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
                 cell.button.addTarget(self, action: #selector(didTapBought), for: .touchUpInside)
                 return cell
             case .group(let group):
-                let cell = tableView.dequeueReusableCell(withIdentifier: "boughtGroupHeader") as! LabelButton
+                let cell = tableView.dequeueReusableCell(withIdentifier: "groupHeader") as! LabelButton
                 let imageName = boughtGroupCollapsed.isGroupCollapsed(group.id) ? "chevron.forward" : "chevron.down"
                 cell.button.setImage(UIImage(systemName: imageName), for: .normal)
                 cell.label.text = "\(group.group.name) (\(bought.getGroupCount(group.id)))"
                 return cell
             case .uncategorized:
-                let cell = tableView.dequeueReusableCell(withIdentifier: "boughtGroupHeader") as! LabelButton
+                let cell = tableView.dequeueReusableCell(withIdentifier: "groupHeader") as! LabelButton
                 let imageName = boughtGroupCollapsed.isGroupCollapsed(nil) ? "chevron.forward" : "chevron.down"
                 cell.button.setImage(UIImage(systemName: imageName), for: .normal)
                 cell.label.text = "Uncategorized (\(bought.getGroupCount(nil)))"
@@ -596,7 +596,7 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let defaultHeadingHeight = 44.5
-        let groupHeadingHeight = 36.0
+        let groupHeadingHeight = 38.0
         switch indexPath.section {
         case TO_BUY:
             switch toBuy.getItem(indexPath.row) {

@@ -178,10 +178,16 @@
                                 </items>
                             </toolbar>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" keyboardDismissMode="onDrag" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="ja8-9m-ECK">
-                                <rect key="frame" x="20" y="139" width="374" height="683"/>
+                                <rect key="frame" x="20" y="139" width="374" height="693"/>
+                                <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
                                 <color key="textColor" systemColor="labelColor"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="10"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
                                 <connections>
                                     <outlet property="delegate" destination="fSD-ow-YI0" id="5RO-pq-rKU"/>
                                 </connections>
@@ -196,7 +202,7 @@
                         <viewLayoutGuide key="safeArea" id="G9S-ue-Xg6"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="iYy-QL-l3Y" firstAttribute="top" secondItem="ja8-9m-ECK" secondAttribute="bottom" constant="20" id="3d2-uT-oZ9"/>
+                            <constraint firstItem="iYy-QL-l3Y" firstAttribute="top" secondItem="ja8-9m-ECK" secondAttribute="bottom" constant="10" id="3d2-uT-oZ9"/>
                             <constraint firstItem="iYy-QL-l3Y" firstAttribute="trailing" secondItem="G9S-ue-Xg6" secondAttribute="trailing" id="JMb-0j-pmi"/>
                             <constraint firstItem="G9S-ue-Xg6" firstAttribute="trailing" secondItem="ITN-ec-POO" secondAttribute="trailing" constant="20" id="LVs-sp-adS"/>
                             <constraint firstItem="ITN-ec-POO" firstAttribute="width" secondItem="xVR-QC-gJ5" secondAttribute="width" id="NEv-Bf-6yD"/>
@@ -329,12 +335,18 @@
                                     <subviews>
                                         <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" keyboardDismissMode="onDrag" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="ueK-af-XMq">
                                             <rect key="frame" x="20" y="5" width="374" height="175"/>
+                                            <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="175" id="xtz-Wh-fS9"/>
                                             </constraints>
                                             <color key="textColor" systemColor="labelColor"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                    <integer key="value" value="5"/>
+                                                </userDefinedRuntimeAttribute>
+                                            </userDefinedRuntimeAttributes>
                                         </textView>
                                     </subviews>
                                     <constraints>
@@ -482,13 +494,19 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" keyboardDismissMode="onDrag" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="fuo-pc-Z3o">
-                                <rect key="frame" x="20" y="108" width="374" height="705"/>
+                                <rect key="frame" x="20" y="108" width="374" height="695"/>
+                                <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
                                 <constraints>
                                     <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="175" id="KNt-Ha-iYE"/>
                                 </constraints>
                                 <color key="textColor" systemColor="labelColor"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="10"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
                                 <connections>
                                     <outlet property="delegate" destination="Pxr-bK-vCr" id="hpc-dJ-0jE"/>
                                 </connections>
@@ -501,7 +519,7 @@
                             <constraint firstItem="XSM-1e-E3O" firstAttribute="top" secondItem="sBr-HG-dLO" secondAttribute="top" constant="20" id="7T0-Di-zKW"/>
                             <constraint firstItem="XSM-1e-E3O" firstAttribute="leading" secondItem="Pxr-bK-vCr" secondAttribute="leading" constant="20" id="IpZ-vv-HpN"/>
                             <constraint firstItem="AU9-0R-oEN" firstAttribute="leading" secondItem="sBr-HG-dLO" secondAttribute="leading" id="Ocl-eA-FDU"/>
-                            <constraint firstItem="AU9-0R-oEN" firstAttribute="top" secondItem="fuo-pc-Z3o" secondAttribute="bottom" id="ddl-Ja-ScX"/>
+                            <constraint firstItem="AU9-0R-oEN" firstAttribute="top" secondItem="fuo-pc-Z3o" secondAttribute="bottom" constant="10" id="ddl-Ja-ScX"/>
                             <constraint firstItem="AU9-0R-oEN" firstAttribute="bottom" secondItem="sBr-HG-dLO" secondAttribute="bottom" id="epc-ff-r10"/>
                             <constraint firstItem="fuo-pc-Z3o" firstAttribute="leading" secondItem="sBr-HG-dLO" secondAttribute="leading" constant="20" id="mUK-py-NOF"/>
                             <constraint firstItem="sBr-HG-dLO" firstAttribute="trailing" secondItem="fuo-pc-Z3o" secondAttribute="trailing" constant="20" id="qB0-3E-eP7"/>
@@ -532,6 +550,9 @@
         </namedColor>
         <systemColor name="labelColor">
             <color red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="secondarySystemBackgroundColor">
+            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
