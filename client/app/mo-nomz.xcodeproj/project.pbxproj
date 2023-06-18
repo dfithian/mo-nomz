@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3712FC0E2A3F7C22005DB886 /* TextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3712FC0D2A3F7C22005DB886 /* TextView.swift */; };
 		37145F2B2623CE460011C6C1 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37145F2A2623CE460011C6C1 /* Configuration.swift */; };
 		3716947727C5376D0002BD64 /* Browser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3716947627C5376D0002BD64 /* Browser.swift */; };
 		3716947A27C539790002BD64 /* Navigate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3716947927C539790002BD64 /* Navigate.swift */; };
@@ -74,6 +75,7 @@
 
 /* Begin PBXFileReference section */
 		370F287626228726008C3AC0 /* mo-nomz.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "mo-nomz.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		3712FC0D2A3F7C22005DB886 /* TextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextView.swift; sourceTree = "<group>"; };
 		37145F2A2623CE460011C6C1 /* Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
 		3716947627C5376D0002BD64 /* Browser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Browser.swift; sourceTree = "<group>"; };
 		3716947927C539790002BD64 /* Navigate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Navigate.swift; sourceTree = "<group>"; };
@@ -181,6 +183,7 @@
 				37E1DC1C2631B7C000330C5B /* UserDefaults.swift */,
 				3724EFF927ACD7CE0094574E /* ViewController.swift */,
 				3716947B27C67E890002BD64 /* URL.swift */,
+				3712FC0D2A3F7C22005DB886 /* TextView.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -423,6 +426,7 @@
 				37B979E726EC2057002B677F /* DataAccess.swift in Sources */,
 				3724EFCD27A6F8930094574E /* Search.swift in Sources */,
 				37B535672A2D5D84008C7281 /* Preferences.swift in Sources */,
+				3712FC0E2A3F7C22005DB886 /* TextView.swift in Sources */,
 				37AEE6382623D5710052304F /* Api.swift in Sources */,
 				37B979AB269BB3C6002B677F /* RecipeDetailListController.swift in Sources */,
 				3716947A27C539790002BD64 /* Navigate.swift in Sources */,
@@ -551,7 +555,7 @@
 				CODE_SIGN_ENTITLEMENTS = "mo-nomz/mo-nomzRelease.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 9;
 				DEVELOPMENT_TEAM = 5A6Y383S44;
 				INFOPLIST_FILE = "mo-nomz/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
