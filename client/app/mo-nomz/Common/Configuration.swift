@@ -39,4 +39,12 @@ class Configuration {
             "mo-nomz-dev.herokuapp.com"
         ]
     }
+    
+    static var isDebug: Bool {
+        #if targetEnvironment(simulator)
+        return true
+        #else
+        return false
+        #endif
+    }
 }

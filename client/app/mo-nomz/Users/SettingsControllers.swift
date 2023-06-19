@@ -34,12 +34,14 @@ class SettingsController: UIViewController {
 
 class SettingsTableController: UITableViewController {
     var preferences: [PreferenceRole] = [.mealsDefaultTab]
+    var debugs: [PreferenceRole] = [.showAds]
     var products: [(SKProduct, Bool)] = []
     var onChange: (() -> Void)? = nil
 
     let SUPPORT = 0
     let PREFERENCES = 1
     let PURCHASES = 2
+    let DEBUG = 3
     
     private func loadData() {
         let spinner = startLoading()
@@ -72,8 +74,13 @@ class SettingsTableController: UITableViewController {
         User.setPreference(preferences[s.tag], s.isOn)
     }
     
+    @objc func didTapDebug(_ sender: Any?) {
+        guard let s = sender as? UISwitch else { return }
+        User.setPreference(debugs[s.tag], s.isOn)
+    }
+    
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 3
+        return 4
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -81,6 +88,7 @@ class SettingsTableController: UITableViewController {
         case SUPPORT: return 2
         case PREFERENCES: return preferences.count
         case PURCHASES: return products.count + 1
+        case DEBUG: return Configuration.isDebug ? debugs.count : 0
         default: return 0
         }
     }
@@ -90,6 +98,7 @@ class SettingsTableController: UITableViewController {
         case SUPPORT: return "Support"
         case PREFERENCES: return "Preferences"
         case PURCHASES: return "Purchases"
+        case DEBUG: return Configuration.isDebug ? "Debug" : nil
         default: return nil
         }
     }
@@ -127,6 +136,14 @@ class SettingsTableController: UITableViewController {
             } else {
                 return tableView.dequeueReusableCell(withIdentifier: "restore")!
             }
+        case DEBUG:
+            let cell = tableView.dequeueReusableCell(withIdentifier: "preference") as! LabelSwitch
+            let debug = debugs[indexPath.row]
+            cell.label.text = debug.description
+            cell.switch_.tag = indexPath.row
+            cell.switch_.isOn = User.preference(debug)
+            cell.switch_.addTarget(self, action: #selector(didTapDebug), for: .touchUpInside)
+            return cell
         default:
             return tableView.dequeueReusableCell(withIdentifier: "sectionHeader") as! OneLabel
         }

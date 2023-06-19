@@ -18,6 +18,17 @@ class BannerController: UIViewController, GADBannerViewDelegate {
         parent?.updateViewConstraints()
     }
     
+    private func shouldRemoveBanner() -> Bool {
+        if User.purchased(.removeAds) {
+            return true
+        }
+        #if targetEnvironment(simulator)
+        return !User.preference(.showAds)
+        #else
+        return false
+        #endif
+    }
+    
     func bannerView(_ bannerView: GADBannerView, didFailToReceiveAdWithError error: Error) {
         print(error)
         removeBanner()
@@ -25,14 +36,14 @@ class BannerController: UIViewController, GADBannerViewDelegate {
     
     override func reloadInputViews() {
         super.reloadInputViews()
-        if User.purchased(.removeAds) {
+        if shouldRemoveBanner() {
             removeBanner()
         }
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        if User.purchased(.removeAds) {
+        if shouldRemoveBanner() {
             removeBanner()
             return
         }
@@ -41,14 +52,14 @@ class BannerController: UIViewController, GADBannerViewDelegate {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if User.purchased(.removeAds) {
+        if shouldRemoveBanner() {
             removeBanner()
         }
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        if User.purchased(.removeAds) {
+        if shouldRemoveBanner() {
             removeBanner()
             return
         }
