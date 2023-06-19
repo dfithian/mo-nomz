@@ -9,7 +9,6 @@ import UIKit
 
 class RecipeController: UIViewController, RecipeFilterDelegate {
     @IBOutlet weak var add: UIButton!
-    @IBOutlet weak var banner: UIView!
     @IBOutlet weak var search: UISearchBar!
 
     var filterVc: RecipeFilterController? = nil
@@ -79,9 +78,6 @@ class RecipeController: UIViewController, RecipeFilterDelegate {
             recipeVc = vc
             vc.onChange = reloadData
             search.delegate = vc
-        }
-        if let vc = segue.destination as? BannerController, segue.identifier == "embedBanner" {
-            vc.height = banner.constraints.filter({ $0.identifier == "height" }).first
         }
         if let vc = segue.destination as? GroceryController, segue.identifier == "showGroceries" {
             vc.onChange = reloadData

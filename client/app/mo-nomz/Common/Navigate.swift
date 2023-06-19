@@ -8,11 +8,11 @@
 import UIKit
 
 extension UIViewController {
-    func withMainVc(_ f: ((SceneDelegate, TabBarController) -> Void)?) {
+    func withMainVc(_ f: ((SceneDelegate, ViewController) -> Void)?) {
         DispatchQueue.main.async {
             let scene = UIApplication.shared.connectedScenes.first?.delegate as! SceneDelegate
             let mainSb = UIStoryboard(name: "Main", bundle: nil)
-            let mainVc = mainSb.instantiateInitialViewController() as! TabBarController
+            let mainVc = mainSb.instantiateInitialViewController() as! ViewController
             f?(scene, mainVc)
         }
     }
@@ -39,13 +39,14 @@ extension UIViewController {
         withMainVc { scene, mainVc in
             let RECIPE_TAB = 1
             scene.window?.rootViewController = mainVc
-            mainVc.selectedIndex = RECIPE_TAB
-            let vc = mainVc.viewControllers![RECIPE_TAB] as! RecipeController
-            vc.recipeVc?.addLink(link: url.absoluteString, completion: { response in
+            mainVc.setSelected(index: RECIPE_TAB)
+            mainVc.addLink(link: url.absoluteString, completion: { response in
                 let recipe = Database.insertRecipe(response: response, link: url.absoluteString, active: true, tags: [])
-                vc.reloadData()
-                DispatchQueue.main.async {
-                    vc.recipeVc?.performSegue(withIdentifier: "showRecipe", sender: recipe)
+                mainVc.reloadData()
+                if let vc = mainVc.tab?.viewControllers?[RECIPE_TAB] as? RecipeController {
+                    DispatchQueue.main.async {
+                        vc.recipeVc?.performSegue(withIdentifier: "showRecipe", sender: recipe)
+                    }
                 }
             })
         }
@@ -55,9 +56,12 @@ extension UIViewController {
         withMainVc { scene, mainVc in
             let RECIPE_TAB = 1
             scene.window?.rootViewController = mainVc
-            mainVc.selectedIndex = RECIPE_TAB
-            let vc = mainVc.viewControllers![RECIPE_TAB] as! RecipeController
-            vc.recipeVc?.performSegue(withIdentifier: "showRecipe", sender: recipe)
+            mainVc.setSelected(index: RECIPE_TAB)
+            if let vc = mainVc.tab?.viewControllers?[RECIPE_TAB] as? RecipeController {
+                DispatchQueue.main.async {
+                    vc.recipeVc?.performSegue(withIdentifier: "showRecipe", sender: recipe)
+                }
+            }
         }
     }
 }
