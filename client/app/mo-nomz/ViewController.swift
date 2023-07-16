@@ -11,7 +11,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var banner: UIView!
     @IBOutlet weak var bannerHeight: NSLayoutConstraint!
     var tab: TabBarController!
-    private var selected: Int = 0
+    private var selected: Int = User.preference(.mealsDefaultTab) ? 1 : 0
     
     func setSelected(index: Int) {
         selected = index
@@ -27,6 +27,7 @@ class ViewController: UIViewController {
             vc.height = bannerHeight
         }
         if let vc = segue.destination as? TabBarController, segue.identifier == "main" {
+            vc.selectedIndex = selected
             tab = vc
         }
     }

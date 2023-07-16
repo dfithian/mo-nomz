@@ -19,7 +19,9 @@ extension UIViewController {
     
     func loadGroceries() {
         withMainVc({ scene, mainVc in
+            let GROCERY_TAB = 0
             scene.window?.rootViewController = mainVc
+            mainVc.setSelected(index: GROCERY_TAB)
         })
     }
     
