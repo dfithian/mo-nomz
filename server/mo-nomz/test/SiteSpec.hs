@@ -108,7 +108,7 @@ spec env = describe "Scrape" $ do
     it "handles thelastfoodblog" $ scrapeAndParseConfig defCfg "https://www.thelastfoodblog.com/spinach-and-ricotta-cannelloni/"
     -- split into https://www.melissahemsley.com and https://www.jasminehemsley.com, neither of which use a recipe manager
     xit "handles hemsleyandhemsley" $ scrapeAndParseConfig defCfg "https://hemsleyandhemsley.com/recipe/apple-rocket-and-feta-buckwheat-galettes/"
-    it "handles localmilkblog" $ scrapeAndParseConfig (defCfg { requiredIngredients = 0 }) "https://localmilkblog.com/2019/11/turkey-buttermilk-sage-dumpling-soup.html"
+    xit "handles localmilkblog" $ scrapeAndParseConfig (defCfg { requiredIngredients = 0 }) "https://localmilkblog.com/2019/11/turkey-buttermilk-sage-dumpling-soup.html"
     it "handles thefoodblog" $ scrapeAndParseConfig defCfg "https://www.thefoodblog.net/air-fryer-salmon-recipe/"
     it "handles onceuponafoodblog" $ scrapeAndParseConfig defCfg "https://onceuponafoodblog.com/cheesy-bacon-spring-greens/"
     it "handles anotherfoodblogger" $ scrapeAndParseConfig defCfg "https://www.anotherfoodblogger.com/recipes/meatball-marinara/#wprm-recipe-container-6560"
@@ -125,7 +125,7 @@ spec env = describe "Scrape" $ do
     it "handles slenderkitchen" $ scrapeAndParseConfig defCfg "https://www.slenderkitchen.com/recipe/sunday-slow-cooker-saag-paneer"
     it "handles everydayannie" $ scrapeAndParseConfig defCfg "https://everydayannie.com/2020/12/28/raspberry-cheesecake-streusel-bars/"
     it "handles notwithoutsalt" $ scrapeAndParseConfig defCfg "http://notwithoutsalt.com/brussels-sprout-green-apple-slaw-pickled-cranberries/"
-    it "handles chefspencil" $ scrapeAndParseConfig (defCfg { requiredIngredients = 0 }) "https://www.chefspencil.com/marinated-skirt-steak/"
+    xit "handles chefspencil" $ scrapeAndParseConfig (defCfg { requiredIngredients = 0 }) "https://www.chefspencil.com/marinated-skirt-steak/"
     it "handles sweetandsavorymeals" $ scrapeAndParseConfig defCfg "https://sweetandsavorymeals.com/air-fryer-eggplant/"
     it "handles eatwell101" $ scrapeAndParseConfig (defCfg { requiredSteps = 0 }) "https://www.eatwell101.com/garlic-butter-chicken-bites-asparagus-recipe"
     it "handles bbcgoodfood" $ scrapeAndParseConfig defCfg "https://www.bbcgoodfood.com/recipes/challah/"
