@@ -10,6 +10,7 @@ import UIKit
 
 class GroceryController: UIViewController {
     @IBOutlet weak var hamburger: UIButton!
+    @IBOutlet weak var count: UILabel!
 
     var groceryVc: GroceryListController? = nil
     var onChange: (() -> Void)? = nil
@@ -60,6 +61,7 @@ class GroceryController: UIViewController {
         }
         if let vc = segue.destination as? GroceryListController, segue.identifier == "embedGroceryItems" {
             groceryVc = vc
+            vc.count = count
         }
         if let vc = segue.destination as? GroceryListController, segue.identifier == "showBought" {
             vc.active = false

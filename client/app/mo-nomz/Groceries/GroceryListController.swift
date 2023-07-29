@@ -236,6 +236,7 @@ class GroceryListItems {
 }
 
 class GroceryListController: UITableViewController, UITableViewDragDelegate, UITableViewDropDelegate {
+    var count: UILabel? = nil
     var groupCollapsed: GroceryGroupCollapsed = GroceryGroupCollapsed()
     var items: GroceryListItems = GroceryListItems([], GroceryGroupCollapsed())
     var active: Bool = true
@@ -513,6 +514,7 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
             $0.item.group == nil && $0.item.active == self.active
         }).map({ .item($0) }))
         items = GroceryListItems(newItems, groupCollapsed)
+        count?.text = "(\(items.getAllItemCount()))"
     }
     
     func reloadData() {
