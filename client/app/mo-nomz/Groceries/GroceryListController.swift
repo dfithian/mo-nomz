@@ -514,7 +514,7 @@ class GroceryListController: UITableViewController, UITableViewDragDelegate, UIT
             $0.item.group == nil && $0.item.active == self.active
         }).map({ .item($0) }))
         items = GroceryListItems(newItems, groupCollapsed)
-        count?.text = "(\(items.getAllItemCount()))"
+        count?.text = "\(items.getAllItemCount()) remaining"
     }
     
     func reloadData() {
