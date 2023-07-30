@@ -598,7 +598,7 @@ delishS = simpleStepScraper "delish"
   ("ul" @: [Scalpel.hasClass "directions"] // "li")
 
 spoonacularI :: IngredientScraper
-spoonacularI = simpleIngredientScraper "spoontacular"
+spoonacularI = simpleIngredientScraper "spoonacular"
   denyAll
   ("div" @: [Scalpel.hasClass "spoonacular-ingredient"])
 
