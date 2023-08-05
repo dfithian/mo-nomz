@@ -9,8 +9,6 @@ import StoreKit
 import UIKit
 
 class SettingsController: UIViewController {
-    @IBOutlet weak var banner: UIView!
-    
     var bannerVc: BannerController? = nil
     var profileVc: SettingsTableController? = nil
     
@@ -21,10 +19,6 @@ class SettingsController: UIViewController {
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let vc = segue.destination as? BannerController, segue.identifier == "embedBanner" {
-            vc.height = banner.constraints.filter({ $0.identifier == "height" }).first
-            bannerVc = vc
-        }
         if let vc = segue.destination as? SettingsTableController, segue.identifier == "embedProfile" {
             profileVc = vc
             vc.onChange = reloadInputViews

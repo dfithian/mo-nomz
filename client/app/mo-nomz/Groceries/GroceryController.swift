@@ -10,7 +10,7 @@ import UIKit
 
 class GroceryController: UIViewController {
     @IBOutlet weak var hamburger: UIButton!
-    @IBOutlet weak var banner: UIView!
+    @IBOutlet weak var count: UILabel!
 
     var groceryVc: GroceryListController? = nil
     var onChange: (() -> Void)? = nil
@@ -47,6 +47,9 @@ class GroceryController: UIViewController {
                     Database.insertGroups(groups: [group])
                     self.reloadData()
                 })
+            }),
+            UIAction(title: "View bought items", image: UIImage(systemName: "dollarsign"), handler: { _ in
+                self.performSegue(withIdentifier: "showBought", sender: nil)
             })
         ])
     }
@@ -58,9 +61,11 @@ class GroceryController: UIViewController {
         }
         if let vc = segue.destination as? GroceryListController, segue.identifier == "embedGroceryItems" {
             groceryVc = vc
+            vc.count = count
         }
-        if let vc = segue.destination as? BannerController, segue.identifier == "embedBanner" {
-            vc.height = banner.constraints.filter({ $0.identifier == "height" }).first
+        if let vc = segue.destination as? GroceryListController, segue.identifier == "showBought" {
+            vc.active = false
+            vc.onChange = reloadData
         }
     }
 
