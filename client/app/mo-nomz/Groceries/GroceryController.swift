@@ -34,7 +34,17 @@ class GroceryController: UIViewController {
         hamburger.showsMenuAsPrimaryAction = true
         hamburger.menu = UIMenu(options: .displayInline, children: [
             UIAction(title: "Share groceries", image: UIImage(systemName: "square.and.arrow.up"), handler: { _ in
-                let items = Database.selectGroceries().filter({ $0.item.active })
+                var items: [ReadableGroceryItemWithId] = []
+                let groups = Database.selectGroups()
+                let groceries = Database.selectGroceries()
+                for group in groups {
+                    items.append(contentsOf: groceries.filter({
+                        $0.item.group?.id == group.id && $0.item.active
+                    }))
+                }
+                items.append(contentsOf: groceries.filter({
+                    $0.item.group == nil && $0.item.active
+                }))
                 if !items.isEmpty {
                     let exportText: String = items.map({ $0.item.render() }).joined(separator: "\n")
                     let vc = UIActivityViewController(activityItems: [exportText], applicationActivities: nil)
