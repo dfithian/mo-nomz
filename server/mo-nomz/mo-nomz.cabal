@@ -48,20 +48,10 @@ common ghc-exe-options
 library
   import: options, ghc-options
   exposed-modules:
-      API.Types
       Application
-      Auth
-      Combinable
-      Conversion
-      Database
       Foundation
-      NomzPrelude
-      Postgres.Orphans
-      Scraper.Site
       Servant
-      Server
       Settings
-      Types
   other-modules:
       Paths_mo_nomz
   hs-source-dirs:
@@ -69,32 +59,17 @@ library
   build-depends:
       aeson
     , base
-    , bytestring
-    , case-insensitive
-    , chez-grater
-    , containers
-    , cryptonite
+    , chez-server
     , data-default
     , exceptions
-    , http-client
-    , http-client-tls
     , http-types
-    , memory
     , monad-logger
     , mtl
-    , network-uri
-    , postgresql-simple
-    , postgresql-simple-migration
-    , random
-    , resource-pool
-    , scalpel
     , servant
     , servant-server
     , tagged
     , text
-    , time
     , transformers
-    , unordered-containers
     , wai
     , wai-app-static
     , wai-enforce-https
@@ -112,32 +87,3 @@ executable mo-nomz
   build-depends:
       base
     , mo-nomz
-
-test-suite tests
-  import: options, ghc-options
-  type: exitcode-stdio-1.0
-  main-is: main.hs
-  other-modules:
-      ConversionSpec
-      DatabaseSpec
-      SiteSpec
-      TestEnv
-      Paths_mo_nomz
-  hs-source-dirs:
-      test
-  build-depends:
-      base
-    , case-insensitive
-    , chez-grater
-    , containers
-    , http-client
-    , hspec
-    , mo-nomz
-    , monad-logger
-    , network-uri
-    , postgresql-simple
-    , resource-pool
-    , QuickCheck
-    , text
-    , time
-    , transformers

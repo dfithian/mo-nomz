@@ -1,14 +1,10 @@
 module Servant where
 
-import NomzPrelude
-import Servant.API ((:<|>), (:>), Capture, Get, JSON, Post, Raw, ReqBody)
-
-import API.Types
-  ( GetHealthResponse, ParseBlobRequest, ParseBlobResponse, ParseLinkRequest, ParseLinkResponse
-  , UserCreateResponse, UserPingRequest, UserPingResponse
-  )
-import Auth (Authorized)
-import Types (UserId)
+import Chez.Server.Types (ParseBlobRequest, ParseBlobResponse, ParseLinkRequest, ParseLinkResponse)
+import Data.Aeson (Value)
+import Data.Proxy (Proxy(Proxy))
+import Data.Text (Text)
+import Servant.API ((:<|>), (:>), Capture, JSON, Post, Raw, ReqBody)
 
 wholeApi :: Proxy WholeApi
 wholeApi = Proxy
@@ -24,10 +20,11 @@ type WholeApi =
     :<|> Raw
 
 type NomzApi =
-  "health" :> Get '[JSON] GetHealthResponse
-    :<|> "api" :> "v1" :> "user" :> Post '[JSON] UserCreateResponse
-    :<|> Authorized :> "api" :> "v1" :> "user" :> Capture "user-id" UserId :> "ping" :> ReqBody '[JSON] UserPingRequest :> Post '[JSON] UserPingResponse
+  "api" :> "v1" :> "user" :> Post '[JSON] Value
+    :<|> "api" :> "v1" :> "user" :> Capture "user-id" Text :> "ping" :> Post '[JSON] Value
 
     -- parsing only
-    :<|> Authorized :> "api" :> "v2" :> "user" :> Capture "user-id" UserId :> "blob" :> ReqBody '[JSON] ParseBlobRequest :> Post '[JSON] ParseBlobResponse
-    :<|> Authorized :> "api" :> "v2" :> "user" :> Capture "user-id" UserId :> "link" :> ReqBody '[JSON] ParseLinkRequest :> Post '[JSON] ParseLinkResponse
+    :<|> "api" :> "v1" :> "blob" :> ReqBody '[JSON] ParseBlobRequest :> Post '[JSON] ParseBlobResponse
+    :<|> "api" :> "v1" :> "link" :> ReqBody '[JSON] ParseLinkRequest :> Post '[JSON] ParseLinkResponse
+    :<|> "api" :> "v2" :> "user" :> Capture "user-id" Text :> "blob" :> ReqBody '[JSON] ParseBlobRequest :> Post '[JSON] ParseBlobResponse
+    :<|> "api" :> "v2" :> "user" :> Capture "user-id" Text :> "link" :> ReqBody '[JSON] ParseLinkRequest :> Post '[JSON] ParseLinkResponse

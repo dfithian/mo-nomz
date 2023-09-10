@@ -1,10 +1,3 @@
 port: "_env:PORT:8080"
-
-database:
-  conn-str: "_env:DATABASE_URL:postgres://postgres:postgres@localhost:5432/postgres"
-  poolsize: "_env:DATABASE_POOLSIZE:3"
-
-migration-dir: "_env:MIGRATION_DIR:server/mo-nomz/sql/migrations/"
 static-dir: "_env:STATIC_DIR:client/web/build/"
-bcrypt-cost: "_env:BCRYPT_COST:4"
 force-ssl: "_env:FORCE_SSL:true"
