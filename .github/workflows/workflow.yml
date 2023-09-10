@@ -1,7 +1,5 @@
 on:
   push: {}
-  schedule:
-    - cron: "0 5 * * *"
 jobs:
   build-web:
     if: ${{ github.event_name == 'push' }}
@@ -21,16 +19,15 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: |
-            ~/.stack
-            .stack-work
-          key: stack-${{ hashFiles('stack.yaml') }}-${{ hashFiles('server/mo-nomz/mo-nomz.cabal') }}
+            ~/.cabal/store
+            dist-newstyle
+          key: cabal-${{ hashFiles('server/mo-nomz/mo-nomz.cabal') }}
           restore-keys: |
-            stack-${{ hashFiles('stack.yaml') }}-${{ hashFiles('server/mo-nomz/mo-nomz.cabal') }}
-            stack-${{ hashFiles('stack.yaml') }}-
-            stack-
+            cabal-${{ hashFiles('server/mo-nomz/mo-nomz.cabal') }}
+            cabal-
       - uses: haskell/actions/setup@v1
         with:
           ghc-version: '8.10.4'
           enable-stack: true
-          stack-version: '2.7.3'
-      - run: NO_DB=1 stack test
+      - run: cabal v2-update
+      - run: cabal v2-test all --test-log /dev/stdout --test-show-details always
