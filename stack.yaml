@@ -1,9 +1,5 @@
 resolver: lts-18.17
 packages:
+- deps/chez-grater/chez-grater
+- deps/chez-grater/chez-server
 - server/mo-nomz
-extra-deps:
-- git: https://github.com/dfithian/chez-grater.git
-  commit: 5555acdbe8aa1d5bf8c2b3ab36f666a6e4697feb
-  subdirs:
-    - chez-grater
-    - chez-server

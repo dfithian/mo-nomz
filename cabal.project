@@ -1,14 +1,4 @@
 packages:
+  deps/chez-grater/chez-grater
+  deps/chez-grater/chez-server
   server/mo-nomz
-
-source-repository-package
-  type: git
-  location: https://github.com/dfithian/chez-grater.git
-  tag: 5555acdbe8aa1d5bf8c2b3ab36f666a6e4697feb
-  subdir: chez-grater
-
-source-repository-package
-  type: git
-  location: https://github.com/dfithian/chez-grater.git
-  tag: 5555acdbe8aa1d5bf8c2b3ab36f666a6e4697feb
-  subdir: chez-server
