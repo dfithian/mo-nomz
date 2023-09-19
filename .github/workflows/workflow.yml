@@ -1,10 +1,7 @@
 on:
   push: {}
-  schedule:
-    - cron: "0 5 * * *"
 jobs:
   build-web:
-    if: ${{ github.event_name == 'push' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
