@@ -1,27 +1,24 @@
 module Server where
 
-import NomzPrelude
+import Chez.Grater.Internal.Prelude
 
 import Chez.Grater (scrapeAndParseUrl)
+import Chez.Grater.Parser (mkIngredients, parseRawIngredients)
+import Chez.Grater.Readable.Types (mkReadableIngredient, mkReadableStep)
+import Chez.Grater.Scraper.Site (allScrapers)
+import Control.Monad.Catch (throwM)
+import Control.Monad.IO.Class (liftIO)
 import Control.Monad.Logger (logError)
-import Data.Version (showVersion)
+import Control.Monad.Reader (ask)
 import Network.URI (parseURI)
-import Servant.Server (ServerError, err400, err401, err403, err500, errReasonPhrase)
+import Servant.Server (err400, errReasonPhrase)
 import qualified Data.Text as Text
 
-import API.Types
-  ( GetHealthResponse(..), ParseBlobRequest(..), ParseBlobResponse(..), ParseLinkRequest(..)
-  , ParseLinkResponse(..), UserCreateResponse(..), UserPingRequest(..), UserPingResponse(..)
+import Foundation (App(..), AppM, logErrors)
+import Types
+  ( ParseBlobRequest(..), ParseBlobResponse(..), ParseLinkRequest(..), ParseLinkResponse(..)
+  , RecipeLink(..), ScrapedRecipe(..)
   )
-import Auth (Authorization, generateToken, validateToken)
-import Chez.Grater.Parser (mkIngredients, parseRawIngredients)
-import Conversion (mkReadableIngredient, mkReadableStep)
-import Foundation (App(..), AppM, appLogFunc, logErrors, settings, withDbConn)
-import Paths_mo_nomz (version)
-import Scraper.Site (allScrapers)
-import Settings (AppSettings(..))
-import Types (OrderedIngredient(..), RecipeLink(..), ScrapedRecipe(..), UserId)
-import qualified Database
 
 scrapeUrl :: AppM m => RecipeLink -> m ScrapedRecipe
 scrapeUrl link = do
@@ -32,80 +29,22 @@ scrapeUrl link = do
         pure (ScrapedRecipe name ingredients steps, meta)
   fst <$> logErrors (liftIO scrape)
 
-unwrapDb :: AppM m => m (Either SomeException a) -> m a
-unwrapDb ma = ma >>= \case
-  Right x -> pure x
-  Left se -> case fromException se of
-    Just (x :: ServerError) -> do
-      $logError $ tshow x
-      throwError x
-    Nothing -> throwError err500
-
-getHealth :: AppM m => m GetHealthResponse
-getHealth = do
-  App {..} <- ask
-  now <- liftIO getCurrentTime
-  unwrapDb $ withDbConn $ \c -> do
-    Database.health c
-    (day, week, month, year) <- Database.selectRecentUsers c
-    pure GetHealthResponse
-      { getHealthResponseStatus = "OK"
-      , getHealthResponseVersion = Text.pack (showVersion version)
-      , getHealthResponseStarted = appStarted
-      , getHealthResponseFetched = now
-      , getHealthResponseUserDay = day
-      , getHealthResponseUserWeek = week
-      , getHealthResponseUserMonth = month
-      , getHealthResponseUserYear = year
-      }
-
-postCreateUser :: AppM m => m UserCreateResponse
-postCreateUser = do
-  AppSettings {..} <- asks settings
-  (token, bcryptedToken) <- liftIO $ generateToken appBcryptCost
-  result <- withDbConn $ \c -> Database.insertToken c bcryptedToken
-  userId <- either (const $ throwError err401) pure result
-  pure $ UserCreateResponse userId token
-
-validateUserToken :: AppM m => Authorization -> UserId -> m ()
-validateUserToken token userId = do
-  withDbConn (\c -> Database.fetchToken c userId) >>= \case
-    Right (Just bcryptedToken) -> case validateToken token bcryptedToken of
-      Right True -> pure ()
-      Right False -> throwError err403
-      Left err -> do
-        $logError $ "User token validation failed for " <> tshow userId <> " due to " <> Text.pack err
-        throwError err403
-    _ -> do
-      $logError $ "No user token for " <> tshow userId
-      throwError err403
-
-postPingUser :: AppM m => Authorization -> UserId -> UserPingRequest -> m UserPingResponse
-postPingUser token userId UserPingRequest {..} = do
-  validateUserToken token userId
-  unwrapDb $ withDbConn $ \c ->
-    Database.updateUserPing c userId userPingRequestVersion userPingRequestTarget
-  pure $ UserPingResponse "pong"
-
--- parsing only
-postParseBlob :: AppM m => Authorization -> UserId -> ParseBlobRequest -> m ParseBlobResponse
-postParseBlob token userId ParseBlobRequest {..} = do
-  validateUserToken token userId
+postParseBlob :: AppM m => ParseBlobRequest -> m ParseBlobResponse
+postParseBlob ParseBlobRequest {..} = do
   ingredients <- case parseRawIngredients parseBlobRequestContent of
     Left e -> do
       $logError e
       pure $ mkIngredients parseBlobRequestContent
     Right is -> pure is
   pure ParseBlobResponse
-    { parseBlobResponseIngredients = mkReadableIngredient <$> zipWith OrderedIngredient ingredients [1..]
+    { parseBlobResponseIngredients = mkReadableIngredient <$> ingredients
     }
 
-postParseLink :: AppM m => Authorization -> UserId -> ParseLinkRequest -> m ParseLinkResponse
-postParseLink token userId ParseLinkRequest {..} = do
-  validateUserToken token userId
+postParseLink :: AppM m => ParseLinkRequest -> m ParseLinkResponse
+postParseLink ParseLinkRequest {..} = do
   ScrapedRecipe {..} <- scrapeUrl parseLinkRequestLink
   pure ParseLinkResponse
     { parseLinkResponseName = scrapedRecipeName
-    , parseLinkResponseIngredients = mkReadableIngredient <$> zipWith OrderedIngredient scrapedRecipeIngredients [1..]
+    , parseLinkResponseIngredients = mkReadableIngredient <$> scrapedRecipeIngredients
     , parseLinkResponseSteps = mkReadableStep <$> scrapedRecipeSteps
     }

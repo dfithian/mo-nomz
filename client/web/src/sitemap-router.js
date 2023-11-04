@@ -8,7 +8,6 @@ const router = (
     <Route path="/#/privacy-policy" />
     <Route path="/#/support" />
     <Route path="/#/recipe" />
-    <Route path="/#/not-found" />
   </Route>
 )
 

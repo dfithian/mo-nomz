@@ -1,27 +1,45 @@
 module Types where
 
-import NomzPrelude
+import Chez.Grater.Internal.Prelude
 
+import Chez.Grater.Internal.Json (jsonOptions)
+import Chez.Grater.Readable.Types (ReadableIngredient, ReadableStep)
 import Chez.Grater.Types (Ingredient(..), RecipeName, Step)
-import Data.Aeson (FromJSON, FromJSONKey, ToJSON, ToJSONKey)
-import Database.PostgreSQL.Simple.FromField (FromField)
-import Database.PostgreSQL.Simple.ToField (ToField)
-import Servant.API (FromHttpApiData, ToHttpApiData)
-
-newtype UserId = UserId { unUserId :: Int }
-  deriving (Eq, Ord, Show, FromJSON, FromJSONKey, ToJSON, ToJSONKey, FromField, ToField, FromHttpApiData, ToHttpApiData)
+import Data.Aeson (FromJSON, ToJSON)
+import Data.Aeson.TH (deriveJSON)
 
 newtype RecipeLink = RecipeLink { unRecipeLink :: Text }
-  deriving (Eq, Ord, Show, FromJSON, ToJSON, FromField, ToField)
-
-data OrderedIngredient = OrderedIngredient
-  { orderedIngredientIngredient :: Ingredient
-  , orderedIngredientOrder      :: Int
-  }
-  deriving (Eq, Ord, Show)
+  deriving (Eq, Ord, Show, FromJSON, ToJSON)
 
 data ScrapedRecipe = ScrapedRecipe
   { scrapedRecipeName        :: RecipeName
   , scrapedRecipeIngredients :: [Ingredient]
   , scrapedRecipeSteps       :: [Step]
-  } deriving (Eq, Show, Generic)
+  } deriving (Eq, Show)
+
+data ParseBlobRequest = ParseBlobRequest
+  { parseBlobRequestContent :: Text
+  }
+  deriving (Eq, Ord, Show)
+
+data ParseLinkRequest = ParseLinkRequest
+  { parseLinkRequestLink :: RecipeLink
+  }
+  deriving (Eq, Ord, Show)
+
+data ParseBlobResponse = ParseBlobResponse
+  { parseBlobResponseIngredients :: [ReadableIngredient]
+  }
+  deriving (Eq, Ord, Show)
+
+data ParseLinkResponse = ParseLinkResponse
+  { parseLinkResponseName        :: RecipeName
+  , parseLinkResponseIngredients :: [ReadableIngredient]
+  , parseLinkResponseSteps       :: [ReadableStep]
+  }
+  deriving (Eq, Ord, Show)
+
+deriveJSON (jsonOptions "parseBlobRequest") ''ParseBlobRequest
+deriveJSON (jsonOptions "parseLinkRequest") ''ParseLinkRequest
+deriveJSON (jsonOptions "parseBlobResponse") ''ParseBlobResponse
+deriveJSON (jsonOptions "parseLinkResponse") ''ParseLinkResponse

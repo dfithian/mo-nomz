@@ -1,11 +1,5 @@
 resolver: lts-18.17
 packages:
+- deps/chez-grater/chez-grater
+- deps/chez-grater/chez-server
 - server/mo-nomz
-extra-deps:
-- base64-bytestring-1.0.0.3
-- postgresql-simple-migration-0.1.15.0
-- git: https://github.com/dfithian/chez-grater.git
-  commit: 5a35cd1008f3a1997bc7cde4da343ba681ca083b
-flags:
-  postgresql-libpq:
-    use-pkg-config: true

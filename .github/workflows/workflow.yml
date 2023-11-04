@@ -11,23 +11,44 @@ jobs:
       - uses: borales/actions-yarn@v3.0.0
         with:
           cmd: build
-  build-server:
+  build-chez:
+    if: ${{ github.event_name == 'cron' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/cache@v2
         with:
           path: |
-            ~/.stack
-            .stack-work
-          key: stack-${{ hashFiles('stack.yaml') }}-${{ hashFiles('server/mo-nomz/mo-nomz.cabal') }}
+            ~/.cabal/store
+            dist-newstyle
+          key: cabal-${{ hashFiles('chez-grater/chez-grater.cabal') }}
           restore-keys: |
-            stack-${{ hashFiles('stack.yaml') }}-${{ hashFiles('server/mo-nomz/mo-nomz.cabal') }}
-            stack-${{ hashFiles('stack.yaml') }}-
-            stack-
+            cabal-${{ hashFiles('chez-grater/chez-grater.cabal') }}
+            cabal-
+      - uses: haskell/actions/setup@v1
+        with:
+          ghc-version: '8.10.7'
+          enable-stack: false
+      - run: cabal v2-update
+      - run: cabal v2-test chez-grater --test-log /dev/stdout --test-show-details always
+  build-server:
+    if: ${{ github.event_name == 'push' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cabal/store
+            dist-newstyle
+          key: cabal-${{ hashFiles('server/mo-nomz/mo-nomz.cabal') }}-${{ hashFiles('server/chez-grater/chez-grater.cabal') }}
+          restore-keys: |
+            cabal-${{ hashFiles('server/mo-nomz/mo-nomz.cabal') }}-${{ hashFiles('server/chez-grater/chez-grater.cabal') }}
+            cabal-${{ hashFiles('server/mo-nomz/mo-nomz.cabal') }}
+            cabal-
       - uses: haskell/actions/setup@v1
         with:
           ghc-version: '8.10.4'
           enable-stack: true
-          stack-version: '2.7.3'
-      - run: NO_DB=1 stack test
+      - run: cabal v2-update
+      - run: cabal v2-build all
