@@ -1,4 +1,4 @@
-module Chez.Server.Types where
+module Types where
 
 import Chez.Grater.Internal.Prelude
 

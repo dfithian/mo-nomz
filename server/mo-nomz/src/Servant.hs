@@ -1,10 +1,11 @@
 module Servant where
 
-import Chez.Server.Types (ParseBlobRequest, ParseBlobResponse, ParseLinkRequest, ParseLinkResponse)
 import Data.Aeson (Value)
 import Data.Proxy (Proxy(Proxy))
 import Data.Text (Text)
 import Servant.API ((:<|>), (:>), Capture, JSON, Post, Raw, ReqBody)
+
+import Types (ParseBlobRequest, ParseBlobResponse, ParseLinkRequest, ParseLinkResponse)
 
 wholeApi :: Proxy WholeApi
 wholeApi = Proxy

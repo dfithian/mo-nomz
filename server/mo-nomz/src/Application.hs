@@ -2,10 +2,7 @@ module Application where
 
 import Prelude
 
-import Chez.Server (postParseBlob, postParseLink)
-import Chez.Server.Context (chezContext)
-import Control.Monad.Except (mapExceptT)
-import Control.Monad.Reader (withReaderT)
+import Chez.Grater.Manager (createManager)
 import Data.Aeson ((.=), object)
 import Data.Default (def)
 import Data.Tagged (Tagged(..))
@@ -25,20 +22,21 @@ import qualified Network.Wai.Middleware.EnforceHTTPS as EnforceHTTPS
 
 import Foundation (App(..), NomzServer, runNomzServer)
 import Servant (NomzApi, nomzApi, wholeApi)
+import Server (postParseBlob, postParseLink)
 import Settings (AppSettings(..), staticSettingsValue)
 
 nomzServer :: ServerT NomzApi NomzServer
 nomzServer =
   (pure $ object ["userId" .= (1 :: Int), "apiToken" .= ("ignored" :: String)])
     :<|> (\_ -> pure $ object ["status" .= ("pong" :: String)])
-    :<|> (mapExceptT (withReaderT appChezContext) . postParseBlob)
-    :<|> (mapExceptT (withReaderT appChezContext) . postParseLink)
-    :<|> (\_ -> mapExceptT (withReaderT appChezContext) . postParseBlob)
-    :<|> (\_ -> mapExceptT (withReaderT appChezContext) . postParseLink)
+    :<|> postParseBlob
+    :<|> postParseLink
+    :<|> (\_ -> postParseBlob)
+    :<|> (\_ -> postParseLink)
 
 makeFoundation :: AppSettings -> IO App
 makeFoundation appSettings = do
-  appChezContext <- chezContext
+  appManager <- createManager
   pure App {..}
 
 warpSettings :: App -> Settings

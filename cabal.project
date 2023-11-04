@@ -1,4 +1,3 @@
 packages:
-  deps/chez-grater/chez-grater
-  deps/chez-grater/chez-server
+  server/chez-grater
   server/mo-nomz
