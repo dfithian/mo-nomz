@@ -4,6 +4,8 @@
 
 A Haskell / Swift app which will scrape provided recipe URLs ingredients and aggregate them into grocery lists.
 
+Based on scraper found at https://github.com/dfithian/chez-grater
+
 Points of interest:
 
 - [./client/app/README.md](client/app/README.md) iOS app
