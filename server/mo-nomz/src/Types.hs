@@ -7,7 +7,6 @@ import Chez.Grater.Readable.Types (ReadableIngredient(..), ReadableQuantity, Rea
 import Chez.Grater.Types (Ingredient(..), IngredientName, RecipeName, Step)
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Aeson.TH (deriveJSON)
-import Data.List (zipWith)
 
 newtype RecipeLink = RecipeLink { unRecipeLink :: Text }
   deriving (Eq, Ord, Show, FromJSON, ToJSON)
