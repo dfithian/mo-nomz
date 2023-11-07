@@ -1,5 +1,4 @@
 resolver: lts-18.17
 packages:
-- deps/chez-grater/chez-grater
-- deps/chez-grater/chez-server
+- server/chez-grater
 - server/mo-nomz
