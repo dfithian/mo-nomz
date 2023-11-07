@@ -3,7 +3,7 @@ module Types where
 import Chez.Grater.Internal.Prelude
 
 import Chez.Grater.Internal.Json (jsonOptions)
-import Chez.Grater.Readable.Types (ReadableIngredient, ReadableStep)
+import Chez.Grater.Readable.Types (ReadableIngredient(..), ReadableStep)
 import Chez.Grater.Types (Ingredient(..), RecipeName, Step)
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Aeson.TH (deriveJSON)
