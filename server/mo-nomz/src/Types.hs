@@ -39,7 +39,30 @@ data ParseLinkResponse = ParseLinkResponse
   }
   deriving (Eq, Ord, Show)
 
+data ReadableIngredientLegacy = ReadableIngredientLegacy
+  { readableIngredientLegacyName     :: IngredientName
+  , readableIngredientLegacyQuantity :: ReadableQuantity
+  , readableIngredientLegacyUnit     :: Maybe ReadableUnit
+  , readableIngredientLegacyOrder    :: Int
+  }
+  deriving (Eq, Ord, Show)
+
+data ParseBlobResponseLegacy = ParseBlobResponseLegacy
+  { parseBlobResponseLegacyIngredients :: [ReadableIngredientLegacy]
+  }
+  deriving (Eq, Ord, Show)
+
+data ParseLinkResponseLegacy = ParseLinkResponseLegacy
+  { parseLinkResponseLegacyName        :: RecipeName
+  , parseLinkResponseLegacyIngredients :: [ReadableIngredientLegacy]
+  , parseLinkResponseLegacySteps       :: [ReadableStep]
+  }
+  deriving (Eq, Ord, Show)
+
 deriveJSON (jsonOptions "parseBlobRequest") ''ParseBlobRequest
 deriveJSON (jsonOptions "parseLinkRequest") ''ParseLinkRequest
 deriveJSON (jsonOptions "parseBlobResponse") ''ParseBlobResponse
 deriveJSON (jsonOptions "parseLinkResponse") ''ParseLinkResponse
+deriveJSON (jsonOptions "readableIngredientLegacy") ''ReadableIngredientLegacy
+deriveJSON (jsonOptions "parseBlobResponseLegacy") ''ParseBlobResponseLegacy
+deriveJSON (jsonOptions "parseLinkResponseLegacy") ''ParseLinkResponseLegacy
