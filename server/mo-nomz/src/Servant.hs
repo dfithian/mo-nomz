@@ -5,7 +5,7 @@ import Data.Proxy (Proxy(Proxy))
 import Data.Text (Text)
 import Servant.API ((:<|>), (:>), Capture, JSON, Post, Raw, ReqBody)
 
-import Types (ParseBlobRequest, ParseBlobResponse, ParseLinkRequest, ParseLinkResponse)
+import Types (ParseBlobRequest, ParseBlobResponse, ParseBlobResponseLegacy, ParseLinkRequest, ParseLinkResponse, ParseLinkResponseLegacy)
 
 wholeApi :: Proxy WholeApi
 wholeApi = Proxy
@@ -27,5 +27,5 @@ type NomzApi =
     -- parsing only
     :<|> "api" :> "v1" :> "blob" :> ReqBody '[JSON] ParseBlobRequest :> Post '[JSON] ParseBlobResponse
     :<|> "api" :> "v1" :> "link" :> ReqBody '[JSON] ParseLinkRequest :> Post '[JSON] ParseLinkResponse
-    :<|> "api" :> "v2" :> "user" :> Capture "user-id" Text :> "blob" :> ReqBody '[JSON] ParseBlobRequest :> Post '[JSON] ParseBlobResponse
-    :<|> "api" :> "v2" :> "user" :> Capture "user-id" Text :> "link" :> ReqBody '[JSON] ParseLinkRequest :> Post '[JSON] ParseLinkResponse
+    :<|> "api" :> "v2" :> "user" :> Capture "user-id" Text :> "blob" :> ReqBody '[JSON] ParseBlobRequest :> Post '[JSON] ParseBlobResponseLegacy
+    :<|> "api" :> "v2" :> "user" :> Capture "user-id" Text :> "link" :> ReqBody '[JSON] ParseLinkRequest :> Post '[JSON] ParseLinkResponseLegacy
