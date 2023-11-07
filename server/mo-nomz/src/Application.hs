@@ -24,6 +24,7 @@ import Foundation (App(..), NomzServer, runNomzServer)
 import Servant (NomzApi, nomzApi, wholeApi)
 import Server (postParseBlob, postParseLink)
 import Settings (AppSettings(..), staticSettingsValue)
+import Types (toParseBlobResponseLegacy, toParseLinkResponseLegacy)
 
 nomzServer :: ServerT NomzApi NomzServer
 nomzServer =
@@ -31,8 +32,8 @@ nomzServer =
     :<|> (\_ -> pure $ object ["status" .= ("pong" :: String)])
     :<|> postParseBlob
     :<|> postParseLink
-    :<|> (\_ -> postParseBlob)
-    :<|> (\_ -> postParseLink)
+    :<|> (\_ -> fmap toParseBlobResponseLegacy . postParseBlob)
+    :<|> (\_ -> fmap toParseLinkResponseLegacy . postParseLink)
 
 makeFoundation :: AppSettings -> IO App
 makeFoundation appSettings = do
