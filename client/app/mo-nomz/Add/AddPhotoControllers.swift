@@ -11,9 +11,75 @@ import Vision
 import PhotosUI
 import QCropper
 
-class AddPhotoController: AddDetailController {
-    @IBOutlet weak var helper: UIButton!
+class AddGroceryPhotoController: AddDetailController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, CropperViewControllerDelegate {
+    var scrape: Scrape = Scrape<ScrapeImageInfo>(ingredients: [], steps: [])
+    var current: ScrapeImageInfo? = nil
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        let picker = UIImagePickerController()
+        picker.sourceType = .photoLibrary
+        picker.mediaTypes = [kUTTypeImage as String]
+        picker.delegate = self
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            picker.modalPresentationStyle = .popover
+            picker.popoverPresentationController?.sourceRect = CGRect(x: 0, y: 0, width: 10, height: 10)
+        }
+        present(picker, animated: true)
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        guard let image = info[.originalImage] as? UIImage else { return }
+        let cropper = CropperViewController(originalImage: image)
+        cropper.delegate = self
+        picker.dismiss(animated: true) {
+            self.present(cropper, animated: true, completion: nil)
+        }
+    }
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        picker.dismiss(animated: true) {
+            self.dismiss(animated: true)
+        }
+    }
 
+    func cropperDidConfirm(_ cropper: CropperViewController, state: CropperState?) {
+        cropper.dismiss(animated: true, completion: nil)
+        let progress = startLoading()
+        let cropped = cropper.originalImage.cropped(withCropperState: state!)!
+        let textHandler = { (req: VNRequest, error: Error?) in
+            self.stopLoading(progress)
+            guard let observations = req.results as? [VNRecognizedTextObservation] else { return }
+            let recognized = observations.compactMap({ $0.topCandidates(1).first?.string }).joined(separator: "\n")
+            self.current = ScrapeImageInfo(image: cropped, value: recognized, type: .ingredient)
+            self.performSegue(withIdentifier: "pushManualGroceries", sender: nil)
+        }
+        let handler = VNImageRequestHandler(cgImage: cropped.cgImage!)
+        let req = VNRecognizeTextRequest(completionHandler: textHandler)
+        do {
+            try handler.perform([req])
+        } catch {
+            stopLoading(progress)
+        }
+        cropper.dismiss(animated: true)
+    }
+    
+    func cropperDidCancel(_ cropper: CropperViewController) {
+        cropper.dismiss(animated: true) {
+            self.dismiss(animated: true)
+        }
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let vc = segue.destination as? AddGroceryController, segue.identifier == "pushManualGroceries" {
+            let ingredients = scrape.ingredients.map({ $0.value }).joined(separator: "\n")
+            vc.ingredients = ingredients
+            vc.change = .photo
+        }
+    }
+}
+
+class AddRecipePhotoController: AddDetailController {
     var scrape: Scrape = Scrape<ScrapeImageInfo>(ingredients: [], steps: [])
     var current: ScrapeImageInfo? = nil
     var pickVc: PickPhotoController? = nil
@@ -41,7 +107,7 @@ class AddPhotoController: AddDetailController {
 
 class PickPhotoController: UICollectionViewController, UICollectionViewDelegateFlowLayout, UIImagePickerControllerDelegate, UINavigationControllerDelegate, CropperViewControllerDelegate {
     var scrapeType: ScrapeType? = nil
-    var addVc: AddPhotoController? = nil
+    var addVc: AddRecipePhotoController? = nil
     
     let INGREDIENTS = 0
     let STEPS = 1
@@ -211,7 +277,7 @@ class ReviewPhotoController: UIViewController, UITextViewDelegate, UIContextMenu
     
     var scrapeInfo: ScrapeImageInfo? = nil
     var navigationVc: AddController? = nil
-    var addVc: AddPhotoController? = nil
+    var addVc: AddRecipePhotoController? = nil
     
     @IBAction func didTapBack(_ sender: Any?) {
         DispatchQueue.main.async {
@@ -232,7 +298,7 @@ class ReviewPhotoController: UIViewController, UITextViewDelegate, UIContextMenu
         }
         DispatchQueue.main.async {
             self.navigationVc?.popViewController(animated: true)
-            self.addVc?.pickVc?.collectionView.reloadData()
+            (self.addVc as? AddRecipePhotoController)?.pickVc?.collectionView.reloadData()
         }
     }
     

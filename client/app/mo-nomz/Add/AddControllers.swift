@@ -12,6 +12,7 @@ enum AddType {
     case manualRecipes
     case manualGroceries
     case photo
+    case manualPhoto
 }
 
 enum ScrapeType {
@@ -49,7 +50,10 @@ class AddController: UINavigationController, UINavigationControllerDelegate {
         if let vc = viewController as? AddManualController {
             vc.navigationVc = self
         }
-        if let vc = viewController as? AddPhotoController {
+        if let vc = viewController as? AddRecipePhotoController {
+            vc.navigationVc = self
+        }
+        if let vc = viewController as? AddGroceryPhotoController {
             vc.navigationVc = self
         }
         if let vc = viewController as? ReviewPhotoController {
@@ -68,13 +72,16 @@ class AddController: UINavigationController, UINavigationControllerDelegate {
             break
         case .manualRecipes:
             vc = storyboard.instantiateViewController(withIdentifier: "addManual")
-            (vc as! AddManualController).change = .addRecipe
+            (vc as! AddManualController).change = .manual
             break
         case .manualGroceries:
             vc = storyboard.instantiateViewController(withIdentifier: "addGrocery")
             break
         case .photo:
             vc = storyboard.instantiateViewController(withIdentifier: "addPhoto")
+            break
+        case .manualPhoto:
+            vc = storyboard.instantiateViewController(withIdentifier: "addGroceryPhoto")
             break
         }
         setViewControllers([vc], animated: false)
