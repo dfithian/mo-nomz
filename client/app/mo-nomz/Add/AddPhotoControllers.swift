@@ -12,8 +12,7 @@ import PhotosUI
 import QCropper
 
 class AddGroceryPhotoController: AddDetailController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, CropperViewControllerDelegate {
-    var scrape: Scrape = Scrape<ScrapeImageInfo>(ingredients: [], steps: [])
-    var current: ScrapeImageInfo? = nil
+    var ingredients: String = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -51,7 +50,7 @@ class AddGroceryPhotoController: AddDetailController, UIImagePickerControllerDel
             self.stopLoading(progress)
             guard let observations = req.results as? [VNRecognizedTextObservation] else { return }
             let recognized = observations.compactMap({ $0.topCandidates(1).first?.string }).joined(separator: "\n")
-            self.current = ScrapeImageInfo(image: cropped, value: recognized, type: .ingredient)
+            self.ingredients = recognized
             self.performSegue(withIdentifier: "pushManualGroceries", sender: nil)
         }
         let handler = VNImageRequestHandler(cgImage: cropped.cgImage!)
@@ -72,7 +71,6 @@ class AddGroceryPhotoController: AddDetailController, UIImagePickerControllerDel
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let vc = segue.destination as? AddGroceryController, segue.identifier == "pushManualGroceries" {
-            let ingredients = scrape.ingredients.map({ $0.value }).joined(separator: "\n")
             vc.ingredients = ingredients
             vc.change = .photo
         }

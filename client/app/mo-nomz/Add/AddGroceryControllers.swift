@@ -48,6 +48,7 @@ class AddGroceryController: AddDetailController, UITextViewDelegate {
             header.text = "Review selections"
             break
         }
+        text.text = ingredients ?? ""
         text.addDoneButtonOnKeyboard()
         text.becomeFirstResponder()
     }

@@ -64,24 +64,23 @@ class AddController: UINavigationController, UINavigationControllerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.delegate = self
-        let storyboard = UIStoryboard(name: "AddItems", bundle: nil)
         let vc: UIViewController
         switch addType {
         case .link:
-            vc = storyboard.instantiateViewController(withIdentifier: "addLink")
+            vc = storyboard!.instantiateViewController(withIdentifier: "addLink")
             break
         case .manualRecipes:
-            vc = storyboard.instantiateViewController(withIdentifier: "addManual")
+            vc = storyboard!.instantiateViewController(withIdentifier: "addManual")
             (vc as! AddManualController).change = .manual
             break
         case .manualGroceries:
-            vc = storyboard.instantiateViewController(withIdentifier: "addGrocery")
+            vc = storyboard!.instantiateViewController(withIdentifier: "addGrocery")
             break
         case .photo:
-            vc = storyboard.instantiateViewController(withIdentifier: "addPhoto")
+            vc = storyboard!.instantiateViewController(withIdentifier: "addPhoto")
             break
         case .manualPhoto:
-            vc = storyboard.instantiateViewController(withIdentifier: "addGroceryPhoto")
+            vc = storyboard!.instantiateViewController(withIdentifier: "addGroceryPhoto")
             break
         }
         setViewControllers([vc], animated: false)
