@@ -7,9 +7,16 @@
 
 import UIKit
 
+enum GroceryAdd {
+    case manual
+    case photo
+}
+
 class AddGroceryController: AddDetailController, UITextViewDelegate {
+    @IBOutlet weak var header: UILabel!
     @IBOutlet weak var text: UITextView!
     
+    var change: GroceryAdd = .manual
     var ingredients: String? = nil
 
     @IBAction func didTapSubmit(_ sender: Any?) {
@@ -33,6 +40,15 @@ class AddGroceryController: AddDetailController, UITextViewDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        switch (change) {
+        case .manual:
+            header.text = "Add groceries"
+            break
+        case .photo:
+            header.text = "Review selections"
+            break
+        }
+        text.text = ingredients ?? ""
         text.addDoneButtonOnKeyboard()
         text.becomeFirstResponder()
     }

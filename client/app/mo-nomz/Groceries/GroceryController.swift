@@ -9,6 +9,7 @@ import GoogleMobileAds
 import UIKit
 
 class GroceryController: UIViewController {
+    @IBOutlet weak var add: UIButton!
     @IBOutlet weak var hamburger: UIButton!
     @IBOutlet weak var count: UILabel!
 
@@ -28,6 +29,18 @@ class GroceryController: UIViewController {
             }
             self.promptForConfirmation(title: "Clear", message: "This will delete all groceries and deactivate all recipes. Do you want to continue?", handler: handler)
         }
+    }
+    
+    private func setupAdd() {
+        add.showsMenuAsPrimaryAction = true
+        add.menu = UIMenu(options: .displayInline, children: [
+            UIAction(title: "Add manually", image: UIImage(systemName: "pencil"), handler: { _ in
+                self.performSegue(withIdentifier: "addManual", sender: nil)
+            }),
+            UIAction(title: "Add ingredient photos", image: UIImage(systemName: "photo.on.rectangle"), handler: { _ in
+                self.performSegue(withIdentifier: "addPhoto", sender: nil)
+            })
+        ])
     }
     
     private func setupHamburger() {
@@ -65,8 +78,12 @@ class GroceryController: UIViewController {
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let vc = segue.destination as? AddController, segue.identifier == "addGrocery" {
+        if let vc = segue.destination as? AddController, segue.identifier == "addManual" {
             vc.addType = .manualGroceries
+            vc.onChange = reloadData
+        }
+        if let vc = segue.destination as? AddController, segue.identifier == "addPhoto" {
+            vc.addType = .manualPhoto
             vc.onChange = reloadData
         }
         if let vc = segue.destination as? GroceryListController, segue.identifier == "embedGroceryItems" {
@@ -82,6 +99,7 @@ class GroceryController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         reloadData()
+        setupAdd()
         setupHamburger()
     }
 }

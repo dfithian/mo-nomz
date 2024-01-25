@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 53;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -567,14 +567,14 @@
 				CODE_SIGN_ENTITLEMENTS = "mo-nomz/mo-nomzRelease.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = 5A6Y383S44;
 				INFOPLIST_FILE = "mo-nomz/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 9.5;
+				MARKETING_VERSION = 9.6;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-l\"c++\"",

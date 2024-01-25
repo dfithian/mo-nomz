@@ -1,5 +1,7 @@
 on:
   push: {}
+  # schedule:
+  #   - cron: "0 5 * * *"
 jobs:
   build-web:
     runs-on: ubuntu-latest
@@ -21,9 +23,9 @@ jobs:
           path: |
             ~/.cabal/store
             dist-newstyle
-          key: cabal-${{ hashFiles('chez-grater/chez-grater.cabal') }}
+          key: cabal-${{ hashFiles('server/chez-grater/chez-grater.cabal') }}
           restore-keys: |
-            cabal-${{ hashFiles('chez-grater/chez-grater.cabal') }}
+            cabal-${{ hashFiles('server/chez-grater/chez-grater.cabal') }}
             cabal-
       - uses: haskell/actions/setup@v1
         with:

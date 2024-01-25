@@ -7,8 +7,8 @@
 
 import UIKit
 
-enum ManualChange {
-    case addRecipe
+enum ManualAdd {
+    case manual
     case link(String?, String?, String, String?)
     case photo(String, String?)
 }
@@ -16,7 +16,7 @@ enum ManualChange {
 class AddManualController: AddDetailController {
     @IBOutlet weak var header: UILabel!
 
-    var change: ManualChange = .addRecipe
+    var change: ManualAdd = .manual
     var manualVc: AddManualTableController? = nil
     
     @IBAction func didTapSubmit(_ sender: Any?) {
@@ -53,7 +53,7 @@ class AddManualController: AddDetailController {
                 vc.ingredients = ingredients
                 vc.steps = steps
                 break
-            case .addRecipe:
+            case .manual:
                 vc.startEditing = true
                 break
             }
@@ -69,7 +69,7 @@ class AddManualController: AddDetailController {
         case .photo(_, _):
             header.text = "Review selections"
             break
-        case .addRecipe:
+        case .manual:
             header.text = "Add recipe"
             break
         }

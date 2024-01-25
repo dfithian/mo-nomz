@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="2PP-TC-bgv">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="22505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="2PP-TC-bgv">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21679"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22504"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -443,9 +443,6 @@
                                 <rect key="frame" x="304" y="73.5" width="23" height="21"/>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                 <state key="normal" image="plus" catalog="system"/>
-                                <connections>
-                                    <segue destination="h4A-hb-V1S" kind="show" identifier="addGrocery" id="WVr-Rt-SBc"/>
-                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" role="destructive" translatesAutoresizingMaskIntoConstraints="NO" id="WfJ-eS-RpJ">
                                 <rect key="frame" x="335" y="70" width="27" height="28"/>
@@ -487,9 +484,12 @@
                     <tabBarItem key="tabBarItem" title="Grocery List" image="cart" catalog="system" id="gkS-fY-qIs"/>
                     <navigationItem key="navigationItem" id="jfY-fc-nn1"/>
                     <connections>
+                        <outlet property="add" destination="kfQ-SK-sbN" id="0UV-BN-Mb2"/>
                         <outlet property="count" destination="dan-56-iJ9" id="Azb-4M-MmW"/>
                         <outlet property="hamburger" destination="VL9-oc-dHF" id="dbP-D9-3zv"/>
                         <segue destination="ww3-W0-E8H" kind="show" identifier="showBought" id="jJh-wE-b2P"/>
+                        <segue destination="h4A-hb-V1S" kind="show" identifier="addManual" id="nv8-N0-KLt"/>
+                        <segue destination="fO8-VL-3gG" kind="show" identifier="addPhoto" id="ji2-Az-aMv"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="25s-xu-CdQ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -1496,11 +1496,20 @@
             </objects>
             <point key="canvasLocation" x="462" y="-1116"/>
         </scene>
+        <!--AddItems-->
+        <scene sceneID="d5g-d9-UMc">
+            <objects>
+                <viewControllerPlaceholder storyboardName="AddItems" id="fO8-VL-3gG" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="SSp-pV-u5A"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="uce-CM-aVA" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="228" y="753"/>
+        </scene>
     </scenes>
     <inferredMetricsTieBreakers>
         <segue reference="C01-YK-wY2"/>
         <segue reference="w9r-p2-QGm"/>
-        <segue reference="jJh-wE-b2P"/>
     </inferredMetricsTieBreakers>
     <resources>
         <image name="arrow.3.trianglepath" catalog="system" width="128" height="123"/>
@@ -1511,7 +1520,7 @@
         <image name="circle.fill" catalog="system" width="128" height="123"/>
         <image name="ellipsis" catalog="system" width="128" height="37"/>
         <image name="eye" catalog="system" width="128" height="79"/>
-        <image name="eye.slash" catalog="system" width="128" height="84"/>
+        <image name="eye.slash" catalog="system" width="128" height="95"/>
         <image name="flame" catalog="system" width="106" height="128"/>
         <image name="fork.knife" catalog="system" width="94" height="128"/>
         <image name="gear" catalog="system" width="128" height="122"/>
@@ -1524,7 +1533,7 @@
             <color red="0.0" green="0.46000000000000002" blue="0.89000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <systemColor name="labelColor">
-            <color red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="linkColor">
             <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
